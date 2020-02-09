@@ -18,7 +18,12 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+    mounted () {
+      var vm = this
+      vm.$i18n.locale = 'hk'
+    }
+  }
 </script>
 
 <style lang="scss">

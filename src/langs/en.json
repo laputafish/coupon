@@ -1,0 +1,35 @@
+{
+  "message": "hello i18n !!",
+  "menu": {
+    "dashboard": "Dashboard",
+    "dashboard1": "Dashboard1",
+    "dashboard2": "Dashboard2",
+    "dashboard3": "Dashboard3",
+    "widgets": "Widgets",
+    "layout_options": "Layout Options",
+    "top_navigation": "Top Navigation",
+    "top_navigation_sidebar": "Top Navigation - Sidebar",
+    "boxed": "Boxed",
+    "fixed_sidebar": "Fixed Sidebar",
+    "fixed_navbar": "Fixed Navbar",
+    "fixed_footer": "Fixed Footer",
+    "collapsed_sidebar": "Collapsed Sidebar",
+
+    "charts": "Charts",
+    "charts_js": "Charts JS",
+    "flot": "Flots",
+    "inline": "Inline",
+
+    "ui_elements": "UI Elements",
+    "general": "General",
+    "icons": "Icons",
+    "buttons": "Buttons",
+    "sliders": "Sliders",
+    "modals_alerts": "Modals & Alerts",
+    "navbar_tabs": "Navbar & Tabs",
+    "timeline": "Timeline",
+    "ribbons": "Ribbons",
+
+    "coupon_codes": "Coupon Codes"
+  }
+}
