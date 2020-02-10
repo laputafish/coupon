@@ -19,8 +19,12 @@
 
 <script>
   export default {
+    created () {
+      const vm = this
+      vm.$store.dispatch('FETCH_CONSTANTS')
+    },
     mounted () {
-      var vm = this
+      const vm = this
       vm.$i18n.locale = 'hk'
     }
   }

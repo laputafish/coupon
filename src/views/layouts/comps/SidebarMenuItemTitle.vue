@@ -1,8 +1,8 @@
 <template>
-  <a :href="link" class="nav-link">
-    <i class="nav-icon" :class="item.iconClass"></i>
+  <a href="#" class="nav-link">
+    <i class="nav-icon" :class="item.icon_class"></i>
     <p>
-      {{ $t(item.labelTag) }}
+      {{ $t(item.label_tag) }}
       <i v-if="item.type==='group'" class="fas fa-angle-left right"></i>
       <span v-if="item.badge" class="right badge"
             :class="getBadgeClass">
@@ -22,7 +22,7 @@
     computed: {
       getBadgeClass () {
         const vm = this
-        return vm.item.badgeClass ? 'badge-' + vm.item.badgeClass : 'badge-primary'
+        return vm.item.badge_class ? 'badge-' + vm.item.badge_class : 'badge-primary'
       },
       link () {
         let vm = this
