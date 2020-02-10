@@ -4,7 +4,8 @@
     "number": "#",
     "description": "Description",
     "expiry_date": "Expiry Date",
-    "action" : "Action"
+    "action" : "Action",
+    "dashboard": "Dashboard"
   },
   "buttons": {
     "save": "Save"

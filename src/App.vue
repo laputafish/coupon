@@ -25,7 +25,7 @@
     },
     mounted () {
       const vm = this
-      vm.$i18n.locale = 'hk'
+      vm.$i18n.locale = 'en'
     }
   }
 </script>
