@@ -18,7 +18,8 @@ const mutations = {
 
 const actions = {
   [types.FETCH_CONSTANTS] ({commit}) {
-    const promise = new Promise((resolve, reject) => {
+    /*const promise = */
+    new Promise((resolve) => {
       const env = {
         apiUrl: process.env.VUE_APP_API_URL
       }

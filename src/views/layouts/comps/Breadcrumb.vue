@@ -1,13 +1,13 @@
 <template>
 <ol class="breadcrumb float-sm-right">
   <template v-for="item in items">
-  <li v-if="item.route_name!==''"
-      class="breadcrumb-item">{{ $t(item.label_tag) }}
-    :key="item.labelTag">
-    <route-link :to="item.route_name">{{ $t(item.label_tag) }}</route-link></li>
+  <li v-if="item.routeName!==''"
+      class="breadcrumb-item"
+      :key="item.labelTag">
+    <router-link :to="{name: item.routeName}">{{ $t(item.labelTag) }}</router-link></li>
   <li v-else
       class="breadcrumb-item active"
-      :key="item.label_tag">DataTables</li>
+      :key="item.labelTag">{{ $t(item.labelTag) }}</li>
   </template>
 </ol>
 </template>

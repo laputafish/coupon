@@ -19,11 +19,13 @@ import store from './store'
 import i18n from './i18n'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import Datatable from 'vue2-datatable-component'
 
 // custom.scss
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueAxios, axios)
+Vue.use(Datatable)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false

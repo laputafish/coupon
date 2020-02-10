@@ -1,5 +1,5 @@
 {
-  "name": "coupon",
+  "name": "eVoucher",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,6 +22,7 @@
     "vue-axios": "^2.1.5",
     "vue-i18n": "^8.0.0",
     "vue-router": "^3.1.5",
+    "vue2-datatable-component": "^2.3.1",
     "vuex": "^3.1.2"
   },
   "devDependencies": {

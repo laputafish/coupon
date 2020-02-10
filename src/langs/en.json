@@ -1,4 +1,14 @@
 {
+  "general": {
+    "home": "Home",
+    "number": "#",
+    "description": "Description",
+    "expiry_date": "Expiry Date",
+    "action" : "Action"
+  },
+  "buttons": {
+    "save": "Save"
+  },
   "message": "hello i18n !!",
   "menu": {
     "dashboard": "Dashboard",
@@ -32,5 +42,11 @@
 
     "vouchers": "Vouchers",
     "agents": "Agents"
+  },
+  "agents": {
+    "agent": "Agent"
+  },
+  "vouchers": {
+    "email_sent_total": "Email Sent/Total"
   }
 }

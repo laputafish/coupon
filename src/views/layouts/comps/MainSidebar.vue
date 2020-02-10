@@ -8,7 +8,7 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <sidebar-user-panel avatarUrl="/static/img/user2-160x160.jpg"
-        name="Digital Voucher"></sidebar-user-panel>
+        name="Admin"></sidebar-user-panel>
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -33,9 +33,9 @@
       }
     },
     mounted () {
-      let vm = this
+      const vm = this
 
-      vm.$store.dispatch('COMMON_GET', 'menu').then(response => {
+      vm.$store.dispatch('COMMON_GET', '/menu').then(response => {
         vm.mainMenu = response
       })
     },

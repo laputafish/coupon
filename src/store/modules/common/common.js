@@ -19,7 +19,7 @@ const actions = {
       } else {
         urlCommand = payload
       }
-      let url = rootGetters.constants.apiUrl + urlCommand
+      const url = rootGetters.constants.apiUrl + urlCommand
 
       Vue.axios.delete(url, options).then(function (response) {
         if (response.data.status) {
@@ -92,9 +92,9 @@ const actions = {
       } else {
         urlCommand = payload
       }
-      let url = rootGetters.constants.apiUrl + urlCommand
+      const url = rootGetters.constants.apiUrl + urlCommand
       if (payload.query) {
-        let paginationConfig = helpers.addPagination(payload.query)
+        const paginationConfig = helpers.addPagination(payload.query)
         config = {
           params: {
             ...config.params,
@@ -130,7 +130,7 @@ const actions = {
         urlCommand = payload
       }
 
-      let url = rootGetters.constants.apiUrl + urlCommand
+      const url = rootGetters.constants.apiUrl + urlCommand
       Vue.axios.post(url, data).then(function (response) {
         if (response.data.status) {
           resolve(response.data.result)
@@ -162,7 +162,7 @@ const actions = {
         urlCommand = payload
       }
 
-      let url = rootGetters.constants.apiUrl + urlCommand
+      const url = rootGetters.constants.apiUrl + urlCommand
       // console.log('COMMON_PUT :: url: ', url)
       // console.log('COMMON_PUT :: data: ', data)
       // console.log('COMMON_PUT :: config: ', config)

@@ -25,7 +25,7 @@
         return vm.item.badge_class ? 'badge-' + vm.item.badge_class : 'badge-primary'
       },
       link () {
-        let vm = this
+        const vm = this
         return vm.item.type === 'group' ?
           '#' : vm.item.link
       }

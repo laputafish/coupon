@@ -1,8 +1,8 @@
 const getToday = () => {
-  var dateObj = new Date()
-  var month = dateObj.getUTCMonth() + 1
-  var day = dateObj.getUTCDate()
-  var year = dateObj.getUTCFullYear()
+  const dateObj = new Date()
+  const month = dateObj.getUTCMonth() + 1
+  const day = dateObj.getUTCDate()
+  const year = dateObj.getUTCFullYear()
 
   const monthStr = month < 10 ? '0' + month.toString() : month.toString()
   const dayStr = day < 10 ? '0' + day.toString() : day.toString()
@@ -56,7 +56,7 @@ const addPagination = (query, config) => {
 
 const array2str = (ar) => {
   const items = []
-  for (var i = 0; i < ar.length; i++) {
+  for (let i = 0; i < ar.length; i++) {
     if (ar[i] !== '') {
       items.push(ar[i].trim())
     }
@@ -79,6 +79,7 @@ const showWarning = (vm, message, options) => {
     title: vm.$t('general.warning'),
     body: message.toString()
   }, options).then(function (dialogRef) {
+    alert('alert')
   })
 }
 

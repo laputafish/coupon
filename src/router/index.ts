@@ -64,7 +64,7 @@ const routes = [
 		component: AppLayout,
 		children: [
 			{
-				path: '/vouchers',
+				path: '/vouchers/:id?',
 				name: 'vouchers',
 				component: Voucher
 			},
