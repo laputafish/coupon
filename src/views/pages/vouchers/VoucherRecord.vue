@@ -25,11 +25,12 @@
             <file-upload
                 extensions="xlsx"
                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                name="xlsFile"
+                name="file"
                 class="btn btn-primary mr-1 mb-1"
                 post-action="http://evoucherapi/media/upload"
                 :drop="!edit"
                 v-model="files"
+                @success="onSuccess()"
                 @input-filter="inputFilter"
                 @input-file="inputFile"
                 ref="upload">
@@ -79,6 +80,9 @@
       default: null
     },
     methods: {
+      onSuccess () {
+        alert('success')
+      },
       editSave() {
         console.log('editSave')
         this.edit = false
@@ -114,6 +118,10 @@
         if (!newFile && oldFile) {
           console.log('not newFile')
           this.edit = false
+        }
+        if (newFile.success) {
+          alert('success')
+          console.log('sucess response: ', newFile.response)
         }
       },
       // inputFile: function (newFile, oldFile) {
