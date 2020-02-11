@@ -78,7 +78,8 @@ const showWarning = (vm, message, options) => {
   vm.$dialog.alert({
     title: vm.$t('general.warning'),
     body: message.toString()
-  }, options).then(function (dialogRef) {
+  }, options).then(function () {
+  // }, options).then(function (dialogRef) {
     alert('alert')
   })
 }

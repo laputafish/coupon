@@ -18,13 +18,16 @@
     "bootstrap-vue": "^2.4.0",
     "core-js": "^3.6.4",
     "jquery": "^3.4.1",
+    "tinymce": "^5.1.6",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-html-editor": "^0.2.1",
     "vue-i18n": "^8.0.0",
     "vue-router": "^3.1.5",
+    "vue-tinymce-editor": "^1.6.2",
     "vue-upload-component": "^2.8.20",
     "vue2-datatable-component": "^2.3.1",
+    "vue2-datepicker": "^3.3.0",
     "vuex": "^3.1.2"
   },
   "devDependencies": {

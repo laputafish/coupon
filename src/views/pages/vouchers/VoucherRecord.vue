@@ -27,25 +27,28 @@
       <div class="col-sm-2">
         <div class="form-group">
           <label for="activation_date">{{ $t('vouchers.activation_date') }}</label>
-          <input class="form-control" id="activation_date" name="activation_date"
-                 type="date"
-                 v-model="record.activation_date"/>
+          <!--<input class="form-control" id="activation_date" name="activation_date"-->
+                 <!--type="date"-->
+                 <!--v-model="record.activation_date"/>-->
+          <date-picker v-model="record.activation_date" valueType="format"></date-picker>
         </div>
       </div>
       <div class="col-sm-2">
         <div class="form-group">
           <label for="expiry_date">{{ $t('vouchers.expiry_date') }}</label>
-          <input class="form-control" id="expiry_date" name="expiry_date"
-                 type="date"
-                 v-model="record.expiry_date"/>
+          <!--<input class="form-control" id="expiry_date" name="expiry_date"-->
+                 <!--type="date"-->
+                 <!--v-model="record.expiry_date"/>-->
+          <date-picker v-model="record.expiry_date" valueType="format"></date-picker>
         </div>
       </div>
       <div class="col-sm-2">
         <div class="form-group">
           <label for="created_at">{{ $t('vouchers.creation_date') }}</label>
-          <input readonly class="form-control" id="created_at" name="created_at"
-                 type="date"
-                 v-model="record.created_at"/>
+          <!--<input readonly class="form-control" id="created_at" name="created_at"-->
+                 <!--type="date"-->
+                 <!--v-model="record.created_at"/>-->
+          <date-picker v-model="record.created_at" valueType="format"></date-picker>
         </div>
       </div>
     </div>
@@ -69,10 +72,11 @@
               <div class="col-12">
               </div>
             </div>
-            <div class="row">
+            <div class="row" v-if="record">
               <div class="col-12">
+                <tinymce id="leaflet-template" v-model="record.template"></tinymce>
                 HTML Code
-                <textarea rows="16" v-model="content" class="w-100 mt-2"></textarea>
+                <textarea rows="16" v-model="record.template" class="w-100 mt-2"></textarea>
               </div>
             </div>
           </div>
@@ -85,11 +89,16 @@
 <script>
 import agentCodeTable from './comps/AgentCodeTable'
 import emailTable from './comps/EmailTable'
+import tinymce from 'vue-tinymce-editor'
+import datePicker from 'vue2-datepicker'
+import 'vue2-datepicker/index.css';
 
 export default {
   components: {
     agentCodeTable,
-    emailTable
+    emailTable,
+    tinymce,
+    datePicker
   },
   data () {
     return {
@@ -165,6 +174,10 @@ export default {
   padding-bottom: 0.25rem;
 }
 
+.nav-tabs .nav-item a.nav-link.active {
+  background-color: lightseagreen;
+  color: white;
+}
 div[name=Datatable] .pagination {
   justify-content: flex-end !important;
 }
