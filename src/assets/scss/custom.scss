@@ -8,3 +8,14 @@ div[name=Datatable] div.row:last-child {
   color: #999;
 }
 
+.bg-module {
+  //background-color: #fdf8ef;
+  background-color: white;
+}
+
+.tabs ul > li.nav-item > a.nav-link.active {
+  color: black;
+}
+.tabs ul > li.nav-item > a.nav-link {
+  color: darkgray;
+}

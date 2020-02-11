@@ -1,165 +1,171 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-12">
-        <div class="btn-toolbar mb-1 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
-          <button type="button"
-                  @click="save()"
-                  class="btn btn-primary">
-            <i class="fas fa-save"></i>&nbsp;{{ $t('buttons.save') }}
-          </button>
-        </div>
-      </div>
-      <div class="col-5">
-        <div class="upload">
-          <div v-if="files.length>0">
-            <span>{{files[0].name}}</span>
-            <span>({{files[0].size}})</span>
-            <span v-if="files[0].error">{{files[0].error}}</span>
-            <span v-else-if="files[0].success">success</span>
-            <span v-else-if="files[0].active">active</span>
-            <span v-else-if="files[0].active">active</span>
-            <span v-else></span>
+      <div v-if="record" class="col-12 border-bottom border-2 mb-3">
+        <div class="d-flex flex-row justify-content-between">
+          <div class="record-title flex-grow-1">
+            <h2 v-if="record && record.description.length>0" class="d-inline mr-2">{{ record.description }}</h2>
+            <h2 class="d-inline">[{{ recordId===0 ? $t('general.new') : $t('general.edit') }}]</h2>
           </div>
-          <div class="example-btn">
-            <file-upload
-                extensions="xlsx"
-                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                name="file"
-                class="btn btn-primary mr-1 mb-1"
-                post-action="http://evoucherapi/media/upload"
-                :drop="!edit"
-                v-model="files"
-                @success="onSuccess()"
-                @input-filter="inputFilter"
-                @input-file="inputFile"
-                ref="upload">
-              <i class="fa fa-upload"></i>
-              Upload File
-            </file-upload>
-            <!--<button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active"-->
-                    <!--@click.prevent="$refs.upload.active = true">-->
-              <!--<i class="fa fa-arrow-up" aria-hidden="true"></i>-->
-              <!--Start Upload-->
-            <!--</button>-->
-            <!--<button type="button" class="btn btn-danger" v-else @click.prevent="$refs.upload.active = false">-->
-              <!--<i class="fa fa-stop" aria-hidden="true"></i>-->
-              <!--Stop Upload-->
-            <!--</button>-->
-          </div>
-        </div>
-        <div class="avatar-edit" v-show="files.length && edit">
-          <div class="avatar-edit-image" v-if="files.length">
-            <img ref="editImage" :src="files[0].url" />
-          </div>
-          <div class="text-center p-4">
-            <button type="button" class="btn btn-secondary" @click.prevent="$refs.upload.clear">Cancel</button>
-            <button type="submit" class="btn btn-primary" @click.prevent="editSave">Save</button>
+          <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
+            <button type="button"
+                    @click="save()"
+                    class="btn btn-primary">
+              <i class="fas fa-save"></i>&nbsp;{{ $t('buttons.save') }}
+            </button>
           </div>
         </div>
       </div>
+    </div>
+    <div class="row" v-if="record">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label for="description">{{ $t('general.description') }}</label>
+          <input class="form-control" id="description" name="description" type="text" v-model="record.description"/>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="activation_date">{{ $t('vouchers.activation_date') }}</label>
+          <input class="form-control" id="activation_date" name="activation_date"
+                 type="date"
+                 v-model="record.activation_date"/>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="expiry_date">{{ $t('vouchers.expiry_date') }}</label>
+          <input class="form-control" id="expiry_date" name="expiry_date"
+                 type="date"
+                 v-model="record.expiry_date"/>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="created_at">{{ $t('vouchers.creation_date') }}</label>
+          <input readonly class="form-control" id="created_at" name="created_at"
+                 type="date"
+                 v-model="record.created_at"/>
+        </div>
+      </div>
+    </div>
+    <div style="background-color:#EEEEEE;" class="p-2">
+      <b-tabs content-class="py-2" class="bg-white">
+        <b-tab title="Agent Codes & Emails">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-7">
+                <agent-code-table :voucherId="recordId"></agent-code-table>
+              </div>
+              <div class="col-5">
+                <email-table :voucherId="recordId"></email-table>
+              </div>
+            </div>
+          </div>
+        </b-tab>
+        <b-tab title="Leaflet Template">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                HTML Code
+                <textarea rows="16" v-model="content" class="w-100 mt-2"></textarea>
+              </div>
+            </div>
+          </div>
+        </b-tab>
+      </b-tabs>
     </div>
   </div>
 </template>
 
 <script>
-  import fileUpload from 'vue-upload-component'
+import agentCodeTable from './comps/AgentCodeTable'
+import emailTable from './comps/EmailTable'
 
-  export default {
-    data () {
-      return {
-        files: [],
-        edit: false
-      }
-    },
-    components: {
-      fileUpload
-    },
-    props: {
-      type: Object,
-      default: null
-    },
-    methods: {
-      onSuccess () {
-        alert('success')
-      },
-      editSave() {
-        console.log('editSave')
-        this.edit = false
-        let file = this.files[0]
-        // let oldFile = this.files[0]
-        // let binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1])
-        // let arr = new Uint8Array(binStr.length)
-        // for (let i = 0; i < binStr.length; i++) {
-        //   arr[i] = binStr.charCodeAt(i)
-        // }
-        // let file = new File([arr], oldFile.name, { type: oldFile.type })
-        this.$refs.upload.update(file.id, {
-          file,
-          type: file.type,
-          size: file.size,
-          active: true,
-        })
-      },
-
-      save () {
-        alert('save')
-      },
-
-      inputFile(newFile, oldFile, prevent) {
-        console.log('inputFile')
-        if (newFile && !oldFile) {
-          console.log('newFile')
-          this.$nextTick(function () {
-            this.edit = true
-            this.$refs.upload.active = true
-          })
-        }
-        if (!newFile && oldFile) {
-          console.log('not newFile')
-          this.edit = false
-        }
-        if (newFile.success) {
-          alert('success')
-          console.log('sucess response: ', newFile.response)
-        }
-      },
-      // inputFile: function (newFile, oldFile) {
-      //   if (newFile && oldFile && !newFile.active && oldFile.active) {
-      //     // Get response data
-      //     console.log('response', newFile.response)
-      //     if (newFile.xhr) {
-      //       //  Get the response status code
-      //       console.log('status', newFile.xhr.status)
-      //     }
-      //   }
-      // },
-      /**
-       * Pretreatment
-       * @param  Object|undefined   newFile   Read and write
-       * @param  Object|undefined   oldFile   Read only
-       * @param  Function           prevent   Prevent changing
-       * @return undefined
-       */
-      inputFilter (newFile, oldFile, prevent) {
-        console.log('inputFilter')
-        if (newFile && !oldFile) {
-          // Filter non-image file
-          if (!/\.(xlsx)$/i.test(newFile.name)) {
-            alert('you file is not excel file.')
-            return prevent()
-          }
-        }
-        //
-        // if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
-        //   // Create a blob field
-        //   newFile.blob = ''
-        //   let URL = window.URL || window.webkitURL
-        //   if (URL && URL.createObjectURL) {
-        //     newFile.blob = URL.createObjectURL(newFile.file)
-        //   }
-        // }
-      }
+export default {
+  components: {
+    agentCodeTable,
+    emailTable
+  },
+  data () {
+    return {
+      apiPath: '/vouchers',
+      record: null,
+      content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds'
     }
+  },
+  props: {
+    recordId: {
+      type: Number,
+      default: 0
+    }
+  },
+  watch: {
+    recordId: function (newValue) {
+      const vm = this
+      vm.refreshDataRecord(newValue)
+    }
+  },
+  mounted () {
+    const vm = this
+    vm.refreshDataRecord(vm.recordId)
+  },
+  methods: {
+    refreshDataRecord (id) {
+      const vm = this
+      if (vm.selectedId !== id) {
+        vm.selectedId = id
+      }
+      const data = {
+        urlCommand: vm.apiPath + '/' + id
+      }
+      vm.loading = true
+      vm.$store.dispatch('COMMON_GET', data).then(function (response) {
+        console.log('refreshDataRecord :: response: ', response)
+        vm.record = response
+      })
+    },
+
+    save () {
+      alert('save')
+    },
+
+    // inputFile(newFile, oldFile, prevent) {
+
+    // inputFile: function (newFile, oldFile) {
+    //   if (newFile && oldFile && !newFile.active && oldFile.active) {
+    //     // Get response data
+    //     console.log('response', newFile.response)
+    //     if (newFile.xhr) {
+    //       //  Get the response status code
+    //       console.log('status', newFile.xhr.status)
+    //     }
+    //   }
+    // },
+    /**
+     * Pretreatment
+     * @param  Object|undefined   newFile   Read and write
+     * @param  Object|undefined   oldFile   Read only
+     * @param  Function           prevent   Prevent changing
+     * @return undefined
+     */
+
   }
+}
 </script>
+
+<style>
+#email-table div[name=Datatable] table tbody tr td,
+#code-table div[name=Datatable] table tbody tr td {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+div[name=Datatable] .pagination {
+  justify-content: flex-end !important;
+}
+</style>

@@ -1,12 +1,12 @@
 <template>
-  <div class="btn-group btn-group-sm btn-group-gap">
+  <div class="action-btn-group btn-group-sm btn-group-gap">
     <button v-for="(btn,index) in buttons"
             :key="index"
             class="btn"
             :class="btn.btnClass"
             @click="processCommand(btn.command, btn.needConfirm)">
       <i v-if="processing(btn.command)" class="fa fa-fw fa-spinner fa-spin"></i>
-      <i v-else class="fa fa-fw" :class="btn.iconClass"></i>
+      <i v-else class="fa-fw" :class="btn.iconClass"></i>
     </button>
   </div>
 </template>
@@ -30,44 +30,51 @@ export default {
         // console.log('i= ' + i)
         let key = vm.xprops.buttons[i]
         switch (key) {
+          case 'view':
+            vm.buttons.push({
+              iconClass: 'fas fa-file-alt',
+              btnClass: 'btn-info',
+              command: 'view'
+            })
+            break
           case 'update':
             vm.buttons.push({
-              iconClass: 'fa-save',
+              iconClass: 'fas fa-save',
               btnClass: 'btn-success',
               command: 'update'
             })
             break
           case 'edit':
             vm.buttons.push({
-              iconClass: 'fa-edit',
+              iconClass: 'fas fa-edit',
               btnClass: 'btn-primary',
               command: 'edit'
             })
             break
           case 'duplicate':
             vm.buttons.push({
-              iconClass: 'fa-copy',
+              iconClass: 'fas fa-copy',
               btnClass: 'btn-info',
               command: 'duplicate'
             })
             break
           case 'delete':
             vm.buttons.push({
-              iconClass: 'fa-close',
+              iconClass: 'fas fa-times',
               btnClass: 'btn-danger',
               command: 'delete'
             })
             break
           case 'print':
             vm.buttons.push({
-              iconClass: 'fa-print',
+              iconClass: 'fas fa-print',
               btnClass: 'btn-info',
               command: 'print'
             })
             break
           case 'download':
             vm.buttons.push({
-              iconClass: 'fa-download',
+              iconClass: 'fas fa-download',
               btnClass: 'btn-info',
               command: 'download'
             })
@@ -129,5 +136,8 @@ export default {
   .-nested-comp-open-btn {
     color: #fff !important;
     background-color: #337ab7 !important;
+  }
+  .action-btn-group .btn {
+    margin-right: 1px;
   }
 </style>

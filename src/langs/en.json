@@ -5,7 +5,12 @@
     "description": "Description",
     "expiry_date": "Expiry Date",
     "action" : "Action",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "new": "New",
+    "edit": "Edit",
+    "name": "Name",
+    "email": "Email",
+    "tel_no": "Tel No."
   },
   "buttons": {
     "save": "Save"
@@ -48,6 +53,11 @@
     "agent": "Agent"
   },
   "vouchers": {
-    "email_sent_total": "Email Sent/Total"
+    "email_sent_total": "Email Sent/Total",
+    "creation_date": "Created At",
+    "activation_date": "Activation Date",
+    "expiry_date": "Expiry Date",
+    "code_list": "Code List",
+    "email_list": "Email List"
   }
 }

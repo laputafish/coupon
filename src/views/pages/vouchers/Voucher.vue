@@ -5,24 +5,26 @@
 
   <!-- Main content -->
   <section class="content">
-    <div v-if="mode==='list'" class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div class="btn-toolbar mb-1 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
-            <button type="button"
-                    @click="newVoucher()"
-                    class="btn btn-primary">
-              <i class="fas fa-plus"></i>
-            </button>
+    <div class="bg-module mx-2 p-2">
+      <div v-if="mode==='list'" class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="btn-toolbar mb-1 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
+              <button type="button"
+                      @click="newVoucher()"
+                      class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
           </div>
+          <div class="col-12">
+            <datatable v-cloak v-bind="$data"></datatable>
+          </div>
+          <!-- /.col -->
         </div>
-        <div class="col-12">
-          <datatable v-cloak v-bind="$data"></datatable>
-        </div>
-        <!-- /.col -->
       </div>
+      <voucher-record v-else :id="selectedId"></voucher-record>
     </div>
-    <voucher-record v-else :record="record"></voucher-record>
     <!-- /.row -->
   </section>
 </div>
@@ -60,8 +62,7 @@ export default {
       breadcrumb: [
         { labelTag: 'general.home', routeName: 'dashboard' },
         { labelTag: 'menu.vouchers', routeName:'' }
-      ],
-      record: null
+      ]
       // <ol class="breadcrumb float-sm-right">
       //   <li class="breadcrumb-item"><a href="#">Home</a></li>
       // <li class="breadcrumb-item active">DataTables</li>

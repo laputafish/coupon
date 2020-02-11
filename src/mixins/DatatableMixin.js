@@ -129,9 +129,10 @@ const mixin = {
       const vm = this
       if (vm.mode === 'list') {
         vm.refreshDataList(query)
-      } else {
-        vm.refreshDataRecord(vm.selectedId)
       }
+      // else {
+      //   vm.refreshDataRecord(vm.selectedId)
+      // }
     },
     refreshDataList (query) {
       let vm = this
@@ -153,20 +154,20 @@ const mixin = {
         vm.loading = false
       })
     },
-    refreshDataRecord (id) {
-      let vm = this
-      if (vm.selectedId !== id) {
-        vm.selectedId = id
-      }
-      const data = {
-        urlCommand: vm.apiPath + '/' + id
-      }
-      vm.loading = true
-      vm.$store.dispatch('COMMON_GET', data).then(function (response) {
-        console.log('refreshDataRecord :: response: ', response)
-        vm.record = response
-      })
-    },
+    // refreshDataRecord (id) {
+    //   let vm = this
+    //   if (vm.selectedId !== id) {
+    //     vm.selectedId = id
+    //   }
+    //   const data = {
+    //     urlCommand: vm.apiPath + '/' + id
+    //   }
+    //   vm.loading = true
+    //   vm.$store.dispatch('COMMON_GET', data).then(function (response) {
+    //     console.log('refreshDataRecord :: response: ', response)
+    //     vm.record = response
+    //   })
+    // },
     onQueryChangedHandler (query) {
       this.refreshData(query)
     },
@@ -184,7 +185,8 @@ const mixin = {
   watch: {
     '$route.params.id': function (newValue) {
       let vm = this
-      vm.refreshDataRecord(parseInt(newValue))
+      vm.selectedId = newValue
+      // vm.refreshDataRecord(parseInt(newValue))
       vm.updateMode()
     },
     searchValue: function () {
