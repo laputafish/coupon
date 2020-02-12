@@ -12,7 +12,10 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <sidebar-menu :menu="mainMenu"></sidebar-menu>
+        <h4 v-if="loading" class="mt-5 text-center text-light">
+          <i class="fa fa-spinner fa-spin"></i>
+        </h4>
+        <sidebar-menu v-else :menu="mainMenu"></sidebar-menu>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
@@ -29,14 +32,16 @@
   export default {
     data () {
       return {
+        loading: false,
         mainMenu: []
       }
     },
     mounted () {
       const vm = this
-
+      vm.loading = true
       vm.$store.dispatch('COMMON_GET', '/menu').then(response => {
         vm.mainMenu = response
+        vm.loading = false
       })
     },
     components: {

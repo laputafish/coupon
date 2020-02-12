@@ -11,6 +11,37 @@ const getToday = () => {
   return yearStr + '-' + monthStr + '-' + dayStr
 }
 
+const str2token = (str) => {
+  return str.tolowerCase().replace(' ', '_').replace(/[^a-z0-9]/gi,'')
+}
+
+const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
+  if (typeof pairSeparator === 'undefined') {
+    pairSeparator = '|'
+  }
+  if (typeof keyValueSeparator === 'undefined') {
+    keyValueSeparator = ':'
+  }
+  console.log('getKeyPairArray :: str = ' + str)
+  console.log('getKeyPairArray :: pairSeparator = ' + pairSeparator)
+  console.log('getKeyPairArray :: keyValueSeparator = ' + keyValueSeparator)
+
+  const pairs = str.split(pairSeparator)
+  console.log('getKeyPairArray :: pairs: ', pairs)
+
+  let result = []
+  for (let i = 0; i < pairs.length; i++) {
+    const keyValue = pairs[i].split(keyValueSeparator)
+    console.log('i=' + i + ': pairs[i]: ', pairs[i])
+    console.log('i=' + i + ': keyValue: ', keyValue)
+
+    result.push(keyValue)
+    console.log('getKeyPairArray :: result: ', result)
+  }
+  console.log('getKeyPairArray :: result: ', result)
+  return result
+}
+
 // const unSubscribe = (vm) => {
 //   if (vm.pusher) {
 //     vm.pusher.disconnect()
@@ -106,6 +137,7 @@ const showConfirmDialog = (vm, callback, data, message, options) => {
 }
 
 export default {
+  getKeyPairArray,
   getToday,
   // subscribe,
   // unSubscribe,

@@ -34,7 +34,7 @@
           <!--<input class="form-control" id="activation_date" name="activation_date"-->
                  <!--type="date"-->
                  <!--v-model="record.activation_date"/>-->
-          <date-picker v-model="record.activation_date" valueType="format"></date-picker>
+          <date-picker v-model="record.activation_date" class="w-100" valueType="format"></date-picker>
         </div>
       </div>
       <div class="col-sm-2">
@@ -43,7 +43,7 @@
           <!--<input class="form-control" id="expiry_date" name="expiry_date"-->
                  <!--type="date"-->
                  <!--v-model="record.expiry_date"/>-->
-          <date-picker v-model="record.expiry_date" valueType="format"></date-picker>
+          <date-picker v-model="record.expiry_date" class="w-100" valueType="format"></date-picker>
         </div>
       </div>
       <div class="col-sm-2">
@@ -52,25 +52,32 @@
           <!--<input readonly class="form-control" id="created_at" name="created_at"-->
                  <!--type="date"-->
                  <!--v-model="record.created_at"/>-->
-          <date-picker v-model="record.created_at" valueType="format"></date-picker>
+          <date-picker v-model="record.created_at" class="w-100" valueType="format"></date-picker>
         </div>
       </div>
     </div>
-    <div style="background-color:#EEEEEE;" class="p-2">
-      <b-tabs content-class="py-2" class="bg-white">
-        <b-tab title="Agent Codes & Emails">
+    <div v-if="record" class="p-2 bg-tab">
+      <b-tabs content-class="py-0" class="bg-tab">
+        <b-tab title="Agent Codes & Emails" class="bg-white py-2">
           <div class="container-fluid">
             <div class="row">
               <div class="col-7">
-                <agent-code-table :voucherId="recordId"></agent-code-table>
+                <agent-code-table
+                    ref="agentCodeTable"
+                    @onCommand="onCommandHandler"
+                    :codeInfos="record.codeInfos"
+                    :codeFieldsStr="record.code_fields"></agent-code-table>
               </div>
               <div class="col-5">
-                <email-table :voucherId="recordId"></email-table>
+                <email-table
+                    ref="emailTable"
+                    @onCommand="onCommandHandler"
+                    :emails="record.emails"></email-table>
               </div>
             </div>
           </div>
         </b-tab>
-        <b-tab title="Leaflet Template">
+        <b-tab title="Leaflet Template" class="bg-white py-2">
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">
@@ -82,13 +89,11 @@
 
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
                   <h6>Token List</h6>
-                  <ul class="token-list list-unstyled"">
-                  <li><div class="badge badge-info">{agent_name}</div></li>
-                  <li><div class="badge badge-info">{agent_name}</div></li>
-                  <li><div class="badge badge-info">{agent_name}</div></li>
-                  <li><div class="badge badge-info">{agent_name}</div></li>
-                  <li><div class="badge badge-info">{agent_name}</div></li>
-                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  <ul class="token-list list-unstyled px-2">
+                  <li v-for="token in codeFields"
+                    :key="token">
+                    <div class="badge badge-info">{{ '{'+token+'}' }}</div>
+                  </li>
                   </ul>
                 </div>
               </div>
@@ -96,6 +101,11 @@
           </div>
         </b-tab>
       </b-tabs>
+    </div>
+    <div v-else class="text-center">
+      <h4 class="text-center">
+        <i claas="fa fa-spinner fa-spin"></i>
+      </h4>
     </div>
   </div>
 </template>
@@ -105,7 +115,8 @@ import agentCodeTable from './comps/AgentCodeTable'
 import emailTable from './comps/EmailTable'
 import tinymce from 'vue-tinymce-editor'
 import datePicker from 'vue2-datepicker'
-import 'vue2-datepicker/index.css';
+import 'vue2-datepicker/index.css'
+import helpers from '@/helpers'
 
 export default {
   components: {
@@ -127,6 +138,21 @@ export default {
       default: 0
     }
   },
+  computed: {
+    tokenList () {
+      const vm = this
+      const result = []
+      for (let i = 0; i < vm.codeFields.length; i++) {
+        result.push(helpers.str2token(vm.codeFields[i]))
+      }
+      return result
+    },
+    codeFields () {
+      const vm = this
+      const arKeyPairs = helpers.getKeyPairArray(vm.record.code_fields)
+      return arKeyPairs.map(keyPair => keyPair[0])
+    }
+  },
   watch: {
     recordId: function (newValue) {
       const vm = this
@@ -138,6 +164,90 @@ export default {
     vm.refreshDataRecord(vm.recordId)
   },
   methods: {
+    onCommandHandler (payload) {
+      let vm = this
+      switch (payload.command) {
+        case 'saveTemp':
+          vm.saveTemp()
+          break
+        case 'setCodeFields':
+          vm.record.code_fields = vm.createCodeFieldStr(payload.value)
+          break
+        case 'setCodeData':
+          vm.record.codeInfos = vm.createCodeInfos(payload.value)
+          break
+      }
+    },
+    createCodeInfos (codeDataList) {
+      // codeDataList = [
+      //    ['value1', 'value2', 'value3', 'value4'],
+      //    ['value1', 'value2', 'value3', 'value4'],
+      //    ['value1', 'value2', 'value3', 'value4'],
+      //    ['value1', 'value2', 'value3', 'value4']
+      // ]
+      let vm = this
+      let result = []
+      for (let i = 0; i < codeDataList.length; i++) {
+        const fields = []
+        for (let j = 0; j < codeDataList[i].length; j++) {
+          fields.push(codeDataList[i][j])
+        }
+        result.push({
+          id: i,
+          code_details: fields.join('|'),
+          sent_on: '',
+          status: 'pending'
+        })
+      }
+      return result
+    },
+    createCodeFieldStr (arCodeFields) {
+      const result = []
+      for (var i = 0; i < arCodeFields.length; i++) {
+        result.push(arCodeFields[i]['title'] + ':' + arCodeFields[i]['type'])
+      }
+      return result.join('|')
+    },
+
+    saveTemp () {
+      const vm = this
+      const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
+      const reqData = JSON.parse(JSON.stringify(vm.record))
+      reqData.status = 'preparing'
+      reqData['fields'] = agentCodeInfo['fields']
+      reqData['code_details'] = agentCodeInfo['codeDetails']
+      const data = {
+        urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
+        data: reqData
+      }
+      vm.loading = true
+      const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
+      vm.$store.dispatch(action, data).then(response => {
+        console.log('saveTemp: response: ', response)
+        vm.loading = false
+        vm.record.id = response.id
+      })
+    },
+
+    save () {
+      const vm = this
+      const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
+      const reqData = JSON.parse(JSON.stringify(vm.record))
+      reqData['fields'] = agentCodeInfo['fields']
+      reqData['code_details'] = agentCodeInfo['codeDetails']
+      const data = {
+        urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
+        data: reqData
+      }
+      vm.loading = true
+      const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
+      vm.$store.dispatch(action, data).then(response => {
+        console.log('saveTemp: response: ', response)
+        vm.loading = false
+        vm.record.id = response.id
+      })
+    },
+
     refreshDataRecord (id) {
       const vm = this
       if (vm.selectedId !== id) {
@@ -153,9 +263,6 @@ export default {
       })
     },
 
-    save () {
-      alert('save')
-    },
 
     // inputFile(newFile, oldFile, prevent) {
 
@@ -188,11 +295,22 @@ export default {
   padding-bottom: 0.1rem;
 }
 
+.nav-tabs .nav-item a.nav-link {
+  background-color: #F7F7F7;
+}
 .nav-tabs .nav-item a.nav-link.active {
-  background-color: lightseagreen;
+  background-color: white;
   color: white;
 }
 div[name=Datatable] .pagination {
   justify-content: flex-end !important;
+}
+
+.mce-tinymce {
+  height: 100%;
+}
+
+.token-list div.badge {
+  font-size: 0.9rem;
 }
 </style>

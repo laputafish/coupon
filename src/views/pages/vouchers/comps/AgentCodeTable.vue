@@ -34,11 +34,13 @@
 import Vue from 'vue'
 import fileUpload from 'vue-upload-component'
 import dtCommon from '@/views/comps/datatable'
+import dtComps from './dtComps'
 
 export default {
   components: {
     fileUpload,
-    ...dtCommon
+    ...dtCommon,
+    ...dtComps
   },
   data () {
     return {
@@ -61,14 +63,72 @@ export default {
     }
   },
   props: {
-    voucherId: {
-      type: Number,
-      default: 0
+    codeInfos: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    codeFieldsStr: {
+      type: String,
+      default: ''
+    },
+  },
+  watch: {
+    codeInfos: function (newValue) {
+      const vm = this
+      vm.setData(newValue)
+    },
+    codeFieldsStr: function (newValue) {
+      // codeFields is string in format:
+      //
+      // Code:string|Serial No:string|activate_date:date
+      //
+      const vm = this
+      console.log('watch(codeFieldsStr) :: newValue: ', newValue)
+      vm.setColumns(newValue)
     }
   },
+  mounted () {
+    let vm = this
+    vm.setColumns(vm.codeFieldsStr)
+    vm.setData(vm.codeInfos)
+  },
   methods: {
-    setColumns (fields) {
+    getCodeFieldsFromStr (fieldStr) {
+      const result = []
+      if (fieldStr !== '') {
+        const arTitleType = fieldStr.split('|')
+        for (let i = 0; i < arTitleType.length; i++) {
+          const titleTypePair = arTitleType[i]
+          const segs = titleTypePair.split(':')
+          result.push({
+            title: segs[0],
+            type: segs[1]
+          })
+        }
+      }
+      return result
+    },
+
+    setColumns (fieldsStr) {
+      // Input : fieldsStr
+      //
+      // Code:string|Serial No:string|activate_date:date
+      //
       const vm = this
+      const codeFields = vm.getCodeFieldsFromStr(fieldsStr);
+      // codeFields = [
+      //    {
+      //      title: 'title 1',
+      //      type: 'number'
+      //    },
+      //    {
+      //      title: 'title 2',
+      //      type: 'string'
+      //    },
+      //
+      //
       vm.columns = [{
         title: vm.$t('general.number'),
         tdClass: 'text-center',
@@ -77,8 +137,8 @@ export default {
         field: 'id'
       }];
 
-      for (let i = 0; i < fields.length; i++) {
-        const field = fields[i]
+      for (let i = 0; i < codeFields.length; i++) {
+        const field = codeFields[i]
         let tdClass = 'text-left'
         let thClass = 'text-left'
         switch (field['type']) {
@@ -90,6 +150,7 @@ export default {
         }
         vm.columns.push({
           title: field['title'],
+          thComp: 'ThBadgeHeader',
           tdClass: tdClass,
           thClass: thClass,
           field: 'field' + i
@@ -101,6 +162,28 @@ export default {
         field: 'field0'
 
       })
+    },
+
+    setData (codeInfos) {
+      const vm = this
+      const result = []
+      if (vm.columns)
+      for (let i = 0; i < codeInfos.length; i++) {
+        const codeRecord = codeInfos[i]
+        const codeDetails = codeRecord['code_details']
+        const arFieldValues = codeDetails.split('|')
+
+        const obj = {
+          id: codeRecord['id'],
+        }
+        for (let j = 0; j < arFieldValues.length; j++) {
+          obj['field'+j] = arFieldValues[j]
+        }
+        obj['status'] = codeRecord['status']
+        obj['sent_on'] = codeRecord['sent_on']
+        result.push(obj)
+      }
+      vm.data = result
     },
 
     getCodeData (values) {
@@ -141,9 +224,20 @@ export default {
         const fields = newFile.response.result.fields
         const values = newFile.response.result.data
 
-        vm.setColumns(fields);
-        vm.data = vm.getCodeData(values)
-        vm.total = vm.data.length
+        // vm.saveTemp(id => {
+        //   vm.record.id = id
+        // })
+        vm.$emit('onCommand', {
+          command: 'setCodeFields',
+          value: fields
+        })
+        vm.$emit('onCommand', {
+          command: 'setCodeData',
+          value: values
+        })
+        // vm.setColumns(fields);
+        // vm.data = vm.getCodeData(values)
+        // vm.total = vm.data.length
       } else {
         // console.log('not newFile')
       }
