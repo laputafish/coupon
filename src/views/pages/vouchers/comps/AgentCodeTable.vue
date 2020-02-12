@@ -1,5 +1,5 @@
 <template>
-<div style="background-color:#e5f8ff" class="py-2 px-3">
+<div style="background-color:#e5f8ff" class="py-2 px-3 agent-code-table">
   <div class="toolbar d-flex justify-content-between mb-1">
     <div class="d-flex flex-row justify-content-end py-1 align-items-center">
       <div class="mr-2">

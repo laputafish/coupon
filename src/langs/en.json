@@ -13,7 +13,8 @@
     "tel_no": "Tel No."
   },
   "buttons": {
-    "save": "Save"
+    "save": "Save",
+    "back": "Back"
   },
   "message": "hello i18n !!",
   "menu": {

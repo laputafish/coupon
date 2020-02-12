@@ -1,5 +1,5 @@
 <template>
-  <div class="action-btn-group btn-group-sm btn-group-gap">
+  <div class="action-btn-group btn-group-xs btn-group-gap">
     <button v-for="(btn,index) in buttons"
             :key="index"
             class="btn"
@@ -139,5 +139,9 @@ export default {
   }
   .action-btn-group .btn {
     margin-right: 1px;
+  }
+
+  .btn-group-xs > .btn {
+    padding: 0.1rem 0.3rem;
   }
 </style>

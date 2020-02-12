@@ -13,9 +13,19 @@ div[name=Datatable] div.row:last-child {
   background-color: white;
 }
 
+.bg-muted {
+  background-color: #DDD;
+}
+
 .tabs ul > li.nav-item > a.nav-link.active {
   color: black;
 }
 .tabs ul > li.nav-item > a.nav-link {
   color: darkgray;
+}
+.btn-toolbar .btn:not(:last-child) {
+  margin-right: 3px;
+}
+.btn.min-width-80 {
+  min-width: 80px;
 }

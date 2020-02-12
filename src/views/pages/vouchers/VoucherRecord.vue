@@ -9,8 +9,12 @@
           </div>
           <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
             <button type="button"
+                    @click="$router.go(-1)"
+                    class="btn btn-outline-secondary min-width-80">
+              <i class="fas fa-reply"></i>&nbsp;{{ $t('buttons.back') }}
+            </button>            <button type="button"
                     @click="save()"
-                    class="btn btn-primary">
+                    class="btn btn-primary min-width-80">
               <i class="fas fa-save"></i>&nbsp;{{ $t('buttons.save') }}
             </button>
           </div>
@@ -73,10 +77,20 @@
               </div>
             </div>
             <div class="row" v-if="record">
-              <div class="col-12">
-                <tinymce id="leaflet-template" v-model="record.template"></tinymce>
-                HTML Code
-                <textarea rows="16" v-model="record.template" class="w-100 mt-2"></textarea>
+              <div class="col-12 d-flex flex-row">
+                <tinymce class="flex-grow-1 bg-muted" style="min-height:480px;" id="leaflet-template" v-model="record.template"></tinymce>
+
+                <div class="flex-grow-0 p-2 bg-muted ml-2">
+                  <h6>Token List</h6>
+                  <ul class="token-list list-unstyled"">
+                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  <li><div class="badge badge-info">{agent_name}</div></li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -170,8 +184,8 @@ export default {
 <style>
 #email-table div[name=Datatable] table tbody tr td,
 #code-table div[name=Datatable] table tbody tr td {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
 }
 
 .nav-tabs .nav-item a.nav-link.active {
