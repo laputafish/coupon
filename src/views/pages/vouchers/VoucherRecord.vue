@@ -1,28 +1,10 @@
 <template>
   <div class="container-fluid">
-    <div class="row">
-      <div v-if="record" class="col-12 border-bottom border-2 mb-3">
-        <div class="d-flex flex-row justify-content-between">
-          <div class="record-title flex-grow-1">
-            <h2 v-if="record && record.description.length>0" class="d-inline mr-2">{{ record.description }}</h2>
-            <h2 class="d-inline">[{{ recordId===0 ? $t('general.new') : $t('general.edit') }}]</h2>
-          </div>
-          <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
-            <button type="button"
-                    @click="$router.go(-1)"
-                    class="btn btn-outline-secondary min-width-80">
-              <i class="fas fa-reply"></i>&nbsp;{{ $t('buttons.back') }}
-            </button>            <button type="button"
-                                         @click="save()"
-                                         class="btn btn-primary min-width-80">
-              <i v-if="loading" class="fa fa-spinner fa-spin"></i>
-              <i v-else class="fas fa-save"></i>
-              {{ $t('buttons.save') }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <title-row :record="record"
+               :titleField="titleField"
+               :loading="loading"
+               :buttons="['back','save']"
+               @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
       <div class="col-sm-6">
         <div class="form-group">
@@ -63,7 +45,8 @@
           <select class="form-control" id="agent_id" name="agent_id" v-model="record.agent_id">
             <option v-for="agent in agents"
                     :key="agent.id"
-                    :value="agent.id">{{ agent.name }}</option>
+                    :value="agent.id">{{ agent.name }}
+            </option>
           </select>
         </div>
       </div>
@@ -111,24 +94,39 @@
               </div>
             </div>
             <div class="row" v-if="record">
+              <div class="col-12">
+                <textarea v-model="record.template" rows="10"></textarea>
+              </div>
               <div class="col-12 d-flex flex-row">
-                 <editor
-                     api-key="no-api-key"
-                     :init="{
-                     height: 500,
-                     menubar: false,
-                     plugins: [
-                       'advlist autolink lists link image charmap print preview anchor',
-                       'searchreplace visualblocks code fullscreen',
-                       'insertdatetime media table paste code help wordcount'
-                     ],
-                     toolbar:
-                       'undo redo | formatselect | bold italic backcolor | \
-                       alignleft aligncenter alignright alignjustify | \
-                       bullist numlist outdent indent | removeformat | help'
-                   }"
-                 />
-                <!--<tinymce class="flex-grow-1 bg-muted" style="min-height:480px;" id="leaflet-template" v-model="record.template"></tinymce>-->
+                <!--<yoov-editor-->
+                <!--class="flex-grow-1"-->
+                <!--v-model="record.template"-->
+                <!--ref="editor"></yoov-editor>-->
+                <!--<editor-->
+                <!--class="flex-grow-1 bg-muted"-->
+                <!--api-key="no-api-key"-->
+                <!--:init="{-->
+                <!--height: 500,-->
+                <!--menubar: true,-->
+                <!--plugins: [-->
+                <!--'advlist autolink lists link image charmap print preview anchor',-->
+                <!--'searchreplace visualblocks code fullscreen',-->
+                <!--'insertdatetime media table paste code help wordcount'-->
+                <!--],-->
+                <!--toolbar:-->
+                <!--'undo redo | formatselect | bold italic backcolor | \-->
+                <!--alignleft aligncenter alignright alignjustify | \-->
+                <!--bullist numlist outdent indent | removeformat | help'-->
+                <!--}"-->
+                <!--/>-->
+                <tinymce
+                    ref="yoovEditor"
+                    class="flex-grow-1 bg-muted"
+                    @editorInit="onEditorInit()"
+                    style="min-height:480px;"
+                    id="yoovEditor"
+                    :options="{twoWay:true}"
+                    v-model="record.template"></tinymce>
 
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
                   <h6>Token List</h6>
@@ -136,10 +134,10 @@
                        :key="keyGroup['name']">
                     {{ $t('vouchers.' + keyGroup['name']) }}
                     <ul class="token-list list-unstyled px-2">
-                    <li v-for="templateKey in keyGroup.keys"
-                        :key="templateKey">
-                      <div class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
-                    </li>
+                      <li v-for="templateKey in keyGroup.keys"
+                          :key="templateKey">
+                        <div class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
+                      </li>
                     </ul>
 
                   </div>
@@ -159,313 +157,317 @@
 </template>
 
 <script>
-import agentCodeTable from './comps/AgentCodeTable'
-import emailTable from './comps/EmailTable'
-// import tinymce from 'vue-tinymce-editor'
-import datePicker from 'vue2-datepicker'
-import 'vue2-datepicker/index.css'
-import helpers from '@/helpers'
-import editor from '@tinymce/tinymce-vue'
+  import DataRecordMixin from '@/mixins/DataRecordMixin'
+  import agentCodeTable from './comps/AgentCodeTable'
+  import emailTable from './comps/EmailTable'
+  import tinymce from 'vue-tinymce-editor'
+  import datePicker from 'vue2-datepicker'
+  import 'vue2-datepicker/index.css'
+  import helpers from '@/helpers'
+  import titleRow from '@/views/comps/TitleRow'
 
-export default {
-  components: {
-    agentCodeTable,
-    emailTable,
-    datePicker,
-    editor
-  },
-  data () {
-    return {
-      apiPath: '/vouchers',
-      record: null,
-      csrfToken: null,
-      content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
-      defaultTemplateKeyGroups: [],
-      agents: []
-    }
-  },
-  props: {
-    recordId: {
-      type: Number,
-      default: 0
-    }
-  },
-  computed: {
-    templateKeyGroups () {
-      const vm = this
-      const result = vm.defaultTemplateKeyGroups
-      if (vm.codeFields.length > 0) {
-        vm.defaultTemplateKeyGroups.push({
-          name: 'code',
-          keys: []
-        })
-      }
-      for (let i = 0; i < vm.codeFields.length; i++) {
-        let key = helpers.str2token('code_', vm.codeFields[i])
-        vm.defaultTemplateKeyGroups[vm.defaultTemplateKeyGroups.length - 1]['keys'].push(key)
-      }
-      return result
+  export default {
+    mixins: [DataRecordMixin],
+    components: {
+      agentCodeTable,
+      emailTable,
+      datePicker,
+      tinymce,
+      titleRow
+      // ,
+      // yoovEditor
+      // ,
+      // editor
     },
-    codeFields () {
-      const vm = this
-      let result = []
-      if (vm.record.code_fields !== null && vm.record.code_fields !== '') {
-        console.log('codeFields :: codeFields = ' + vm.record.code_fields)
-        const arKeyPairs = helpers.getKeyPairArray(vm.record.code_fields)
-        console.log('codeFields :: arKeyPairs: ', arKeyPairs)
-        result = arKeyPairs.map(keyPair => keyPair[0])
+    data () {
+      return {
+        apiPath: '/vouchers',
+        titleField: 'description',
+        record: null,
+        loading: false,
+        // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
+        defaultTemplateKeyGroups: [],
+        agents: []
       }
-      return result
-    }
-  },
-  watch: {
-    recordId: function (newValue) {
-      const vm = this
-      console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
-      vm.refreshDataRecord(newValue)
-    }
-  },
-  mounted () {
-    const vm = this
-    vm.fetchAgents();
-    vm.refreshDataRecord(vm.recordId)
-    vm.fetchDefaultTemplateKeys()
-  },
-  methods: {
-    fetchAgents () {
-      const vm = this
-      vm.$store.dispatch('COMMON_GET', '/agents').then(response => {
-        vm.agents = response
-      })
     },
-    fetchDefaultTemplateKeys () {
-      const vm = this
-      vm.defaultTemplateKeyGroups = []
-      vm.$store.dispatch('COMMON_GET', '/template_keys').then(response => {
-        for (let i = 0; i < response.length; i++) {
-          const responseItem = response[i]
-          const category = responseItem.category
-          const key = responseItem.key
-          const keyGroup = vm.defaultTemplateKeyGroups.find(group => {
-            return group.name === category
+    props: {
+      recordId: {
+        type: Number,
+        default: 0
+      }
+    },
+    computed: {
+      templateKeyGroups () {
+        const vm = this
+        const result = vm.defaultTemplateKeyGroups
+        if (vm.codeFields.length > 0) {
+          vm.defaultTemplateKeyGroups.push({
+            name: 'code',
+            keys: []
           })
-          if (keyGroup) {
-            console.log('keyGroup is true: ', keyGroup)
-            keyGroup.keys.push(key)
-          } else {
-            console.log('keyGroup is false: ', keyGroup)
-            vm.defaultTemplateKeyGroups.push({
-              name: category,
-              keys: [key]
+        }
+        for (let i = 0; i < vm.codeFields.length; i++) {
+          const key = helpers.str2token('code_', vm.codeFields[i])
+          vm.defaultTemplateKeyGroups[vm.defaultTemplateKeyGroups.length - 1]['keys'].push(key)
+        }
+        return result
+      },
+      codeFields () {
+        const vm = this
+        let result = []
+        if (vm.record.code_fields !== null && vm.record.code_fields !== '') {
+          console.log('codeFields :: codeFields = ' + vm.record.code_fields)
+          const arKeyPairs = helpers.getKeyPairArray(vm.record.code_fields)
+          console.log('codeFields :: arKeyPairs: ', arKeyPairs)
+          result = arKeyPairs.map(keyPair => keyPair[0])
+        }
+        return result
+      }
+    },
+    watch: {
+      recordId: function (newValue) {
+        const vm = this
+        console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
+        vm.refresh(newValue)
+      }
+    },
+    mounted () {
+      const vm = this
+
+      vm.fetchAgents();
+      vm.fetchDefaultTemplateKeys()
+
+      vm.refresh(vm.recordId)
+    },
+    methods: {
+      onEditorInit () {
+        const vm = this
+        console.log('onEditorInit :: tinyMCE: ', tinyMCE)
+        tinyMCE.get('yoovEditor').setContent(vm.record.template)
+        // tinymce.get('yoovEditor').setContent('<p>hello world</p>')
+        // console.log('tinymce: ', tinymce)
+        // vm.$refs.yoovEditor.setContent('<p>hello world</p>')
+        // console.log('template: ', vm.record.template)
+      },
+      fetchAgents () {
+        const vm = this
+        vm.$store.dispatch('COMMON_GET', '/agents').then(response => {
+          vm.agents = response
+        })
+      },
+      fetchDefaultTemplateKeys () {
+        const vm = this
+        vm.defaultTemplateKeyGroups = []
+        vm.$store.dispatch('COMMON_GET', '/template_keys').then(response => {
+          for (let i = 0; i < response.length; i++) {
+            const responseItem = response[i]
+            const category = responseItem.category
+            const key = responseItem.key
+            const keyGroup = vm.defaultTemplateKeyGroups.find(group => {
+              return group.name === category
             })
+            if (keyGroup) {
+              console.log('keyGroup is true: ', keyGroup)
+              keyGroup.keys.push(key)
+            } else {
+              console.log('keyGroup is false: ', keyGroup)
+              vm.defaultTemplateKeyGroups.push({
+                name: category,
+                keys: [key]
+              })
+            }
+          }
+        })
+      },
+      onCommandHandler (payload) {
+        const vm = this
+        console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
+        switch (payload.command) {
+          case 'save':
+            vm.save()
+            break
+          // case 'saveTemp':
+          //   vm.saveTemp()
+          //   break
+          case 'setCodeFields':
+            vm.record.code_fields = vm.createCodeFieldStr(payload.value)
+            break
+          case 'setCodeData':
+            vm.updateCodeInfos(payload.value)
+            // vm.record.codeInfos = vm.createCodeInfos(payload.value)
+            break
+        }
+      },
+      updateCodeInfos (codeDataList) {
+        // codeDataList = [
+        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2', 'value3', 'value4']
+        // ]
+        console.log('updateCodeInfos :: codeDataList: ', codeDataList)
+        const vm = this
+        let existingCodes = []
+        if (vm.record.code_infos) {
+          existingCodes = vm.record.code_infos.map(codeInfo => codeInfo.code)
+        } else {
+          vm.record.code_infos = []
+        }
+        console.log('updateCodeInfos :: existingCodes: ', existingCodes)
+        for (let i = 0; i < codeDataList.length; i++) {
+          const fields = []
+          const code = codeDataList[i][0]
+          console.log('updateCodeInfos :: code = ' + code)
+          for (let j = 1; j < codeDataList[i].length; j++) {
+            const value = codeDataList[i][j]
+            console.log('updateCodeInfos j=' + j + ': value=' + value)
+            fields.push(value)
+          }
+          const extraFields = fields.join('|')
+          const index = existingCodes.indexOf(code)
+          // if exists
+          if (index >= 0) {
+            vm.record.code_infos[index].extra_fields = extraFields
+          } else {
+            vm.record.code_infos.push({
+              id: 0,
+              code: code,
+              extra_fields: fields.join('|'),
+              sent_on: '',
+              status: 'pending'
+            })
+            existingCodes.push(code)
           }
         }
-      })
-    },
-    onCommandHandler (payload) {
-      const vm = this
-      console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
-      switch (payload.command) {
-        // case 'saveTemp':
-        //   vm.saveTemp()
-        //   break
-        case 'setCodeFields':
-          vm.record.code_fields = vm.createCodeFieldStr(payload.value)
-          break
-        case 'setCodeData':
-          vm.updateCodeInfos(payload.value)
-          // vm.record.codeInfos = vm.createCodeInfos(payload.value)
-          break
-      }
-    },
-    updateCodeInfos (codeDataList) {
-      // codeDataList = [
-      //    ['value1', 'value2', 'value3', 'value4'],
-      //    ['value1', 'value2', 'value3', 'value4'],
-      //    ['value1', 'value2', 'value3', 'value4'],
-      //    ['value1', 'value2', 'value3', 'value4']
-      // ]
-      console.log('updateCodeInfos :: codeDataList: ', codeDataList)
-      let vm = this
-      let existingCodes = []
-      if (vm.record.code_infos) {
-        existingCodes = vm.record.code_infos.map(codeInfo => codeInfo.code)
-      } else {
-        vm.record.code_infos = []
-      }
-      console.log('updateCodeInfos :: existingCodes: ', existingCodes)
-      for (let i = 0; i < codeDataList.length; i++) {
-        const fields = []
-        const code = codeDataList[i][0]
-        console.log('updateCodeInfos :: code = ' + code)
-        for (let j = 1; j < codeDataList[i].length; j++) {
-          const value = codeDataList[i][j]
-          console.log('updateCodeInfos j=' + j + ': value=' + value)
-          fields.push(value)
-        }
-        const extraFields = fields.join('|')
-        const index = existingCodes.indexOf(code)
-        // if exists
-        if (index >= 0) {
-          vm.record.code_infos[index].extra_fields = extraFields
-        } else {
-          vm.record.code_infos.push({
+      },
+      createCodeInfos (codeDataList) {
+        // codeDataList = [
+        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2', 'value3', 'value4']
+        // ]
+        const result = []
+        for (let i = 0; i < codeDataList.length; i++) {
+          const fields = []
+          for (let j = 0; j < codeDataList[i].length; j++) {
+            fields.push(codeDataList[i][j])
+          }
+          result.push({
             id: 0,
-            code: code,
-            extra_fields: fields.join('|'),
+            code_details: fields.join('|'),
             sent_on: '',
             status: 'pending'
           })
-          existingCodes.push(code)
         }
-      }
-    },
-    createCodeInfos (codeDataList) {
-      // codeDataList = [
-      //    ['value1', 'value2', 'value3', 'value4'],
-      //    ['value1', 'value2', 'value3', 'value4'],
-      //    ['value1', 'value2', 'value3', 'value4'],
-      //    ['value1', 'value2', 'value3', 'value4']
-      // ]
-      const result = []
-      for (let i = 0; i < codeDataList.length; i++) {
-        const fields = []
-        for (let j = 0; j < codeDataList[i].length; j++) {
-          fields.push(codeDataList[i][j])
+        return result
+      },
+      createCodeFieldStr (arCodeFields) {
+        const result = []
+        for (let i = 0; i < arCodeFields.length; i++) {
+          result.push(arCodeFields[i]['title'] + ':' + arCodeFields[i]['type'])
         }
-        result.push({
-          id: 0,
-          code_details: fields.join('|'),
-          sent_on: '',
-          status: 'pending'
+        return result.join('|')
+      },
+
+      // saveTemp () {
+      //   const vm = this
+      //   const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
+      //   const reqData = JSON.parse(JSON.stringify(vm.record))
+      //   reqData.status = 'preparing'
+      //   reqData['fields'] = agentCodeInfo['fields']
+      //   reqData['code_details'] = agentCodeInfo['codeDetails']
+      //   const data = {
+      //     urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
+      //     data: reqData
+      //   }
+      //   vm.loading = true
+      //   const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
+      //   vm.$store.dispatch(action, data).then(response => {
+      //     console.log('saveTemp: response: ', response)
+      //     vm.loading = false
+      //     vm.record.id = response.id
+      //   })
+      // },
+
+      save () {
+        const vm = this
+        // const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
+        // const reqData = JSON.parse(JSON.stringify(vm.record))
+        // reqData['fields'] = agentCodeInfo['fields']
+        // reqData['code_details'] = agentCodeInfo['codeDetails']
+        const data = {
+          urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
+          // options: {
+          //   headers: {
+          //     'X-CSRF-TOKEN': vm.csrfToken
+          //   }
+          // },
+          data: vm.record
+        }
+        vm.loading = true
+        const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
+        vm.$store.dispatch(action, data).then(response => {
+          console.log('save: response: ', response)
+          vm.loading = false
+          vm.record.id = response.id
+          vm.$router.go(-1);
         })
-      }
-      return result
-    },
-    createCodeFieldStr (arCodeFields) {
-      const result = []
-      for (let i = 0; i < arCodeFields.length; i++) {
-        result.push(arCodeFields[i]['title'] + ':' + arCodeFields[i]['type'])
-      }
-      return result.join('|')
-    },
-
-    // saveTemp () {
-    //   const vm = this
-    //   const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
-    //   const reqData = JSON.parse(JSON.stringify(vm.record))
-    //   reqData.status = 'preparing'
-    //   reqData['fields'] = agentCodeInfo['fields']
-    //   reqData['code_details'] = agentCodeInfo['codeDetails']
-    //   const data = {
-    //     urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
-    //     data: reqData
-    //   }
-    //   vm.loading = true
-    //   const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
-    //   vm.$store.dispatch(action, data).then(response => {
-    //     console.log('saveTemp: response: ', response)
-    //     vm.loading = false
-    //     vm.record.id = response.id
-    //   })
-    // },
-
-    save () {
-      const vm = this
-      // const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
-      // const reqData = JSON.parse(JSON.stringify(vm.record))
-      // reqData['fields'] = agentCodeInfo['fields']
-      // reqData['code_details'] = agentCodeInfo['codeDetails']
-      const data = {
-        urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
-        // options: {
-        //   headers: {
-        //     'X-CSRF-TOKEN': vm.csrfToken
-        //   }
-        // },
-        data: vm.record
-      }
-      vm.loading = true
-      const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
-      vm.$store.dispatch(action, data).then(response => {
-        console.log('save: response: ', response)
-        vm.loading = false
-        vm.record.id = response.id
-        vm.$router.go(-1);
-      })
-    },
-
-    refreshDataRecord (id) {
-      const vm = this
-      console.log('refreshDataRecord :: id = ' + id)
-      console.log('refreshDataRecord :: vm.selectedId = ' + vm.selectedId)
-      if (vm.selectedId !== id) {
-        vm.selectedId = id
-      }
-      const data = {
-        urlCommand: vm.apiPath + '/' + id
-      }
-      vm.loading = true
-      vm.$store.dispatch('COMMON_GET', data).then(function (response) {
-        console.log('refreshDataRecord :: response: ', response)
-        vm.record = response.data
-        vm.csrfToken = response.csrfToken
-        vm.loading = false
-      })
-    },
+      },
 
 
-    // inputFile(newFile, oldFile, prevent) {
 
-    // inputFile: function (newFile, oldFile) {
-    //   if (newFile && oldFile && !newFile.active && oldFile.active) {
-    //     // Get response data
-    //     console.log('response', newFile.response)
-    //     if (newFile.xhr) {
-    //       //  Get the response status code
-    //       console.log('status', newFile.xhr.status)
-    //     }
-    //   }
-    // },
-    /**
-     * Pretreatment
-     * @param  Object|undefined   newFile   Read and write
-     * @param  Object|undefined   oldFile   Read only
-     * @param  Function           prevent   Prevent changing
-     * @return undefined
-     */
+      // inputFile(newFile, oldFile, prevent) {
 
+      // inputFile: function (newFile, oldFile) {
+      //   if (newFile && oldFile && !newFile.active && oldFile.active) {
+      //     // Get response data
+      //     console.log('response', newFile.response)
+      //     if (newFile.xhr) {
+      //       //  Get the response status code
+      //       console.log('status', newFile.xhr.status)
+      //     }
+      //   }
+      // },
+      /**
+       * Pretreatment
+       * @param  Object|undefined   newFile   Read and write
+       * @param  Object|undefined   oldFile   Read only
+       * @param  Function           prevent   Prevent changing
+       * @return undefined
+       */
+
+    }
   }
-}
 </script>
 
 <style>
-#email-table div[name=Datatable] table tbody tr td,
-#code-table div[name=Datatable] table tbody tr td {
-  padding-top: 0.1rem;
-  padding-bottom: 0.1rem;
-}
+  #email-table div[name=Datatable] table tbody tr td,
+  #code-table div[name=Datatable] table tbody tr td {
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+  }
 
-.nav-tabs .nav-item a.nav-link {
-  background-color: #F7F7F7;
-}
+  .nav-tabs .nav-item a.nav-link {
+    background-color: #F7F7F7;
+  }
 
-.nav-tabs .nav-item a.nav-link.active {
-  background-color: white;
-  color: white;
-}
+  .nav-tabs .nav-item a.nav-link.active {
+    background-color: white;
+    color: white;
+  }
 
-div[name=Datatable] .pagination {
-  justify-content: flex-end !important;
-}
+  div[name=Datatable] .pagination {
+    justify-content: flex-end !important;
+  }
 
-.mce-tinymce {
-  height: 100%;
-}
+  .mce-tinymce {
+    height: 100%;
+  }
 
-.token-list div.badge {
-  font-size: 0.9rem;
-}
+  .token-list div.badge {
+    font-size: 0.9rem;
+  }
 
 
 </style>

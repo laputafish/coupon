@@ -1,10 +1,43 @@
 import Vue from 'vue'
 import dialogMixin from '@/mixins/DialogMixin'
 import dtCommon from '@/views/comps/datatable'
+import sectionHeader from '@/views/layouts/comps/SectionHeader'
 
 const mixin = {
+  template: `<template>
+    <div>
+      <section-header :title="$t(moduleNameTag)"
+        :breadcrumb="breadcrumb"></section-header>
+    
+      <!-- Main content -->
+      <section class="content">
+        <div class="bg-module mx-2 p-2">
+          <div v-if="mode==='list'" class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="btn-toolbar mb-1 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
+                  <button type="button"
+                          @click="Record()"
+                          class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-12">
+                <datatable v-cloak v-bind="$data"></datatable>
+              </div>
+              <!-- /.col -->
+            </div>
+          </div>
+          <data-record v-else :recordId="selectedId"></data-record>
+        </div>
+        <!-- /.row -->
+      </section>
+    </div>
+    </template>`,
   mixins: [dialogMixin],
   components: {
+    sectionHeader,
     ...dtCommon
   },
   data () {
@@ -26,7 +59,7 @@ const mixin = {
         buttons: ['edit', 'delete'],
         eventbus: new Vue()
       },
-      tblStyle: {color: '#AAA', fontWeight: 'normal'},
+      tblStyle: {color: '#777', fontWeight: 'normal'},
       HeaderSettings: false,
       searchInputTimer: 0
     }
@@ -47,6 +80,10 @@ const mixin = {
     this.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    newRecord () {
+      let vm = this
+      vm.$router.push({name: vm.routeName, params: {id: 0}})
+    },
     onRowCommandHandler (payload) {
       const vm = this
       let command = payload.command
@@ -85,7 +122,7 @@ const mixin = {
     },
     editRow (row) {
       const vm = this
-      let url = vm.routePath + '/' + row.id
+      let url = '/' + vm.routeName + '/' + row.id
       vm.$router.push(url)
     },
     print (record) {

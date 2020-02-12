@@ -5,6 +5,23 @@ import { library, dom } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+// Import TinyMCE
+// import tinymce from 'tinymce/tinymce';
+//
+// // A theme is also required
+// import 'tinymce/themes/silver';
+//
+// // Any plugins you want to use has to be imported
+// import 'tinymce/plugins/paste';
+// import 'tinymce/plugins/link';
+//
+// // Initialize the app
+// tinymce.init({
+// 	selector: '#tiny',
+// 	plugins: ['paste', 'link']
+// });
+
+
 // import $ from 'jquery'
 // $ = require('jquery')
 // window.$ = window.jQuery = require('jquery')

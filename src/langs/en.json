@@ -10,7 +10,10 @@
     "edit": "Edit",
     "name": "Name",
     "email": "Email",
+    "alias": "Alias",
     "tel_no": "Tel No.",
+    "fax_no": "Fax No.",
+    "web_url": "Web Url",
     "status": "Status"
   },
   "status": {
@@ -59,7 +62,8 @@
     "agents": "Agents"
   },
   "agents": {
-    "agent": "Agent"
+    "agent": "Agent",
+    "voucher_count": "Vouchers"
   },
   "vouchers": {
     "email_sent_total": "Email Sent/Total",
