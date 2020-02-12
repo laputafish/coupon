@@ -33,3 +33,13 @@ div[name=Datatable] div.row:last-child {
 .bg-tab {
   background-color:#EEEEEE;
 }
+
+.mx-input-wrapper input[name=date].mx-input {
+  padding: 0.375rem 0.75rem;
+  height: calc(2.25rem + 2px);
+}
+
+.mce-tinymce.mce-fullscreen {
+  z-index: 2000;
+  height: 100%;
+}

@@ -17,7 +17,7 @@ const AppMixin = {
     }
   },
   created () {
-    let vm = this
+    const vm = this
     vm.$validator.extend('bankCode', {
       getMessage (field, args) {
         return vm.$t('payroll.invalid_bank_code')
@@ -251,7 +251,7 @@ const AppMixin = {
       this.$validator.validateScopes()
     },
     engOrCht (engValue, chtValue) {
-      let vm = this
+      const vm = this
       return vm.$i18n.locale === 'en' ? engValue : chtValue
     },
     pluralForm (value) {
@@ -273,7 +273,7 @@ const AppMixin = {
       })
     },
     date2Weekday (dateStr) {
-      let vm = this
+      const vm = this
       let result = -1
       let theDate = dateStr.trim()
       if (theDate !== '') {
@@ -283,7 +283,7 @@ const AppMixin = {
       return result
     },
     removeStringItem (itemStr, value) {
-      let vm = this
+      const vm = this
       let result = itemStr
       if (itemStr !== '') {
         let items = vm.list2Items(itemStr)

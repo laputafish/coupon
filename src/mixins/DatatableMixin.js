@@ -33,6 +33,7 @@ const mixin = {
   },
   mounted () {
     const vm = this
+    console.log('DatatableMixin :: mounted')
     if (typeof vm.onMounting === 'function') {
       vm.onMounting()
     }
@@ -102,8 +103,10 @@ const mixin = {
     },
     updateMode () {
       const vm = this
+
       console.log('DatatableMixin :: updateMode  route.params.id = [' + vm.$route.params.id + ']')
       console.log('typeof vm.$route.params.id = ' + (typeof vm.$route.params.id))
+      console.log('vm.route.params.id: ' + (vm.$route.params.id ? 'yes' : 'no'))
       console.log('vm.route.params.id === 0: ' + (vm.$route.params.id === '0' ? 'yes' : 'no'))
 
       if (vm.$route.params.id || vm.$route.params.id === 0) {
@@ -111,7 +114,7 @@ const mixin = {
         if (vm.$route.params.id !== '') {
           console.log('vm.route.params.id not empty')
           vm.mode = 'record'
-          vm.refreshSelectedId(parseInt(vm.$route.params.id))
+          vm.selectedId = parseInt(vm.$route.params.id)
         } else {
           vm.mode = 'list'
         }
@@ -120,10 +123,6 @@ const mixin = {
         console.log('vm.route.params.id not exists. id = ' + vm.$route.params.id)
       }
       // alert('vm.mode = ' + vm.mode)
-    },
-    refreshSelectedId (id) {
-      const vm = this
-      vm.selectedId = id
     },
     refreshData (query) {
       const vm = this
@@ -186,8 +185,10 @@ const mixin = {
     '$route.params.id': function (newValue) {
       let vm = this
       vm.selectedId = newValue
-      // vm.refreshDataRecord(parseInt(newValue))
       vm.updateMode()
+      if (!newValue) {
+        vm.refreshData()
+      }
     },
     searchValue: function () {
       const vm = this

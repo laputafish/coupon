@@ -11,8 +11,8 @@ const getToday = () => {
   return yearStr + '-' + monthStr + '-' + dayStr
 }
 
-const str2token = (str) => {
-  return str.tolowerCase().replace(' ', '_').replace(/[^a-z0-9]/gi,'')
+const str2token = (prefix, str) => {
+  return prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9]/gi,'')
 }
 
 const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
@@ -138,6 +138,7 @@ const showConfirmDialog = (vm, callback, data, message, options) => {
 
 export default {
   getKeyPairArray,
+  str2token,
   getToday,
   // subscribe,
   // unSubscribe,

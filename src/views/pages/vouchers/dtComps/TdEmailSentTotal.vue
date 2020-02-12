@@ -1,6 +1,6 @@
 <template>
   <div class="td-agent">
-    {{ value.name }}
+    {{ row['code_sent'] }} / {{ row['code_count'] }}
   </div>
 </template>
 

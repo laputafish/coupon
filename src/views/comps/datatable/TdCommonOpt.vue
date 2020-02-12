@@ -1,5 +1,6 @@
 <template>
-  <div class="action-btn-group btn-group-xs btn-group-gap">
+  <div class="action-btn-group btn-group-gap"
+    :class="customClass">
     <button v-for="(btn,index) in buttons"
             :key="index"
             class="btn"
@@ -18,6 +19,16 @@ export default {
   data () {
     return {
       buttons: []
+    }
+  },
+  computed: {
+    customClass () {
+      const vm = this
+      let result = 'btn-group-sm'
+      if (vm.xprops.actionButtonSize) {
+        result = 'btn-group-' + vm.xprops.actionButtonSize
+      }
+      return result
     }
   },
   props: ['row', 'nested', 'xprops'],

@@ -10,7 +10,15 @@
     "edit": "Edit",
     "name": "Name",
     "email": "Email",
-    "tel_no": "Tel No."
+    "tel_no": "Tel No.",
+    "status": "Status"
+  },
+  "status": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "preparing": "Preparing",
+    "ready_to_send": "Ready to Send",
+    "sending": "Sending"
   },
   "buttons": {
     "save": "Save",
@@ -59,6 +67,9 @@
     "activation_date": "Activation Date",
     "expiry_date": "Expiry Date",
     "code_list": "Code List",
-    "email_list": "Email List"
+    "email_list": "Email List",
+    "agent": "Agent",
+    "voucher": "Voucher",
+    "code": "Code"
   }
 }

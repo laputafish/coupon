@@ -56,7 +56,8 @@ export default {
       },
       xprops: {
         buttons: ['edit','view','delete'],
-        eventbus: new Vue()
+        eventbus: new Vue(),
+        actionButtonSize: 'xs'
       },
       HeaderSettings: false,
       searchInputTimer: 0
@@ -90,14 +91,14 @@ export default {
     }
   },
   mounted () {
-    let vm = this
+    const vm = this
     vm.setColumns(vm.codeFieldsStr)
     vm.setData(vm.codeInfos)
   },
   methods: {
     getCodeFieldsFromStr (fieldStr) {
       const result = []
-      if (fieldStr !== '') {
+      if (fieldStr !== null && fieldStr !== '') {
         const arTitleType = fieldStr.split('|')
         for (let i = 0; i < arTitleType.length; i++) {
           const titleTypePair = arTitleType[i]
@@ -170,11 +171,11 @@ export default {
       if (vm.columns)
       for (let i = 0; i < codeInfos.length; i++) {
         const codeRecord = codeInfos[i]
-        const codeDetails = codeRecord['code_details']
-        const arFieldValues = codeDetails.split('|')
+        const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
+        const arFieldValues = fieldsStr.split('|')
 
         const obj = {
-          id: codeRecord['id'],
+          id: i
         }
         for (let j = 0; j < arFieldValues.length; j++) {
           obj['field'+j] = arFieldValues[j]
