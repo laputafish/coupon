@@ -18,7 +18,7 @@ export default {
   props: ['field', 'value', 'row', 'xprops'],
   methods: {
     toggleEnabled (value) {
-      let vm = this
+      const vm = this
       console.log('TdYesNo :: field: ', vm.field)
       console.log('TdYesNo :: value: ', vm.value)
       console.log('TdYesNo :: row: ', vm.row)

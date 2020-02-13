@@ -47,13 +47,14 @@
     methods: {
       save () {
         alert('save not implemented')
-      },
-      refresh (id) {
-        const vm = this
-        const data = {
-          urlCommand: vm.apiPath + '/' + id
-        }
       }
+      // ,
+      // refresh (id) {
+      //   const vm = this
+      //   // const data = {
+      //   //   urlCommand: vm.apiPath + '/' + id
+      //   // }
+      // }
     }
   }
 </script>

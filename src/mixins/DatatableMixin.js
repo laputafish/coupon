@@ -4,8 +4,7 @@ import dtCommon from '@/views/comps/datatable'
 import sectionHeader from '@/views/layouts/comps/SectionHeader'
 
 const mixin = {
-  template: `<template>
-    <div>
+  template: `<div>
       <section-header :title="$t(moduleNameTag)"
         :breadcrumb="breadcrumb"></section-header>
     
@@ -33,8 +32,7 @@ const mixin = {
         </div>
         <!-- /.row -->
       </section>
-    </div>
-    </template>`,
+    </div>`,
   mixins: [dialogMixin],
   components: {
     sectionHeader,
@@ -81,7 +79,7 @@ const mixin = {
   },
   methods: {
     newRecord () {
-      let vm = this
+      const vm = this
       vm.$router.push({name: vm.routeName, params: {id: 0}})
     },
     onRowCommandHandler (payload) {
@@ -171,7 +169,7 @@ const mixin = {
       // }
     },
     refreshDataList (query) {
-      let vm = this
+      const vm = this
       if (vm.apiPath === '') return
 
       if (typeof query === 'undefined') {
@@ -191,7 +189,7 @@ const mixin = {
       })
     },
     // refreshDataRecord (id) {
-    //   let vm = this
+    //   const vm = this
     //   if (vm.selectedId !== id) {
     //     vm.selectedId = id
     //   }
@@ -220,7 +218,7 @@ const mixin = {
   },
   watch: {
     '$route.params.id': function (newValue) {
-      let vm = this
+      const vm = this
       vm.selectedId = newValue
       vm.updateMode()
       if (!newValue) {
@@ -240,7 +238,7 @@ const mixin = {
     },
     query: {
       handler (query) {
-        let vm = this
+        const vm = this
         vm.onQueryChangedHandler(query)
       },
       deep: true

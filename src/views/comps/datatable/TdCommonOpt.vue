@@ -37,9 +37,9 @@ export default {
     // console.log('mounted starts')
     if (vm.xprops['buttons']) {
       vm.buttons = []
-      for (var i = 0; i < vm.xprops.buttons.length; i++) {
+      for (let i = 0; i < vm.xprops.buttons.length; i++) {
         // console.log('i= ' + i)
-        let key = vm.xprops.buttons[i]
+        const key = vm.xprops.buttons[i]
         switch (key) {
           case 'view':
             vm.buttons.push({
@@ -96,14 +96,14 @@ export default {
   },
   methods: {
     processing (command) {
-      let vm = this
-      let mapping = {
+      const vm = this
+      const mapping = {
         print: 'printing'
       }
       let result = false
       if (vm.xprops['statuses']) {
         if (mapping[command]) {
-          let commandStr = mapping[command] + ':' + vm.row['id']
+          const commandStr = mapping[command] + ':' + vm.row['id']
           if (vm.xprops['statuses'] && commandStr) {
             result = vm.xprops.statuses.indexOf(commandStr) >= 0
           }
@@ -112,7 +112,7 @@ export default {
       return result
     },
     processCommand (command, needConfirm) {
-      let vm = this
+      const vm = this
       // console.log('tdCommonOpt :: processCommand')
       if (typeof needConfirm === 'undefined') {
         needConfirm = false
@@ -133,7 +133,7 @@ export default {
     },
 
     doProcessCommand (command) {
-      let vm = this
+      const vm = this
       vm.xprops.eventbus.$emit('onRowCommand', {
         command: command,
         row: vm.row

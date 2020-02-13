@@ -14,7 +14,8 @@
     "tel_no": "Tel No.",
     "fax_no": "Fax No.",
     "web_url": "Web Url",
-    "status": "Status"
+    "status": "Status",
+    "key": "Key"
   },
   "status": {
     "pending": "Pending",
@@ -25,7 +26,9 @@
   },
   "buttons": {
     "save": "Save",
-    "back": "Back"
+    "back": "Back",
+    "ok": "OK",
+    "cancel": "Cancel"
   },
   "message": "hello i18n !!",
   "menu": {
@@ -66,6 +69,7 @@
     "voucher_count": "Vouchers"
   },
   "vouchers": {
+    "qr_code": "QR Code",
     "email_sent_total": "Email Sent/Total",
     "creation_date": "Created At",
     "activation_date": "Activation Date",
@@ -74,6 +78,11 @@
     "email_list": "Email List",
     "agent": "Agent",
     "voucher": "Voucher",
-    "code": "Code"
+    "code": "Code",
+    "sent_on": "Sent On",
+    "qr_code_composition": "QR Code Composition",
+    "qr_code_size": "QR Code Size",
+    "available_after_saving": "Available after Saving",
+    "copy_template_from": "Copy Template From ..."
   }
 }

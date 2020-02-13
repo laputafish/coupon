@@ -1,8 +1,3 @@
-import Vue from 'vue'
-import dialogMixin from '@/mixins/DialogMixin'
-import dtCommon from '@/views/comps/datatable'
-import sectionHeader from '@/views/layouts/comps/SectionHeader'
-
 const mixin = {
   methods: {
     refresh (id) {

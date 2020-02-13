@@ -9,11 +9,11 @@ export default {
   props: ['value', 'row', 'xprops'],
   computed: {
     status () {
-      let vm = this
+      const vm = this
       let label = vm.$t('status.' + vm.value)
       if (vm.xprops.statusOptions) {
-        for (var i = 0; i < vm.xprops.statusOptions.length; i++) {
-          let option = vm.xprops.statusOptions[i]
+        for (let i = 0; i < vm.xprops.statusOptions.length; i++) {
+          const  option = vm.xprops.statusOptions[i]
           if (option.value === vm.value) {
             label = vm.$t(option.labelTag)
             break

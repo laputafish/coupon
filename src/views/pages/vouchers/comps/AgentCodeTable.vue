@@ -5,7 +5,7 @@
       <div class="mr-2">
         {{ $t('vouchers.code_list') }}
       </div>
-      <div class="badge badge-warning">{{ total }}</div>
+      <div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>
     </div>
     <file-upload
         extensions="xlsx"
@@ -23,7 +23,7 @@
       Upload File
     </file-upload>
   </div>
-  <div id="code-table">
+  <div v-if="codeInfos.length>0" id="code-table" >
      <datatable v-cloak v-bind="$data"
                 :columns="columns"></datatable>
   </div>
@@ -78,7 +78,7 @@ export default {
   watch: {
     codeInfos: function (newValue) {
       const vm = this
-      vm.setData(newValue)
+      vm.setTableData(newValue)
     },
     codeFieldsStr: function (newValue) {
       // codeFields is string in format:
@@ -93,9 +93,39 @@ export default {
   mounted () {
     const vm = this
     vm.setColumns(vm.codeFieldsStr)
-    vm.setData(vm.codeInfos)
+    vm.setTableData(vm.codeInfos)
+  },
+  created () {
+    const vm = this
+    vm.xprops.eventbus.$on('onRowCommand', vm.onRowCommandHandler)
+  },
+  destroyed () {
+    const vm = this
+    vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    onRowCommandHandler (payload) {
+      const vm = this
+      console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+      switch (payload.command) {
+        case 'edit':
+          alert('onRowCommandHandler :; edit')
+          break
+        case 'view':
+          vm.$emit('onCommand', {
+            command: 'view_temp_leaflet',
+            row: payload.row
+          })
+          break
+        case 'delete':
+          vm.$dialog().configm(vm.$t('messages.are_you_sure'))
+            .then(dialog => {
+              vm.record.code_infos.splice(payload.index, 1)
+            })
+          alert('onRowCommandHandler :: delete')
+          break
+      }
+    },
     getCodeFieldsFromStr (fieldStr) {
       const result = []
       if (fieldStr !== null && fieldStr !== '') {
@@ -158,14 +188,29 @@ export default {
         })
       }
       vm.columns.push({
+        title: vm.$t('general.key'),
+        tdComp: 'TdKey',
+        field: 'key'
+      })
+      vm.columns.push({
+        title: vm.$t('vouchers.sent_on'),
+        tdComp: 'TdCommon',
+        field: 'sent_on'
+      })
+      vm.columns.push({
+        title: vm.$t('general.status'),
+        tdComp: 'TdCommonStatus',
+        field: 'status'
+      })
+      vm.columns.push({
         title: vm.$t('general.action'),
         tdComp: 'TdCommonOpt',
-        field: 'field0'
+        field: 'id'
 
       })
     },
 
-    setData (codeInfos) {
+    setTableData (codeInfos) {
       const vm = this
       const result = []
       if (vm.columns)
@@ -181,27 +226,28 @@ export default {
           obj['field'+j] = arFieldValues[j]
         }
         obj['status'] = codeRecord['status']
+        obj['key'] = codeRecord['key']
         obj['sent_on'] = codeRecord['sent_on']
         result.push(obj)
       }
       vm.data = result
     },
 
-    getCodeData (values) {
-      console.log('getCodeData :: values: ', values)
-      const records = []
-      for (let i = 0; i < values.length; i++) {
-        const record = {}
-        const loopRecord = values[i]
-        for (let j = 0; j < loopRecord.length; j++) {
-          record['id'] = j
-          record['field' + j] = loopRecord[j]
-        }
-        records.push(record)
-      }
-      console.log('getCodeData :: records: ', records)
-      return records
-    },
+    // getCodeData (values) {
+    //   console.log('getCodeData :: values: ', values)
+    //   const records = []
+    //   for (let i = 0; i < values.length; i++) {
+    //     const record = {}
+    //     const loopRecord = values[i]
+    //     for (let j = 0; j < loopRecord.length; j++) {
+    //       record['id'] = j
+    //       record['field' + j] = loopRecord[j]
+    //     }
+    //     records.push(record)
+    //   }
+    //   console.log('getCodeData :: records: ', records)
+    //   return records
+    // },
 
     inputFile (newFile, oldFile) {
       const vm = this

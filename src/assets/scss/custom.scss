@@ -43,3 +43,19 @@ div[name=Datatable] div.row:last-child {
   z-index: 2000;
   height: 100%;
 }
+
+.list-group-item + .list-group-item {
+  border-top-width: 1px;
+}
+
+.btn-toolbar button:last-child {
+  margin-right: 0;
+}
+
+.btn-toolbar button {
+  margin-right: 2px;
+}
+
+.line-height-1 {
+  line-height: 1;
+}

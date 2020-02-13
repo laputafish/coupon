@@ -5,22 +5,6 @@ import { library, dom } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-// Import TinyMCE
-// import tinymce from 'tinymce/tinymce';
-//
-// // A theme is also required
-// import 'tinymce/themes/silver';
-//
-// // Any plugins you want to use has to be imported
-// import 'tinymce/plugins/paste';
-// import 'tinymce/plugins/link';
-//
-// // Initialize the app
-// tinymce.init({
-// 	selector: '#tiny',
-// 	plugins: ['paste', 'link']
-// });
-
 
 // import $ from 'jquery'
 // $ = require('jquery')
@@ -37,12 +21,15 @@ import i18n from './i18n'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Datatable from 'vue2-datatable-component'
+import VuejsDialog from 'vuejs-dialog'
+import VuejsDialogMixin from 'vuejs-dialog/dist/vuejs-dialog-mixin.min.js'
 
 // custom.scss
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueAxios, axios)
 Vue.use(Datatable)
+Vue.use(VuejsDialog)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
@@ -50,6 +37,7 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
+  mixins: [VuejsDialogMixin],
   i18n,
   render: h => h(App)
 }).$mount('#app')

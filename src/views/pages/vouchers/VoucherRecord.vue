@@ -6,55 +6,34 @@
                :buttons="['back','save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
-      <div class="col-sm-6">
-        <div class="form-group">
-          <label for="description">{{ $t('general.description') }}</label>
-          <input class="form-control" id="description" name="description" type="text" v-model="record.description"/>
-        </div>
-      </div>
-      <div class="col-sm-2">
-        <div class="form-group">
-          <label for="activation_date">{{ $t('vouchers.activation_date') }}</label>
-          <!--<input class="form-control" id="activation_date" name="activation_date"-->
-          <!--type="date"-->
-          <!--v-model="record.activation_date"/>-->
-          <date-picker v-model="record.activation_date" class="w-100" valueType="format"></date-picker>
-        </div>
-      </div>
-      <div class="col-sm-2">
-        <div class="form-group">
-          <label for="expiry_date">{{ $t('vouchers.expiry_date') }}</label>
-          <!--<input class="form-control" id="expiry_date" name="expiry_date"-->
-          <!--type="date"-->
-          <!--v-model="record.expiry_date"/>-->
-          <date-picker v-model="record.expiry_date" class="w-100" valueType="format"></date-picker>
-        </div>
-      </div>
-      <div class="col-sm-2">
-        <div class="form-group">
-          <label for="created_at">{{ $t('vouchers.creation_date') }}</label>
-          <input readonly class="form-control" id="created_at" name="created_at"
-                 type="text"
-                 v-model="record.created_at"/>
-          <!--<date-picker v-model="record.created_at" class="w-100" valueType="format"></date-picker>-->
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="form-group">
-          <label for="agent_id">{{ $t('agents.agent') }}</label>
-          <select class="form-control" id="agent_id" name="agent_id" v-model="record.agent_id">
-            <option v-for="agent in agents"
-                    :key="agent.id"
-                    :value="agent.id">{{ agent.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <div class="col-sm-6">
+      <data-input width="6" id="description" labelTag="general.description" v-model="record.description"></data-input>
+      <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
+                       v-model="record.activation_date"></data-input-date>
+      <data-input-date width="2" id="expiry_date" labelTag="vouchers.expiry_date"
+                       v-model="record.expiry_date"></data-input-date>
+      <data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"
+                           v-model="record.created_at"></data-input-readonly>
+      <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
+                         :options="agents"
+                         optionLabelField="name"></data-input-select>
+      <div class="col-sm-3">
         <div class="form-group">
           <label for="qr_code_composition">{{ $t('vouchers.qr_code_composition') }}</label>
           <input type="text" class="form-control" id="qr_code_composition" name="qr_code_composition"
                  v-model="record.qr_code_composition"/>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label>{{ $t('vouchers.qr_code_size') }}</label>
+          <div class="form-control d-flex flex-row">
+             <vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">
+              <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
+                {{ value }}
+              </div>
+             </vue-range-slider>
+              <div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>
+          </div>
         </div>
       </div>
       <div class="col-sm-2">
@@ -68,17 +47,23 @@
     </div>
     <div v-if="record" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
-        <b-tab title="Agent Codes & Emails" class="bg-white py-2">
+        <b-tab title="Agent Codes" class="bg-white py-2">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-7">
+              <div class="col-12">
                 <agent-code-table
                     ref="agentCodeTable"
                     @onCommand="onCommandHandler"
                     :codeInfos="record.code_infos"
                     :codeFieldsStr="record.code_fields"></agent-code-table>
               </div>
-              <div class="col-5">
+            </div>
+          </div>
+        </b-tab>
+        <b-tab title="Emails" class="bg-white py-2">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
                 <email-table
                     ref="emailTable"
                     @onCommand="onCommandHandler"
@@ -94,31 +79,7 @@
               </div>
             </div>
             <div class="row" v-if="record">
-              <div class="col-12">
-                <textarea v-model="record.template" rows="10"></textarea>
-              </div>
               <div class="col-12 d-flex flex-row">
-                <!--<yoov-editor-->
-                <!--class="flex-grow-1"-->
-                <!--v-model="record.template"-->
-                <!--ref="editor"></yoov-editor>-->
-                <!--<editor-->
-                <!--class="flex-grow-1 bg-muted"-->
-                <!--api-key="no-api-key"-->
-                <!--:init="{-->
-                <!--height: 500,-->
-                <!--menubar: true,-->
-                <!--plugins: [-->
-                <!--'advlist autolink lists link image charmap print preview anchor',-->
-                <!--'searchreplace visualblocks code fullscreen',-->
-                <!--'insertdatetime media table paste code help wordcount'-->
-                <!--],-->
-                <!--toolbar:-->
-                <!--'undo redo | formatselect | bold italic backcolor | \-->
-                <!--alignleft aligncenter alignright alignjustify | \-->
-                <!--bullist numlist outdent indent | removeformat | help'-->
-                <!--}"-->
-                <!--/>-->
                 <tinymce
                     ref="yoovEditor"
                     class="flex-grow-1 bg-muted"
@@ -129,17 +90,21 @@
                     v-model="record.template"></tinymce>
 
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
+                  <b-button @click="showCopyTemplateDialog=true"
+                          class="btn btn-primary mb-3 w-100">
+                    {{ $t('vouchers.copy_template_from') }}
+                  </b-button>
                   <h6>Token List</h6>
                   <div v-for="keyGroup in templateKeyGroups"
                        :key="keyGroup['name']">
                     {{ $t('vouchers.' + keyGroup['name']) }}
-                    <ul class="token-list list-unstyled px-2">
+                    <ul class="token-list list-unstyled px-2 mb-1">
                       <li v-for="templateKey in keyGroup.keys"
                           :key="templateKey">
-                        <div class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
+                        <div @click="insertKey(templateKey)"
+                             class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
                       </li>
                     </ul>
-
                   </div>
                 </div>
               </div>
@@ -153,6 +118,39 @@
         <i claas="fa fa-spinner fa-spin"></i>
       </h4>
     </div>
+    <b-modal id="copyTemplateDialog"
+             v-model="showCopyTemplateDialog"
+             :title="$t('vouchers.copy_template_from')">
+      <b-list-group>
+        <b-list-group-item v-for="voucher in otherVouchers"
+                           @click="selectedVoucher=voucher"
+                           :class="{'active': selectedVoucher==voucher}"
+            :key="voucher.id">
+          {{ voucher.description }}
+        </b-list-group-item>
+      </b-list-group>
+         <template v-slot:modal-footer>
+        <div class="w-100 text-right">
+          <div class="btn-toolbar justify-content-end">
+              <b-button
+                  :disabled="selectedVoucher===null"
+                variant="primary"
+                size="sm"
+                class="min-width-80"
+                @click="copyTemplate(selectedVoucher)">
+              {{ $t('buttons.ok') }}
+            </b-button>
+              <b-button
+                  variant="secondary"
+                  size="sm"
+                  class="min-width-80"
+                  @click="showCopyTemplateDialog=false">
+              {{ $t('buttons.cancel') }}
+            </b-button>
+          </div>
+        </div>
+      </template>
+    </b-modal>
   </div>
 </template>
 
@@ -165,6 +163,8 @@
   import 'vue2-datepicker/index.css'
   import helpers from '@/helpers'
   import titleRow from '@/views/comps/TitleRow'
+  import formInputs from '@/views/comps/forms'
+  import vueRangeSlider from 'vue-range-slider'
 
   export default {
     mixins: [DataRecordMixin],
@@ -173,7 +173,9 @@
       emailTable,
       datePicker,
       tinymce,
-      titleRow
+      titleRow,
+      ...formInputs,
+      vueRangeSlider
       // ,
       // yoovEditor
       // ,
@@ -187,7 +189,11 @@
         loading: false,
         // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
         defaultTemplateKeyGroups: [],
-        agents: []
+        agents: [],
+        showCopyTemplateDialog: false,
+        allVouchers: [],
+        selectedVoucher: null,
+        showCopyTemplateDialog: false
       }
     },
     props: {
@@ -197,6 +203,16 @@
       }
     },
     computed: {
+      otherVouchers () {
+        const vm = this
+        let result = []
+        if (vm.record) {
+          result = vm.allVouchers.filter(voucher => {
+            return voucher.id !== vm.record.id
+          })
+        }
+        return result
+      },
       templateKeyGroups () {
         const vm = this
         const result = vm.defaultTemplateKeyGroups
@@ -206,9 +222,10 @@
             keys: []
           })
         }
+        const lastIndex = vm.defaultTemplateKeyGroups.length - 1
         for (let i = 0; i < vm.codeFields.length; i++) {
           const key = helpers.str2token('code_', vm.codeFields[i])
-          vm.defaultTemplateKeyGroups[vm.defaultTemplateKeyGroups.length - 1]['keys'].push(key)
+          vm.defaultTemplateKeyGroups[lastIndex]['keys'].push(key)
         }
         return result
       },
@@ -235,11 +252,26 @@
       const vm = this
 
       vm.fetchAgents();
+      vm.fetchVouchers();
       vm.fetchDefaultTemplateKeys()
 
       vm.refresh(vm.recordId)
     },
     methods: {
+      copyTemplate () {
+        const vm = this
+        vm.showCopyTemplateDialog = false
+        if (vm.record.template && vm.record.template.trim() !== '') {
+          vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(response => {
+            console.log('dialog confirm : response: ', response)
+          })
+        } else {
+          vm.record.template = vm.selectedVoucher.template
+        }
+      },
+      insertKey (key) {
+        tinyMCE.get('yoovEditor').execCommand('mceInsertContent', false, '{' + key + '}');
+      },
       onEditorInit () {
         const vm = this
         console.log('onEditorInit :: tinyMCE: ', tinyMCE)
@@ -252,9 +284,16 @@
       fetchAgents () {
         const vm = this
         vm.$store.dispatch('COMMON_GET', '/agents').then(response => {
-          vm.agents = response
+          vm.agents = response.data
         })
       },
+      fetchVouchers () {
+        const vm = this
+        vm.$store.dispatch('COMMON_GET', '/vouchers').then(response => {
+          vm.allVouchers = response.data
+        })
+      },
+
       fetchDefaultTemplateKeys () {
         const vm = this
         vm.defaultTemplateKeyGroups = []
@@ -279,10 +318,52 @@
           }
         })
       },
+      getCodeInfoFromRow (row) {
+        // id: 0
+        // field0: "0019999900100008000000g0rDtKv136"
+        // field1: "00092979"
+        // field2: "2019-11-14"
+        // field3: "2020-05-23"
+        // status: "pending"
+        // key: ""
+        // sent_on: null
+
+        const vm = this
+        const codeFields = vm.record.code_fields
+        const fieldCount = codeFields.split('|').length
+        const fieldValues = []
+        for (let i = 1; i < fieldCount; i++) {
+          fieldValues.push(row['field' + i])
+        }
+
+        return {
+          id: row['id'],
+          code: row['field0'],
+          extra_fields: fieldValues.join('|'),
+          key: row['key']
+        }
+      },
       onCommandHandler (payload) {
         const vm = this
         console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
         switch (payload.command) {
+          case 'view_temp_leaflet':
+            const tempRecord = JSON.parse(JSON.stringify(vm.record))
+            delete tempRecord['code_infos']
+            const data = {
+              urlCommand: '/templates/create_temp',
+              data: {
+                record: tempRecord,
+                codeInfo: vm.getCodeInfoFromRow(payload.row)
+              }
+            }
+            console.log('view_temp_leaflet: data: ', data)
+            vm.$store.dispatch('COMMON_POST', data).then(response => {
+              const key = response
+              const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
+              window.open(url, '_blank');
+            })
+            break
           case 'save':
             vm.save()
             break
@@ -334,10 +415,15 @@
               code: code,
               extra_fields: fields.join('|'),
               sent_on: '',
+              order: 0,
+              key: '',
               status: 'pending'
             })
             existingCodes.push(code)
           }
+        }
+        for (let i = 0; i < vm.record.code_infos.length; i++) {
+          vm.record.code_infos[i].order = i + 1
         }
       },
       createCodeInfos (codeDataList) {
@@ -416,7 +502,6 @@
       },
 
 
-
       // inputFile(newFile, oldFile, prevent) {
 
       // inputFile: function (newFile, oldFile) {
@@ -440,6 +525,10 @@
     }
   }
 </script>
+
+<style lang="scss">
+@import 'vue-range-slider/dist/vue-range-slider.scss';
+</style>
 
 <style>
   #email-table div[name=Datatable] table tbody tr td,
@@ -469,5 +558,16 @@
     font-size: 0.9rem;
   }
 
+  .mce-edit-area iframe {
+    min-height: 360px;
+  }
 
+  #copyTemplateDialog .modal-body {
+    overflow-y: scroll;
+    max-height: 480px;
+  }
+
+  #copyTemplateDialog .list-group-item {
+    cursor: pointer;
+  }
 </style>

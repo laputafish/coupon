@@ -12,7 +12,7 @@ const getToday = () => {
 }
 
 const str2token = (prefix, str) => {
-  return prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9]/gi,'')
+  return prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9_]/gi,'')
 }
 
 const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
