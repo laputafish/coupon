@@ -92,7 +92,7 @@ const actions = {
       } else {
         urlCommand = payload
       }
-      const url = rootGetters.constants.apiUrl + urlCommand
+      const url = rootGetters.apiUrl + urlCommand
       if (payload.query) {
         const paginationConfig = helpers.addPagination(payload.query)
         config = {

@@ -3,8 +3,8 @@
     <div v-if="record" class="col-12 border-bottom border-2 mb-3">
       <div class="d-flex flex-row justify-content-between">
         <div class="record-title flex-grow-1">
-          <h2 v-if="record && record[titleField].length>0" class="d-inline mr-2">{{ record[titleField] }}</h2>
-          <h2 class="d-inline">[{{ record.id===0 ? $t('general.new') : $t('general.edit') }}]</h2>
+          <h3 v-if="record && record[titleField].length>0" class="d-inline mr-2">{{ record[titleField] }}</h3>
+          <h3 class="d-inline">[{{ record.id===0 ? $t('general.new') : $t('general.edit') }}]</h3>
         </div>
         <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
           <button v-for="buttonInfo in buttonInfos"

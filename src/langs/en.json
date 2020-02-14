@@ -84,5 +84,17 @@
     "qr_code_size": "QR Code Size",
     "available_after_saving": "Available after Saving",
     "copy_template_from": "Copy Template From ..."
+  },
+  "login": {
+    "digital_coupon": "Digital Coupon",
+    "management_platform": "Management Platform",
+    "login": "Login",
+    "register": "Register",
+    "email_address": "Email Address",
+    "email": "Email",
+    "password": "Password",
+    "remember_me": "Remember Me",
+    "forgot_password": "Forgot Password",
+    "forgot_your_password": "Forgot Your Password?"
   }
 }

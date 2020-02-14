@@ -19,13 +19,12 @@
 
 <script>
   export default {
-    created () {
-      const vm = this
-      vm.$store.dispatch('FETCH_CONSTANTS')
-    },
     mounted () {
       const vm = this
       vm.$i18n.locale = 'en'
+      // vm.$store.dispatch('FETCH_TOKEN').then(response => {
+      //
+      // })
     }
   }
 </script>

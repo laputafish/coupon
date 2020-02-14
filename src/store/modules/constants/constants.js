@@ -7,6 +7,9 @@ const state = {
 const getters = {
   constants: state => {
     return state.constants
+  },
+  apiUrl: state => {
+    return state.constants ? state.constants.apiUrl : ''
   }
 }
 
@@ -17,16 +20,16 @@ const mutations = {
 }
 
 const actions = {
-  [types.FETCH_CONSTANTS] ({commit}) {
+  async [types.FETCH_CONSTANTS] ({commit}) {
     /*const promise = */
-    new Promise((resolve) => {
-      const env = {
-        apiUrl: process.env.VUE_APP_API_URL
-      }
-      console.log('FETCH_CONSTANTS :: env: ', env)
-      commit('setConstants', env)
-      resolve(env)
-    })
+    // new Promise((resolve) => {
+    const env = {
+      apiUrl: process.env.VUE_APP_API_URL
+    }
+    console.log('FETCH_CONSTANTS :: env: ', env)
+    commit('setConstants', env)
+      // resolve(env)
+    // })
   }
 }
 
