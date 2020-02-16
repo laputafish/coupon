@@ -6,6 +6,7 @@
                :buttons="['back','save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
+      <!-- Row #0 -->
       <data-input width="6" id="description" labelTag="general.description" v-model="record.description"></data-input>
       <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
                        v-model="record.activation_date"></data-input-date>
@@ -13,37 +14,44 @@
                        v-model="record.expiry_date"></data-input-date>
       <data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"
                            v-model="record.created_at"></data-input-readonly>
+
+      <!-- Row #1 -->
       <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
                          :options="agents"
                          optionLabelField="name"></data-input-select>
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label for="qr_code_composition">{{ $t('vouchers.qr_code_composition') }}</label>
-          <input type="text" class="form-control" id="qr_code_composition" name="qr_code_composition"
-                 v-model="record.qr_code_composition"/>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label>{{ $t('vouchers.qr_code_size') }}</label>
-          <div class="form-control d-flex flex-row">
-             <vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">
-              <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
-                {{ value }}
-              </div>
-             </vue-range-slider>
-              <div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-2">
-        <div class="form-group">
-          <label for="status">{{ $t('general.status') }}</label>
-          <input readonly class="form-control" id="status" name="status"
-                 type="text"
-                 :value="$t('status.' + record.status)"/>
-        </div>
-      </div>
+      <data-input width="3" id="qr_code_composition" labelTag="vouchers.qr_code_composition" v-model="record.qr_code_composition"></data-input>
+      <!--<div class="col-sm-3">-->
+        <!--<div class="form-group">-->
+          <!--<label for="qr_code_composition">{{ $t('vouchers.qr_code_composition') }}</label>-->
+          <!--<input type="text" class="form-control" id="qr_code_composition" name="qr_code_composition"-->
+                 <!--v-model="record.qr_code_composition"/>-->
+        <!--</div>-->
+      <!--</div>-->
+
+      <data-input-sider width="3" id="qr_code_size" labelTag="vouchers.qr_code_size" v-model="record.qr_code_size"
+                        :min="100" :max="300"></data-input-sider>
+      <!--<div class="col-sm-3">-->
+        <!--<div class="form-group">-->
+          <!--<label>{{ $t('vouchers.qr_code_size') }}</label>-->
+          <!--<div class="form-control d-flex flex-row">-->
+             <!--<vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">-->
+              <!--<div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">-->
+                <!--{{ value }}-->
+              <!--</div>-->
+             <!--</vue-range-slider>-->
+              <!--<div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <data-input-readonly width="2" id="status" labelTag="general.status" :value="$t('status.'+record.status)"></data-input-readonly>
+      <!--<div class="col-sm-2">-->
+        <!--<div class="form-group">-->
+          <!--<label for="status">{{ $t('general.status') }}</label>-->
+          <!--<input readonly class="form-control" id="status" name="status"-->
+                 <!--type="text"-->
+                 <!--:value="$t('status.' + record.status)"/>-->
+        <!--</div>-->
+      <!--</div>-->
     </div>
     <div v-if="record" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
@@ -155,27 +163,30 @@
 </template>
 
 <script>
+  import titleRow from '@/views/comps/TitleRow'
+  import formInputs from '@/views/comps/forms'
+
   import DataRecordMixin from '@/mixins/DataRecordMixin'
   import agentCodeTable from './comps/AgentCodeTable'
   import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
-  import datePicker from 'vue2-datepicker'
+  // import datePicker from 'vue2-datepicker'
   import 'vue2-datepicker/index.css'
   import helpers from '@/helpers'
-  import titleRow from '@/views/comps/TitleRow'
-  import formInputs from '@/views/comps/forms'
-  import vueRangeSlider from 'vue-range-slider'
+
+  // import vueRangeSlider from 'vue-range-slider'
 
   export default {
     mixins: [DataRecordMixin],
     components: {
       agentCodeTable,
       emailTable,
-      datePicker,
+      // datePicker,
       tinymce,
       titleRow,
-      ...formInputs,
-      vueRangeSlider
+      ...formInputs
+      // ,
+      // vueRangeSlider
       // ,
       // yoovEditor
       // ,
@@ -283,13 +294,13 @@
       },
       fetchAgents () {
         const vm = this
-        vm.$store.dispatch('COMMON_GET', '/agents').then(response => {
+        vm.$store.dispatch('AUTH_GET', '/agents').then(response => {
           vm.agents = response.data
         })
       },
       fetchVouchers () {
         const vm = this
-        vm.$store.dispatch('COMMON_GET', '/vouchers').then(response => {
+        vm.$store.dispatch('AUTH_GET', '/vouchers').then(response => {
           vm.allVouchers = response.data
         })
       },
@@ -297,7 +308,7 @@
       fetchDefaultTemplateKeys () {
         const vm = this
         vm.defaultTemplateKeyGroups = []
-        vm.$store.dispatch('COMMON_GET', '/template_keys').then(response => {
+        vm.$store.dispatch('AUTH_GET', '/template_keys').then(response => {
           for (let i = 0; i < response.length; i++) {
             const responseItem = response[i]
             const category = responseItem.category
@@ -358,7 +369,7 @@
               }
             }
             console.log('view_temp_leaflet: data: ', data)
-            vm.$store.dispatch('COMMON_POST', data).then(response => {
+            vm.$store.dispatch('AUTH_POST', data).then(response => {
               const key = response
               const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
               window.open(url, '_blank');
@@ -492,7 +503,7 @@
           data: vm.record
         }
         vm.loading = true
-        const action = vm.record.id === 0 ? 'COMMON_POST' : 'COMMON_PUT'
+        const action = vm.record.id === 0 ? 'AUTH_POST' : 'AUTH_PUT'
         vm.$store.dispatch(action, data).then(response => {
           console.log('save: response: ', response)
           vm.loading = false

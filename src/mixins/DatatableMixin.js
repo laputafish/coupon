@@ -181,7 +181,7 @@ const mixin = {
       }
 
       vm.loading = true
-      vm.$store.dispatch('COMMON_GET', data).then(function (response) {
+      vm.$store.dispatch('AUTH_GET', data).then(function (response) {
         console.log('refreshDataList :: response: ', response)
         vm.data = response.data
         vm.total = response.total

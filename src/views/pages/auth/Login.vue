@@ -2,44 +2,39 @@
 <div class="card mt-5">
   <div class="card-header">{{ $t(titleTag) }}</div>
   <div class="card-body">
+    <div v-if="messageTag" class="text-center alert alert-danger">
+      {{ $t('messages.' + messageTag) }}
+    </div>
+
     <form action="" method="">
       <!-- Email -->
-      <div class="form-group row">
-        <label for="email_address" class="col-md-4 col-form-label text-md-right">
-          {{ $t('login.email_address') }}</label>
-        <div class="col-md-6">
-          <input type="text" id="email_address" class="form-control" name="email-address"
-                 v-model="credentials.email"
-                 required autofocus>
-        </div>
-      </div>
+      <auth-input-row id="email_address"
+                      labelTag="login.email_address"
+                      v-model="credentials.email"
+                      rules="required|email"></auth-input-row>
       <!-- Password -->
-      <div class="form-group row">
-        <label for="password" class="col-md-4 col-form-label text-md-right">
-          {{ $t('login.password') }}</label>
-        <div class="col-md-6">
-          <input type="password" id="password" class="form-control" name="password"
-                 v-model="credentials.password"
-                 required>
-        </div>
-      </div>
+      <auth-input-row-password id="password"
+                      labelTag="login.password"
+                      v-model="credentials.password"
+                      rules="required"></auth-input-row-password>
       <!-- Remember -->
-      <div class="form-group row">
-        <div class="col-md-6 offset-md-4">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="remember"> {{ $t('login.remember_me') }}
-            </label>
-          </div>
-        </div>
-      </div>
+      <!--<div class="form-group row">-->
+        <!--<div class="col-md-6 offset-md-4">-->
+          <!--<div class="checkbox">-->
+            <!--<label>-->
+              <!--<input type="checkbox" name="remember"> {{ $t('login.remember_me') }}-->
+            <!--</label>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
       <!-- Submit button -->
       <div class="col-md-6 offset-md-4">
-        <button @click="submit()" class="btn btn-primary">
+        <button type="button" @click="login()" class="btn btn-primary min-width-80">
+          <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin" />
           {{ $t(titleTag) }}
         </button>
-        <router-link :to="{name: 'Forget_Password'}" class="btn btn-link">
-          {{ $t('login.forgot_your_password') }}
+        <router-link :to="{name: 'ForgotPassword'}" class="btn btn-link">
+          {{ $t('login.forgotYourPassword') }}
         </router-link>
       </div>
     </form>
@@ -48,14 +43,56 @@
 </template>
 
 <script>
+  import authInputRow from './comps/AuthInputRow'
+  import authInputRowPassword from './comps/AuthInputRowPassword'
+
   export default {
+    components: {
+      authInputRow,
+      authInputRowPassword
+    },
     data () {
       return {
+        loading: false,
         titleTag: 'login.login',
+        messageTag: '',
         credentials: {
-          email: '',
-          password: ''
+          email: 'dominic@yoov.com',
+          password: 'yoovyoov'
         }
+      }
+    },
+    methods: {
+      login () {
+        const vm = this
+        const postData = {
+          urlCommand: '/auth/login',
+          data: vm.credentials
+        }
+        vm.loading = true
+        vm.$store.dispatch('COMMON_POST', postData).then(
+          response => {
+            console.log('login :: response: ', response)
+            vm.loading = false
+            vm.$store.dispatch('SET_TOKEN', response.access_token).then(()=> {
+              vm.gotoNextUrl('/')
+            }, () => {})
+          },
+          error => {
+            vm.loading = false
+            vm.messageTag = error.messageTag
+          }
+        )
+      },
+      gotoNextUrl (defaultUrl) {
+        const vm = this
+        let nextUrl = localStorage.getItem('nextUrl')
+        if (!nextUrl) {
+          nextUrl = defaultUrl
+        }
+        console.log('gotoNextUrl :: nextUrl = ' + nextUrl)
+        localStorage.removeItem('nextUrl');
+        vm.$router.push(nextUrl);
       }
     }
   }

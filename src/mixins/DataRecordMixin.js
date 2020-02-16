@@ -6,7 +6,7 @@ const mixin = {
         urlCommand: vm.apiPath + '/' + id
       }
       vm.loading = true
-      vm.$store.dispatch('COMMON_GET', data).then(function (response) {
+      vm.$store.dispatch('AUTH_GET', data).then(function (response) {
         console.log('refresh :: response: ', response)
         vm.record = response.data
         vm.csrfToken = response.csrfToken

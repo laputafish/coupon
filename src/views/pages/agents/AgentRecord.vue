@@ -6,17 +6,30 @@
                :buttons="['back','save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
-
+      <data-input width="6" id="name" labelTag="general.name" v-model="record.name"></data-input>
+      <data-input width="3" id="alias" labelTag="general.alias" v-model="record.alias"></data-input>
+      <data-input width="3" id="contact" labelTag="general.contact" v-model="record.contact"></data-input>
+      <data-input width="2" id="tel_no" labelTag="general.telNo" v-model="record.tel_no"></data-input>
+      <data-input width="2" id="fax_no" labelTag="general.faxNo" v-model="record.fax_no"></data-input>
+      <data-input width="4" id="web_url" labelTag="general.webUrl" v-model="record.web_url"></data-input>
+      <data-input width="4" id="email" labelTag="general.email" v-model="record.email"></data-input>
+      <!--<data-textarea></data-textarea>-->
     </div>
   </div>
 </template>
 
 <script>
   import titleRow from '@/views/comps/TitleRow'
+  import formInputs from '@/views/comps/forms'
+
+  import DataRecordMixin from '@/mixins/DataRecordMixin'
+  import helpers from '@/helpers'
 
   export default {
+    mixins: [DataRecordMixin],
     components: {
-      titleRow
+      titleRow,
+      ...formInputs
     },
     data () {
       return {
@@ -46,15 +59,28 @@
     },
     methods: {
       save () {
-        alert('save not implemented')
-      }
-      // ,
-      // refresh (id) {
-      //   const vm = this
-      //   // const data = {
-      //   //   urlCommand: vm.apiPath + '/' + id
-      //   // }
-      // }
+        const vm = this
+        const data = {
+          urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
+          data: vm.record
+        }
+        vm.loading = true
+        const action = vm.record.id === 0 ? 'AUTH_POST' : 'AUTH_PUT'
+        vm.$store.dispatch(action, data).then(response => {
+          vm.loading = false
+          vm.record.id = response.id
+          vm.$router.go(-1);
+        })
+      },
+      onCommandHandler (payload) {
+        const vm = this
+        console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
+        switch (payload.command) {
+          case 'save':
+            vm.save()
+            break
+        }
+      },
     }
   }
 </script>

@@ -39,7 +39,7 @@
     mounted () {
       const vm = this
       vm.loading = true
-      vm.$store.dispatch('COMMON_GET', '/menu').then(response => {
+      vm.$store.dispatch('AUTH_GET', '/menu').then(response => {
         vm.mainMenu = response
         vm.loading = false
       })

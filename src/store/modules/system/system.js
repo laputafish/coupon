@@ -31,6 +31,15 @@ const actions = {
     //   resolve(accessToken)
     // })
   },
+  [types.SET_TOKEN] ({commit, getters}, payload) {
+    return new Promise((resolve) => {
+      if (getters.accessToken !== payload) {
+        localStorage.setItem('accessToken', payload)
+        commit('setAccessToken', payload)
+        resolve()
+      }
+    })
+  },
   [types.REFRESH_TOKEN] ({commit, rootGetters, getters}) {
     /*const promise = */
     return new Promise((resolve, reject) => {
@@ -46,16 +55,16 @@ const actions = {
         }
         console.log('REFRESH_TOKEN :: auth: ', auth)
         Vue.axios.post(url, {}, auth).then(response => {
-          console.log('REFRESH_TOKEN => response: ', responses)
-          if (response.message && response.message==='Unauthenticated') {
-            const accessToken = response.access_token
-            commit('setAccessToken', accessToken)
-            resolve(accessToken)
-          } else {
-            commit('setAccessToken', '')
-            reject(response)
-          }
+          console.log('REFRESH_TOKEN => response: ', response)
+          const result = response.data.result
+          console.log('REFRESH_TOKEN => result: ', result)
+          const accessToken = result.access_token
+
+          localStorage.setItem('accessToken', accessToken)
+          commit('setAccessToken', accessToken)
+          resolve(accessToken)
         }).catch(error => {
+          console.log('REFRESH_TOKEN :: error: ', error)
           commit('setAccessToken', '')
           reject(error.response)
         })

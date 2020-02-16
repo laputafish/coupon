@@ -23,6 +23,10 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Datatable from 'vue2-datatable-component'
 import VuejsDialog from 'vuejs-dialog'
+import { ValidationProvider, extend } from 'vee-validate'
+import { required, email, confirmed } from 'vee-validate/dist/rules';
+import { localize } from 'vee-validate';
+
 // import VuejsDialogMixin from 'vuejs-dialog/dist/vuejs-dialog-mixin.min.js'
 
 // custom.scss
@@ -32,7 +36,24 @@ Vue.use(VueAxios, axios)
 Vue.use(Datatable)
 Vue.use(VuejsDialog)
 
+localize({
+  en: {
+    names: {
+      'email': 'Email Address'
+    }
+  }
+})
+
+extend('email', {
+  ...email,
+  message: 'The email address is not valid.'
+})
+extend('required', { ...required, message: 'This field is required.' })
+extend('confirmed', { ...confirmed, message: 'Password not matched.' }
+)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('validationProvider', ValidationProvider)
+
 Vue.config.productionTip = false
 
 store.dispatch('FETCH_CONSTANTS')

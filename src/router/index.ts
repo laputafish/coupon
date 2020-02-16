@@ -18,6 +18,8 @@ import Auth from '@/views/pages/auth/Auth.vue'
 import Login from '@/views/pages/auth/Login.vue'
 import Register from '@/views/pages/auth/Register.vue'
 import ForgotPassword from '@/views/pages/auth/ForgotPassword.vue'
+import AuthMessage from '@/views/pages/auth/AuthMessage.vue'
+import VerifyEmail from '@/views/pages/auth/VerifyEmail.vue'
 
 // Layout Options
 import TopNavigation from '@/views/pages/layoutOptions/TopNavigation.vue'
@@ -106,6 +108,16 @@ const allRoutes = [
         name: 'ForgotPassword',
         component: ForgotPassword
       },
+      {
+        path: '/message/:messageTag',
+        name: 'AuthMessage',
+        component: AuthMessage
+      },
+      {
+        path: '/verify/:code?',
+        name: 'VerifyEmail',
+        component: VerifyEmail
+      }
     ]
   },
   {
@@ -120,14 +132,16 @@ const allRoutes = [
         component: Voucher
       },
       {
-        path: '/agents',
+        path: '/agents/:id?',
         name: 'agents',
-        component: Agent
+	      beforeEnter: ifAuthenticated,
+	      component: Agent
       },
       {
         path: '/dashboard',
         name: 'dashboard',
-        component: Dashboard
+	      beforeEnter: ifAuthenticated,
+	      component: Dashboard
       },
       {
         path: '/widgets',
