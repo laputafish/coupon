@@ -26,7 +26,7 @@ export default {
     //   return vm.value ? vm.value.substr(0, 10) : '(invalid date)'
     // },
     date1 () {
-      let vm = this
+      const vm = this
       let result = ''
       // console.log('TdCommonDateRange :: date1')
       // console.log('TdCommonDateRange :: xprops: ', vm.xprops)
@@ -41,7 +41,7 @@ export default {
       return result
     },
     date2 () {
-      let vm = this
+      const vm = this
       let result = ''
       if (vm.xprops['columnFields'] &&
         vm.xprops['columnFields']['dateRange'] &&

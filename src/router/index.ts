@@ -59,6 +59,7 @@ import TablesJsGrid from '@/views/pages/tables/TablesJsGrid.vue'
 // Application
 import Voucher from '@/views/pages/vouchers/Voucher.vue'
 import Agent from '@/views/pages/agents/Agent.vue'
+import Coupon from '@/views/pages/coupons/Coupon.vue'
 
 
 Vue.use(VueRouter)
@@ -83,6 +84,16 @@ const ifAuthenticated = (to, from, next) => {
 
 const allRoutes = [
   {
+    path: '/coupons/:key',
+    name: 'Coupon',
+    component: Coupon
+  },
+  {
+    path: '/coupons/temp/:key',
+    name: 'TempCoupon',
+    component: Coupon
+  },
+  {
     path: '/',
     name: 'Home',
     redirect: '/vouchers',
@@ -94,29 +105,40 @@ const allRoutes = [
     component: Auth,
     children: [
       {
+        path: '/logout',
+        name: 'Logout',
+        component: Login,
+        meta: {auth: true}
+      },
+      {
         path: '/login',
         name: 'Login',
-        component: Login
+        component: Login,
+        meta: {auth: true}
       },
       {
         path: '/regiser',
         name: 'Register',
-        component: Register
+        component: Register,
+        meta: {auth: true}
       },
       {
         path: '/forgot_password',
         name: 'ForgotPassword',
-        component: ForgotPassword
+        component: ForgotPassword,
+        meta: {auth: true}
       },
       {
         path: '/message/:messageTag',
         name: 'AuthMessage',
-        component: AuthMessage
+        component: AuthMessage,
+        meta: {auth: true}
       },
       {
         path: '/verify/:code?',
         name: 'VerifyEmail',
-        component: VerifyEmail
+        component: VerifyEmail,
+        meta: {auth: true}
       }
     ]
   },

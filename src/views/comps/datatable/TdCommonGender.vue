@@ -7,7 +7,7 @@ export default {
   props: ['value', 'row', 'xprops'],
   computed: {
     gender () {
-      let vm = this
+      const vm = this
       return vm.value === 'm' ? vm.$t('general.male') : vm.$t('general.female')
     }
   }

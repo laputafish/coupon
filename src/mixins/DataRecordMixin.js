@@ -9,7 +9,6 @@ const mixin = {
       vm.$store.dispatch('AUTH_GET', data).then(function (response) {
         console.log('refresh :: response: ', response)
         vm.record = response.data
-        vm.csrfToken = response.csrfToken
         vm.loading = false
         vm.$forceUpdate()
       })

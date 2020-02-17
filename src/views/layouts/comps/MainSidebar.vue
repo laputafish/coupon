@@ -2,12 +2,12 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <sidebar-brand-logo logoSrc="/static/img/AdminLTELogo.png"></sidebar-brand-logo>
+    <sidebar-brand-logo logoSrc="/static/img/brand_logo.png"></sidebar-brand-logo>
 
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-      <sidebar-user-panel avatarUrl="/static/img/user2-160x160.jpg"
+      <sidebar-user-panel avatarUrl="/static/img/user.png"
         name="Admin"></sidebar-user-panel>
 
       <!-- Sidebar Menu -->

@@ -9,7 +9,7 @@ export default {
   props: ['row', 'value', 'xprops'],
   computed: {
     name () {
-      let vm = this
+      const vm = this
       let result = []
       if (vm.row.first_name !== '') {
         result.push(vm.row.first_name)

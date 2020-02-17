@@ -7,7 +7,7 @@ export default {
   props: ['value'],
   computed: {
     trimDate () {
-      let vm = this
+      const vm = this
       let result = '-'
       if (vm.value) {
         if (vm.value === '') {

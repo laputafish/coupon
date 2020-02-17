@@ -52,3 +52,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+@import 'vue-range-slider/dist/vue-range-slider.scss';
+</style>

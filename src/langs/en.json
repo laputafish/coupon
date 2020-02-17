@@ -15,7 +15,11 @@
     "fax_no": "Fax No.",
     "web_url": "Web Url",
     "status": "Status",
-    "key": "Key"
+    "key": "Key",
+    "contact": "Contact",
+    "telNo": "Tel No.",
+    "faxNo": "Fax No.",
+    "webUrl": "Web Url"
   },
   "status": {
     "pending": "Pending",
@@ -28,7 +32,8 @@
     "save": "Save",
     "back": "Back",
     "ok": "OK",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "message": "hello i18n !!",
   "messages": {
@@ -36,7 +41,9 @@
     "verification_code_is_invalid_or_expired": "Verification Code is Invalid or Expired!",
     "email_not_registered_yet": "Email was not registered yet!",
     "verification_link_is_sent_please_check_your_email": "Verification link is sent. Please check your email.",
-    "verification_successful": "Verification Successfully!"
+    "verification_successful": "Verification Successfully!",
+    "see_all_messages": "See All Messages",
+    "overwrite_existing_content": "Overwrite existing content?"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -69,7 +76,10 @@
     "ribbons": "Ribbons",
 
     "vouchers": "Vouchers",
-    "agents": "Agents"
+    "agents": "Agents",
+
+    "home": "Home",
+    "contact": "Contact"
   },
   "agents": {
     "agent": "Agent",

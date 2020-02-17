@@ -1,3 +1,8 @@
+html,
+body {
+  height: 100% !important;
+}
+
 div[name=Datatable] div.row:last-child strong,
 div[name=Datatable] div.row:last-child label[name=PageSizeSelect] {
   font-weight: normal;
@@ -63,4 +68,8 @@ div[name=Datatable] div.row:last-child {
 /* Action buttons */
 .action-btn-group button {
   margin-bottom: 1px;
+}
+
+#auth div.card {
+  margin-top: -20% !important;
 }

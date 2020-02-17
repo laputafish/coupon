@@ -22,12 +22,12 @@ export default {
     }
   },
   mounted () {
-    let vm = this
+    const vm = this
     vm.userData = vm.value
   },
   methods: {
     updateFieldValue (newValue) {
-      let vm = this
+      const vm = this
       vm.xprops.eventbus.$emit('onRowCommand', {
         command: 'updateField',
         row: vm.row,
@@ -36,7 +36,7 @@ export default {
       })
     },
     processCommand (command, needConfirm) {
-      let vm = this
+      const vm = this
       console.log('tdCommonOpt :: processCommand')
       if (typeof needConfirm === 'undefined') {
         needConfirm = false
@@ -57,7 +57,7 @@ export default {
     },
 
     doProcessCommand (command) {
-      let vm = this
+      const vm = this
       vm.xprops.eventbus.$emit('onRowCommand', {
         command: command,
         row: vm.row

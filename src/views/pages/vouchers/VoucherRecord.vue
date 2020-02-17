@@ -19,30 +19,27 @@
       <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
                          :options="agents"
                          optionLabelField="name"></data-input-select>
-      <data-input width="3" id="qr_code_composition" labelTag="vouchers.qr_code_composition" v-model="record.qr_code_composition"></data-input>
-      <!--<div class="col-sm-3">-->
-        <!--<div class="form-group">-->
-          <!--<label for="qr_code_composition">{{ $t('vouchers.qr_code_composition') }}</label>-->
-          <!--<input type="text" class="form-control" id="qr_code_composition" name="qr_code_composition"-->
-                 <!--v-model="record.qr_code_composition"/>-->
-        <!--</div>-->
-      <!--</div>-->
+      <data-input width="3"
+                  id="qr_code_composition"
+                  labelTag="vouchers.qr_code_composition"
+                  v-model="record.qr_code_composition"></data-input>
 
-      <data-input-sider width="3" id="qr_code_size" labelTag="vouchers.qr_code_size" v-model="record.qr_code_size"
-                        :min="100" :max="300"></data-input-sider>
-      <!--<div class="col-sm-3">-->
-        <!--<div class="form-group">-->
-          <!--<label>{{ $t('vouchers.qr_code_size') }}</label>-->
-          <!--<div class="form-control d-flex flex-row">-->
-             <!--<vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">-->
-              <!--<div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">-->
-                <!--{{ value }}-->
-              <!--</div>-->
-             <!--</vue-range-slider>-->
-              <!--<div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
+      <!--<data-input-slider width="3" id="qr_code_size" labelTag="vouchers.qr_code_size" v-model="record.qr_code_size"-->
+                        <!--:min="100" :max="300"></data-input-slider>-->
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label>{{ $t('vouchers.qr_code_size') }}</label>
+          <div class="form-control d-flex flex-row">
+             <vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">
+              <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
+                {{ value }}
+              </div>
+             </vue-range-slider>
+              <div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>
+          </div>
+        </div>
+      </div>
       <data-input-readonly width="2" id="status" labelTag="general.status" :value="$t('status.'+record.status)"></data-input-readonly>
       <!--<div class="col-sm-2">-->
         <!--<div class="form-group">-->
@@ -173,7 +170,7 @@
   // import datePicker from 'vue2-datepicker'
   import 'vue2-datepicker/index.css'
   import helpers from '@/helpers'
-
+  import vueRangeSlider from 'vue-range-slider'
   // import vueRangeSlider from 'vue-range-slider'
 
   export default {
@@ -184,9 +181,9 @@
       // datePicker,
       tinymce,
       titleRow,
-      ...formInputs
+      ...formInputs,
       // ,
-      // vueRangeSlider
+      vueRangeSlider
       // ,
       // yoovEditor
       // ,
@@ -235,6 +232,7 @@
         }
         const lastIndex = vm.defaultTemplateKeyGroups.length - 1
         for (let i = 0; i < vm.codeFields.length; i++) {
+          console.log('computed(templateKeyGroups) :: vm.codeFields[i]: ', vm.codeFields[i])
           const key = helpers.str2token('code_', vm.codeFields[i])
           vm.defaultTemplateKeyGroups[lastIndex]['keys'].push(key)
         }
@@ -274,7 +272,7 @@
         vm.showCopyTemplateDialog = false
         if (vm.record.template && vm.record.template.trim() !== '') {
           vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(response => {
-            console.log('dialog confirm : response: ', response)
+            vm.record.template = vm.selectedVoucher.template
           })
         } else {
           vm.record.template = vm.selectedVoucher.template
@@ -354,26 +352,43 @@
           key: row['key']
         }
       },
+      createTempLeaflet (codeRecord) {
+        const vm = this
+        console.log('createTempLeaflet :: codeRecord: ', codeReord)
+        const tempRecord = JSON.parse(JSON.stringify(vm.record))
+        delete tempRecord['code_infos']
+        const data = {
+          urlCommand: '/templates/create_temp',
+          data: {
+            record: tempRecord,
+            codeInfo: vm.getCodeInfoFromRow(codeRecord)
+          }
+        }
+        console.log('view_temp_leaflet: data: ', data)
+        vm.$store.dispatch('AUTH_POST', data).then(response => {
+          const key = response
+          const url = window.location.origin + '/coupons/temp/' + key
+          // const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
+          window.open(url, '_blank');
+        })
+      },
+      showLeaflet (key) {
+        const vm = this
+        console.log('showLeaflet ::  key= ' + key)
+        const url = window.location.origin + '/coupons/' + key
+        // const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
+        window.open(url, '_blank');
+      },
       onCommandHandler (payload) {
         const vm = this
-        console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
+        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
           case 'view_temp_leaflet':
-            const tempRecord = JSON.parse(JSON.stringify(vm.record))
-            delete tempRecord['code_infos']
-            const data = {
-              urlCommand: '/templates/create_temp',
-              data: {
-                record: tempRecord,
-                codeInfo: vm.getCodeInfoFromRow(payload.row)
-              }
+            if (payload.row.key === '') {
+              vm.createTempLeaflet(payload.row)
+            } else {
+              vm.showLeaflet(payload.row.key)
             }
-            console.log('view_temp_leaflet: data: ', data)
-            vm.$store.dispatch('AUTH_POST', data).then(response => {
-              const key = response
-              const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
-              window.open(url, '_blank');
-            })
             break
           case 'save':
             vm.save()
@@ -384,10 +399,13 @@
           case 'setCodeFields':
             vm.record.code_fields = vm.createCodeFieldStr(payload.value)
             break
-          case 'setCodeData':
+          case 'setCodeDataRows':
+            console.log('onCommandHandler :: setCodeData :: payload.value: ', payload.value)
             vm.updateCodeInfos(payload.value)
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
+          case 'setQrCodeComposition':
+            vm.record.qr_code_composition = payload.data
         }
       },
       updateCodeInfos (codeDataList) {
@@ -579,6 +597,10 @@
   }
 
   #copyTemplateDialog .list-group-item {
+    cursor: pointer;
+  }
+
+  .token-list li > div.badge {
     cursor: pointer;
   }
 </style>

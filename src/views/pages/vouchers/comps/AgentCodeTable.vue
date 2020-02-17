@@ -12,8 +12,9 @@
         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         name="file"
         class="btn btn-primary"
-        post-action="http://evoucherapi/agent_codes/upload"
+        :post-action="postAction"
         :drop="!edit"
+        :headers="authHeaders"
         v-model="files"
         @success="onSuccess()"
         @input-filter="inputFilter"
@@ -35,12 +36,14 @@ import Vue from 'vue'
 import fileUpload from 'vue-upload-component'
 import dtCommon from '@/views/comps/datatable'
 import dtComps from './dtComps'
+import helpers from '@/helpers'
 
 export default {
   components: {
     fileUpload,
     ...dtCommon,
-    ...dtComps
+    ...dtComps,
+    helpers
   },
   data () {
     return {
@@ -74,6 +77,18 @@ export default {
       type: String,
       default: ''
     },
+  },
+  computed: {
+    authHeaders () {
+      const vm = this
+      return {
+        Authorization: 'bearer ' + vm.$store.getters.accessToken
+      }
+    },
+    postAction () {
+      const vm = this
+      return vm.$store.getters.apiUrl + '/agent_codes/upload'
+    }
   },
   watch: {
     codeInfos: function (newValue) {
@@ -265,23 +280,7 @@ export default {
         this.edit = false
       }
       if (newFile && newFile.success) {
-        // console.log('inputFile :: newfile.success')
-        // console.log('inputFile :: newFile.response: ', newFile.response)
-
-        const fields = newFile.response.result.fields
-        const values = newFile.response.result.data
-
-        // vm.saveTemp(id => {
-        //   vm.record.id = id
-        // })
-        vm.$emit('onCommand', {
-          command: 'setCodeFields',
-          value: fields
-        })
-        vm.$emit('onCommand', {
-          command: 'setCodeData',
-          value: values
-        })
+        vm.onUploaded(newFile.response.result)
         // vm.setColumns(fields);
         // vm.data = vm.getCodeData(values)
         // vm.total = vm.data.length
@@ -290,6 +289,33 @@ export default {
       }
     },
 
+    onUploaded (result) {
+      // result = {
+      //    fields: [
+      //      {title: 'PCC', type: 'string'},
+      //      {title: 'PCC', type: 'string'},
+      //      {title: 'PCC', type: 'string'},
+      //      {title: 'PCC', type: 'string'}
+      //    ],
+      //    values: [ ... ]
+      // }
+      //
+      console.log('onUploaded :: result: ', result)
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'setCodeFields',
+        value: result.fields
+      })
+      vm.$emit('onCommand', {
+        command: 'setCodeDataRows',
+        value: result.data
+      })
+
+      vm.$emit('onCommand', {
+        command: 'setQrCodeComposition',
+        data: '{' + helpers.str2token('code_', result.fields[0].title) + '}'
+      })
+    },
     onSuccess () {
       // alert('success')
     },

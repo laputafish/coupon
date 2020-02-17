@@ -1,5 +1,5 @@
 <template>
-<div class="card mt-5">
+<div class="card">
   <div class="card-header">{{ $t(titleTag) }}</div>
   <div class="card-body">
     <div v-if="messageTag" class="text-center alert alert-danger">
@@ -62,7 +62,37 @@
         }
       }
     },
+    mounted () {
+      const vm = this
+      if (vm.$route.name === 'Logout') {
+        vm.logout()
+      }
+    },
     methods: {
+      logout () {
+        const vm = this
+        const postData = {
+          urlCommand: '/auth/logout',
+          data: vm.credentials
+        }
+        vm.loading = true
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          response => {
+            vm.loading = false
+            vm.$store.dispatch('SET_TOKEN', '').then(()=> {
+              vm.gotoNextUrl('/')
+            }, () => {})
+          },
+          error => {
+            // vm.loading = false
+            // vm.messageTag = error.messageTag
+            vm.loading = false
+            vm.$store.dispatch('SET_TOKEN', '').then(()=> {
+              vm.gotoNextUrl('/')
+            }, () => {})
+          }
+        )
+      },
       login () {
         const vm = this
         const postData = {

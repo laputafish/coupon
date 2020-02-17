@@ -12,7 +12,7 @@ export default {
   props: ['row', 'value', 'props', 'field'],
   computed: {
     photoUrl () {
-      let vm = this
+      const vm = this
       let result = ''
       if (vm.row.avatar) {
         result = vm.row.avatarUrl
