@@ -38,8 +38,8 @@
                 {{ code ? $t('login.resendVerificationCode') : $t('login.sendVerificationCode')}}
               </button>
               <!--<button type="button" @click.prevent="sendVerificationCode()" class="btn btn-primary">-->
-                <!--<font-awesome-icon v-if="loading" icon="spinner" class="fa-spin"/>-->
-                <!--{{ code ? $t('login.resendVerificationCode') : $t('login.sendVerificationCode')}}-->
+              <!--<font-awesome-icon v-if="loading" icon="spinner" class="fa-spin"/>-->
+              <!--{{ code ? $t('login.resendVerificationCode') : $t('login.sendVerificationCode')}}-->
               <!--</button>-->
             </div>
           </div>
@@ -48,18 +48,51 @@
 
       <!-- success -->
       <template v-if="!verifying && success">
-        <div v-if="hasCode" class="row">
-          <div class="col-12 text-center form-control-plaintext">
-            {{ $t('auth.verificationCompleted') }}
+        <form @submit.prevent="confirmPassword()">
+          <div v-if="hasCode" class="row">
+            <div class="col-12 text-center form-control-plaintext">
+              {{ $t('auth.verificationCompleted') }}
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-12 text-center">
-            <button type="button" @click.prevent="gotoLoginPage()" class="btn btn-primary">
-              {{ $t('login.gotoLoginPage') }}
-            </button>
+          <!-- New password -->
+          <div class="form-group row">
+            <label for="password1" class="col-md-4 col-form-label text-md-right">
+              {{ $t('login.password') }}</label>
+            <div class="col-md-6">
+              <validation-provider v-slot="{errors}" rules="required" vid="p1">
+                <input type="password"
+                       id="password1"
+                       name="password1"
+                       class="form-control"
+                       v-model="password">
+                <span>{{ errors[0] }}</span>
+              </validation-provider>
+            </div>
           </div>
-        </div>
+          <!-- New Password (confirmation) -->
+          <div class="form-group row">
+            <label for="password2" class="col-md-4 col-form-label text-md-right">
+              {{ $t('login.passwordConfirmation') }}</label>
+            <div class="col-md-6">
+              <validation-provider v-slot="{errors}" rules="required|confirmed:p1">
+                <input type="password"
+                       id="password2"
+                       name="password2"
+                       class="form-control"
+                       v-model="passwordConfirmation">
+                <span>{{ errors[0] }}</span>
+              </validation-provider>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 text-center">
+              <button type="submit"  class="min-width-80 btn btn-primary">
+                {{ $t('buttons.ok') }}
+              </button>
+            </div>
+          </div>
+        </form>
       </template>
 
     </div><!-- card body -->
@@ -80,17 +113,20 @@
     data () {
       return {
         loading: false,
-        titleTag: 'login.accountVerification',
+        titleTag: 'auth.resetPassword',
 
         message: '',
         success: true,
 
+        password: '',
+        passwordConfirmation: '',
         messageTag: '',
         verifying: true,
         code: '',
         resendData: {
           email: ''
-        }
+        },
+        userId: 0
       }
     },
     mounted () {
@@ -121,9 +157,9 @@
             vm.success = true
             vm.verifying = false
             vm.message = vm.$t('messages.' + response.messageTag)
-
+            vm.userId = response.userId
             let url = vm.$route.path
-            let newUrl = url.replace( '/' + vm.code, '')
+            let newUrl = url.replace('/' + vm.code, '')
             window.history.replaceState({}, document.title, newUrl)
             vm.hasCode = false
           },
@@ -134,14 +170,34 @@
             vm.message = vm.$t('messages.' + error.messageTag)
 
             let url = vm.$route.path
-            let newUrl = url.replace( '/' + vm.code, '')
+            let newUrl = url.replace('/' + vm.code, '')
             window.history.replaceState({}, document.title, newUrl)
             vm.hasCode = false
           }
         )
       },
-      gotoLoginPage () {
-        this.$router.push({'name': 'Login'})
+      confirmPassword () {
+        const vm = this
+        console.log('confirmPassord')
+        const postData = {
+          urlCommand: '/auth/change_password',
+          data: {
+            password: vm.password,
+            userId: vm.userId
+          }
+        }
+        vm.loading = true
+        vm.$store.dispatch('COMMON_POST', postData).then(
+          response => {
+            vm.loading = false
+            vm.$router.push({'name': 'AuthMessage', params: {messageTag: response.messageTag}})
+          },
+          error => {
+            vm.loading = false
+            console.log('error: ', error)
+            vm.message = vm.$t('messages.' + error.messageTag)
+          }
+        )
       },
       sendVerificationCode () {
         const vm = this

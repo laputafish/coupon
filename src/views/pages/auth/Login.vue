@@ -45,8 +45,10 @@
 <script>
   import authInputRow from './comps/AuthInputRow'
   import authInputRowPassword from './comps/AuthInputRowPassword'
+  import authMixin from '@/mixins/AuthMixin'
 
   export default {
+    mixins: [authMixin],
     components: {
       authInputRow,
       authInputRowPassword
@@ -57,13 +59,17 @@
         titleTag: 'login.login',
         messageTag: '',
         credentials: {
-          email: 'dominic@yoov.com',
-          password: 'yoovyoov'
+          email: '',
+          password: ''
         }
       }
     },
     mounted () {
       const vm = this
+      if (vm.mode === 'development') {
+        vm.credentials.email = 'yoovcoupon@gmail.com'
+        vm.credentials.password = 'yoovYoov'
+      }
       if (vm.$route.name === 'Logout') {
         vm.logout()
       }
@@ -109,6 +115,7 @@
             }, () => {})
           },
           error => {
+            console.log('logoin : error: ', error)
             vm.loading = false
             vm.messageTag = error.messageTag
           }

@@ -1,31 +1,31 @@
 const dialogMixin = {
   methods: {
-    // confirmDelete (callback) {
-    //   const vm = this
-    //   vm.confirm(vm.$t('messages.are_you_sure'), callback)
-    // },
-    // confirm (message, callback, cancelCallback) {
-    //   const vm = this
-    //   if (typeof message === 'function') {
-    //     callback = message
-    //     message = vm.$t('messages.are_you_sure') + '?'
-    //   }
-    //   vm.$dialog.confirm({
-    //     title: vm.$t('general.confirmation'),
-    //     body: message
-    //   }, {
-    //     okText: vm.$t('buttons.ok'),
-    //     cancelText: vm.$t('buttons.cancel')
-    //   }).then(function (dialog) {
-    //     if (typeof callback === 'function') {
-    //       callback()
-    //     }
-    //   }).catch(function () {
-    //     if (typeof cancelCallback === 'function') {
-    //       cancelCallback()
-    //     }
-    //   })
-    // },
+    confirmDelete (callback) {
+      const vm = this
+      vm.confirm(vm.$t('messages.are_you_sure'), callback)
+    },
+    confirm (message, callback, cancelCallback) {
+      const vm = this
+      if (typeof message === 'function') {
+        callback = message
+        message = vm.$t('messages.are_you_sure') + '?'
+      }
+      vm.$dialog.confirm({
+        title: vm.$t('general.confirmation'),
+        body: message
+      }, {
+        okText: vm.$t('buttons.ok'),
+        cancelText: vm.$t('buttons.cancel')
+      }).then(function (dialog) {
+        if (typeof callback === 'function') {
+          callback()
+        }
+      }).catch(function () {
+        if (typeof cancelCallback === 'function') {
+          cancelCallback()
+        }
+      })
+    }
     //
     // showErrors (title, errors, callback) {
     //   const vm = this

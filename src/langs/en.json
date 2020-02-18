@@ -19,7 +19,9 @@
     "contact": "Contact",
     "telNo": "Tel No.",
     "faxNo": "Fax No.",
-    "webUrl": "Web Url"
+    "webUrl": "Web Url",
+    "information": "Information",
+    "confirmation": "Confirmation"
   },
   "status": {
     "pending": "Pending",
@@ -30,20 +32,25 @@
   },
   "buttons": {
     "save": "Save",
+    "save_and_back": "Save & Back",
     "back": "Back",
     "ok": "OK",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "logout": "Logout"
   },
   "message": "hello i18n !!",
   "messages": {
-    "sign_up_success_and_check_email": "Signed up successfully. Please check your email for verification.",
-    "verification_code_is_invalid_or_expired": "Verification Code is Invalid or Expired!",
+    "sign_up_success_and_check_email": "Signed up successfully. Please check your email.",
+    "verification_code_is_invalid_or_expired": "Verification code is invalid or expired!",
     "email_not_registered_yet": "Email was not registered yet!",
     "verification_link_is_sent_please_check_your_email": "Verification link is sent. Please check your email.",
     "verification_successful": "Verification Successfully!",
     "see_all_messages": "See All Messages",
-    "overwrite_existing_content": "Overwrite existing content?"
+    "overwrite_existing_content": "Overwrite existing content?",
+    "unauthorized": "Access Denied!",
+    "please_check_email_to_reset_password": "Please check email to reset your password.",
+    "are_you_sure": "Are you sure?"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -112,11 +119,18 @@
     "password": "Password",
     "passwordConfirmation": "Password (Confirmation)",
     "remember_me": "Remember Me",
-    "forgot_password": "Forgot Password",
     "forgotYourPassword": "Forgot Your Password?",
     "gotoLoginPage": "Goto login page",
     "sendVerificationCode": "Send verification code",
     "resendVerificationCode": "Resend verification code",
-    "accountVerification": "Account Verification"
+    "accountVerification": "Account Verification",
+    "_brandNotes_": "Management of Coupon code and QR Code Generation"
+  },
+  "auth": {
+    "verifying": "Verifying ... ",
+    "forgot_password": "Forgot Password",
+    "verificationCompleted": "Verification Completed!",
+    "resendEmail": "Resend Email",
+    "resetPassword": "Reset Password"
   }
 }

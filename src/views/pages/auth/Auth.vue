@@ -63,4 +63,7 @@ export default {
   left: 0;
   background-color: url('/static/img/wallpapers/w1.jpg') cover;
 }
+.login-form .card {
+  background-color: rgba(255, 255, 255, .5);
+}
 </style>

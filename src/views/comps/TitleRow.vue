@@ -14,7 +14,10 @@
             @click="onCommand(buttonInfo.command)"
             :class="'btn-'+buttonInfo.variant">
             <template v-if="buttonInfo.toggleSpinner">
-              <i v-if="loading" class="fa fa-spinner fa-spin"></i>
+               <font-awesome-icon
+                   v-if="isSpinnerActive(buttonInfo.processingState)"
+                   icon="spinner"
+                   class="fa-spin"/>
               <i v-else :class="buttonInfo.iconClass"></i>
             </template>
             <template v-else>
@@ -61,6 +64,12 @@
       loading: {
         type: Boolean,
         default: false
+      },
+      processingButtons: {
+        type: Array,
+        default () {
+          return []
+        }
       }
     },
     data () {
@@ -73,6 +82,14 @@
       vm.updateButtonInfos()
     },
     methods: {
+      isSpinnerActive (processingState) {
+        const vm = this
+        return vm.loading ||
+          (
+            processingState &&
+            vm.processingButtons.indexOf(processingState)>=0
+          )
+      },
       onCommand (command) {
         const vm = this
         switch(command) {
@@ -105,6 +122,17 @@
                 variant: 'primary',
                 captionTag: 'buttons.save',
                 iconClass: 'fas fa-save',
+                processingState: 'saving',
+                toggleSpinner: true
+              })
+              break
+            case 'save_and_back':
+              vm.buttonInfos.push({
+                command: 'save_and_back',
+                variant: 'primary',
+                captionTag: 'buttons.save_and_back',
+                iconClass: 'fas fa-save',
+                processingState: 'savingAndBack',
                 toggleSpinner: true
               })
               break

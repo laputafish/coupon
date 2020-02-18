@@ -20,6 +20,7 @@ import Register from '@/views/pages/auth/Register.vue'
 import ForgotPassword from '@/views/pages/auth/ForgotPassword.vue'
 import AuthMessage from '@/views/pages/auth/AuthMessage.vue'
 import VerifyEmail from '@/views/pages/auth/VerifyEmail.vue'
+import ResetPassword from '@/views/pages/auth/ResetPassword.vue'
 
 // Layout Options
 import TopNavigation from '@/views/pages/layoutOptions/TopNavigation.vue'
@@ -139,6 +140,12 @@ const allRoutes = [
         name: 'VerifyEmail',
         component: VerifyEmail,
         meta: {auth: true}
+      },
+      {
+        path: '/reset/:code?',
+        name: 'ResetPassword',
+        component: ResetPassword,
+        meta: {auth: true}
       }
     ]
   },
@@ -156,14 +163,14 @@ const allRoutes = [
       {
         path: '/agents/:id?',
         name: 'agents',
-	      beforeEnter: ifAuthenticated,
-	      component: Agent
+        beforeEnter: ifAuthenticated,
+        component: Agent
       },
       {
         path: '/dashboard',
         name: 'dashboard',
-	      beforeEnter: ifAuthenticated,
-	      component: Dashboard
+        beforeEnter: ifAuthenticated,
+        component: Dashboard
       },
       {
         path: '/widgets',

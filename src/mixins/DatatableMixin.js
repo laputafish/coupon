@@ -16,7 +16,7 @@ const mixin = {
               <div class="col-12">
                 <div class="btn-toolbar mb-1 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
                   <button type="button"
-                          @click="Record()"
+                          @click="newRecord()"
                           class="btn btn-primary">
                     <i class="fas fa-plus"></i>
                   </button>
@@ -131,7 +131,7 @@ const mixin = {
       let data = {
         urlCommand: vm.apiPath + '/' + row.id
       }
-      vm.$store.dispatch('COMMON_DELETE', data).then(function (response) {
+      vm.$store.dispatch('AUTH_DELETE', data).then(function (response) {
         vm.selectedId = 0
         vm.onQueryChangedHandler()
       })

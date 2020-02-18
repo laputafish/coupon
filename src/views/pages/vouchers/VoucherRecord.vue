@@ -3,7 +3,8 @@
     <title-row :record="record"
                :titleField="titleField"
                :loading="loading"
-               :buttons="['back','save']"
+               :processingButtons="processingButtons"
+               :buttons="['back','save_and_back', 'save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
       <!-- Row #0 -->
@@ -120,7 +121,7 @@
     </div>
     <div v-else class="text-center">
       <h4 class="text-center">
-        <i claas="fa fa-spinner fa-spin"></i>
+        <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin"/>
       </h4>
     </div>
     <b-modal id="copyTemplateDialog"
@@ -201,7 +202,8 @@
         showCopyTemplateDialog: false,
         allVouchers: [],
         selectedVoucher: null,
-        showCopyTemplateDialog: false
+        showCopyTemplateDialog: false,
+        processingButtons: []
       }
     },
     props: {
@@ -354,7 +356,7 @@
       },
       createTempLeaflet (codeRecord) {
         const vm = this
-        console.log('createTempLeaflet :: codeRecord: ', codeReord)
+        console.log('createTempLeaflet :: codeRecord: ', codeRecord)
         const tempRecord = JSON.parse(JSON.stringify(vm.record))
         delete tempRecord['code_infos']
         const data = {
@@ -383,6 +385,17 @@
         const vm = this
         console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'clear_all_code_info':
+            vm.record.code_infos = []
+            vm.record.code_fields = ''
+
+            if (typeof payload.callback) {
+              payload.callback()
+            }
+            break
+          case 'delete_code_info':
+            vm.record.code_infos.splice(payload.index, 1)
+            break
           case 'view_temp_leaflet':
             if (payload.row.key === '') {
               vm.createTempLeaflet(payload.row)
@@ -392,6 +405,11 @@
             break
           case 'save':
             vm.save()
+            break
+          case 'save_and_back':
+            vm.save(() => {
+              vm.$router.go(-1);
+            })
             break
           // case 'saveTemp':
           //   vm.saveTemp()
@@ -408,14 +426,14 @@
             vm.record.qr_code_composition = payload.data
         }
       },
-      updateCodeInfos (codeDataList) {
+      updateCodeInfos (newCodeDataList) {
         // codeDataList = [
         //    ['value1', 'value2', 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4']
         // ]
-        console.log('updateCodeInfos :: codeDataList: ', codeDataList)
+        console.log('updateCodeInfos :: codeDataList: ', newCodeDataList)
         const vm = this
         let existingCodes = []
         if (vm.record.code_infos) {
@@ -424,20 +442,21 @@
           vm.record.code_infos = []
         }
         console.log('updateCodeInfos :: existingCodes: ', existingCodes)
-        for (let i = 0; i < codeDataList.length; i++) {
+        for (let i = 0; i < newCodeDataList.length; i++) {
+
           const fields = []
-          const code = codeDataList[i][0]
+          const code = newCodeDataList[i][0]
           console.log('updateCodeInfos :: code = ' + code)
-          for (let j = 1; j < codeDataList[i].length; j++) {
-            const value = codeDataList[i][j]
+          for (let j = 1; j < newCodeDataList[i].length; j++) {
+            const value = newCodeDataList[i][j]
             console.log('updateCodeInfos j=' + j + ': value=' + value)
             fields.push(value)
           }
-          const extraFields = fields.join('|')
+
           const index = existingCodes.indexOf(code)
           // if exists
           if (index >= 0) {
-            vm.record.code_infos[index].extra_fields = extraFields
+            vm.record.code_infos[index].extra_fields = fields.join('|')
           } else {
             vm.record.code_infos.push({
               id: 0,
@@ -505,12 +524,8 @@
       //   })
       // },
 
-      save () {
+      save (callback) {
         const vm = this
-        // const agentCodeInfo = vm.$refs.agentCodeTable.getAgentCodeInfo()
-        // const reqData = JSON.parse(JSON.stringify(vm.record))
-        // reqData['fields'] = agentCodeInfo['fields']
-        // reqData['code_details'] = agentCodeInfo['codeDetails']
         const data = {
           urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
           // options: {
@@ -526,7 +541,9 @@
           console.log('save: response: ', response)
           vm.loading = false
           vm.record.id = response.id
-          vm.$router.go(-1);
+          if (typeof callback === 'function') {
+            callback()
+          }
         })
       },
 

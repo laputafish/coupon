@@ -28,6 +28,18 @@
      <datatable v-cloak v-bind="$data"
                 :columns="columns"></datatable>
   </div>
+  <!--<b-modal id="codeInfoDialog"-->
+           <!--v-model="selectedRow"-->
+           <!--:title="$t('general.coupon')+': '+selectedRow.code">-->
+    <!--<div class="container-fluid">-->
+      <!--<div class="row">-->
+        <!--<div class="col-12">-->
+          <!--<div class="form-group">-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</b-modal>-->
 </div>
 </template>
 
@@ -63,7 +75,8 @@ export default {
         actionButtonSize: 'xs'
       },
       HeaderSettings: false,
-      searchInputTimer: 0
+      searchInputTimer: 0,
+      selectedRow: null
     }
   },
   props: {
@@ -133,11 +146,13 @@ export default {
           })
           break
         case 'delete':
-          vm.$dialog().configm(vm.$t('messages.are_you_sure'))
+          vm.$dialog.confirm(vm.$t('messages.are_you_sure'))
             .then(dialog => {
-              vm.record.code_infos.splice(payload.index, 1)
+              vm.$emit('onCommand', {
+                command: 'delete_code_info',
+                index: payload.index
+              })
             })
-          alert('onRowCommandHandler :: delete')
           break
       }
     },
@@ -290,6 +305,7 @@ export default {
     },
 
     onUploaded (result) {
+      const vm = this
       // result = {
       //    fields: [
       //      {title: 'PCC', type: 'string'},
@@ -300,8 +316,41 @@ export default {
       //    values: [ ... ]
       // }
       //
-      console.log('onUploaded :: result: ', result)
+      const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
+      let goAhead = true
+      if (vm.codeFieldsStr !== '') {
+        if (newCodeFieldsStr !== vm.codeFieldsStr) {
+          goAhead = false
+          const options = {
+            okText: vm.$t('buttons.continue'),
+            cancelText: vm.$t('buttons.cancel')
+          }
+          vm.$dialog.confirm(vm.$t('messages.fields_not_matched_please_delete_all_first')).then(
+            dialog => {
+              vm.$emit('onCommand', {
+                command: 'clear_all_code_info',
+                callback: () => {
+                  vm.importCodes(result)
+                }
+              })
+            }
+          )
+        } else {
+          vm.importCodes(result)
+        }
+      } else {
+        vm.importCodes(result)
+      }
+    },
+
+    importCodes (result) {
       const vm = this
+      const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
+
+      console.log('codeFieldsStr: ' + vm.codeFieldsStr)
+      console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
+
+      console.log('equal: ' + (vm.codeFieldsStr === newCodeFieldsStr ? 'yes' : 'no'))
       vm.$emit('onCommand', {
         command: 'setCodeFields',
         value: result.fields
@@ -315,6 +364,14 @@ export default {
         command: 'setQrCodeComposition',
         data: '{' + helpers.str2token('code_', result.fields[0].title) + '}'
       })
+    },
+    getCodeFieldsStrFromArray (fields) {
+      const vm = this
+      const result = []
+      for (let i = 0; i < fields.length; i++) {
+        result.push(fields[i].title + ':' + fields[i].type)
+      }
+      return result.join('|')
     },
     onSuccess () {
       // alert('success')

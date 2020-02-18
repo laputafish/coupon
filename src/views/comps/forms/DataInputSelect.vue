@@ -6,7 +6,7 @@
             :id="id"
             :name="id"
             :value="value"
-            @input="$event=>$emit('input',$event.target.value)">
+            @input="$event=>$emit('input',parseInt($event.target.value))">
       <option v-for="item in options"
               :key="item[optionValueField]"
               :value="item[optionValueField]">{{ item[optionLabelField] }}
@@ -33,7 +33,7 @@
       },
       value: {
         type: Number,
-        default: ''
+        default: 0
       },
       width: {
         type: String,

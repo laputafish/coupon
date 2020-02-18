@@ -16,7 +16,7 @@ const actions = {
     }
     if (!payload.options) {payload.options = {}}
     payload.options.headers = {Authorization: 'bearer ' + token}
-    return dispatch('COMMON_PUT', payload)
+    return dispatch('COMMON_DELETE', payload)
   },
 
   [types.COMMON_DELETE] ({rootGetters}, payload) {
@@ -208,7 +208,7 @@ const actions = {
           resolve(response.data.result)
         } else {
           console.log('response.data.status = false')
-          reject(new Error(response.data.result))
+          reject(response.data.result)
           // if (response.data.result.message) {
           //   reject(response.data.result.message)
           // } else {
@@ -216,7 +216,12 @@ const actions = {
           // }
         }
       }).catch((error) => {
-        reject(error.response)
+        if (error.response.data) {
+          if (error.response.data.result) {
+            reject(error.response.data.result)
+          }
+        }
+        reject(error.response.data)
       })
     })
   },

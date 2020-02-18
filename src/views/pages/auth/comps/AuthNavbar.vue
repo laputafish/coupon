@@ -1,7 +1,12 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark navbar-laravel">
+  <nav class="auth-navbar navbar navbar-expand-lg navbar-dark navbar-laravel">
     <div class="container">
-        <a class="navbar-brand" href="#">{{ $t('login.digital_coupon') }}</a>
+        <a class="navbar-brand p-0" href="#">
+          {{ $t('login.digital_coupon') }}<br/>
+          <span class="brand-notes">
+            {{ $t('login._brandNotes_') }}
+          </span>
+        </a>
         <button class="navbar-toggler" type="button"
                 data-toggle="collapse"
                 data-target="#navbarSupportedContent"
@@ -29,3 +34,14 @@
     </div>
 </nav>
 </template>
+
+<style>
+  .auth-navbar .navbar-brand .brand-notes {
+    font-size: 12px;
+  }
+
+  .auth-navbar .navbar-brand {
+    line-height: 1;
+    padding: 0;
+  }
+</style>

@@ -63,26 +63,33 @@
 <script>
   import authInputRow from './comps/AuthInputRow'
   import authInputRowPassword from './comps/AuthInputRowPassword'
+  import authMixin from '@/mixins/AuthMixin'
 
   export default {
+    mixins: [authMixin],
     components: {
       authInputRow,
       authInputRowPassword
     },
     data () {
       return {
-        password1: 'aaa',
-        password2: 'aaa',
         loading: false,
         message: '',
         titleTag: 'login.register',
         registerData: {
-          name: 'Dominic Lee',
-          email: 'dominic@yoov.com',
-          password: 'yoovyoov',
-          passwordConfirmation: 'yoovyoov'
+          name: '',
+          email: '',
+          password: '',
+          passwordConfirmation: ''
         }
       }
+    },
+    mounted () {
+      const vm = this
+      vm.registerData.name = 'Yoov Coupon'
+      vm.registerData.email = 'yoovcoupon@gmail.com'
+      vm.registerData.password = 'yoovYoov'
+      vm.registerData.passwordConfirmation = 'yoovYoov'
     },
     methods: {
       onSubmitRegistration () {

@@ -29,9 +29,9 @@
 
     <!-- Logout -->
     <ul class="navbar-nav">
-      <i class="nav-item">
-        <router-link to="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i></router-link>
-      </i>
+      <li class="nav-item">
+        <router-link to="/logout" class="nav-link"><i class="fas fa-sign-out-alt mr-1"></i>{{ $t('buttons.logout') }}</router-link>
+      </li>
     </ul>
   </nav>
 

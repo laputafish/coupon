@@ -37,7 +37,8 @@ export default {
   },
   methods: {
     onMounting () {
-      this.xprops.buttons = ['edit', 'print', 'download', 'delete']
+      this.xprops.buttons = ['edit', 'delete']
+      // this.xprops.buttons = ['edit', 'print', 'download', 'delete']
     }
   }
 }
