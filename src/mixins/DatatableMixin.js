@@ -14,7 +14,23 @@ const mixin = {
           <div v-if="mode==='list'" class="container-fluid">
             <div class="row">
               <div class="col-12">
-                <div class="btn-toolbar mb-1 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
+                <div class="btn-toolbar mb-1 justify-content-between align-items-center"
+                 role="toolbar" 
+                 aria-label="Toolbar with buttons">
+                  <form @submit.prevent="search()">
+                    <div class="form-group m-0 d-inline-block" style="max-width:300px;">
+                      <div class="input-group">
+                        <input class="form-control" v-model="searchValue">
+                        <div class="input-group-append">
+                          <button type="button" @click="setSearchValue('')"><i class="fas fa-fw fa-times"></i></button>
+                        </div>
+                      </div>                                      
+                    </div>
+                  </form>
+                  <h3 v-if="loading" class="d-inline-block ml-3 my-0 mr-auto">
+                  
+                     <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin" />
+                  </h3>
                   <button type="button"
                           @click="newRecord()"
                           class="btn btn-primary">
@@ -223,9 +239,18 @@ const mixin = {
     onQueryChangedHandler (query) {
       this.refreshData(query)
     },
-    setSearchValue () {
+    setSearchValue (search) {
       const vm = this
-      vm.query.filter = vm.filterFields + ':' + vm.searchValue
+      if (typeof search === 'undefined') {
+        search = vm.searchValue
+      } else {
+        vm.searchValue = search
+      }
+      if (search) {
+        vm.query.filter = vm.filterFields + ':' + search
+      } else {
+        vm.query.filter = ''
+      }
       vm.searchInputTimer = 0
     },
     clearSearch () {
