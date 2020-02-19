@@ -5,7 +5,7 @@
     <div v-if="message" class="text-center alert alert-danger">
       {{ message }}
     </div>
-    <form action="" method="">
+    <form @submit.prevent="onSubmitRegistration()" action="" method="">
       <!-- Name -->
       <auth-input-row id="name"
                       labelTag="general.name"
@@ -50,7 +50,7 @@
 
       <!-- Submit button -->
       <div class="col-md-6 offset-md-4">
-        <button type="button" @click.prevent="onSubmitRegistration()" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary">
           <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin" />
           {{ $t(titleTag) }}
         </button>

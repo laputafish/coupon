@@ -90,11 +90,11 @@
                     ref="yoovEditor"
                     class="flex-grow-1 bg-muted"
                     @editorInit="onEditorInit()"
+                    @onFullscreenStateChanged="onFullscreenStateChanged"
                     style="min-height:480px;"
                     id="yoovEditor"
-                    :options="{twoWay:true}"
+                    :options="tinymceOptions"
                     v-model="record.template"></tinymce>
-
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
                   <b-button @click="showCopyTemplateDialog=true"
                           class="btn btn-primary mb-3 w-100">
@@ -111,6 +111,27 @@
                              class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
                       </li>
                     </ul>
+                  </div>
+                </div>
+                <div class="fullscreen-token-list-panel d-flex flex-column"
+                  v-if="tinyMCEInFullScreen">
+                  <div class="flex-grow-1">
+                    <b-button @click="showCopyTemplateDialog=true"
+                              class="btn btn-primary mb-3 w-100">
+                      {{ $t('vouchers.copy_template_from') }}
+                    </b-button>
+                    <h6>Token List</h6>
+                    <div v-for="keyGroup in templateKeyGroups"
+                         :key="keyGroup['name']">
+                      {{ $t('vouchers.' + keyGroup['name']) }}
+                      <ul class="token-list list-unstyled px-2 mb-1">
+                        <li v-for="templateKey in keyGroup.keys"
+                            :key="templateKey">
+                          <div @click="insertKey(templateKey)"
+                               class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -135,7 +156,7 @@
           {{ voucher.description }}
         </b-list-group-item>
       </b-list-group>
-         <template v-slot:modal-footer>
+      <template v-slot:modal-footer>
         <div class="w-100 text-right">
           <div class="btn-toolbar justify-content-end">
               <b-button
@@ -203,7 +224,11 @@
         allVouchers: [],
         selectedVoucher: null,
         showCopyTemplateDialog: false,
-        processingButtons: []
+        processingButtons: [],
+        tinymceOptions: {
+          twoWay:true
+        },
+        tinyMCEInFullScreen: false
       }
     },
     props: {
@@ -269,6 +294,9 @@
       vm.refresh(vm.recordId)
     },
     methods: {
+      onFullscreenStateChanged (full) {
+        alert('onFull')
+      },
       copyTemplate () {
         const vm = this
         vm.showCopyTemplateDialog = false
@@ -286,7 +314,10 @@
       onEditorInit () {
         const vm = this
         console.log('onEditorInit :: tinyMCE: ', tinyMCE)
-        tinyMCE.get('yoovEditor').setContent(vm.record.template)
+        tinyMCE.get('yoovEditor').setContent(vm.record.template ? vm.record.template : '')
+        tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function(e) {
+          vm.tinyMCEInFullScreen = e.state
+        })
         // tinymce.get('yoovEditor').setContent('<p>hello world</p>')
         // console.log('tinymce: ', tinymce)
         // vm.$refs.yoovEditor.setContent('<p>hello world</p>')
@@ -294,40 +325,64 @@
       },
       fetchAgents () {
         const vm = this
-        vm.$store.dispatch('AUTH_GET', '/agents').then(response => {
-          vm.agents = response.data
-        })
+        vm.$store.dispatch('AUTH_GET', '/agents').then(
+          response => {
+            vm.agents = response.data
+          },
+          error => {
+            vm.$dialog.alert('Agents: ' + vm.$t('messages.error_during_loading'))
+          }
+        )
       },
       fetchVouchers () {
         const vm = this
-        vm.$store.dispatch('AUTH_GET', '/vouchers').then(response => {
-          vm.allVouchers = response.data
-        })
+        let data = {
+          urlCommand: '/vouchers',
+          options: {
+            params: {
+              select: 'description,id,agent.name,agent_id,template'
+            }
+          }
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(
+          response => {
+            console.log('fetchVouchers :: response: ', response)
+            vm.allVouchers = response
+          },
+          error => {
+            vm.$dialog.alert('Voucher Selection: ' + vm.$t('messages.error_during_loading'))
+          }
+        )
       },
 
       fetchDefaultTemplateKeys () {
         const vm = this
         vm.defaultTemplateKeyGroups = []
-        vm.$store.dispatch('AUTH_GET', '/template_keys').then(response => {
-          for (let i = 0; i < response.length; i++) {
-            const responseItem = response[i]
-            const category = responseItem.category
-            const key = responseItem.key
-            const keyGroup = vm.defaultTemplateKeyGroups.find(group => {
-              return group.name === category
-            })
-            if (keyGroup) {
-              console.log('keyGroup is true: ', keyGroup)
-              keyGroup.keys.push(key)
-            } else {
-              console.log('keyGroup is false: ', keyGroup)
-              vm.defaultTemplateKeyGroups.push({
-                name: category,
-                keys: [key]
+        vm.$store.dispatch('AUTH_GET', '/template_keys').then(
+          response => {
+            for (let i = 0; i < response.length; i++) {
+              const responseItem = response[i]
+              const category = responseItem.category
+              const key = responseItem.key
+              const keyGroup = vm.defaultTemplateKeyGroups.find(group => {
+                return group.name === category
               })
+              if (keyGroup) {
+                console.log('keyGroup is true: ', keyGroup)
+                keyGroup.keys.push(key)
+              } else {
+                console.log('keyGroup is false: ', keyGroup)
+                vm.defaultTemplateKeyGroups.push({
+                  name: category,
+                  keys: [key]
+                })
+              }
             }
+          },
+          error => {
+            vm.$dialog.alert('Template Keys: ' + vm.$t('messages.error_during_loading'))
           }
-        })
+        )
       },
       getCodeInfoFromRow (row) {
         // id: 0
@@ -385,6 +440,12 @@
         const vm = this
         console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'update_code_info_field':
+            console.log('update_code_info_field :: payload: ', payload)
+            vm.setCodeFieldValue( payload.row, payload.fieldName, payload.fieldValue)
+            // let codeInfo = vm.getCodeInfo(payload.row)
+            // codeInfo[payload.fieldName] = payload.fieldValue
+            break
           case 'clear_all_code_info':
             vm.record.code_infos = []
             vm.record.code_fields = ''
@@ -426,6 +487,43 @@
             vm.record.qr_code_composition = payload.data
         }
       },
+      setCodeFieldValue (row, fieldName, fieldValue) {
+        const vm = this
+        let result = null
+        for (let i = 0; i < vm.record.code_infos.length; i++) {
+          const codeInfo = vm.record.code_infos[i]
+          console.log('record.codeInfo[code] = ' + codeInfo['code'])
+          console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
+
+          console.log('row.codeInfo[code] = ' + row['code'])
+          console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
+
+          if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
+            console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
+            vm.record.code_infos[i][fieldName] = fieldValue
+            // result = codeInfo
+            break
+          }
+        }
+      },
+      getCodeInfo (row) {
+        const vm = this
+        let result = null
+        for (let i = 0; i < vm.record.code_infos.length; i++) {
+          const codeInfo = vm.record.code_infos[i]
+          console.log('record.codeInfo[code] = ' + codeInfo['code'])
+          console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
+
+          console.log('row.codeInfo[code] = ' + row['code'])
+          console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
+
+          if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
+            result = codeInfo
+            break
+          }
+        }
+        return result
+      },
       updateCodeInfos (newCodeDataList) {
         // codeDataList = [
         //    ['value1', 'value2', 'value3', 'value4'],
@@ -463,6 +561,7 @@
               code: code,
               extra_fields: fields.join('|'),
               sent_on: '',
+              remark: '',
               order: 0,
               key: '',
               status: 'pending'
@@ -491,6 +590,7 @@
             id: 0,
             code_details: fields.join('|'),
             sent_on: '',
+            remark: '',
             status: 'pending'
           })
         }
@@ -545,7 +645,7 @@
             callback()
           }
         })
-      },
+      }
 
 
       // inputFile(newFile, oldFile, prevent) {
@@ -581,6 +681,11 @@
   #code-table div[name=Datatable] table tbody tr td {
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
+  }
+
+  #code-table div[name=Datatable] table tbody tr td .input-group .form-control {
+    padding: 0.1rem 0.3rem;
+    height: calc(2rem + 2px);
   }
 
   .nav-tabs .nav-item a.nav-link {
@@ -619,5 +724,36 @@
 
   .token-list li > div.badge {
     cursor: pointer;
+  }
+
+  .mce-fullscreen .mce-resizehandle {
+    display: block;
+  }
+
+  .mce-fullscreen .mce-edit-area.mce-container {
+    padding-right: 240px;
+  }
+  .mce-fullscreen .mce-edit-area.mce-container {
+    height: 100%;
+  }
+
+  .mce-fullscreen .mce-container-body.mce-stack-layout {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fullscreen-token-list-panel {
+    z-index: 2000;
+    position: fixed;
+    top: 80px;
+    right: 10px;
+    width: 220px;
+    height: 100%;
+    padding-bottom: 120px;
+  }
+
+  .fullscreen-token-list-panel > div {
+    background-color: lightgray;
   }
 </style>

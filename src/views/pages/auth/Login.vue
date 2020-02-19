@@ -6,7 +6,7 @@
       {{ $t('messages.' + messageTag) }}
     </div>
 
-    <form action="" method="">
+    <form @submit.prevent="login()" action="" method="">
       <!-- Email -->
       <auth-input-row id="email_address"
                       labelTag="login.email_address"
@@ -29,7 +29,7 @@
       <!--</div>-->
       <!-- Submit button -->
       <div class="col-md-6 offset-md-4">
-        <button type="button" @click="login()" class="btn btn-primary min-width-80">
+        <button type="submit" class="btn btn-primary min-width-80">
           <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin" />
           {{ $t(titleTag) }}
         </button>

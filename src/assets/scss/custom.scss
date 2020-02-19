@@ -73,3 +73,9 @@ div[name=Datatable] div.row:last-child {
 #auth div.card {
   margin-top: -20% !important;
 }
+
+/* DataTable */
+div[name=Datatable] .-page-size-select {
+  display: inline-block;
+  width: 80px;
+}

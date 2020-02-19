@@ -62,6 +62,7 @@ export default {
       files: [],
       edit: false,
       columns: [],
+      allData: [],
       data: [],
       total: 0,
       query: {
@@ -70,13 +71,21 @@ export default {
         order: ''
       },
       xprops: {
-        buttons: ['edit','view','delete'],
+        buttons: ['view','delete'],
+        // buttons: ['edit','view','delete'],
         eventbus: new Vue(),
         actionButtonSize: 'xs'
       },
       HeaderSettings: false,
       searchInputTimer: 0,
-      selectedRow: null
+      selectedRow: null,
+      defaultColumns: [
+        {title: 'general.key', thComp: 'ThCommonHeader', tdComp: 'TdKey', field: 'key', sortable: true},
+        {title: 'general.remark', thComp: 'ThCommonHeader', tdComp: 'TdCommonInput', field: 'remark'},
+        {title: 'vouchers.sent_on', thComp: 'ThCommonHeader', tdComp: 'TdCommonInputDate',field: 'sent_on', sortable: true},
+        {title: 'general.status', thComp: 'ThCommonHeader', tdComp: 'TdCommonStatus',field: 'status', sortable: true},
+        {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt',field: 'id', sortable: true}
+      ]
     }
   },
   props: {
@@ -104,9 +113,14 @@ export default {
     }
   },
   watch: {
-    codeInfos: function (newValue) {
-      const vm = this
-      vm.setTableData(newValue)
+    codeInfos: {
+      handler: function (newValue) {
+        console.log('AgentCodeTable :: watch(codeInfos) :: newValue: ', newValue)
+        const vm = this
+        vm.setTableData(newValue)
+        vm.refreshList()
+      },
+      deep: true
     },
     codeFieldsStr: function (newValue) {
       // codeFields is string in format:
@@ -116,6 +130,13 @@ export default {
       const vm = this
       console.log('watch(codeFieldsStr) :: newValue: ', newValue)
       vm.setColumns(newValue)
+    },
+    query: {
+      handler: function (newValue) {
+        const vm = this
+        vm.refreshList()
+      },
+      deep: true
     }
   },
   mounted () {
@@ -132,6 +153,45 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    refreshList () {
+      const vm = this
+      console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
+      let end = vm.query.offset + vm.query.limit
+      if (end > vm.total) {
+        end = vm.total
+      }
+      console.log('AgentCodeTable :: refreshList :: allDAta.length = ' + vm.allData.length)
+      console.log('AgentCodeTable :: refreshList :: offset = ' + vm.query.offset)
+      console.log('AgentCodeTable :: refreshList :: vm.total = ' + vm.total)
+      console.log('AgentCodeTable :: refreshList :: vm.query.limit = ' + vm.query.limit)
+      console.log('AgentCodeTable :: refreshList :: end = ' + end)
+
+      vm.data = vm.allData.slice(vm.query.offset, end)
+      console.log('AgentCodeTable :: watch(query)')
+    },
+    row2CodeInfo (row) {
+      const vm = this
+      const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
+      const codeFieldCount = codeFields.length
+
+      const code = row['field0']
+      const extraFieldsArray = []
+      for (let i = 1; i < codeFieldCount; i++) {
+        const fieldName = 'field' + i
+        extraFieldsArray.push(row[fieldName])
+      }
+
+      return {
+        id: row.id,
+        order: row.order,
+        code: code,
+        "extra_fields": extraFieldsArray.join('|'),
+        key: row.key,
+        remark: row.remark,
+        "sent_on": row.sent_on,
+        status: row.status
+      }
+    },
     onRowCommandHandler (payload) {
       const vm = this
       console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
@@ -153,6 +213,14 @@ export default {
                 index: payload.index
               })
             })
+          break
+        case 'updateField':
+          vm.$emit('onCommand', {
+            command: 'update_code_info_field',
+            row: vm.row2CodeInfo(payload.row),
+            fieldName: payload.fieldName,
+            fieldValue: payload.fieldValue
+          })
           break
       }
     },
@@ -217,31 +285,14 @@ export default {
           field: 'field' + i
         })
       }
-      vm.columns.push({
-        title: vm.$t('general.key'),
-        tdComp: 'TdKey',
-        field: 'key'
-      })
-      vm.columns.push({
-        title: vm.$t('vouchers.sent_on'),
-        tdComp: 'TdCommon',
-        field: 'sent_on'
-      })
-      vm.columns.push({
-        title: vm.$t('general.status'),
-        tdComp: 'TdCommonStatus',
-        field: 'status'
-      })
-      vm.columns.push({
-        title: vm.$t('general.action'),
-        tdComp: 'TdCommonOpt',
-        field: 'id'
-
-      })
+      for (let j = 0; j < vm.defaultColumns.length; j++) {
+        vm.columns.push(vm.defaultColumns[j])
+      }
     },
 
     setTableData (codeInfos) {
       const vm = this
+      console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
       const result = []
       if (vm.columns)
       for (let i = 0; i < codeInfos.length; i++) {
@@ -257,10 +308,12 @@ export default {
         }
         obj['status'] = codeRecord['status']
         obj['key'] = codeRecord['key']
+        obj['remark'] = codeRecord['remark']
         obj['sent_on'] = codeRecord['sent_on']
         result.push(obj)
       }
-      vm.data = result
+      vm.allData = result
+      vm.total = result.length
     },
 
     // getCodeData (values) {
@@ -318,7 +371,9 @@ export default {
       //
       const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
       let goAhead = true
-      if (vm.codeFieldsStr !== '') {
+      console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
+      console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
+      if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
         if (newCodeFieldsStr !== vm.codeFieldsStr) {
           goAhead = false
           const options = {
@@ -357,12 +412,12 @@ export default {
       })
       vm.$emit('onCommand', {
         command: 'setCodeDataRows',
-        value: result.data
+        value: result.allData
       })
 
       vm.$emit('onCommand', {
         command: 'setQrCodeComposition',
-        data: '{' + helpers.str2token('code_', result.fields[0].title) + '}'
+        data: helpers.str2token('code_', result.fields[0].title)
       })
     },
     getCodeFieldsStrFromArray (fields) {
@@ -418,3 +473,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.agent-code-table #code-table .mx-input[name=date] {
+  width: 120px;
+}
+</style>

@@ -8,19 +8,21 @@
           :message="message"></auth-result-message>
       <!-- Verifying -->
       <template v-if="verifying">
-        <div class="row">
-          <div class="col-sm-12 text-center">
-            <div class="d-inline mr-3">{{ $t('auth.verifying') }}</div>
-            <font-awesome-icon v-if="verifying" icon="spinner" class="fa-spin"/>
+        <form @submit.prevent="gotoLoginPage()">
+          <div class="row">
+            <div class="col-sm-12 text-center">
+              <div class="d-inline mr-3">{{ $t('auth.verifying') }}</div>
+              <font-awesome-icon v-if="verifying" icon="spinner" class="fa-spin"/>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-12 text-center">
-            <button type="button" @click.prevent="gotoLoginPage()" class="btn btn-primary">
-              {{ $t('login.gotoLoginPage') }}
-            </button>
+          <div class="row">
+            <div class="col-12 text-center">
+              <button type="submit" class="btn btn-primary">
+                {{ $t('login.gotoLoginPage') }}
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
       </template>
 
       <!-- Fails -->
@@ -54,11 +56,13 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-12 text-center">
-            <button type="button" @click.prevent="gotoLoginPage()" class="btn btn-primary">
-              {{ $t('login.gotoLoginPage') }}
-            </button>
-          </div>
+          <form @submit.prevent="gotoLoginPage()">
+            <div class="col-12 text-center">
+              <button type="submit" class="btn btn-primary">
+                {{ $t('login.gotoLoginPage') }}
+              </button>
+            </div>
+          </form>
         </div>
       </template>
 
@@ -122,8 +126,8 @@
             vm.verifying = false
             vm.message = vm.$t('messages.' + response.messageTag)
 
-            let url = vm.$route.path
-            let newUrl = url.replace( '/' + vm.code, '')
+            const url = vm.$route.path
+            const newUrl = url.replace( '/' + vm.code, '')
             window.history.replaceState({}, document.title, newUrl)
             vm.hasCode = false
           },
@@ -133,8 +137,8 @@
             vm.verifying = false
             vm.message = vm.$t('messages.' + error.messageTag)
 
-            let url = vm.$route.path
-            let newUrl = url.replace( '/' + vm.code, '')
+            const url = vm.$route.path
+            const newUrl = url.replace( '/' + vm.code, '')
             window.history.replaceState({}, document.title, newUrl)
             vm.hasCode = false
           }

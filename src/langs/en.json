@@ -21,7 +21,9 @@
     "faxNo": "Fax No.",
     "webUrl": "Web Url",
     "information": "Information",
-    "confirmation": "Confirmation"
+    "confirmation": "Confirmation",
+    "unspecified": "Unspecified",
+    "remark": "Remark"
   },
   "status": {
     "pending": "Pending",
@@ -50,7 +52,8 @@
     "overwrite_existing_content": "Overwrite existing content?",
     "unauthorized": "Access Denied!",
     "please_check_email_to_reset_password": "Please check email to reset your password.",
-    "are_you_sure": "Are you sure?"
+    "are_you_sure": "Are you sure?",
+    "error_during_loading": "Error occurred during data loading!"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -107,7 +110,8 @@
     "qr_code_composition": "QR Code Composition",
     "qr_code_size": "QR Code Size",
     "available_after_saving": "Available after Saving",
-    "copy_template_from": "Copy Template From ..."
+    "copy_template_from": "Copy Template From ...",
+    "no_of_codes": "No. of Codes"
   },
   "login": {
     "digital_coupon": "Digital Coupon",

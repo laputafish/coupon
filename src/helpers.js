@@ -12,7 +12,7 @@ const getToday = () => {
 }
 
 const str2token = (prefix, str) => {
-  return prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9_]/gi,'')
+  return '{' + prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9_]/gi,'') + '}'
 }
 
 const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
@@ -70,7 +70,7 @@ const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
 
 const addPagination = (query, config) => {
   if (query) {
-    const page = Math.floor(query.offset / query.limit)
+    const page = Math.floor(query.offset / query.limit) + 1
     if (typeof config === 'undefined') {
       config = {}
     }

@@ -1,0 +1,8 @@
+  @import '/css/adminlte.css';
+  /*@import 'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css';*/
+  /*@import '/static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css';*/
+  /*@import '/static//plugins/icheck-bootstrap/icheck-bootstrap.min.css';*/
+  /*@import '/static/plugins/jqvmap/jqvmap.min.css';*/
+  /*@import '/static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css';*/
+  /*@import '/static/plugins/daterangepicker/daterangepicker.css';*/
+  /*@import '/static/plugins/summernote/summernote-bs4.css';*/

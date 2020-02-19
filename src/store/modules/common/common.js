@@ -157,7 +157,8 @@ const actions = {
         if (response.data.status) {
           resolve(response.data.result)
         } else {
-          reject(new Error('Get Record Fails! (url=' + url + ')'))
+          reject(response.data.result)
+          // Error('Get Record Fails! (url=' + url + ')'))
         }
       }).catch((error) => {
         reject(error.response)
@@ -228,7 +229,7 @@ const actions = {
 
   [types.AUTH_PUT] ({rootGetters, dispatch}, payload) {
     const token = rootGetters.accessToken
-    console.log('AUTH_GET :: payload: ', payload)
+    console.log('AUTH_PUT :: payload: ', payload)
     if (typeof payload !== 'object') {
       payload = {
         urlCommand: payload

@@ -22,7 +22,7 @@ const mixin = {
                   </button>
                 </div>
               </div>
-              <div class="col-12">
+              <div :id="tableId" class="col-12">
                 <datatable v-cloak v-bind="$data"></datatable>
               </div>
               <!-- /.col -->
@@ -49,6 +49,7 @@ const mixin = {
       total: 0,
       query: {
         filter: '',
+        offset: 0,
         sort: '',
         order: ''
       },
@@ -95,6 +96,9 @@ const mixin = {
       if (!handled) {
         let row = payload.row
         switch (command) {
+          case 'onClick':
+            vm.editRow(row)
+            break
           case 'edit':
             vm.editRow(row)
             break
@@ -181,10 +185,13 @@ const mixin = {
       }
 
       vm.loading = true
+      console.log('refreshDataList query: ', query)
       vm.$store.dispatch('AUTH_GET', data).then(function (response) {
         console.log('refreshDataList :: response: ', response)
         vm.data = response.data
-        vm.total = response.total
+        if (response.current_page) {
+          vm.total = response.total
+        }
         vm.loading = false
       })
     },
