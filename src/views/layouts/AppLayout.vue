@@ -27,4 +27,6 @@ export default {
 </script>
 
 <style>
+  @import '/css/adminlte.css';
+  
 </style>

@@ -13,13 +13,14 @@
     },
     data () {
       return {
+        tableId: 'agent-table',
         moduleNameTag: 'menu.agents',
         apiPath: '/agents',
         routeName: 'agents',
         columns: (() => {
           const cols = [
             {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
-            {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'name'},
+            {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommonClick', field: 'name'},
             {title: 'general.alias', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'alias'},
             {title: 'general.tel_no', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'tel_no'},
             {title: 'general.fax_no', thComp: 'ThCommonHeader',  tdComp: 'TdCommon', field: 'fax_no'},
@@ -38,8 +39,15 @@
     },
     methods: {
       onMounting () {
-        this.xprops.buttons = ['edit', 'print', 'download', 'delete']
+        this.xprops.buttons = ['edit', 'delete']
       }
     }
   }
 </script>
+
+<style>
+  #agent-table div[name=Datatable] table tbody tr td {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+  }
+</style>

@@ -79,6 +79,17 @@ const mixin = {
     this.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    onProcessingRowCommand (payload) {
+      const vm = this
+      let result = false
+      switch (payload.command) {
+        case 'onClick':
+          vm.editRow(payload.row)
+          result = true
+          break
+      }
+      return result
+    },
     newRecord () {
       const vm = this
       vm.$router.push({name: vm.routeName, params: {id: 0}})

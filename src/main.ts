@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // $ = require('jquery')
 // window.$ = window.jQuery = require('jquery')
 
-import 'admin-lte/dist/css/adminlte.css'
+// import 'admin-lte/dist/css/adminlte.css'
 
 dom.watch()
 library.add(fas)

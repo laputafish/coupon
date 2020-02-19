@@ -167,7 +167,7 @@
           error => {
             vm.loading = false
             vm.success = false
-            vm.message = vm.$t('messages.' + response.messageTag)
+            vm.message = vm.$t('messages.' + error.messageTag)
           }
         )
       }
