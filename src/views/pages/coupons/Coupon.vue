@@ -1,8 +1,14 @@
 <template>
-  <div v-if="message" class="d-flex justify-content-center align-items-center" style="position:fixed;left:0;top:0;width:100%;height:100%;">
-    <h2 class="m-0 p-0 d-inline-block">{{ message }}</h2>
+  <div class="coupon">
+    <div v-if="message" class="info-message d-flex justify-content-center align-items-center" style="position:fixed;left:0;top:0;width:100%;height:100%;">
+      <div class="card">
+        <div class="card-body bg-danger card-shadow">
+          <h3 class="m-0 p-0 d-inline-block">{{ message }}</h3>
+        </div>
+      </div>
+    </div>
+    <div v-else v-html="html"></div>
   </div>
-  <div v-else v-html="html"></div>
 </template>
 
 <script>
@@ -41,3 +47,14 @@
     }
   }
 </script>
+
+<style>
+  .coupon .info-message {
+    font-family: cursive;
+  }
+  .card-shadow {
+    -webkit-box-shadow: 10px 10px 9px -2px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 10px 10px 9px -2px rgba(0, 0, 0, 0.75);
+    box-shadow: 10px 10px 9px -2px rgba(0, 0, 0, 0.75);
+  }
+</style>

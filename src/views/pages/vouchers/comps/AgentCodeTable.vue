@@ -1,24 +1,25 @@
 <template>
 <div style="background-color:#e5f8ff" class="py-2 px-3 agent-code-table">
   <div class="toolbar d-flex justify-content-between mb-1">
-    <div class="d-flex flex-row justify-content-end py-1 align-items-center">
-      <div class="mr-2">
-        <form>
-          <div class="form-group m-0 d-inline-block" style="">
-            <div class="input-group">
-              <input class="form-control">
-              <div class="input-group-append">
-                <button type="button">
-                  <svg class="svg-inline--fa fa-times fa-w-11 fa-fw" aria-hidden="true" focusable="false"
-                       data-prefix="fas" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg"
-                       viewBox="0 0 352 512" data-fa-i2svg="">
-                    <path fill="currentColor"
-                          d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z">
-                    </path>
-                  </svg>
-                  <!-- <i class="fas fa-fw fa-times"></i> --></button></div></div></div></form>
-        <!--{{ $t('vouchers.code_list') }}-->
-      </div>
+    <div class="d-flex flex-row justify-content-end align-items-center">
+      <h4 class="d-inline-block mr-2 my-0">
+         <font-awesome-icon icon="search" />
+      </h4>
+      <form @submit.prevent="search()">
+        <div class="form-group m-0 d-inline-block" style="">
+          <div class="input-group">
+            <input class="form-control" v-model="searchValue">
+            <div class="input-group-append">
+              <button type="button" @click="setSearchValue('')">
+                <i class="fas fa-fw fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <h3 v-if="loading" class="d-inline-block ml-3 my-0 mr-auto">
+         <font-awesome-icon icon="spinner" class="fa-spin"/>
+      </h3>
       <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
     </div>
     <file-upload
@@ -73,6 +74,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       files: [],
       edit: false,
       columns: [],
@@ -139,7 +141,7 @@ export default {
   watch: {
     codeInfos: {
       handler: function (newValue) {
-        console.log('AgentCodeTable :: watch(codeInfos) :: newValue: ', newValue)
+        // console.log('AgentCodeTable :: watch(codeInfos) :: newValue: ', newValue)
         const vm = this
         vm.setTableData(newValue)
         vm.refreshList()
@@ -152,23 +154,26 @@ export default {
       // Code:string|Serial No:string|activate_date:date
       //
       const vm = this
-      console.log('watch(codeFieldsStr) :: newValue: ', newValue)
+      // console.log('watch(codeFieldsStr) :: newValue: ', newValue)
       vm.setColumns(newValue)
     },
     query: {
       handler: function (newValue) {
         const vm = this
+        // console.log('AGentCodeTable :: watch(query): ', newValue)
         vm.refreshList()
       },
       deep: true
     },
-    searchValue: function () {
+    searchValue: function (newValue) {
       const vm = this
+      // console.log('AgentCodeTable :: searchValue = ' + newValue)
       if (vm.filterFields && vm.filterFields !== null) {
         if (vm.searchInputTimer !== 0) {
           clearTimeout(vm.searchInputTimer)
         }
         vm.searchInputTimer = setTimeout(vm.setSearchValue, 2000)
+        // console.log('AgentCodeTable :: searchInputTimer: ', vm.searchInputTimer)
       } else {
         vm.alert('No filter fields defined!')
       }
@@ -190,6 +195,8 @@ export default {
   methods: {
     setSearchValue (search) {
       const vm = this
+
+      // console.log('setSearchValue : search: ', search)
       if (typeof search === 'undefined') {
         search = vm.searchValue
       } else {
@@ -208,21 +215,64 @@ export default {
       vm.onQueryChangedHandler(vm.query)
     },
 
+    getFilterValue (filter) {
+      const vm = this
+      const filterItems = filter.split(';')
+      let result = ''
+      for (let i = 0; i < filterItems.length; i++) {
+        const keyValue = filterItems[i].split(':')
+        if (keyValue[0] === '*') {
+          result = keyValue[1]
+          break
+        }
+      }
+      return result
+    },
+
+    getFilteredData (filterValue) {
+      const vm = this
+      const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
+      const filtered = vm.allData.filter(item => {
+        let valid = false
+        for (let i = 0; i < codeFields.length; i++) {
+          const fieldName = 'field' + i
+          if (item[fieldName].indexOf(filterValue) >= 0) {
+            valid = true
+            break
+          }
+        }
+        return valid
+      })
+      return filtered
+    },
+
     refreshList () {
       const vm = this
       console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
+      const filterValue = vm.getFilterValue(vm.query.filter)
+      let filtered = []
+
+      vm.loading = true
+
+      if (filterValue === '') {
+        filtered = vm.allData
+      } else {
+        filtered = vm.getFilteredData(filterValue)
+      }
+      vm.total = filtered.length
       let end = vm.query.offset + vm.query.limit
       if (end > vm.total) {
         end = vm.total
       }
-      console.log('AgentCodeTable :: refreshList :: allDAta.length = ' + vm.allData.length)
-      console.log('AgentCodeTable :: refreshList :: offset = ' + vm.query.offset)
-      console.log('AgentCodeTable :: refreshList :: vm.total = ' + vm.total)
-      console.log('AgentCodeTable :: refreshList :: vm.query.limit = ' + vm.query.limit)
-      console.log('AgentCodeTable :: refreshList :: end = ' + end)
+      // console.log('AgentCodeTable :: refreshList :: allDAta.length = ' + vm.allData.length)
+      // console.log('AgentCodeTable :: refreshList :: offset = ' + vm.query.offset)
+      // console.log('AgentCodeTable :: refreshList :: vm.total = ' + vm.total)
+      // console.log('AgentCodeTable :: refreshList :: vm.query.limit = ' + vm.query.limit)
+      // console.log('AgentCodeTable :: refreshList :: end = ' + end)
 
-      vm.data = vm.allData.slice(vm.query.offset, end)
-      console.log('AgentCodeTable :: watch(query)')
+      vm.data = filtered.slice(vm.query.offset, end)
+      vm.loading = false
+      // console.log('AgentCodeTable :: watch(query)')
     },
     row2CodeInfo (row) {
       const vm = this
@@ -249,14 +299,14 @@ export default {
     },
     onRowCommandHandler (payload) {
       const vm = this
-      console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+      // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
         case 'edit':
           alert('onRowCommandHandler :; edit')
           break
         case 'view':
           vm.$emit('onCommand', {
-            command: 'view_temp_leaflet',
+            command: 'view_leaflet',
             row: payload.row
           })
           break
@@ -347,7 +397,7 @@ export default {
 
     setTableData (codeInfos) {
       const vm = this
-      console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
+      // console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
       const result = []
       if (vm.columns)
         for (let i = 0; i < codeInfos.length; i++) {
@@ -426,8 +476,8 @@ export default {
       //
       const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
       let goAhead = true
-      console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
-      console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
+      // console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
+      // console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
       if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
         if (newCodeFieldsStr !== vm.codeFieldsStr) {
           goAhead = false
@@ -457,10 +507,10 @@ export default {
       const vm = this
       const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
 
-      console.log('codeFieldsStr: ' + vm.codeFieldsStr)
-      console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
+      // console.log('codeFieldsStr: ' + vm.codeFieldsStr)
+      // console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
 
-      console.log('equal: ' + (vm.codeFieldsStr === newCodeFieldsStr ? 'yes' : 'no'))
+      // console.log('equal: ' + (vm.codeFieldsStr === newCodeFieldsStr ? 'yes' : 'no'))
       vm.$emit('onCommand', {
         command: 'setCodeFields',
         value: result.fields
@@ -505,6 +555,9 @@ export default {
       //     newFile.blob = URL.createObjectURL(newFile.file)
       //   }
       // }
+    },
+
+    search () {
     }
 
     // editSave() {

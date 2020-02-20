@@ -106,7 +106,7 @@ const actions = {
 
   [types.AUTH_GET] ({rootGetters, dispatch}, payload) {
     const token = rootGetters.accessToken
-    console.log('AUTH_GET :: payload: ', payload)
+    // console.log('AUTH_GET :: payload: ', payload)
     if (typeof payload !== 'object') {
       payload = {
         urlCommand: payload
@@ -119,7 +119,7 @@ const actions = {
 
   [types.COMMON_GET] ({rootGetters}, payload) {
     return new Promise((resolve, reject) => {
-      console.log('COMMON_GET :: payload: ', payload)
+      // console.log('COMMON_GET :: payload: ', payload)
       let urlCommand
       // payload = {
       //    urlCommand: '....',
@@ -151,8 +151,8 @@ const actions = {
         urlCommand = payload
       }
       const url = rootGetters.apiUrl + urlCommand
-      console.log('COMMON_GET url=' + url)
-      console.log('COMMON_GET config: ', getPayload)
+      // console.log('COMMON_GET url=' + url)
+      // console.log('COMMON_GET config: ', getPayload)
       Vue.axios.get(url, getPayload).then(function (response) {
         if (response.data.status) {
           resolve(response.data.result)
@@ -169,7 +169,7 @@ const actions = {
 
   [types.AUTH_POST] ({rootGetters, dispatch}, payload) {
     const token = rootGetters.accessToken
-    console.log('AUTH_GET :: payload: ', payload)
+    // console.log('AUTH_GET :: payload: ', payload)
     if (typeof payload !== 'object') {
       payload = {
         urlCommand: payload
@@ -208,7 +208,7 @@ const actions = {
         if (response.data.status) {
           resolve(response.data.result)
         } else {
-          console.log('response.data.status = false')
+          // console.log('response.data.status = false')
           reject(response.data.result)
           // if (response.data.result.message) {
           //   reject(response.data.result.message)
@@ -229,7 +229,7 @@ const actions = {
 
   [types.AUTH_PUT] ({rootGetters, dispatch}, payload) {
     const token = rootGetters.accessToken
-    console.log('AUTH_PUT :: payload: ', payload)
+    // console.log('AUTH_PUT :: payload: ', payload)
     if (typeof payload !== 'object') {
       payload = {
         urlCommand: payload

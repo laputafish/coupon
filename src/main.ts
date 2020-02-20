@@ -25,14 +25,16 @@ import Datatable from 'vue2-datatable-component'
 import VuejsDialog from 'vuejs-dialog'
 import VModal from 'vue-js-modal'
 import Toaster from 'v-toaster'
+import VueClipboard from 'vue-clipboard2'
 
 // include the default style
-import 'vuejs-dialog/dist/vuejs-dialog.min.css';
+import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import 'v-toaster/dist/v-toaster.css'
 
 import { ValidationProvider, extend } from 'vee-validate'
-import { required, email, confirmed } from 'vee-validate/dist/rules';
-import { localize } from 'vee-validate';
+import { required, email, confirmed } from 'vee-validate/dist/rules'
+import { localize } from 'vee-validate'
+
 
 // import VuejsDialogMixin from 'vuejs-dialog/dist/vuejs-dialog-mixin.min.js'
 
@@ -44,6 +46,7 @@ Vue.use(Datatable)
 Vue.use(VuejsDialog)
 Vue.use(VModal, 'dialog')
 Vue.use(Toaster, {timeout: 3000})
+Vue.use(VueClipboard)
 
 localize({
   en: {
@@ -66,10 +69,7 @@ Vue.component('validationProvider', ValidationProvider)
 Vue.config.productionTip = false
 
 store.dispatch('FETCH_CONSTANTS')
-console.log('main.ts :: FETCH_CONSTANTS')
-
 store.dispatch('FETCH_TOKEN')
-console.log('main.ts :: FETCH_TOKEN')
 
 new Vue({
   router,

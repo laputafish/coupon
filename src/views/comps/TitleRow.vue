@@ -9,13 +9,13 @@
         <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
           <button v-for="buttonInfo in buttonInfos"
                   :key="buttonInfo.command"
-                  class="btn min-width-80"
+                  class="btn min-width-100"
             type="button"
             @click="onCommand(buttonInfo.command)"
             :class="'btn-'+buttonInfo.variant">
             <template v-if="buttonInfo.toggleSpinner">
               <font-awesome-icon
-                   v-if="isSpinnerActive(buttonInfo.processingState)"
+                   v-if="loading"
                    icon="spinner"
                    class="fa-spin"/>
               <i v-else :class="buttonInfo.iconClass"></i>

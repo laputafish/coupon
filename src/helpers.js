@@ -22,23 +22,23 @@ const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
   if (typeof keyValueSeparator === 'undefined') {
     keyValueSeparator = ':'
   }
-  console.log('getKeyPairArray :: str = ' + str)
-  console.log('getKeyPairArray :: pairSeparator = ' + pairSeparator)
-  console.log('getKeyPairArray :: keyValueSeparator = ' + keyValueSeparator)
+  // console.log('getKeyPairArray :: str = ' + str)
+  // console.log('getKeyPairArray :: pairSeparator = ' + pairSeparator)
+  // console.log('getKeyPairArray :: keyValueSeparator = ' + keyValueSeparator)
 
   const pairs = str.split(pairSeparator)
-  console.log('getKeyPairArray :: pairs: ', pairs)
+  // console.log('getKeyPairArray :: pairs: ', pairs)
 
   let result = []
   for (let i = 0; i < pairs.length; i++) {
     const keyValue = pairs[i].split(keyValueSeparator)
-    console.log('i=' + i + ': pairs[i]: ', pairs[i])
-    console.log('i=' + i + ': keyValue: ', keyValue)
+    // console.log('i=' + i + ': pairs[i]: ', pairs[i])
+    // console.log('i=' + i + ': keyValue: ', keyValue)
 
     result.push(keyValue)
-    console.log('getKeyPairArray :: result: ', result)
+    // console.log('getKeyPairArray :: result: ', result)
   }
-  console.log('getKeyPairArray :: result: ', result)
+  // console.log('getKeyPairArray :: result: ', result)
   return result
 }
 

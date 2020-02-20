@@ -13,7 +13,7 @@ export default {
   computed: {
     token () {
       const vm = this
-      console.log('helpers::ThBadgeHeader :: title: ', vm.title)
+      // console.log('helpers::ThBadgeHeader :: title: ', vm.title)
       return helpers.str2token('code_', vm.title)
     }
   },

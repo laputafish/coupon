@@ -68,17 +68,15 @@ Vue.use(VueRouter)
 const ifAuthenticated = (to, from, next) => {
   const token = store.getters.accessToken;
 
-  console.log('ifAuthenticated: token = ' + token)
   if (token === '' || token === null) {
     next('/login')
   }
 
-  store.dispatch('REFRESH_TOKEN').then(accessToken => {
-    console.log('router/index.ts :: REFRESH_TOKEN = ' + accessToken)
+  // store.dispatch('REFRESH_TOKEN').then(accessToken => {
+  store.dispatch('REFRESH_TOKEN').then(() => {
     next()
-  }, error => {
-    console.log('router/index.ts :: REFRESH_TOKEN (goto login) :: error: ', (typeof error))
-    console.log('router/index.ts :: REFRESH_TOKEN (goto login) :: error: ', error)
+  // }, error => {
+  }, () => {
     next('/login')
   })
 }

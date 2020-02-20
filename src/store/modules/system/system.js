@@ -26,7 +26,7 @@ const actions = {
     /*const promise = */
     // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
-      console.log('localStorage(accessToken) = ' + accessToken)
+      // console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
     //   resolve(accessToken)
     // })
@@ -53,18 +53,18 @@ const actions = {
             'Accept': 'application/json'
           }
         }
-        console.log('REFRESH_TOKEN :: auth: ', auth)
+        // console.log('REFRESH_TOKEN :: auth: ', auth)
         Vue.axios.post(url, {}, auth).then(response => {
-          console.log('REFRESH_TOKEN => response: ', response)
+          // console.log('REFRESH_TOKEN => response: ', response)
           const result = response.data.result
-          console.log('REFRESH_TOKEN => result: ', result)
+          // console.log('REFRESH_TOKEN => result: ', result)
           const accessToken = result.access_token
 
           localStorage.setItem('accessToken', accessToken)
           commit('setAccessToken', accessToken)
           resolve(accessToken)
         }).catch(error => {
-          console.log('REFRESH_TOKEN :: error: ', error)
+          // console.log('REFRESH_TOKEN :: error: ', error)
           commit('setAccessToken', '')
           reject(error.response)
         })

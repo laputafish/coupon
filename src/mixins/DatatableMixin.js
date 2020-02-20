@@ -17,6 +17,9 @@ const mixin = {
                 <div class="btn-toolbar mb-1 justify-content-between align-items-center"
                  role="toolbar" 
                  aria-label="Toolbar with buttons">
+                  <h4 class="d-inline-block mr-2 my-0">                
+                     <font-awesome-icon icon="search" />
+                  </h4>
                   <form @submit.prevent="search()">
                     <div class="form-group m-0 d-inline-block" style="max-width:300px;">
                       <div class="input-group">
@@ -27,13 +30,12 @@ const mixin = {
                       </div>                                      
                     </div>
                   </form>
-                  <h3 v-if="loading" class="d-inline-block ml-3 my-0 mr-auto">
-                  
-                     <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin" />
+                  <h3 v-if="loading" class="d-inline-block ml-3 my-0 mr-auto">                
+                     <font-awesome-icon icon="spinner" class="fa-spin" />
                   </h3>
                   <button type="button"
                           @click="newRecord()"
-                          class="btn btn-primary">
+                          class="btn btn-primary ml-auto">
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
@@ -81,7 +83,7 @@ const mixin = {
   },
   mounted () {
     const vm = this
-    console.log('DatatableMixin :: mounted')
+    // console.log('DatatableMixin :: mounted')
     if (typeof vm.onMounting === 'function') {
       vm.onMounting()
     }
@@ -112,7 +114,7 @@ const mixin = {
     },
     onRowCommandHandler (payload) {
       const vm = this
-      console.log('onRowCommandHandler :: payload: ', payload)
+      // console.log('onRowCommandHandler :: payload: ', payload)
       let command = payload.command
       let handled = false
 
@@ -171,15 +173,15 @@ const mixin = {
     updateMode () {
       const vm = this
 
-      console.log('DatatableMixin :: updateMode  route.params.id = [' + vm.$route.params.id + ']')
-      console.log('typeof vm.$route.params.id = ' + (typeof vm.$route.params.id))
-      console.log('vm.route.params.id: ' + (vm.$route.params.id ? 'yes' : 'no'))
-      console.log('vm.route.params.id === 0: ' + (vm.$route.params.id === '0' ? 'yes' : 'no'))
+      // console.log('DatatableMixin :: updateMode  route.params.id = [' + vm.$route.params.id + ']')
+      // console.log('typeof vm.$route.params.id = ' + (typeof vm.$route.params.id))
+      // console.log('vm.route.params.id: ' + (vm.$route.params.id ? 'yes' : 'no'))
+      // console.log('vm.route.params.id === 0: ' + (vm.$route.params.id === '0' ? 'yes' : 'no'))
 
       if (vm.$route.params.id || vm.$route.params.id === 0) {
-        console.log('vm.route.params.id existes')
+        // console.log('vm.route.params.id existes')
         if (vm.$route.params.id !== '') {
-          console.log('vm.route.params.id not empty')
+          // console.log('vm.route.params.id not empty')
           vm.mode = 'record'
           vm.selectedId = parseInt(vm.$route.params.id)
         } else {
@@ -187,7 +189,7 @@ const mixin = {
         }
       } else {
         vm.mode = 'list'
-        console.log('vm.route.params.id not exists. id = ' + vm.$route.params.id)
+        // console.log('vm.route.params.id not exists. id = ' + vm.$route.params.id)
       }
       // alert('vm.mode = ' + vm.mode)
     },
@@ -213,12 +215,14 @@ const mixin = {
       }
 
       vm.loading = true
-      console.log('refreshDataList query: ', query)
+      // console.log('refreshDataList query: ', query)
       vm.$store.dispatch('AUTH_GET', data).then(function (response) {
-        console.log('refreshDataList :: response: ', response)
+        // console.log('refreshDataList :: response: ', response)
         vm.data = response.data
         if (response.current_page) {
           vm.total = response.total
+          vm.query.page = response.current_page
+          vm.query.offset = (vm.query.page - 1) * vm.query.limit
         }
         vm.loading = false
       })
@@ -258,6 +262,9 @@ const mixin = {
       const vm = this
       vm.query.filter = vm.filterFields + ':'
       vm.onQueryChangedHandler(vm.query)
+    },
+    search () {
+
     }
   },
   watch: {

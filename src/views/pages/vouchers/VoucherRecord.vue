@@ -4,7 +4,7 @@
                :titleField="titleField"
                :loading="loading"
                :processingButtons="processingButtons"
-               :buttons="['back','save_and_back', 'save']"
+               :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
       <!-- Row #0 -->
@@ -56,7 +56,7 @@
         <b-tab class="bg-white py-2">
           <template v-slot:title>
             Agent Codes
-            <div v-if="record.code_infos.length>0"
+            <div v-if="record && record.code_infos && record.code_infos.length>0"
               class="badge badge-warning">
               {{ record.code_infos.length }}
             </div>
@@ -100,6 +100,7 @@
                     @onFullscreenStateChanged="onFullscreenStateChanged"
                     style="min-height:480px;"
                     id="yoovEditor"
+                    :toolbar1="tinymceToolbar1"
                     :options="tinymceOptions"
                     v-model="record.template"></tinymce>
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
@@ -122,7 +123,7 @@
                 </div>
                 <div class="fullscreen-token-list-panel d-flex flex-column"
                   v-if="tinyMCEInFullScreen">
-                  <div class="flex-grow-1">
+                  <div class="flex-grow-1 p-2">
                     <b-button @click="showCopyTemplateDialog=true"
                               class="btn btn-primary mb-3 w-100">
                       {{ $t('vouchers.copy_template_from') }}
@@ -217,6 +218,7 @@
       // yoovEditor
       // ,
       // editor
+
     },
     data () {
       return {
@@ -235,6 +237,7 @@
         tinymceOptions: {
           twoWay:true
         },
+        tinymceToolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat | fullscreen',
         tinyMCEInFullScreen: false
       }
     },
@@ -257,18 +260,17 @@
       },
       templateKeyGroups () {
         const vm = this
-        const result = vm.defaultTemplateKeyGroups
+        const result = JSON.parse(JSON.stringify(vm.defaultTemplateKeyGroups))
         if (vm.codeFields.length > 0) {
-          vm.defaultTemplateKeyGroups.push({
+          result.push({
             name: 'code',
             keys: []
           })
         }
-        const lastIndex = vm.defaultTemplateKeyGroups.length - 1
+        const lastIndex = result.length - 1
         for (let i = 0; i < vm.codeFields.length; i++) {
-          console.log('computed(templateKeyGroups) :: vm.codeFields[i]: ', vm.codeFields[i])
           const key = helpers.str2token('code_', vm.codeFields[i])
-          vm.defaultTemplateKeyGroups[lastIndex]['keys'].push(key)
+          result[lastIndex]['keys'].push(key)
         }
         return result
       },
@@ -276,9 +278,9 @@
         const vm = this
         let result = []
         if (vm.record.code_fields !== null && vm.record.code_fields !== '') {
-          console.log('codeFields :: codeFields = ' + vm.record.code_fields)
+          // console.log('codeFields :: codeFields = ' + vm.record.code_fields)
           const arKeyPairs = helpers.getKeyPairArray(vm.record.code_fields)
-          console.log('codeFields :: arKeyPairs: ', arKeyPairs)
+          // console.log('codeFields :: arKeyPairs: ', arKeyPairs)
           result = arKeyPairs.map(keyPair => keyPair[0])
         }
         return result
@@ -287,7 +289,7 @@
     watch: {
       recordId: function (newValue) {
         const vm = this
-        console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
+        // console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
         vm.refresh(newValue)
       }
     },
@@ -320,7 +322,7 @@
       },
       onEditorInit () {
         const vm = this
-        console.log('onEditorInit :: tinyMCE: ', tinyMCE)
+        // console.log('onEditorInit :: tinyMCE: ', tinyMCE)
         tinyMCE.get('yoovEditor').setContent(vm.record.template ? vm.record.template : '')
         tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function(e) {
           vm.tinyMCEInFullScreen = e.state
@@ -334,7 +336,8 @@
         const vm = this
         vm.$store.dispatch('AUTH_GET', '/agents').then(
           response => {
-            vm.agents = response.data
+            // console.log('fetchAgents: redsponse: ', response)
+            vm.agents = response
           },
           error => {
             vm.$dialog.alert('Agents: ' + vm.$t('messages.error_during_loading'))
@@ -353,7 +356,7 @@
         }
         vm.$store.dispatch('AUTH_GET', data).then(
           response => {
-            console.log('fetchVouchers :: response: ', response)
+            // console.log('fetchVouchers :: response: ', response)
             vm.allVouchers = response
           },
           error => {
@@ -375,10 +378,10 @@
                 return group.name === category
               })
               if (keyGroup) {
-                console.log('keyGroup is true: ', keyGroup)
+                // console.log('keyGroup is true: ', keyGroup)
                 keyGroup.keys.push(key)
               } else {
-                console.log('keyGroup is false: ', keyGroup)
+                // console.log('keyGroup is false: ', keyGroup)
                 vm.defaultTemplateKeyGroups.push({
                   name: category,
                   keys: [key]
@@ -418,7 +421,7 @@
       },
       createTempLeaflet (codeRecord) {
         const vm = this
-        console.log('createTempLeaflet :: codeRecord: ', codeRecord)
+        // console.log('createTempLeaflet :: codeRecord: ', codeRecord)
         const tempRecord = JSON.parse(JSON.stringify(vm.record))
         delete tempRecord['code_infos']
         const data = {
@@ -428,7 +431,7 @@
             codeInfo: vm.getCodeInfoFromRow(codeRecord)
           }
         }
-        console.log('view_temp_leaflet: data: ', data)
+        // console.log('view_temp_leaflet: data: ', data)
         vm.$store.dispatch('AUTH_POST', data).then(response => {
           const key = response
           const url = window.location.origin + '/coupons/temp/' + key
@@ -438,17 +441,17 @@
       },
       showLeaflet (key) {
         const vm = this
-        console.log('showLeaflet ::  key= ' + key)
+        // console.log('showLeaflet ::  key= ' + key)
         const url = window.location.origin + '/coupons/' + key
         // const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
         window.open(url, '_blank');
       },
       onCommandHandler (payload) {
         const vm = this
-        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
+        // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
           case 'update_code_info_field':
-            console.log('update_code_info_field :: payload: ', payload)
+            // console.log('update_code_info_field :: payload: ', payload)
             vm.setCodeFieldValue( payload.row, payload.fieldName, payload.fieldValue)
             // let codeInfo = vm.getCodeInfo(payload.row)
             // codeInfo[payload.fieldName] = payload.fieldValue
@@ -464,7 +467,7 @@
           case 'delete_code_info':
             vm.record.code_infos.splice(payload.index, 1)
             break
-          case 'view_temp_leaflet':
+          case 'view_leaflet':
             if (payload.row.key === '') {
               vm.createTempLeaflet(payload.row)
             } else {
@@ -486,7 +489,7 @@
             vm.record.code_fields = vm.createCodeFieldStr(payload.value)
             break
           case 'setCodeDataRows':
-            console.log('onCommandHandler :: setCodeData :: payload.value: ', payload.value)
+            // console.log('onCommandHandler :: setCodeData :: payload.value: ', payload.value)
             vm.updateCodeInfos(payload.value)
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
@@ -499,14 +502,14 @@
         let result = null
         for (let i = 0; i < vm.record.code_infos.length; i++) {
           const codeInfo = vm.record.code_infos[i]
-          console.log('record.codeInfo[code] = ' + codeInfo['code'])
-          console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
-
-          console.log('row.codeInfo[code] = ' + row['code'])
-          console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
+          // console.log('record.codeInfo[code] = ' + codeInfo['code'])
+          // console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
+          //
+          // console.log('row.codeInfo[code] = ' + row['code'])
+          // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
 
           if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
-            console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
+            // console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
             vm.record.code_infos[i][fieldName] = fieldValue
             // result = codeInfo
             break
@@ -518,11 +521,11 @@
         let result = null
         for (let i = 0; i < vm.record.code_infos.length; i++) {
           const codeInfo = vm.record.code_infos[i]
-          console.log('record.codeInfo[code] = ' + codeInfo['code'])
-          console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
-
-          console.log('row.codeInfo[code] = ' + row['code'])
-          console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
+          // console.log('record.codeInfo[code] = ' + codeInfo['code'])
+          // console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
+          //
+          // console.log('row.codeInfo[code] = ' + row['code'])
+          // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
 
           if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
             result = codeInfo
@@ -538,7 +541,7 @@
         //    ['value1', 'value2', 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4']
         // ]
-        console.log('updateCodeInfos :: codeDataList: ', newCodeDataList)
+        // console.log('updateCodeInfos :: codeDataList: ', newCodeDataList)
         const vm = this
         let existingCodes = []
         if (vm.record.code_infos) {
@@ -546,15 +549,15 @@
         } else {
           vm.record.code_infos = []
         }
-        console.log('updateCodeInfos :: existingCodes: ', existingCodes)
+        // console.log('updateCodeInfos :: existingCodes: ', existingCodes)
         for (let i = 0; i < newCodeDataList.length; i++) {
 
           const fields = []
           const code = newCodeDataList[i][0]
-          console.log('updateCodeInfos :: code = ' + code)
+          // console.log('updateCodeInfos :: code = ' + code)
           for (let j = 1; j < newCodeDataList[i].length; j++) {
             const value = newCodeDataList[i][j]
-            console.log('updateCodeInfos j=' + j + ': value=' + value)
+            // console.log('updateCodeInfos j=' + j + ': value=' + value)
             fields.push(value)
           }
 
@@ -643,15 +646,22 @@
           data: vm.record
         }
         vm.loading = true
+        vm.$forceUpdate()
         const action = vm.record.id === 0 ? 'AUTH_POST' : 'AUTH_PUT'
-        vm.$store.dispatch(action, data).then(response => {
-          console.log('save: response: ', response)
-          vm.loading = false
-          vm.record.id = response.id
-          if (typeof callback === 'function') {
-            callback()
+        vm.$store.dispatch(action, data).then(
+          response => {
+            vm.$toaster.success(vm.$t('messages.saved_successfully'))
+            // console.log('save: response: ', response)
+            vm.loading = false
+            vm.record.id = response.id
+            if (typeof callback === 'function') {
+              callback()
+            }
+          },
+          error => {
+            vm.$toast.danger(vm.$t('messages.' + error.messageTag))
           }
-        })
+        )
       }
 
 
@@ -763,4 +773,58 @@
   .fullscreen-token-list-panel > div {
     background-color: lightgray;
   }
+
+
+  /*.mce-container.mce-panel.mce-floatpanel[role=dialog] {*/
+    /*width: 800px;*/
+    /*height: 80%;*/
+    /*overflow-y: hidden;*/
+    /*max-width: 90%;*/
+  /*}*/
+
+  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
+  /*.mce-container-body {*/
+  /*width: 100% !important;*/
+  /*height: 100% !important;*/
+  /*padding-bottom: 90px;*/
+  /*position: absolute;*/
+  /*}*/
+
+  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
+  /*.mce-reset*/
+  /*.mce-container.mce-foot[role=group] {*/
+    /*width: 100% !important;*/
+  /*}*/
+
+  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
+  /*.mce-reset*/
+  /*.mce-container.mce-foot[role=group] >*/
+  /*.mce-container-body {*/
+    /*width: 100%;*/
+  /*}*/
+
+  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
+  /*.mce-reset*/
+  /*.mce-container.mce-foot*/
+  /*.mce-container-body*/
+  /*.mce-widget.mce-btn {*/
+    /*top: 10px !important;*/
+    /*width: 80px !important;*/
+    /*height: 38px !important;*/
+    /*right: 56px !important;*/
+    /*left: auto !important;*/
+  /*}*/
+
+  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
+  /*.mce-reset*/
+  /*.mce-container.mce-foot*/
+  /*.mce-container-body*/
+  /*.mce-widget.mce-btn*/
+  /*button[role=presentation] {*/
+    /*height: 100%;*/
+    /*width: 100%;*/
+    /*text-align: center;*/
+    /*line-height: 28px;*/
+
+  /*}*/
 </style>
