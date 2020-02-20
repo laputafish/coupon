@@ -106,7 +106,8 @@
           response => {
             vm.loading = false
             vm.record.id = response.id
-            vm.$router.go(-1);
+            vm.$toaster.success(vm.$t('messages.saved_successfully'))
+            // vm.$router.go(-1);
           },
           error => {
             vm.loading = false

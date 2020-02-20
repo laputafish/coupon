@@ -53,7 +53,14 @@
     </div>
     <div v-if="record" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
-        <b-tab title="Agent Codes" class="bg-white py-2">
+        <b-tab class="bg-white py-2">
+          <template v-slot:title>
+            Agent Codes
+            <div v-if="record.code_infos.length>0"
+              class="badge badge-warning">
+              {{ record.code_infos.length }}
+            </div>
+          </template>
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">

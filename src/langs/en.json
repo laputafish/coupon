@@ -53,7 +53,9 @@
     "unauthorized": "Access Denied!",
     "please_check_email_to_reset_password": "Please check email to reset your password.",
     "are_you_sure": "Are you sure?",
-    "error_during_loading": "Error occurred during data loading!"
+    "error_during_loading": "Error occurred during data loading!",
+    "saved_successfully": "Saved Successfully.",
+    "temporary_key_expired": "Tempoarary Key Expired!"
   },
   "menu": {
     "dashboard": "Dashboard",

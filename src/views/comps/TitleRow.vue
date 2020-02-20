@@ -14,7 +14,7 @@
             @click="onCommand(buttonInfo.command)"
             :class="'btn-'+buttonInfo.variant">
             <template v-if="buttonInfo.toggleSpinner">
-               <font-awesome-icon
+              <font-awesome-icon
                    v-if="isSpinnerActive(buttonInfo.processingState)"
                    icon="spinner"
                    class="fa-spin"/>

@@ -3,9 +3,23 @@
   <div class="toolbar d-flex justify-content-between mb-1">
     <div class="d-flex flex-row justify-content-end py-1 align-items-center">
       <div class="mr-2">
-        {{ $t('vouchers.code_list') }}
+        <form>
+          <div class="form-group m-0 d-inline-block" style="">
+            <div class="input-group">
+              <input class="form-control">
+              <div class="input-group-append">
+                <button type="button">
+                  <svg class="svg-inline--fa fa-times fa-w-11 fa-fw" aria-hidden="true" focusable="false"
+                       data-prefix="fas" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg"
+                       viewBox="0 0 352 512" data-fa-i2svg="">
+                    <path fill="currentColor"
+                          d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z">
+                    </path>
+                  </svg>
+                  <!-- <i class="fas fa-fw fa-times"></i> --></button></div></div></div></form>
+        <!--{{ $t('vouchers.code_list') }}-->
       </div>
-      <div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>
+      <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
     </div>
     <file-upload
         extensions="xlsx"
@@ -24,21 +38,21 @@
       Upload File
     </file-upload>
   </div>
-  <div v-if="codeInfos.length>0" id="code-table" >
+  <div v-if="codeInfos.length>0" id="code-table">
      <datatable v-cloak v-bind="$data"
                 :columns="columns"></datatable>
   </div>
   <!--<b-modal id="codeInfoDialog"-->
-           <!--v-model="selectedRow"-->
-           <!--:title="$t('general.coupon')+': '+selectedRow.code">-->
-    <!--<div class="container-fluid">-->
-      <!--<div class="row">-->
-        <!--<div class="col-12">-->
-          <!--<div class="form-group">-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</div>-->
+  <!--v-model="selectedRow"-->
+  <!--:title="$t('general.coupon')+': '+selectedRow.code">-->
+  <!--<div class="container-fluid">-->
+  <!--<div class="row">-->
+  <!--<div class="col-12">-->
+  <!--<div class="form-group">-->
+  <!--</div>-->
+  <!--</div>-->
+  <!--</div>-->
+  <!--</div>-->
   <!--</b-modal>-->
 </div>
 </template>
@@ -71,7 +85,7 @@ export default {
         order: ''
       },
       xprops: {
-        buttons: ['view','delete'],
+        buttons: ['view', 'delete'],
         // buttons: ['edit','view','delete'],
         eventbus: new Vue(),
         actionButtonSize: 'xs'
@@ -82,10 +96,20 @@ export default {
       defaultColumns: [
         {title: 'general.key', thComp: 'ThCommonHeader', tdComp: 'TdKey', field: 'key', sortable: true},
         {title: 'general.remark', thComp: 'ThCommonHeader', tdComp: 'TdCommonInput', field: 'remark'},
-        {title: 'vouchers.sent_on', thComp: 'ThCommonHeader', tdComp: 'TdCommonInputDate',field: 'sent_on', sortable: true},
-        {title: 'general.status', thComp: 'ThCommonHeader', tdComp: 'TdCommonStatus',field: 'status', sortable: true},
-        {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt',field: 'id', sortable: true}
-      ]
+        {
+          title: 'vouchers.sent_on',
+          thComp: 'ThCommonHeader',
+          tdComp: 'TdCommonInputDate',
+          field: 'sent_on',
+          sortable: true
+        },
+        {title: 'general.status', thComp: 'ThCommonHeader', tdComp: 'TdCommonStatus', field: 'status', sortable: true},
+        {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id', sortable: true}
+      ],
+      searchValue: '',
+      searchInputTimer: 3000,
+      filterFields: '*',
+
     }
   },
   props: {
@@ -137,6 +161,17 @@ export default {
         vm.refreshList()
       },
       deep: true
+    },
+    searchValue: function () {
+      const vm = this
+      if (vm.filterFields && vm.filterFields !== null) {
+        if (vm.searchInputTimer !== 0) {
+          clearTimeout(vm.searchInputTimer)
+        }
+        vm.searchInputTimer = setTimeout(vm.setSearchValue, 2000)
+      } else {
+        vm.alert('No filter fields defined!')
+      }
     }
   },
   mounted () {
@@ -153,6 +188,26 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    setSearchValue (search) {
+      const vm = this
+      if (typeof search === 'undefined') {
+        search = vm.searchValue
+      } else {
+        vm.searchValue = search
+      }
+      if (search) {
+        vm.query.filter = vm.filterFields + ':' + search
+      } else {
+        vm.query.filter = ''
+      }
+      vm.searchInputTimer = 0
+    },
+    clearSearch () {
+      const vm = this
+      vm.query.filter = vm.filterFields + ':'
+      vm.onQueryChangedHandler(vm.query)
+    },
+
     refreshList () {
       const vm = this
       console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
@@ -295,23 +350,23 @@ export default {
       console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
       const result = []
       if (vm.columns)
-      for (let i = 0; i < codeInfos.length; i++) {
-        const codeRecord = codeInfos[i]
-        const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
-        const arFieldValues = fieldsStr.split('|')
+        for (let i = 0; i < codeInfos.length; i++) {
+          const codeRecord = codeInfos[i]
+          const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
+          const arFieldValues = fieldsStr.split('|')
 
-        const obj = {
-          id: i
+          const obj = {
+            id: i
+          }
+          for (let j = 0; j < arFieldValues.length; j++) {
+            obj['field' + j] = arFieldValues[j]
+          }
+          obj['status'] = codeRecord['status']
+          obj['key'] = codeRecord['key']
+          obj['remark'] = codeRecord['remark']
+          obj['sent_on'] = codeRecord['sent_on']
+          result.push(obj)
         }
-        for (let j = 0; j < arFieldValues.length; j++) {
-          obj['field'+j] = arFieldValues[j]
-        }
-        obj['status'] = codeRecord['status']
-        obj['key'] = codeRecord['key']
-        obj['remark'] = codeRecord['remark']
-        obj['sent_on'] = codeRecord['sent_on']
-        result.push(obj)
-      }
       vm.allData = result
       vm.total = result.length
     },

@@ -95,23 +95,24 @@ const mixin = {
     this.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
-    onProcessingRowCommand (payload) {
-      const vm = this
-      let result = false
-      switch (payload.command) {
-        case 'onClick':
-          vm.editRow(payload.row)
-          result = true
-          break
-      }
-      return result
-    },
+    // onProcessingRowCommand (payload) {
+    //   const vm = this
+    //   let result = false
+    //   switch (payload.command) {
+    //     case 'onClick':
+    //       vm.editRow(payload.row)
+    //       result = true
+    //       break
+    //   }
+    //   return result
+    // },
     newRecord () {
       const vm = this
       vm.$router.push({name: vm.routeName, params: {id: 0}})
     },
     onRowCommandHandler (payload) {
       const vm = this
+      console.log('onRowCommandHandler :: payload: ', payload)
       let command = payload.command
       let handled = false
 
@@ -272,7 +273,7 @@ const mixin = {
       const vm = this
       if (vm.filterFields && vm.filterFields !== null) {
         if (vm.searchInputTimer !== 0) {
-          clearTimeout(vm.timerVar)
+          clearTimeout(vm.searchInputTimer)
         }
         vm.searchInputTimer = setTimeout(vm.setSearchValue, 2000)
       } else {

@@ -24,9 +24,11 @@ import VueAxios from 'vue-axios'
 import Datatable from 'vue2-datatable-component'
 import VuejsDialog from 'vuejs-dialog'
 import VModal from 'vue-js-modal'
+import Toaster from 'v-toaster'
 
 // include the default style
 import 'vuejs-dialog/dist/vuejs-dialog.min.css';
+import 'v-toaster/dist/v-toaster.css'
 
 import { ValidationProvider, extend } from 'vee-validate'
 import { required, email, confirmed } from 'vee-validate/dist/rules';
@@ -41,6 +43,7 @@ Vue.use(VueAxios, axios)
 Vue.use(Datatable)
 Vue.use(VuejsDialog)
 Vue.use(VModal, 'dialog')
+Vue.use(Toaster, {timeout: 3000})
 
 localize({
   en: {
