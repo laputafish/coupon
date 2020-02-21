@@ -26,7 +26,7 @@ const actions = {
     const env = {
       apiUrl: process.env.VUE_APP_API_URL
     }
-    console.log('FETCH_CONSTANTS :: env: ', env)
+    // console.log('FETCH_CONSTANTS :: env: ', env)
     commit('setConstants', env)
       // resolve(env)
     // })

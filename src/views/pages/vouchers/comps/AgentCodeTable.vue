@@ -22,22 +22,31 @@
       </h3>
       <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
     </div>
-    <file-upload
-        extensions="xlsx"
-        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        name="file"
-        class="btn btn-primary"
-        :post-action="postAction"
-        :drop="!edit"
-        :headers="authHeaders"
-        v-model="files"
-        @success="onSuccess()"
-        @input-filter="inputFilter"
-        @input-file="inputFile"
-        ref="upload">
-      <i class="fa fa-upload"></i>
-      Upload File
-    </file-upload>
+    <div class="">
+    <button type="button"
+            :disabled="allData.length===0"
+            class="btn btn-danger min-width-100 mr-1"
+            @click="deleteAll()">
+      <i class="fas fa-times"></i>
+      <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
+    </button>
+      <file-upload
+          extensions="xlsx"
+          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          name="file"
+          class="btn btn-primary"
+          :post-action="postAction"
+          :drop="!edit"
+          :headers="authHeaders"
+          v-model="files"
+          @success="onSuccess()"
+          @input-filter="inputFilter"
+          @input-file="inputFile"
+          ref="upload">
+        <i class="fa fa-upload"></i>
+        Upload File
+      </file-upload>
+    </div>
   </div>
   <div v-if="codeInfos.length>0" id="code-table">
      <datatable v-cloak v-bind="$data"
@@ -193,6 +202,18 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    deleteAll () {
+      const vm = this
+      vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
+        dialog => {
+          vm.$emit('onCommand', {
+            command: 'clear_all_code_info',
+            callback: () => {
+              vm.$toaster.success('All codes are deleted.')
+            }
+          })
+        })
+    },
     setSearchValue (search) {
       const vm = this
 
@@ -311,7 +332,7 @@ export default {
           })
           break
         case 'delete':
-          vm.$dialog.confirm(vm.$t('messages.are_you_sure'))
+          vm.$dialog.confirm(vm.$t('messages.areYouSure'))
             .then(dialog => {
               vm.$emit('onCommand', {
                 command: 'delete_code_info',
@@ -475,6 +496,7 @@ export default {
       // }
       //
       const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
+      console.log('onUploaded :: newCodeFieldsStr: ', newCodeFieldsStr)
       let goAhead = true
       // console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
       // console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
@@ -504,6 +526,7 @@ export default {
     },
 
     importCodes (result) {
+      console.log('importCodes :: result: ', result)
       const vm = this
       const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
 
@@ -517,7 +540,7 @@ export default {
       })
       vm.$emit('onCommand', {
         command: 'setCodeDataRows',
-        value: result.allData
+        value: result.data
       })
 
       vm.$emit('onCommand', {

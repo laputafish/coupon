@@ -23,11 +23,11 @@
                                  class="nav-link">
                       {{ $t('login.login') }}</router-link>
                 </li>
-                <li class="nav-item">
-                    <router-link :to="{name: 'Register'}"
-                                 class="nav-link">
-                      {{ $t('login.register') }}</router-link>
-                </li>
+                <!--<li class="nav-item">-->
+                    <!--<router-link :to="{name: 'Register'}"-->
+                                 <!--class="nav-link">-->
+                      <!--{{ $t('login.register') }}</router-link>-->
+                <!--</li>-->
             </ul>
 
         </div>

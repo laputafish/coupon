@@ -7,36 +7,40 @@
           <h3 class="d-inline">[{{ record.id===0 ? $t('general.new') : $t('general.edit') }}]</h3>
         </div>
         <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
-          <button v-for="buttonInfo in buttonInfos"
-                  :key="buttonInfo.command"
-                  class="btn min-width-100"
-            type="button"
-            @click="onCommand(buttonInfo.command)"
-            :class="'btn-'+buttonInfo.variant">
-            <template v-if="buttonInfo.toggleSpinner">
-              <font-awesome-icon
-                   v-if="loading"
-                   icon="spinner"
-                   class="fa-spin"/>
-              <i v-else :class="buttonInfo.iconClass"></i>
-            </template>
-            <template v-else>
-              <i :class="buttonInfo.iconClass"></i>
-            </template>
-            {{ $t(buttonInfo.captionTag) }}
-          </button>
+          <title-row-button v-for="buttonInfo in buttonInfos"
+                            :key="buttonInfo.command"
+                            :loading="loading"
+                            :buttonInfo="buttonInfo"
+                            @onCommand="onCommandHandler"></title-row-button>
+          <!--<button v-for="buttonInfo in buttonInfos"-->
+          <!--:key="buttonInfo.command"-->
+          <!--class="btn min-width-100"-->
+          <!--type="button"-->
+          <!--@click="onCommand(buttonInfo.command)"-->
+          <!--:class="'btn-'+buttonInfo.variant">-->
+          <!--<font-awesome-icon-->
+          <!--:icon="currentIcon"-->
+          <!--:class="currentIconClass"></font-awesome-icon>-->
+          <!--&lt;!&ndash;<i v-else :class="buttonInfo.iconClass"></i>&ndash;&gt;-->
+
+          <!--&lt;!&ndash;<font-awesome-icon&ndash;&gt;-->
+          <!--&lt;!&ndash;v-if="loading"&ndash;&gt;-->
+          <!--&lt;!&ndash;icon="spinner"></font-awesome-icon>&ndash;&gt;-->
+          <!--&lt;!&ndash;<i v-else :class="buttonInfo.iconClass"></i>&ndash;&gt;-->
+          <!--{{ $t(buttonInfo.captionTag) }}-->
+          <!--</button>-->
 
           <!--<button type="button"-->
-                  <!--@click="onCommand('back')"-->
-                  <!--class="btn btn-outline-secondary min-width-80">-->
-            <!--<i class="fas fa-reply"></i>&nbsp;{{ $t('buttons.back') }}-->
+          <!--@click="onCommand('back')"-->
+          <!--class="btn btn-outline-secondary min-width-80">-->
+          <!--<i class="fas fa-reply"></i>&nbsp;{{ $t('buttons.back') }}-->
           <!--</button>-->
           <!--<button type="button"-->
-                  <!--@click="save()"-->
-                  <!--class="btn btn-primary min-width-80">-->
-            <!--<i v-if="loading" class="fa fa-spinner fa-spin"></i>-->
-            <!--<i v-else class="fas fa-save"></i>-->
-            <!--{{ $t('buttons.save') }}-->
+          <!--@click="save()"-->
+          <!--class="btn btn-primary min-width-80">-->
+          <!--<i v-if="loading" class="fa fa-spinner fa-spin"></i>-->
+          <!--<i v-else class="fas fa-save"></i>-->
+          <!--{{ $t('buttons.save') }}-->
           <!--</button>-->
         </div>
       </div>
@@ -45,7 +49,12 @@
 </template>
 
 <script>
+  import titleRowButton from './TitleRowButton'
+
   export default {
+    components: {
+      titleRowButton
+    },
     props: {
       record: {
         type: Object,
@@ -72,9 +81,24 @@
         }
       }
     },
+    watch: {
+      loading: function (newValue) {
+        const vm = this
+        console.log('TitleRow :: watch(loading) : ' + newValue)
+        if (newValue) {
+          vm.currentIcon = 'spinner'
+          vm.currentIconClass = 'spin'
+        } else {
+          vm.currentIcon = 'user',
+            vm.currentIconClass = ''
+        }
+      }
+    },
     data () {
       return {
-        buttonInfos: []
+        buttonInfos: [],
+        currentIcon: 'user',
+        currentIconClass: ''
       }
     },
     mounted () {
@@ -87,12 +111,17 @@
         return vm.loading ||
           (
             processingState &&
-            vm.processingButtons.indexOf(processingState)>=0
+            vm.processingButtons.indexOf(processingState) >= 0
           )
       },
-      onCommand (command) {
+      onCommandHandler (payload) {
+        const command = payload.command
+        console.log('TitleRow :; onCommandHandler :; command = ' + command)
         const vm = this
-        switch(command) {
+        switch (command) {
+          case 'save':
+            vm.$emit('onCommand', {command: 'save'})
+            break
           case 'back':
             vm.$router.go(-1)
             break
@@ -105,14 +134,15 @@
       updateButtonInfos () {
         const vm = this
         vm.buttonInfos = []
-        for(let i = 0; i < vm.buttons.length; i++) {
+        for (let i = 0; i < vm.buttons.length; i++) {
           switch (vm.buttons[i]) {
             case 'back':
               vm.buttonInfos.push({
                 command: 'back',
                 variant: 'outline-secondary',
                 captionTag: 'buttons.back',
-                iconClass: 'fas fa-reply',
+                // iconClass: 'fas fa-reply',
+                iconClass: 'reply',
                 toggleSpinner: false
               })
               break
@@ -121,7 +151,8 @@
                 command: 'save',
                 variant: 'primary',
                 captionTag: 'buttons.save',
-                iconClass: 'fas fa-save',
+                // iconClass: 'fas fa-save',
+                iconClass: 'save',
                 processingState: 'saving',
                 toggleSpinner: true
               })
@@ -131,7 +162,8 @@
                 command: 'save_and_back',
                 variant: 'primary',
                 captionTag: 'buttons.save_and_back',
-                iconClass: 'fas fa-save',
+                // iconClass: 'fas fa-save',
+                iconClass: 'save',
                 processingState: 'savingAndBack',
                 toggleSpinner: true
               })

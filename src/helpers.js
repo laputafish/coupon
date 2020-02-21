@@ -12,7 +12,7 @@ const getToday = () => {
 }
 
 const str2token = (prefix, str) => {
-  return '{' + prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9_]/gi,'') + '}'
+  return prefix + str.toLowerCase().replace(' ', '_').replace(/[^a-z0-9_]/gi,'')
 }
 
 const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
@@ -117,7 +117,7 @@ const showWarning = (vm, message, options) => {
 
 const showConfirmDialog = (vm, callback, data, message, options) => {
   if (typeof message === 'undefined') {
-    message = vm.$t('messages.are_you_sure')
+    message = vm.$t('messages.areYouSure')
   }
   if (typeof options === 'undefined') {
     options = {

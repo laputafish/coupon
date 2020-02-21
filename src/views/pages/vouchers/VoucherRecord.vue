@@ -459,6 +459,7 @@
           case 'clear_all_code_info':
             vm.record.code_infos = []
             vm.record.code_fields = ''
+            vm.record.qr_code_composition = ''
 
             if (typeof payload.callback) {
               payload.callback()
@@ -494,7 +495,7 @@
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
           case 'setQrCodeComposition':
-            vm.record.qr_code_composition = payload.data
+            vm.record.qr_code_composition = '{' + payload.data + '}'
         }
       },
       setCodeFieldValue (row, fieldName, fieldValue) {
@@ -541,7 +542,7 @@
         //    ['value1', 'value2', 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4']
         // ]
-        // console.log('updateCodeInfos :: codeDataList: ', newCodeDataList)
+        console.log('updateCodeInfos :: newCodeDataList: ', newCodeDataList)
         const vm = this
         let existingCodes = []
         if (vm.record.code_infos) {
@@ -636,6 +637,7 @@
 
       save (callback) {
         const vm = this
+        console.log('VoucherRecord :; save')
         const data = {
           urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
           // options: {
@@ -653,7 +655,9 @@
             vm.$toaster.success(vm.$t('messages.saved_successfully'))
             // console.log('save: response: ', response)
             vm.loading = false
+            console.log('after save: response: ', response)
             vm.record.id = response.id
+            vm.refresh(vm.record.id)
             if (typeof callback === 'function') {
               callback()
             }

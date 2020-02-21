@@ -2,6 +2,7 @@ const mixin = {
   methods: {
     refresh (id) {
       const vm = this
+      console.log('DataRecordMixin :: refresh')
       const data = {
         urlCommand: vm.apiPath + '/' + id
       }

@@ -17,6 +17,9 @@
         </h4>
         <sidebar-menu v-else :menu="mainMenu"></sidebar-menu>
       </nav>
+      <div class="text-center mt-3">
+        <a :href="sampleUrl" type="button" class="btn btn-danger">Download XLS Samples</a>
+      </div>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
@@ -34,6 +37,12 @@
       return {
         loading: false,
         mainMenu: []
+      }
+    },
+    computed: {
+      sampleUrl () {
+        const vm = this
+        return vm.$store.getters.apiUrl + '/samples/download'
       }
     },
     mounted () {

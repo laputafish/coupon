@@ -39,7 +39,8 @@
     "ok": "OK",
     "cancel": "Cancel",
     "close": "Close",
-    "logout": "Logout"
+    "logout": "Logout",
+    "deleteAll": "Delete All"
   },
   "message": "hello i18n !!",
   "messages": {
@@ -52,10 +53,11 @@
     "overwrite_existing_content": "Overwrite existing content?",
     "unauthorized": "Access Denied!",
     "please_check_email_to_reset_password": "Please check email to reset your password.",
-    "are_you_sure": "Are you sure?",
+    "areYouSure": "Are you sure?",
     "error_during_loading": "Error occurred during data loading!",
     "saved_successfully": "Saved Successfully.",
-    "temporary_key_expired": "Tempoarary Key Expired!"
+    "temporary_key_expired": "Tempoarary Key Expired!",
+    "fields_not_matched_please_delete_all_first": "Fields not matched. All exisiting codes will be removed. Are you sure?"
   },
   "menu": {
     "dashboard": "Dashboard",

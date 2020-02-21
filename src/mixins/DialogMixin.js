@@ -2,13 +2,13 @@ const dialogMixin = {
   methods: {
     confirmDelete (callback) {
       const vm = this
-      vm.confirm(vm.$t('messages.are_you_sure'), callback)
+      vm.confirm(vm.$t('messages.areYouSure'), callback)
     },
     confirm (message, callback, cancelCallback) {
       const vm = this
       if (typeof message === 'function') {
         callback = message
-        message = vm.$t('messages.are_you_sure') + '?'
+        message = vm.$t('messages.areYouSure') + '?'
       }
       vm.$dialog.confirm({
         title: vm.$t('general.confirmation'),

@@ -51,7 +51,8 @@
         topMenu: [],
         // topMenu: [
         //   {labelTag: 'home', link: 'index3.html'},
-        //   {la
+        //   ...
+        // ]
         messageMenu: {
           iconClass: 'far fa-comments', badgeVariant: 'danger', badgeValue: 3, children: [
             {
