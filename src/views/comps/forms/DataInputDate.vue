@@ -1,5 +1,5 @@
 <template>
-<div :class="'col-sm-' + width">
+<div class="data-input-date" :class="'col-sm-' + width">
     <div class="form-group">
       <label :for="id">{{ $t(labelTag) }}</label>
       <date-picker :value="value"
@@ -46,3 +46,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .data-input-date .mx-datepicker {
+    width: 100% !important;
+  }
+</style>

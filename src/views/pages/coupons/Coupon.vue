@@ -49,6 +49,10 @@
 </script>
 
 <style>
+  .coupon p {
+    margin: 16px 0;
+  }
+
   .coupon .info-message {
     font-family: cursive;
   }

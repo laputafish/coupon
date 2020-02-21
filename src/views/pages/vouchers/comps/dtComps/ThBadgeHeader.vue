@@ -2,7 +2,7 @@
   <div class="th-field">
     <div class="text-center">
       {{ title }}<br/>
-      <div class="badge badge-info">{{ token }}</div>
+      <div class="badge badge-info">{{ '{' + token + '}' }}</div>
     </div>
   </div>
 </template>

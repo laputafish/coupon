@@ -7,7 +7,9 @@
                :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="row" v-if="record">
+      <!-- ********* -->
       <!-- Row #0 -->
+      <!-- ********* -->
       <data-input width="6" id="description" labelTag="general.description" v-model="record.description"></data-input>
       <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
                        v-model="record.activation_date"></data-input-date>
@@ -15,11 +17,13 @@
                        v-model="record.expiry_date"></data-input-date>
       <data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"
                            v-model="record.created_at"></data-input-readonly>
-
+      <!-- ********* -->
       <!-- Row #1 -->
-      <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
+      <!-- ********* -->
+      <data-input-select width="3" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
                          :options="agents"
                          optionLabelField="name"></data-input-select>
+
       <data-input width="3"
                   id="qr_code_composition"
                   labelTag="vouchers.qr_code_composition"
@@ -41,7 +45,7 @@
           </div>
         </div>
       </div>
-      <data-input-readonly width="2" id="status" labelTag="general.status" :value="$t('status.'+record.status)"></data-input-readonly>
+      <data-input-readonly width="3" id="status" labelTag="general.status" :value="$t('status.'+record.status)"></data-input-readonly>
       <!--<div class="col-sm-2">-->
         <!--<div class="form-group">-->
           <!--<label for="status">{{ $t('general.status') }}</label>-->
@@ -55,7 +59,7 @@
       <b-tabs content-class="py-0" class="bg-tab">
         <b-tab class="bg-white py-2">
           <template v-slot:title>
-            Agent Codes
+            {{ $t('vouchers.codeTabLabel') }}
             <div v-if="record && record.code_infos && record.code_infos.length>0"
               class="badge badge-warning">
               {{ record.code_infos.length }}
@@ -73,18 +77,18 @@
             </div>
           </div>
         </b-tab>
-        <b-tab title="Emails" class="bg-white py-2">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-12">
-                <email-table
-                    ref="emailTable"
-                    @onCommand="onCommandHandler"
-                    :emails="record.emails"></email-table>
-              </div>
-            </div>
-          </div>
-        </b-tab>
+        <!--<b-tab title="Emails" class="bg-white py-2">-->
+          <!--<div class="container-fluid">-->
+            <!--<div class="row">-->
+              <!--<div class="col-12">-->
+                <!--<email-table-->
+                    <!--ref="emailTable"-->
+                    <!--@onCommand="onCommandHandler"-->
+                    <!--:emails="record.emails"></email-table>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</b-tab>-->
         <b-tab title="Leaflet Template" class="bg-white py-2">
           <div class="container-fluid">
             <div class="row">
@@ -154,21 +158,44 @@
       </h4>
     </div>
     <b-modal id="copyTemplateDialog"
+             size="xl"
              v-model="showCopyTemplateDialog"
+             scrollable
              :title="$t('vouchers.copy_template_from')">
-      <b-list-group>
-        <b-list-group-item v-for="voucher in otherVouchers"
-                           @click="selectedVoucher=voucher"
-                           :class="{'active': selectedVoucher==voucher}"
-            :key="voucher.id">
-          {{ voucher.description }}
-        </b-list-group-item>
-      </b-list-group>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-4">
+            <b-list-group style="line-height:1;">
+              <b-list-group-item v-for="agent in agents"
+                @click="selectedAgent=agent"
+              :class="{'active': selectedAgent===agent}"
+              :key="agent.id">
+                {{ agent.name }}&nbsp;<div class="badge badge-info">{{ agentVouchers.length }}</div>
+              </b-list-group-item>
+            </b-list-group>
+          </div>
+          <div class="col-sm-8">
+            <b-list-group style="line-height:1;">
+              <b-list-group-item v-for="voucher in otherVouchers"
+                                 @click="selectedVoucher=voucher"
+                                 :class="{'active': selectedVoucher==voucher}"
+                                 :key="voucher.id">
+                  {{ voucher.description }}
+                  <div>
+                    <div class="badge badge-primary">
+                      {{ voucher.agent ? voucher.agent.name : $t('messages.not_specified') }}
+                    </div>
+                  </div>
+              </b-list-group-item>
+            </b-list-group>
+          </div>
+        </div>
+      </div>
       <template v-slot:modal-footer>
         <div class="w-100 text-right">
           <div class="btn-toolbar justify-content-end">
               <b-button
-                  :disabled="selectedVoucher===null"
+                  :disabled="selectedVoucher===null || selectedAgent===null"
                 variant="primary"
                 size="sm"
                 class="min-width-80"
@@ -207,7 +234,7 @@
     mixins: [DataRecordMixin],
     components: {
       agentCodeTable,
-      emailTable,
+      // emailTable,
       // datePicker,
       tinymce,
       titleRow,
@@ -231,7 +258,12 @@
         agents: [],
         showCopyTemplateDialog: false,
         allVouchers: [],
+
+        // Template selection
+        selectedAgent: null,
         selectedVoucher: null,
+        agentVouchers: [],
+
         showCopyTemplateDialog: false,
         processingButtons: [],
         tinymceOptions: {
@@ -461,7 +493,7 @@
             vm.record.code_fields = ''
             vm.record.qr_code_composition = ''
 
-            if (typeof payload.callback) {
+            if (typeof payload.callback === 'function') {
               payload.callback()
             }
             break
@@ -472,7 +504,9 @@
             if (payload.row.key === '') {
               vm.createTempLeaflet(payload.row)
             } else {
-              vm.showLeaflet(payload.row.key)
+              vm.save(() => {
+                vm.showLeaflet(payload.row.key)
+              })
             }
             break
           case 'save':
@@ -500,7 +534,7 @@
       },
       setCodeFieldValue (row, fieldName, fieldValue) {
         const vm = this
-        let result = null
+        const result = null
         for (let i = 0; i < vm.record.code_infos.length; i++) {
           const codeInfo = vm.record.code_infos[i]
           // console.log('record.codeInfo[code] = ' + codeInfo['code'])
@@ -735,12 +769,27 @@
   }
 
   #copyTemplateDialog .modal-body {
-    overflow-y: scroll;
-    max-height: 480px;
+    /*overflow-y: scroll;*/
+    /*max-height: 480px;*/
+  }
+
+  #copyTemplateDialog .list-group-item.active:hover {
+    background-color: #0062cc;
+
+  }
+
+  #copyTemplateDialog .list-group-item:hover {
+    background-color: #f8f9fa;
   }
 
   #copyTemplateDialog .list-group-item {
     cursor: pointer;
+    line-height: 1;
+  }
+
+
+  #copyTemplateDialog___BV_modal_outer_ {
+    z-index: 2000 !important;
   }
 
   .token-list li > div.badge {
@@ -777,7 +826,6 @@
   .fullscreen-token-list-panel > div {
     background-color: lightgray;
   }
-
 
   /*.mce-container.mce-panel.mce-floatpanel[role=dialog] {*/
     /*width: 800px;*/

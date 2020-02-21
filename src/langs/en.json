@@ -2,6 +2,7 @@
   "general": {
     "home": "Home",
     "number": "#",
+    "brand_text": "Digital Coupon",
     "description": "Description",
     "expiry_date": "Expiry Date",
     "action" : "Action",
@@ -57,7 +58,9 @@
     "error_during_loading": "Error occurred during data loading!",
     "saved_successfully": "Saved Successfully.",
     "temporary_key_expired": "Tempoarary Key Expired!",
-    "fields_not_matched_please_delete_all_first": "Fields not matched. All exisiting codes will be removed. Are you sure?"
+    "fields_not_matched_please_delete_all_first": "Fields not matched. All exisiting codes will be removed. Are you sure?",
+    "link_copied_to_clipboard": "The link is copied to clipboard.",
+    "not_specified": "Not Specified"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -115,7 +118,8 @@
     "qr_code_size": "QR Code Size",
     "available_after_saving": "Available after Saving",
     "copy_template_from": "Copy Template From ...",
-    "no_of_codes": "No. of Codes"
+    "no_of_codes": "No. of Codes",
+    "codeTabLabel": "Coupon Codes"
   },
   "login": {
     "digital_coupon": "Digital Coupon",

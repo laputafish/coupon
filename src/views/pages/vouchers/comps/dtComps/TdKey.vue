@@ -4,7 +4,8 @@
       {{ $t('vouchers.available_after_saving') }}
     </div>
     <template v-else>
-      <div class="badge badge-primary flex-grow-1 mr-1">
+      <div class="badge badge-primary flex-grow-1 mr-1 key-value"
+        @click="copyLink()">
         {{ value }}
       </div>
       <div class="d-inline-block copy-link"
@@ -22,13 +23,23 @@
       copyLink () {
         const vm = this
         vm.$copyText( window.location.origin + '/coupons/' + vm.value)
+        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
       }
     }
   }
 </script>
 
 <style>
-.copy-link {
+.copy-link,
+.key-value {
   cursor: pointer;
+}
+
+.copy-link {
+  color: darkgray;
+}
+
+.copy-link:hover {
+  color: rgb(10,10,10);
 }
 </style>

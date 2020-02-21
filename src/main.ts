@@ -61,8 +61,11 @@ extend('email', {
   message: 'The email address is not valid.'
 })
 extend('required', { ...required, message: 'This field is required.' })
-extend('confirmed', { ...confirmed, message: 'Password not matched.' }
-)
+extend('confirmed', { ...confirmed, message: 'Password not matched.' })
+extend('nonzero', value => {
+  return value !== 0
+})
+
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('validationProvider', ValidationProvider)
 
