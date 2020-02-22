@@ -1,0 +1,1 @@
+export const FETCH_AGENTS = 'FETCH_AGENTS'

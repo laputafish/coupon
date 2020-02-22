@@ -41,7 +41,8 @@
     "cancel": "Cancel",
     "close": "Close",
     "logout": "Logout",
-    "deleteAll": "Delete All"
+    "deleteAll": "Delete All",
+    "export": "Export"
   },
   "message": "hello i18n !!",
   "messages": {
@@ -60,7 +61,8 @@
     "temporary_key_expired": "Tempoarary Key Expired!",
     "fields_not_matched_please_delete_all_first": "Fields not matched. All exisiting codes will be removed. Are you sure?",
     "link_copied_to_clipboard": "The link is copied to clipboard.",
-    "not_specified": "Not Specified"
+    "not_specified": "Not Specified",
+    "some_errors_occurred_during_export": "Some errors occurred during export!"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -117,7 +119,7 @@
     "qr_code_composition": "QR Code Composition",
     "qr_code_size": "QR Code Size",
     "available_after_saving": "Available after Saving",
-    "copy_template_from": "Copy Template From ...",
+    "copyTemplateFrom": "Copy Template From ...",
     "no_of_codes": "No. of Codes",
     "codeTabLabel": "Coupon Codes"
   },

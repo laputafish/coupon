@@ -23,13 +23,20 @@
       <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
     </div>
     <div class="">
-    <button type="button"
-            :disabled="allData.length===0"
-            class="btn btn-danger min-width-100 mr-1"
-            @click="deleteAll()">
-      <i class="fas fa-times"></i>
-      <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
-    </button>
+      <button type="button"
+              :disabled="allData.length===0"
+              class="btn btn-danger min-width-100 mr-1"
+              @click="deleteAll()">
+        <i class="fas fa-times"></i>
+        <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
+      </button>
+      <button type="button"
+              :disabled="allData.length===0"
+              class="btn btn-warning min-width-100 mr-1"
+              @click="exportExcel()">
+        <i class="fas fa-times"></i>
+        <span class="ml-2">{{ $t('buttons.export') }}</span>
+      </button>
       <file-upload
           extensions="xlsx"
           accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -202,6 +209,12 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    exportExcel () {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'export'
+      })
+    },
     deleteAll () {
       const vm = this
       vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(

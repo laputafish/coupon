@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import constants from './modules/constants/constants'
 import common from './modules/common/common'
 import system from './modules/system/system'
+import agents from './modules/agents/agents'
 
 Vue.use(Vuex)
 
@@ -15,8 +16,9 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-    constants,
-    common,
-    system
+	  agents,
+	  constants,
+	  common,
+	  system
   }
 })

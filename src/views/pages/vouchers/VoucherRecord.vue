@@ -110,7 +110,7 @@
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
                   <b-button @click="showCopyTemplateDialog=true"
                           class="btn btn-primary mb-3 w-100">
-                    {{ $t('vouchers.copy_template_from') }}
+                    {{ $t('vouchers.copyTemplateFrom') }}
                   </b-button>
                   <h6>Token List</h6>
                   <div v-for="keyGroup in templateKeyGroups"
@@ -128,9 +128,13 @@
                 <div class="fullscreen-token-list-panel d-flex flex-column"
                   v-if="tinyMCEInFullScreen">
                   <div class="flex-grow-1 p-2">
+                    <!--<b-button @click="$bvModal.show('voucherSelectDialog')"-->
+                              <!--class="btn btn-primary mb-3 w-100">-->
+                      <!--{{ $t('vouchers.copyTemplateFrom') }}-->
+                    <!--</b-button>-->
                     <b-button @click="showCopyTemplateDialog=true"
                               class="btn btn-primary mb-3 w-100">
-                      {{ $t('vouchers.copy_template_from') }}
+                      {{ $t('vouchers.copyTemplateFrom') }}
                     </b-button>
                     <h6>Token List</h6>
                     <div v-for="keyGroup in templateKeyGroups"
@@ -157,62 +161,69 @@
         <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin"/>
       </h4>
     </div>
-    <b-modal id="copyTemplateDialog"
-             size="xl"
-             v-model="showCopyTemplateDialog"
-             scrollable
-             :title="$t('vouchers.copy_template_from')">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-sm-4">
-            <b-list-group style="line-height:1;">
-              <b-list-group-item v-for="agent in agents"
-                @click="selectedAgent=agent"
-              :class="{'active': selectedAgent===agent}"
-              :key="agent.id">
-                {{ agent.name }}&nbsp;<div class="badge badge-info">{{ agentVouchers.length }}</div>
-              </b-list-group-item>
-            </b-list-group>
-          </div>
-          <div class="col-sm-8">
-            <b-list-group style="line-height:1;">
-              <b-list-group-item v-for="voucher in otherVouchers"
-                                 @click="selectedVoucher=voucher"
-                                 :class="{'active': selectedVoucher==voucher}"
-                                 :key="voucher.id">
-                  {{ voucher.description }}
-                  <div>
-                    <div class="badge badge-primary">
-                      {{ voucher.agent ? voucher.agent.name : $t('messages.not_specified') }}
-                    </div>
-                  </div>
-              </b-list-group-item>
-            </b-list-group>
-          </div>
-        </div>
-      </div>
-      <template v-slot:modal-footer>
-        <div class="w-100 text-right">
-          <div class="btn-toolbar justify-content-end">
-              <b-button
-                  :disabled="selectedVoucher===null || selectedAgent===null"
-                variant="primary"
-                size="sm"
-                class="min-width-80"
-                @click="copyTemplate(selectedVoucher)">
-              {{ $t('buttons.ok') }}
-            </b-button>
-              <b-button
-                  variant="secondary"
-                  size="sm"
-                  class="min-width-80"
-                  @click="showCopyTemplateDialog=false">
-              {{ $t('buttons.cancel') }}
-            </b-button>
-          </div>
-        </div>
-      </template>
-    </b-modal>
+    <voucher-select-dialog
+        :title="$t('vouchers.copyTemplateFrom')"
+        :initialAgentId="record ? record.agent_id : 0"
+        v-model="showCopyTemplateDialog"
+        @onCommand="onCommandHandler"></voucher-select-dialog>
+
+    <!--<b-modal id="copyTemplateDialog"-->
+             <!--size="xl"-->
+             <!--v-model="showCopyTemplateDialog"-->
+             <!--:title="$t('vouchers.copyTemplateFrom')">-->
+      <!--<div class="left-pane">-->
+        <!--{{ $t('menu.agents') }}-->
+        <!--<div class="left-pane-scroll">-->
+          <!--<b-list-group style="line-height:1;">-->
+            <!--<b-list-group-item v-for="agent in agentxs"-->
+              <!--@click="selectedAgent=agent"-->
+            <!--:class="{'active': selectedAgent===agent}"-->
+            <!--:key="agent.id">-->
+              <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agentVouchers.length }}</div>-->
+            <!--</b-list-group-item>-->
+          <!--</b-list-group>-->
+        <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
+      <!--</div>&lt;!&ndash; left-pane &ndash;&gt;-->
+      <!--<div class="right-pane">-->
+        <!--{{ $t('menu.vouchers') }}-->
+        <!--<div class="right-pane-scroll">-->
+          <!--<b-list-group style="line-height:1;">-->
+            <!--<b-list-group-item v-for="voucher in otherVouchers"-->
+                               <!--@click="selectedVoucher=voucher"-->
+                               <!--:class="{'active': selectedVoucher==voucher}"-->
+                               <!--:key="voucher.id">-->
+                <!--{{ voucher.description }}-->
+                <!--<div>-->
+                  <!--<div class="badge badge-primary">-->
+                    <!--{{ voucher.agent ? voucher.agent.name : $t('messages.not_specified') }}-->
+                  <!--</div>-->
+                <!--</div>-->
+            <!--</b-list-group-item>-->
+          <!--</b-list-group>-->
+        <!--</div>&lt;!&ndash; right-pane-scroll &ndash;&gt;-->
+      <!--</div>&lt;!&ndash; right-pane &ndash;&gt;-->
+      <!--<template v-slot:modal-footer>-->
+        <!--<div class="w-100 text-right">-->
+          <!--<div class="btn-toolbar justify-content-end">-->
+              <!--<b-button-->
+                  <!--:disabled="selectedVoucher===null || selectedAgent===null"-->
+                <!--variant="primary"-->
+                <!--size="sm"-->
+                <!--class="min-width-80"-->
+                <!--@click="copyTemplate(selectedVoucher)">-->
+              <!--{{ $t('buttons.ok') }}-->
+            <!--</b-button>-->
+              <!--<b-button-->
+                  <!--variant="secondary"-->
+                  <!--size="sm"-->
+                  <!--class="min-width-80"-->
+                  <!--@click="showCopyTemplateDialog=false">-->
+              <!--{{ $t('buttons.cancel') }}-->
+            <!--</b-button>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</template>-->
+    <!--</b-modal>-->
   </div>
 </template>
 
@@ -230,6 +241,8 @@
   import vueRangeSlider from 'vue-range-slider'
   // import vueRangeSlider from 'vue-range-slider'
 
+  import voucherSelectDialog from './dialogs/VoucherSelectDialog'
+
   export default {
     mixins: [DataRecordMixin],
     components: {
@@ -240,7 +253,8 @@
       titleRow,
       ...formInputs,
       // ,
-      vueRangeSlider
+      vueRangeSlider,
+      voucherSelectDialog
       // ,
       // yoovEditor
       // ,
@@ -249,14 +263,44 @@
     },
     data () {
       return {
+        agentxs: [
+          {id: 1, name: 'agent 1'},
+          {id: 2, name: 'agent 2'},
+          {id: 3, name: 'agent 3'},
+          {id: 4, name: 'agent 4'},
+          {id: 5, name: 'agent 5'},
+          {id: 6, name: 'agent 6'},
+          {id: 7, name: 'agent 7'},
+          {id: 8, name: 'agent 8'},
+          {id: 9, name: 'agent 9'},
+          {id: 10, name: 'agent 10'},
+          {id: 11, name: 'agent 11'},
+          {id: 12, name: 'agent 12'},
+          {id: 13, name: 'agent 13'},
+          {id: 14, name: 'agent 14'},
+          {id: 15, name: 'agent 15'},
+          {id: 16, name: 'agent 16'},
+          {id: 17, name: 'agent 17'},
+          {id: 18, name: 'agent 18'},
+          {id: 19, name: 'agent 19'},
+          {id: 20, name: 'agent 20'},
+          {id: 21, name: 'agent 21'},
+          {id: 22, name: 'agent 22'},
+          {id: 23, name: 'agent 23'},
+          {id: 24, name: 'agent 24'},
+          {id: 25, name: 'agent 25'},
+          {id: 26, name: 'agent 26'},
+          {id: 27, name: 'agent 27'},
+        ],
         apiPath: '/vouchers',
         titleField: 'description',
         record: null,
         loading: false,
         // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
         defaultTemplateKeyGroups: [],
-        agents: [],
+        // agents: [],
         showCopyTemplateDialog: false,
+        // showCopyTemplateDialogx: false,
         allVouchers: [],
 
         // Template selection
@@ -280,6 +324,9 @@
       }
     },
     computed: {
+      agents () {
+        return this.$store.getters.agents
+      },
       otherVouchers () {
         const vm = this
         let result = []
@@ -328,7 +375,8 @@
     mounted () {
       const vm = this
 
-      vm.fetchAgents();
+      vm.$store.dispatch('FETCH_AGENTS')
+      // vm.fetchAgents();
       vm.fetchVouchers();
       vm.fetchDefaultTemplateKeys()
 
@@ -364,18 +412,18 @@
         // vm.$refs.yoovEditor.setContent('<p>hello world</p>')
         // console.log('template: ', vm.record.template)
       },
-      fetchAgents () {
-        const vm = this
-        vm.$store.dispatch('AUTH_GET', '/agents').then(
-          response => {
-            // console.log('fetchAgents: redsponse: ', response)
-            vm.agents = response
-          },
-          error => {
-            vm.$dialog.alert('Agents: ' + vm.$t('messages.error_during_loading'))
-          }
-        )
-      },
+      // fetchAgents () {
+      //   const vm = this
+      //   vm.$store.dispatch('AUTH_GET', '/agents').then(
+      //     response => {
+      //       // console.log('fetchAgents: redsponse: ', response)
+      //       vm.agents = response
+      //     },
+      //     error => {
+      //       vm.$dialog.alert('Agents: ' + vm.$t('messages.error_during_loading'))
+      //     }
+      //   )
+      // },
       fetchVouchers () {
         const vm = this
         let data = {
@@ -482,6 +530,12 @@
         const vm = this
         // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'export':
+            vm.exportCodes()
+            break
+          case 'select_voucher':
+            alert('voucher selected')
+            break
           case 'update_code_info_field':
             // console.log('update_code_info_field :: payload: ', payload)
             vm.setCodeFieldValue( payload.row, payload.fieldName, payload.fieldValue)
@@ -531,6 +585,20 @@
           case 'setQrCodeComposition':
             vm.record.qr_code_composition = '{' + payload.data + '}'
         }
+      },
+      exportCodes () {
+        const vm = this
+        const data = {
+          urlCommand: '/vouchers/' + vm.record.id + '/export',
+        }
+        vm.$store.dispatch('AUTH_POST', data).then(
+          response => {
+            window.open(vm.$store.getters.apiUrl + '/files/' + response.key)
+          },
+          () => {
+            vm.$toaster.warning(vm.$t('message.some_errors_occurred_during_export'))
+          }
+        )
       },
       setCodeFieldValue (row, fieldName, fieldValue) {
         const vm = this
@@ -827,56 +895,47 @@
     background-color: lightgray;
   }
 
-  /*.mce-container.mce-panel.mce-floatpanel[role=dialog] {*/
-    /*width: 800px;*/
-    /*height: 80%;*/
-    /*overflow-y: hidden;*/
-    /*max-width: 90%;*/
+  /*.left-pane {*/
+     /*padding-right: 10px;*/
+     /*flex-grow: 1;*/
   /*}*/
 
-  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
-  /*.mce-container-body {*/
-  /*width: 100% !important;*/
-  /*height: 100% !important;*/
-  /*padding-bottom: 90px;*/
-  /*position: absolute;*/
+  /*.right-pane {*/
+    /*flex-grow: 1;*/
   /*}*/
 
-  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
-  /*.mce-reset*/
-  /*.mce-container.mce-foot[role=group] {*/
-    /*width: 100% !important;*/
+  /*.left-pane-scroll {*/
+    /*overflow-y: scroll;*/
+    /*height: 0;*/
+    /*min-height: 100%;*/
   /*}*/
 
-  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
-  /*.mce-reset*/
-  /*.mce-container.mce-foot[role=group] >*/
-  /*.mce-container-body {*/
+  /*.right-pane-scroll {*/
+    /*overflow-y: scroll;*/
+    /*height: 0;*/
+    /*min-height: 100%;*/
+  /*}*/
+
+  /*#copyTemplateDialog {*/
+    /*display: flex !important;*/
+    /*flex-direction: column;*/
+  /*}*/
+
+  /*#copyTemplateDialog .modal-dialog {*/
+    /*flex-grow: 1;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
     /*width: 100%;*/
   /*}*/
-
-  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
-  /*.mce-reset*/
-  /*.mce-container.mce-foot*/
-  /*.mce-container-body*/
-  /*.mce-widget.mce-btn {*/
-    /*top: 10px !important;*/
-    /*width: 80px !important;*/
-    /*height: 38px !important;*/
-    /*right: 56px !important;*/
-    /*left: auto !important;*/
+  /*#copyTemplateDialog .modal-dialog [role=document] {*/
+    /*flex-grow: 1;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
+  /*}*/
+  /*#copyTemplateDialog .modal-dialog [role=document] .modal-body {*/
+    /*flex-grow: 1;*/
+    /*display: flex;*/
+    /*flex-direction: row;*/
   /*}*/
 
-  /*.mce-container.mce-panel.mce-floatpanel[role=dialog]*/
-  /*.mce-reset*/
-  /*.mce-container.mce-foot*/
-  /*.mce-container-body*/
-  /*.mce-widget.mce-btn*/
-  /*button[role=presentation] {*/
-    /*height: 100%;*/
-    /*width: 100%;*/
-    /*text-align: center;*/
-    /*line-height: 28px;*/
-
-  /*}*/
 </style>

@@ -3,11 +3,17 @@ import * as types from './system_types'
 
 const state = {
   accessToken: '',
+  team: {
+    id: 1
+  }
 }
 
 const getters = {
   accessToken: state => {
     return state.accessToken
+  },
+  team: state => {
+    return state.team
   }
 }
 
