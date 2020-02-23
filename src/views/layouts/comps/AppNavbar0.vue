@@ -184,7 +184,7 @@
             iconClass: 'far fa-comments', badgeVariant: 'danger', badgeValue: 3, children: [
               {
                 type: 'media',
-                imgSrc: '/static/img/user1-128x128.jpg',
+                imgSrc: '/img/user1-128x128.jpg',
                 imgAlt: 'User Avatar',
                 title: 'Brad Diesel',
                 rightIcon: {
@@ -199,7 +199,7 @@
               {type: 'divider'},
               {
                 type: 'media',
-                imgSrc: '/static/img/user8-128x128',
+                imgSrc: '/img/user8-128x128',
                 imgAlt: 'User Avatar',
                 title: 'John Pierce',
                 rightIcon: {
@@ -214,7 +214,7 @@
               {type: 'divider'},
               {
                 type: 'media',
-                imgSrc: '/static/img/user3-128x128.jpg',
+                imgSrc: '/img/user3-128x128.jpg',
                 imgAlt: 'User Aavatar',
                 title: 'Nora Silverster',
                 rightIcon: {

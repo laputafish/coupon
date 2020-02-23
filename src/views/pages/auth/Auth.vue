@@ -1,6 +1,6 @@
 <template>
 <div id="auth">
-  <div id="bkgd" :style="{backgroundImage: 'url(/static/img/wallpapers/w1.jpg)'}"></div>
+  <div id="bkgd" :style="{backgroundImage: 'url(/img/wallpapers/w1.jpg)'}"></div>
   <auth-navbar></auth-navbar>
   <main class="login-form position-fixed w-100 h-100">
     <div class="container h-100">
@@ -61,7 +61,7 @@ export default {
   height: 100%;
   top: 0;
   left: 0;
-  background-color: url('/static/img/wallpapers/w1.jpg') cover;
+  background-color: url('/img/wallpapers/w1.jpg') cover;
 }
 .login-form .card {
   background-color: rgba(255, 255, 255, .5);

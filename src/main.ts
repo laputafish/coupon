@@ -6,9 +6,12 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+// declare global {
+// 	interface Window { jQuery: any }
+// }
+
 // import $ from 'jquery'
-// $ = require('jquery')
-// window.$ = window.jQuery = require('jquery')
+// window.$ = window.jQuery = $
 
 // import 'admin-lte/dist/css/adminlte.css'
 
