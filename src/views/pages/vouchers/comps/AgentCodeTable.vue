@@ -109,7 +109,6 @@ export default {
         actionButtonSize: 'xs'
       },
       HeaderSettings: false,
-      searchInputTimer: 0,
       selectedRow: null,
       defaultColumns: [
         {title: 'general.key', thComp: 'ThCommonHeader', tdComp: 'TdKey', field: 'key', sortable: true},
@@ -174,14 +173,14 @@ export default {
       vm.setColumns(newValue)
     },
     query: {
-      handler: function (newValue) {
+      handler: function () {
         const vm = this
         // console.log('AGentCodeTable :: watch(query): ', newValue)
         vm.refreshList()
       },
       deep: true
     },
-    searchValue: function (newValue) {
+    searchValue: function () {
       const vm = this
       // console.log('AgentCodeTable :: searchValue = ' + newValue)
       if (vm.filterFields && vm.filterFields !== null) {
@@ -218,7 +217,7 @@ export default {
     deleteAll () {
       const vm = this
       vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
-        dialog => {
+        () => {
           vm.$emit('onCommand', {
             command: 'clear_all_code_info',
             callback: () => {
@@ -250,7 +249,7 @@ export default {
     },
 
     getFilterValue (filter) {
-      const vm = this
+      // const vm = this
       const filterItems = filter.split(';')
       let result = ''
       for (let i = 0; i < filterItems.length; i++) {
@@ -346,7 +345,7 @@ export default {
           break
         case 'delete':
           vm.$dialog.confirm(vm.$t('messages.areYouSure'))
-            .then(dialog => {
+            .then( () => {
               vm.$emit('onCommand', {
                 command: 'delete_code_info',
                 index: payload.index
@@ -510,18 +509,18 @@ export default {
       //
       const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
       console.log('onUploaded :: newCodeFieldsStr: ', newCodeFieldsStr)
-      let goAhead = true
+      // let goAhead = true
       // console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
       // console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
       if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
         if (newCodeFieldsStr !== vm.codeFieldsStr) {
-          goAhead = false
+          // goAhead = false
           const options = {
             okText: vm.$t('buttons.continue'),
             cancelText: vm.$t('buttons.cancel')
           }
-          vm.$dialog.confirm(vm.$t('messages.fields_not_matched_please_delete_all_first')).then(
-            dialog => {
+          vm.$dialog.confirm(vm.$t('messages.fields_not_matched_please_delete_all_first'), options).then(
+            () => {
               vm.$emit('onCommand', {
                 command: 'clear_all_code_info',
                 callback: () => {
@@ -541,7 +540,7 @@ export default {
     importCodes (result) {
       console.log('importCodes :: result: ', result)
       const vm = this
-      const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
+      // const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
 
       // console.log('codeFieldsStr: ' + vm.codeFieldsStr)
       // console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
@@ -562,7 +561,6 @@ export default {
       })
     },
     getCodeFieldsStrFromArray (fields) {
-      const vm = this
       const result = []
       for (let i = 0; i < fields.length; i++) {
         result.push(fields[i].title + ':' + fields[i].type)

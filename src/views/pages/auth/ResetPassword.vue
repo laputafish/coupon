@@ -6,6 +6,7 @@
           v-if="message"
           :success="success"
           :message="message"></auth-result-message>
+
       <!-- Verifying -->
       <template v-if="verifying">
         <div class="row">

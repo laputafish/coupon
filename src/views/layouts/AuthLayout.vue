@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import authNavbar from './comps/AuthNavbar'
+import authNavbar from '../pages/auth/comps/AuthNavbar'
 
 export default {
   components: {

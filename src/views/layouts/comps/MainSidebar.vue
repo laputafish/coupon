@@ -31,8 +31,10 @@
   import sidebarBrandLogo from './SidebarBrandLogo'
   import sidebarUserPanel from './SidebarUserPanel'
   import sidebarMenu from './SidebarMenu'
+  import appMixin from '@/mixins/AppMixin'
 
   export default {
+    mixins: [appMixin],
     data () {
       return {
         loading: false,
@@ -48,10 +50,15 @@
     mounted () {
       const vm = this
       vm.loading = true
-      vm.$store.dispatch('AUTH_GET', '/menu').then(response => {
-        vm.mainMenu = response
-        vm.loading = false
-      })
+      vm.$store.dispatch('AUTH_GET', '/menu')
+        .then(response => {
+          vm.loading = false
+          vm.mainMenu = response
+        })
+        .catch(() => {
+          vm.loading = false
+          vm.showSessionExpired()
+        })
     },
     components: {
       sidebarBrandLogo,

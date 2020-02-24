@@ -6,6 +6,7 @@
       :okButtonState="selectedVoucher!==null"
       size="xl"
       :value="value"
+      @onCommand="onCommandHandler"
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
       <div class="left-pane">
@@ -53,8 +54,10 @@
 
 <script>
   import baseDialog from '@/views/comps/BaseDialog'
+  import appMixin from '@/mixins/AppMixin'
 
   export default {
+    mixins: [appMixin],
     components: {
       baseDialog
     },
@@ -111,6 +114,21 @@
       vm.fetchAgentVouchers()
     },
     methods: {
+      onCommandHandler (payload) {
+        const vm = this
+        console.log('VoucherSelectDialog :; onCommandHandler :: payload: ', payload)
+        const command = payload.command
+        switch (command) {
+          case 'ok':
+            if (vm.selectedVoucher) {
+              vm.$emit('onCommand', {
+                command: 'copyTemplate',
+                voucher: vm.selectedVoucher
+              })
+            }
+            break
+        }
+      },
       setInitialAgent () {
         const vm = this
         console.log('setInitialAgent :: initialAGentId = ' + vm.initialAgentId)
@@ -148,7 +166,8 @@
             },
             () => {
               vm.loading = false
-              vm.$dialog.alert('Vouchers: ' + vm.$t('messages.error_during_loading'))
+              vm.showSessionExpired()
+              // vm.$dialog.alert('Vouchers: ' + vm.$t('messages.error_during_loading'))
             }
           )
         }

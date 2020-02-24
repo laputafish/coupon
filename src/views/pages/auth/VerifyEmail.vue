@@ -7,26 +7,25 @@
           :success="success"
           :message="message"></auth-result-message>
       <!-- Verifying -->
-      <template v-if="verifying">
-        <form @submit.prevent="gotoLoginPage()">
-          <div class="row">
-            <div class="col-sm-12 text-center">
-              <div class="d-inline mr-3">{{ $t('auth.verifying') }}</div>
-              <font-awesome-icon v-if="verifying" icon="spinner" class="fa-spin"/>
-            </div>
+      <template v-if="inVerificationMode">
+        <div class="row">
+          <div class="col-sm-12 text-center">
+            <div class="d-inline mr-3">{{ $t('auth.verifying') }}</div>
+            <font-awesome-icon v-if="inVerificationMode" icon="spinner" class="fa-spin"/>
           </div>
-          <div class="row">
-            <div class="col-12 text-center">
-              <button type="submit" class="btn btn-primary">
-                {{ $t('login.gotoLoginPage') }}
-              </button>
-            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 text-center">
+            <button type="button"
+                    @click="gotoLoginPage()" class="btn btn-primary">
+              {{ $t('login.gotoLoginPage') }}
+            </button>
           </div>
-        </form>
+        </div>
       </template>
 
       <!-- Fails -->
-      <template v-if="!verifying && !success">
+      <template v-if="!inVerificationMode && !success">
         <form @submit.prevent="sendVerificationCode()">
           <!-- Email -->
           <auth-input-row id="email_address"
@@ -49,20 +48,20 @@
       </template>
 
       <!-- success -->
-      <template v-if="!verifying && success">
+      <template v-if="!inVerificationMode && success">
         <div v-if="hasCode" class="row">
           <div class="col-12 text-center form-control-plaintext">
             {{ $t('auth.verificationCompleted') }}
           </div>
         </div>
         <div class="row">
-          <form @submit.prevent="gotoLoginPage()">
-            <div class="col-12 text-center">
-              <button type="submit" class="btn btn-primary">
-                {{ $t('login.gotoLoginPage') }}
-              </button>
-            </div>
-          </form>
+          <div class="col-12 text-center">
+            <button type="button"
+                    @click="gotoLoginPage()"
+                    class="btn btn-primary">
+              {{ $t('login.gotoLoginPage') }}
+            </button>
+          </div>
         </div>
       </template>
 
@@ -90,7 +89,7 @@
         success: true,
 
         messageTag: '',
-        verifying: true,
+        inVerificationMode: true,
         code: '',
         resendData: {
           email: ''
@@ -107,7 +106,7 @@
       } else {
         vm.hasCode = false
         vm.success = false
-        vm.verifying = false
+        vm.inVerificationMode = false
       }
     },
     methods: {
@@ -123,7 +122,7 @@
           response => {
             console.log('verify ok: response: ', response)
             vm.success = true
-            vm.verifying = false
+            vm.inVerificationMode = false
             vm.message = vm.$t('messages.' + response.messageTag)
 
             const url = vm.$route.path
@@ -134,7 +133,7 @@
           error => {
             console.log('verify fails: error: ', error)
             vm.success = false
-            vm.verifying = false
+            vm.inVerificationMode = false
             vm.message = vm.$t('messages.' + error.messageTag)
 
             const url = vm.$route.path

@@ -14,7 +14,7 @@
                 variant="primary"
                 size="sm"
                 class="min-width-80"
-                @click="copyTemplate(selectedVoucher)">
+                @click="$emit('onCommand', {command: 'ok'})">
               {{ $t('buttons.ok') }}
             </b-button>
             <b-button
@@ -77,6 +77,8 @@
         const vm = this
         if (newValue) {
           vm.$bvModal.show(vm.id)
+        } else {
+          vm.$bvModal.hide(vm.id)
         }
       }
     },

@@ -29,6 +29,7 @@ import VuejsDialog from 'vuejs-dialog'
 import VModal from 'vue-js-modal'
 import Toaster from 'v-toaster'
 import VueClipboard from 'vue-clipboard2'
+import VueCarousel from 'vue-carousel'
 
 // include the default style
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
@@ -37,7 +38,6 @@ import 'v-toaster/dist/v-toaster.css'
 import {ValidationProvider, extend} from 'vee-validate'
 import {required, email, confirmed} from 'vee-validate/dist/rules'
 import {localize} from 'vee-validate'
-
 
 // import VuejsDialogMixin from 'vuejs-dialog/dist/vuejs-dialog-mixin.min.js'
 
@@ -50,6 +50,7 @@ Vue.use(VuejsDialog)
 Vue.use(VModal, 'dialog')
 Vue.use(Toaster, {timeout: 3000})
 Vue.use(VueClipboard)
+Vue.use(VueCarousel)
 
 // axios.interceptors.response.use(
 //     function (response) {

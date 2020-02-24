@@ -231,7 +231,9 @@
   import titleRow from '@/views/comps/TitleRow'
   import formInputs from '@/views/comps/forms'
 
+  import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
+
   import agentCodeTable from './comps/AgentCodeTable'
   import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
@@ -244,7 +246,7 @@
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
 
   export default {
-    mixins: [DataRecordMixin],
+    mixins: [DataRecordMixin,appMixin],
     components: {
       agentCodeTable,
       // emailTable,
@@ -304,8 +306,8 @@
         allVouchers: [],
 
         // Template selection
-        selectedAgent: null,
-        selectedVoucher: null,
+        // selectedAgent: null,
+        // selectedVoucher: null,
         agentVouchers: [],
 
         showCopyTemplateDialog: false,
@@ -386,16 +388,37 @@
       onFullscreenStateChanged (full) {
         alert('onFull')
       },
-      copyTemplate () {
+      copyTemplate (selectedVoucher) {
         const vm = this
+        console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
         vm.showCopyTemplateDialog = false
         if (vm.record.template && vm.record.template.trim() !== '') {
-          vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(response => {
-            vm.record.template = vm.selectedVoucher.template
-          })
+          vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
+            () => {
+              vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
+              vm.$toaster.success(vm.$t('messages.template_copied'))
+            }
+          )
         } else {
-          vm.record.template = vm.selectedVoucher.template
+          vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
+          vm.$toaster.success(vm.$t('messages.template_copied_successfully'))
         }
+      },
+      getVoucherTemplate (voucherId) {
+        const vm = this
+        const data = {
+          urlCommand: '/vouchers/' + voucherId,
+          options: {
+            params: {
+              select: 'template'
+            }
+          }
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(
+          response => {
+            vm.record.template = response.data.template
+          }
+        )
       },
       insertKey (key) {
         tinyMCE.get('yoovEditor').execCommand('mceInsertContent', false, '{' + key + '}');
@@ -439,8 +462,9 @@
             // console.log('fetchVouchers :: response: ', response)
             vm.allVouchers = response
           },
-          error => {
-            vm.$dialog.alert('Voucher Selection: ' + vm.$t('messages.error_during_loading'))
+          () => {
+            vm.showSessionExpired
+            // vm.$dialog.alert('Voucher Selection: ' + vm.$t('messages.error_during_loading'))
           }
         )
       },
@@ -469,8 +493,9 @@
               }
             }
           },
-          error => {
-            vm.$dialog.alert('Template Keys: ' + vm.$t('messages.error_during_loading'))
+          () => {
+            vm.showSessionExpired()
+            // vm.$dialog.alert('Template Keys: ' + vm.$t('messages.error_during_loading'))
           }
         )
       },
@@ -528,8 +553,11 @@
       },
       onCommandHandler (payload) {
         const vm = this
-        // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
+        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'copyTemplate':
+            vm.copyTemplate(payload.voucher)
+            break
           case 'export':
             vm.exportCodes()
             break

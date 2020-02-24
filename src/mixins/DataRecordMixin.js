@@ -1,4 +1,7 @@
-const mixin = {
+import Vue from 'vue'
+import appMixin from '@/mixins/AppMixin'
+
+const mixin = Vue.util.mergeOptions(appMixin, {
   methods: {
     refresh (id) {
       const vm = this
@@ -15,6 +18,6 @@ const mixin = {
       })
     }
   }
-}
+})
 
 export default mixin

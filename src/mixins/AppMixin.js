@@ -35,6 +35,20 @@ const AppMixin = {
     //   })
     //   // vm.$dialog.alert(html, {html: true})
     // },
+    showSessionExpired () {
+      const vm = this
+      vm.$dialog
+        .confirm('Session expired. Please login again.', {
+          okText: vm.$t('messages.goto_login_page')
+        })
+        .then(() => {
+          vm.$router.push({name: 'Logout'})
+        })
+        .catch(dialogRef => {
+          dialogRef.close()
+        })
+
+    },
     pad (str, max) {
       str = str.toString()
       return str.length < max ? this.pad('0' + str, max) : str

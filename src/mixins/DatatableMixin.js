@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import dialogMixin from '@/mixins/DialogMixin'
+import appMixin from '@/mixins/AppMixin'
 import dtCommon from '@/views/comps/datatable'
 import sectionHeader from '@/views/layouts/comps/SectionHeader'
 
-const mixin = {
+const mixin = Vue.util.mergeOptions(appMixin, {
   template: `<div>
       <section-header :title="$t(moduleNameTag)"
         :breadcrumb="breadcrumb"></section-header>
@@ -218,13 +219,16 @@ const mixin = {
       // console.log('refreshDataList query: ', query)
       vm.$store.dispatch('AUTH_GET', data).then(response => {
         // console.log('refreshDataList :: response: ', response)
+        vm.loading = false
         vm.data = response.data
         if (response.current_page) {
           vm.total = response.total
           vm.query.page = response.current_page
           vm.query.offset = (vm.query.page - 1) * vm.query.limit
         }
+      }, () => {
         vm.loading = false
+        vm.showSessionExpired()
       })
     },
     // refreshDataRecord (id) {
@@ -295,6 +299,6 @@ const mixin = {
       deep: true
     }
   }
-}
+})
 
 export default mixin

@@ -202,23 +202,41 @@ const actions = {
             })
           })
           .catch(error => {
+            // Vue.$dialog(Vue.$t('messages.session_invalid_or_expired_goto_login_page'))
+            //   .then(() => {
+            //     Vue.$router.push({name: 'Logout'})
+            //   })
             reject(error.response.data)
           })
      })
   },
 
-  [types.AUTH_POST] ({rootGetters, dispatch}, payload) {
-    const token = rootGetters.accessToken
-    // console.log('AUTH_GET :: payload: ', payload)
-    if (typeof payload !== 'object') {
-      payload = {
-        urlCommand: payload
-      }
-    }
-    if (!payload.options) {payload.options = {}}
-    payload.options.headers = {Authorization: 'bearer ' + token}
-    return dispatch('COMMON_POST', payload)
+  [types.AUTH_POST] ({dispatch}, payload) {
+    return new Promise((resolve, reject) => {
+      dispatch('AUTH_REFRESH').then(
+        token => {
+          // console.log('AUTH_GET :: payload: ', payload)
+          if (typeof payload !== 'object') {
+            payload = {
+              urlCommand: payload
+            }
+          }
+          if (!payload.options) {
+            payload.options = {}
+          }
+          payload.options.headers = {Authorization: 'bearer ' + token}
+          dispatch('COMMON_POST', payload)
+            .then(response => {
+              resolve(response)
+            })
+            .catch(error => {
+              reject(error)
+            })
+        }
+      )
+    })
   },
+
   [types.COMMON_POST] ({rootGetters}, payload) {
     // payload = {
     //    data: {..},
@@ -268,16 +286,35 @@ const actions = {
   },
 
   [types.AUTH_PUT] ({rootGetters, dispatch}, payload) {
-    const token = rootGetters.accessToken
-    // console.log('AUTH_PUT :: payload: ', payload)
-    if (typeof payload !== 'object') {
-      payload = {
-        urlCommand: payload
-      }
-    }
-    if (!payload.options) {payload.options = {}}
-    payload.options.headers = {Authorization: 'bearer ' + token}
-    return dispatch('COMMON_PUT', payload)
+    return new Promise((resolve, reject) => {
+      dispatch('AUTH_REFRESH').then(
+        token => {
+          // console.log('AUTH_PUT :: payload: ', payload)
+          if (typeof payload !== 'object') {
+            payload = {
+              urlCommand: payload
+            }
+          }
+          if (!payload.options) {
+            payload.options = {}
+          }
+          payload.options.headers = {Authorization: 'bearer ' + token}
+          dispatch('COMMON_PUT', payload).then(
+            response => {
+              resolve(response)
+            }
+          ).catch(
+            error => {
+              reject(error)
+            }
+          )
+        }
+      ).catch(
+        error => {
+          reject(error)
+        }
+      )
+    })
   },
 
   [types.COMMON_PUT] ({rootGetters}, payload) {

@@ -3,6 +3,7 @@ import * as types from './system_types'
 
 const state = {
   accessToken: '',
+  user: null,
   team: {
     id: 1
   }
@@ -12,12 +13,18 @@ const getters = {
   accessToken: state => {
     return state.accessToken
   },
+  user: state => {
+    return state.user
+  },
   team: state => {
     return state.team
   }
 }
 
 const mutations = {
+  setUser (state, payload) {
+    state.user = payload
+  },
   setAccessToken (state, payload) {
     state.accessToken = payload
     const localToken = localStorage.getItem('accessToken')
@@ -38,6 +45,7 @@ const actions = {
     //   resolve(accessToken)
     // })
   },
+
   [types.SET_TOKEN] ({commit, getters}, payload) {
     return new Promise((resolve) => {
       if (getters.accessToken !== payload) {
@@ -50,6 +58,23 @@ const actions = {
       }
     })
   },
+
+  [types.FETCH_USER] ({commit, dispatch}) {
+    return new Promise((resolve, reject) =>  {
+      console.log('FETCH_USER')
+      dispatch('AUTH_POST', '/auth/me').then(
+        response => {
+          console.log('FETCH_USER :: response: ', response)
+          commit('setUser', response)
+          resolve(response)
+        },
+        error => {
+          reject(error)
+        }
+      )
+    })
+  },
+
   [types.REFRESH_TOKEN] ({commit, rootGetters, getters}) {
     /*const promise = */
     return new Promise((resolve, reject) => {

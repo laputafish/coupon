@@ -2,10 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '@/store/index'
 
-import Home from '../views/Home.vue'
+import BaseLayout from '../views/layouts/BaseLayout.vue'
+import Home from '../views/pages/home/Home.vue'
 
 import AppLayout from '@/views/layouts/AppLayout.vue'
-import Dashboard from '@/views/pages/Dashboard.vue'
+import Dashboard from '@/views/pages/dashboard/Dashboard.vue'
 import Widgets from '@/views/pages/Widgets.vue'
 import LayoutOptions from '@/views/pages/LayoutOptions.vue'
 import Charts from '@/views/pages/Charts.vue'
@@ -13,8 +14,14 @@ import UIElements from '@/views/pages/UIElements.vue'
 import Forms from '@/views/pages/Forms.vue'
 import Tables from '@/views/pages/Tables.vue'
 
+// Guest or user
+import Profile from '@/views/pages/profile/Profile.vue'
+
+// Super User modules
+import SuperDashboard from '@/views/pages/super/superDashboard/SuperDashboard.vue'
+
 // Auth
-import Auth from '@/views/pages/auth/Auth.vue'
+import AuthLayout from '@/views/layouts/AuthLayout.vue'
 import Login from '@/views/pages/auth/Login.vue'
 import Register from '@/views/pages/auth/Register.vue'
 import ForgotPassword from '@/views/pages/auth/ForgotPassword.vue'
@@ -65,12 +72,29 @@ import Coupon from '@/views/pages/coupons/Coupon.vue'
 
 Vue.use(VueRouter)
 
+const checkIfMember = (to, from, next) => {
+  const token = store.getters.accessToken;
+  if (token === '' || token === null) {
+  } else {
+    const user = store.getters.user;
+    if (user === null) {
+      store.dispatch('FETCH_USER')
+    }
+  }
+  next()
+}
+
 const ifAuthenticated = (to, from, next) => {
   const token = store.getters.accessToken;
-
   if (token === '' || token === null) {
     next('/login')
   }
+
+  const user = store.getters.user;
+  if (user === null) {
+    store.dispatch('FETCH_USER')
+  }
+
   next()
 
   // // store.dispatch('REFRESH_TOKEN').then(accessToken => {
@@ -95,14 +119,26 @@ const allRoutes = [
   },
   {
     path: '/',
-    name: 'Home',
-    redirect: '/vouchers',
-    component: Home
+    redirect: '/home',
+    component: BaseLayout,
+    beforeEnter: checkIfMember,
+    children: [
+      {
+        path: '/home',
+        name: 'Home',
+        component: Home
+      },
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile
+      }
+    ]
   },
   {
     path: '/auth',
-    name: 'Auth',
-    component: Auth,
+    name: 'AuthLayout',
+    component: AuthLayout,
     children: [
       {
         path: '/logout',
@@ -154,6 +190,11 @@ const allRoutes = [
     component: AppLayout,
     children: [
       {
+        path: '/super_dashboard',
+        name: 'SuperDashboard',
+        component: SuperDashboard
+      },
+      {
         path: '/vouchers/:id?',
         name: 'vouchers',
         beforeEnter: ifAuthenticated,
@@ -168,6 +209,7 @@ const allRoutes = [
       {
         path: '/dashboard',
         name: 'dashboard',
+        redirect: '/vouchers',
         beforeEnter: ifAuthenticated,
         component: Dashboard
       },

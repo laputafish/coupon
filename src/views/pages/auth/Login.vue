@@ -85,30 +85,24 @@
           urlCommand: '/auth/logout',
           data: vm.credentials
         }
-        vm.loading = true
+        // vm.loading = true
         vm.$store.dispatch('AUTH_POST', postData).then(
           () => {
+            console.log('Logout :: AUTH_POST .then')
             vm.loading = false
-            // vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-            //   vm.gotoNextUrl('/')
-            // }, () => {console.log('#1 setToken fails')}).catch(()=>{
-            //   console.log('#1 caught')
-            // })
             vm.$store.dispatch('SET_TOKEN', '').then(()=> {
               vm.$router.replace({name: 'login'})
+            }).catch(() => {
+              vm.loading = false
             })
           },
           () => {
-            // vm.loading = false
-            // vm.messageTag = error.messageTag
+            console.log('Logout :: AUTH_POST .catch')
             vm.loading = false
-            // vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-            //   vm.gotoNextUrl('/')
-            // }, () => {console.log('#2 setToken fails')}).catch(() => {
-            //   console.log('#2 caught')
-            // })
             vm.$store.dispatch('SET_TOKEN', '').then(()=> {
               vm.$router.replace({name: 'Login'})
+            }).catch(() => {
+              vm.loading = false
             })
           }
         )
@@ -125,7 +119,7 @@
             console.log('login :: response: ', response)
             vm.loading = false
             vm.$store.dispatch('SET_TOKEN', response.access_token).then(()=> {
-              vm.gotoNextUrl('/')
+              vm.gotoNextUrl('/dashboard')
             }, () => {console.log('#3 setToken fails')}).catch(() => {
               console.log('#3 caught')
             })
