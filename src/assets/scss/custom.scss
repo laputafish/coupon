@@ -28,8 +28,10 @@ div[name=Datatable] div.row:last-child {
 .tabs ul > li.nav-item > a.nav-link {
   color: darkgray;
 }
-.btn-toolbar .btn:not(:last-child) {
-  margin-right: 3px;
+.btn-toolbar .btn {
+  margin-left: 3px;
+  margin-right: 1px;
+  margin-bottom: 1px;
 }
 .btn.min-width-80 {
   min-width: 80px;

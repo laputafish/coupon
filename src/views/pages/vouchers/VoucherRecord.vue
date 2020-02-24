@@ -6,46 +6,82 @@
                :processingButtons="processingButtons"
                :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
+    <div class="w-100 text-right" style="margin-top:-20px;">
+      <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
+      <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record.created_at }}</div>
+    </div>
+
+    <!-- ********* -->
+    <!-- Row #0 -->
+    <!-- ********* -->
     <div class="row" v-if="record">
-      <!-- ********* -->
-      <!-- Row #0 -->
-      <!-- ********* -->
-      <data-input width="6" id="description" labelTag="general.description" v-model="record.description"></data-input>
+      <data-input width="4" id="description" labelTag="general.description" v-model="record.description"></data-input>
       <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
                        v-model="record.activation_date"></data-input-date>
       <data-input-date width="2" id="expiry_date" labelTag="vouchers.expiry_date"
                        v-model="record.expiry_date"></data-input-date>
-      <data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"
-                           v-model="record.created_at"></data-input-readonly>
-      <!-- ********* -->
-      <!-- Row #1 -->
-      <!-- ********* -->
-      <data-input-select width="3" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
+      <data-input-readonly width="4" id="status" labelTag="general.status"
+                           :value="$t('status.'+record.status)"></data-input-readonly>
+    </div>
+
+    <!-- ********* -->
+    <!-- Row #1 -->
+    <!-- ********* -->
+    <div class="row mb-2">
+      <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
                          :options="agents"
                          optionLabelField="name"></data-input-select>
+      <!--<data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"-->
+                           <!--v-model="record.created_at"></data-input-readonly>-->
 
-      <data-input width="3"
-                  id="qr_code_composition"
-                  labelTag="vouchers.qr_code_composition"
-                  v-model="record.qr_code_composition"></data-input>
+      <div class="col-sm-4">
+        <label>QR Code <div class="badge badge-info">{qr_code}</div></label>
+        <input class="form-control">
+        <div class="d-flex flex-row align-items-center">
+          <small class="line-height-1 d-inline mr-1">Size</small>
+          <vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">
+            <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
+              {{ value }}
+            </div>
+          </vue-range-slider>
+          <div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="d-flex flex-row justify-content-between">
+          <label>Barcode <div class="badge badge-info">{barcode}</div></label>
+          <select v-mode="record.barcodeType">
+            <option value="C39">Code 39</option>
+            <option value="C128">Code 128</option>
+          </select>
+        </div>
+        <input class="form-control">
+        <div class="d-flex flex-row align-items-center">
+          <small class="text-nowrap line-height-1 d-inline mr-1">Size (x)</small>
+          <small class="bg-primary border p-0 px-2">1</small>
+          <small class="border p-0 px-2">2</small>
+          <small class="border p-0 px-2">3</small>
+          <small class="border p-0 px-2">4</small>
+          <small class="border p-0 px-2">5</small>
+
+          <small class="text-nowrap line-height-1 d-inline ml-2 mr-1">Size (y)</small>
+          <vue-range-slider :min="30" :max="100" ref="slider" style="width:100%;" v-model="record.qr_code_size">
+            <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
+              {{ value }}
+            </div>
+          </vue-range-slider>
+        </div>
+      </div>
+      <!--<data-input width="3"-->
+                  <!--id="qr_code_composition"-->
+                  <!--labelTag="vouchers.qr_code_composition"-->
+                  <!--v-model="record.qr_code_composition"></data-input>-->
 
       <!--<data-input-slider width="3" id="qr_code_size" labelTag="vouchers.qr_code_size" v-model="record.qr_code_size"-->
                         <!--:min="100" :max="300"></data-input-slider>-->
 
-      <div class="col-sm-3">
-        <div class="form-group">
-          <label>{{ $t('vouchers.qr_code_size') }}</label>
-          <div class="form-control d-flex flex-row">
-             <vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">
-              <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
-                {{ value }}
-              </div>
-             </vue-range-slider>
-              <div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>
-          </div>
-        </div>
-      </div>
-      <data-input-readonly width="3" id="status" labelTag="general.status" :value="$t('status.'+record.status)"></data-input-readonly>
+
+
       <!--<div class="col-sm-2">-->
         <!--<div class="form-group">-->
           <!--<label for="status">{{ $t('general.status') }}</label>-->

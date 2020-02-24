@@ -1,26 +1,26 @@
 <template>
-            <button
-                :key="buttonInfo.command"
-                class="btn min-width-100"
-                type="button"
-                @click="onButtonClicked"
-                :class="'btn-'+buttonInfo.variant">
-            <font-awesome-icon
+  <button
+      :key="buttonInfo.command"
+      class="btn min-width-100"
+      type="button"
+      @click="onButtonClicked"
+      :class="'btn-'+buttonInfo.variant">
+    <font-awesome-icon
 
-                :icon="currentIcon"
-                :class="currentIconClass"></font-awesome-icon>
-              <!--<i v-else :class="buttonInfo.iconClass"></i>-->
+        :icon="currentIcon"
+        :class="currentIconClass"></font-awesome-icon>
+    <!--<i v-else :class="buttonInfo.iconClass"></i>-->
 
-              <!--<font-awesome-icon-->
-              <!--v-if="loading"-->
-              <!--icon="spinner"></font-awesome-icon>-->
-              <!--<i v-else :class="buttonInfo.iconClass"></i>-->
-              <span class="ml-2">{{ $t(buttonInfo.captionTag) }}</span>
-          </button>
+    <!--<font-awesome-icon-->
+    <!--v-if="loading"-->
+    <!--icon="spinner"></font-awesome-icon>-->
+    <!--<i v-else :class="buttonInfo.iconClass"></i>-->
+    <span class="ml-2">{{ $t(buttonInfo.captionTag) }}</span>
+  </button>
 
-  </template>
+</template>
 
-  <script>
+<script>
   export default {
     props: {
       buttonInfo: {

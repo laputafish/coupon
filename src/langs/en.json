@@ -24,7 +24,8 @@
     "information": "Information",
     "confirmation": "Confirmation",
     "unspecified": "Unspecified",
-    "remark": "Remark"
+    "remark": "Remark",
+    "created_at": "Created at"
   },
   "status": {
     "pending": "Pending",

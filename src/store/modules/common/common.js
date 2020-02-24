@@ -191,7 +191,7 @@ const actions = {
         let url =  rootGetters.constants.apiUrl + '/auth/refresh'
         let options = {
           headers: {
-            Authorization: 'bearer' + rootGetters.accessToken
+            Authorization: 'bearer ' + rootGetters.accessToken
           }
         }
         Vue.axios.post(url, {}, options)

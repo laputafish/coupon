@@ -6,7 +6,7 @@
           <h3 v-if="record && record[titleField].length>0" class="d-inline mr-2">{{ record[titleField] }}</h3>
           <h3 class="d-inline">[{{ record.id===0 ? $t('general.new') : $t('general.edit') }}]</h3>
         </div>
-        <div class="btn-toolbar mb-1 flex-grow-0" role="toolbar" aria-label="Toolbar with buttons">
+        <div class="btn-toolbar mb-1 flex-grow-0 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
           <title-row-button v-for="buttonInfo in buttonInfos"
                             :key="buttonInfo.command"
                             :loading="loading"
