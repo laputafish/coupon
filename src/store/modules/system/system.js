@@ -29,10 +29,11 @@ const mutations = {
 
 const actions = {
   async [types.FETCH_TOKEN] ({commit}) {
-    /*const promise = */
     // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
-      // console.log('localStorage(accessToken) = ' + accessToken)
+    /*const promise = */
+    console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
+    // console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
     //   resolve(accessToken)
     // })
@@ -42,7 +43,10 @@ const actions = {
       if (getters.accessToken !== payload) {
         localStorage.setItem('accessToken', payload)
         commit('setAccessToken', payload)
-        resolve()
+        console.log('SET_TOKEN :: token = ' + payload)
+        resolve(payload)
+      } else {
+        resolve(payload)
       }
     })
   },

@@ -216,7 +216,7 @@ const mixin = {
 
       vm.loading = true
       // console.log('refreshDataList query: ', query)
-      vm.$store.dispatch('AUTH_GET', data).then(function (response) {
+      vm.$store.dispatch('AUTH_GET', data).then(response => {
         // console.log('refreshDataList :: response: ', response)
         vm.data = response.data
         if (response.current_page) {

@@ -66,12 +66,16 @@
     },
     mounted () {
       const vm = this
+      console.log('Login.vue :: mounted')
       if (vm.mode === 'development') {
         vm.credentials.email = 'yoovcoupon@gmail.com'
         vm.credentials.password = 'yoovYoov'
       }
       if (vm.$route.name === 'Logout') {
+        console.log('  is logout route')
         vm.logout()
+      } else {
+        console.log('  not logout route')
       }
     },
     methods: {
@@ -83,19 +87,29 @@
         }
         vm.loading = true
         vm.$store.dispatch('AUTH_POST', postData).then(
-          response => {
+          () => {
             vm.loading = false
+            // vm.$store.dispatch('SET_TOKEN', '').then(()=> {
+            //   vm.gotoNextUrl('/')
+            // }, () => {console.log('#1 setToken fails')}).catch(()=>{
+            //   console.log('#1 caught')
+            // })
             vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-              vm.gotoNextUrl('/')
-            }, () => {})
+              vm.$router.replace({name: 'login'})
+            })
           },
-          error => {
+          () => {
             // vm.loading = false
             // vm.messageTag = error.messageTag
             vm.loading = false
+            // vm.$store.dispatch('SET_TOKEN', '').then(()=> {
+            //   vm.gotoNextUrl('/')
+            // }, () => {console.log('#2 setToken fails')}).catch(() => {
+            //   console.log('#2 caught')
+            // })
             vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-              vm.gotoNextUrl('/')
-            }, () => {})
+              vm.$router.replace({name: 'Login'})
+            })
           }
         )
       },
@@ -112,7 +126,9 @@
             vm.loading = false
             vm.$store.dispatch('SET_TOKEN', response.access_token).then(()=> {
               vm.gotoNextUrl('/')
-            }, () => {})
+            }, () => {console.log('#3 setToken fails')}).catch(() => {
+              console.log('#3 caught')
+            })
           },
           error => {
             console.log('logoin : error: ', error)

@@ -1,10 +1,10 @@
 import Vue from 'vue'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
 import App from './App.vue'
-import { library, dom } from '@fortawesome/fontawesome-svg-core'
-import { far } from '@fortawesome/free-regular-svg-icons'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {library, dom} from '@fortawesome/fontawesome-svg-core'
+import {far} from '@fortawesome/free-regular-svg-icons'
+import {fas} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 
 // declare global {
 // 	interface Window { jQuery: any }
@@ -34,9 +34,9 @@ import VueClipboard from 'vue-clipboard2'
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import 'v-toaster/dist/v-toaster.css'
 
-import { ValidationProvider, extend } from 'vee-validate'
-import { required, email, confirmed } from 'vee-validate/dist/rules'
-import { localize } from 'vee-validate'
+import {ValidationProvider, extend} from 'vee-validate'
+import {required, email, confirmed} from 'vee-validate/dist/rules'
+import {localize} from 'vee-validate'
 
 
 // import VuejsDialogMixin from 'vuejs-dialog/dist/vuejs-dialog-mixin.min.js'
@@ -51,6 +51,25 @@ Vue.use(VModal, 'dialog')
 Vue.use(Toaster, {timeout: 3000})
 Vue.use(VueClipboard)
 
+// axios.interceptors.response.use(
+//     function (response) {
+//       console.log('axios.interceptors.response :: response: ', response)
+//       const newtoken = ''
+//       if (newtoken) store.dispatch('login', newtoken)
+//       return response
+//     },
+//     function (error) {
+//       switch (error.response.status) {
+//         case 401:
+//           store.dispatch('logoff')
+//           break
+//         default:
+//           console.log(error.response)
+//       }
+//       return Promise.reject(error)
+//     }
+// )
+
 localize({
   en: {
     names: {
@@ -63,8 +82,8 @@ extend('email', {
   ...email,
   message: 'The email address is not valid.'
 })
-extend('required', { ...required, message: 'This field is required.' })
-extend('confirmed', { ...confirmed, message: 'Password not matched.' })
+extend('required', {...required, message: 'This field is required.'})
+extend('confirmed', {...confirmed, message: 'Password not matched.'})
 extend('nonzero', value => {
   return value !== 0
 })

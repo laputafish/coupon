@@ -71,14 +71,15 @@ const ifAuthenticated = (to, from, next) => {
   if (token === '' || token === null) {
     next('/login')
   }
+  next()
 
-  // store.dispatch('REFRESH_TOKEN').then(accessToken => {
-  store.dispatch('REFRESH_TOKEN').then(() => {
-    next()
-  // }, error => {
-  }, () => {
-    next('/login')
-  })
+  // // store.dispatch('REFRESH_TOKEN').then(accessToken => {
+  // store.dispatch('REFRESH_TOKEN').then(() => {
+  //   next()
+  // // }, error => {
+  // }, () => {
+  //   next('/login')
+  // })
 }
 
 const allRoutes = [

@@ -104,17 +104,36 @@ const actions = {
   //   })
   // },
 
-  [types.AUTH_GET] ({rootGetters, dispatch}, payload) {
-    const token = rootGetters.accessToken
-    // console.log('AUTH_GET :: payload: ', payload)
-    if (typeof payload !== 'object') {
-      payload = {
-        urlCommand: payload
-      }
-    }
-    if (!payload.options) {payload.options = {}}
-    payload.options.headers = {Authorization: 'bearer ' + token}
-    return dispatch('COMMON_GET', payload)
+  [types.AUTH_GET] ({dispatch}, payload) {
+    return new Promise((resolve, reject) => {
+      dispatch('AUTH_REFRESH').then(
+        token => {
+          console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
+          if (typeof payload !== 'object') {
+            payload = {
+              urlCommand: payload
+            }
+          }
+          if (!payload.options) {
+            payload.options = {}
+          }
+          payload.options.headers = {Authorization: 'bearer ' + token}
+          dispatch('COMMON_GET', payload).then(
+            response => {
+              resolve(response)
+            }
+          ).catch(
+            error => {
+              reject(error)
+            }
+          )
+        }
+      ).catch(
+        error => {
+          reject(error)
+        }
+      )
+    })
   },
 
   [types.COMMON_GET] ({rootGetters}, payload) {
@@ -166,6 +185,27 @@ const actions = {
     })
   },
 
+  [types.AUTH_REFRESH] ({rootGetters, commit, dispatch}, payload) {
+    return new Promise((resolve, reject) => {
+      console.log('AUTH_REFRESH')
+        let url =  rootGetters.constants.apiUrl + '/auth/refresh'
+        let options = {
+          headers: {
+            Authorization: 'bearer' + rootGetters.accessToken
+          }
+        }
+        Vue.axios.post(url, {}, options)
+          .then(response => {
+            const accessToken = response.data.result.access_token
+            dispatch('SET_TOKEN', accessToken).then(() => {
+              resolve(accessToken)
+            })
+          })
+          .catch(error => {
+            reject(error.response.data)
+          })
+     })
+  },
 
   [types.AUTH_POST] ({rootGetters, dispatch}, payload) {
     const token = rootGetters.accessToken
