@@ -126,6 +126,7 @@ const allRoutes = [
       {
         path: '/home',
         name: 'Home',
+        redirect: '/vouchers',
         component: Home
       },
       {

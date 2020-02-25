@@ -11,12 +11,12 @@ const mixin = Vue.util.mergeOptions(appMixin, {
       }
       vm.loading = true
       vm.$store.dispatch('AUTH_GET', data).then(function (response) {
+        vm.loading = false
         // console.log('refresh :: response: ', response)
         vm.record = response.data
         if (typeof vm.onRefreshed === 'function') {
           vm.onRefreshed()
         }
-        vm.loading = false
         vm.$forceUpdate()
       })
     }

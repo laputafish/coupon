@@ -3,6 +3,7 @@ import dialogMixin from '@/mixins/DialogMixin'
 import appMixin from '@/mixins/AppMixin'
 import dtCommon from '@/views/comps/datatable'
 import sectionHeader from '@/views/layouts/comps/SectionHeader'
+import forceDeleteDialog from '@/views/comps/dialogs/ForceDeleteDialog'
 
 const mixin = Vue.util.mergeOptions(appMixin, {
   template: `<div>
@@ -51,11 +52,16 @@ const mixin = Vue.util.mergeOptions(appMixin, {
         </div>
         <!-- /.row -->
       </section>
+      <force-delete-dialog id="forceDeleteDialog" :title="$t('general.confirmation')"
+        :messages="forceDeleteMessage"
+        @onCommand="onCommandHandler">     
+      </force-delete-dialog>
     </div>`,
   mixins: [dialogMixin],
   components: {
     sectionHeader,
-    ...dtCommon
+    ...dtCommon,
+    forceDeleteDialog
   },
   data () {
     return {
@@ -79,7 +85,10 @@ const mixin = Vue.util.mergeOptions(appMixin, {
       },
       tblStyle: {color: '#777', fontWeight: 'normal'},
       HeaderSettings: false,
-      searchInputTimer: 0
+      searchInputTimer: 0,
+
+      // ForceDeleteDialog
+      forceDeleteMessage: ''
     }
   },
   mounted () {
@@ -113,10 +122,22 @@ const mixin = Vue.util.mergeOptions(appMixin, {
       const vm = this
       vm.$router.push({name: vm.routeName, params: {id: 0}})
     },
+
+    onCommandHandler (payload) {
+      const vm = this
+      const command = payload.command
+      switch (command) {
+        case 'deleteByForce':
+          vm.doDeleteRow(vm.selectedRow, () => {
+            vm.selectedRow = null
+          })
+          break
+      }
+    },
+
     onRowCommandHandler (payload) {
       const vm = this
-      // console.log('onRowCommandHandler :: payload: ', payload)
-      let command = payload.command
+      const command = payload.command
       let handled = false
 
       // console.log('onRowCommandHandler :: payload: ', payload)
@@ -137,7 +158,7 @@ const mixin = Vue.util.mergeOptions(appMixin, {
             vm.duplicateRow(row)
             break
           case 'delete':
-            vm.confirmDelete(() => {
+            vm.confirmDialog(row, () => {
               vm.deleteRow(row)
             })
             break
@@ -153,6 +174,10 @@ const mixin = Vue.util.mergeOptions(appMixin, {
         }
       }
     },
+    confirmDialog (row, callback) {
+      const vm = this
+      vm.confirmDelete(callback)
+    },
     editRow (row) {
       const vm = this
       let url = '/' + vm.routeName + '/' + row.id
@@ -161,15 +186,54 @@ const mixin = Vue.util.mergeOptions(appMixin, {
     print (record) {
       alert('not defined yet')
     },
+    // deleteRow (row) {
+    //   const vm = this
+    //   let handled = false
+    //   if (typeof vm.deletionAllowed === 'function') {
+    //     console.log('deletionAllowed is function')
+    //     const allowed = vm.deletionAllowed(row)
+    //     if (!allowed) {
+    //       vm.selectedRow = row
+    //       vm.forceDeleteMessage = vm.$t('messages.areYouSure')
+    //       vm.$bvModal.show('forceDeleteDialog')
+    //       handled = true
+    //     }
+    //   } else {
+    //     console.log('deletionAllowed is not function')
+    //   }
+    //   if (!handled) {
+    //     vm.$dialog.prompt({
+    //       title: vm.$t('general.confirmation'),
+    //       body: vm.$t('messages.areYouSure')
+    //     }).then(
+    //       () => {
+    //         alert('delete')
+    //         vm.doDeleteRow(row)
+    //       }
+    //     )
+    //   }
+    // },
+
     deleteRow (row) {
-      const vm = this
-      let data = {
-        urlCommand: vm.apiPath + '/' + row.id
-      }
-      vm.$store.dispatch('AUTH_DELETE', data).then(function (response) {
-        vm.selectedId = 0
-        vm.onQueryChangedHandler()
-      })
+      //
+      // const vm = this
+      // let data = {
+      //   urlCommand: vm.apiPath + '/' + row.id
+      // }
+      // vm.loading = true
+      // vm.$store.dispatch('AUTH_DELETE', data).then(
+      //   () => {
+      //     vm.loading = false
+      //     vm.selectedId = 0
+      //     vm.onQueryChangedHandler()
+      //     vm.$toaster.success(vm.$t('messages.successfully_deleted'))
+      //     vm.refreshDataList()
+      //   },
+      //   error => {
+      //     vm.loading = false
+      //     vm.$toaster.error(vm.$t('messages.' + error.messageTag))
+      //   }
+      // )
     },
     updateMode () {
       const vm = this

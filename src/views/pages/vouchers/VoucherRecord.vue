@@ -30,7 +30,7 @@
                          :options="agents"
                          optionLabelField="name"></data-input-select>
       <!--<data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"-->
-                           <!--v-model="record.created_at"></data-input-readonly>-->
+      <!--v-model="record.created_at"></data-input-readonly>-->
 
       <div class="col-sm-4">
         <label>QR Code <div class="badge badge-info">{qrcode}</div></label>
@@ -49,8 +49,8 @@
         <div class="d-flex flex-row justify-content-between">
           <label>Barcode <div class="badge badge-info">{barcode}</div></label>
           <!--<select v-model="record.barcodeType">-->
-            <!--<option value="C39">Code 39</option>-->
-            <!--<option value="C128">Code 128</option>-->
+          <!--<option value="C39">Code 39</option>-->
+          <!--<option value="C128">Code 128</option>-->
           <!--</select>-->
         </div>
         <input class="form-control" v-model="barcodeConfig.composition">
@@ -74,22 +74,21 @@
         </div>
       </div>
       <!--<data-input width="3"-->
-                  <!--id="qr_code_composition"-->
-                  <!--labelTag="vouchers.qr_code_composition"-->
-                  <!--v-model="record.qr_code_composition"></data-input>-->
+      <!--id="qr_code_composition"-->
+      <!--labelTag="vouchers.qr_code_composition"-->
+      <!--v-model="record.qr_code_composition"></data-input>-->
 
       <!--<data-input-slider width="3" id="qr_code_size" labelTag="vouchers.qr_code_size" v-model="record.qr_code_size"-->
-                        <!--:min="100" :max="300"></data-input-slider>-->
-
+      <!--:min="100" :max="300"></data-input-slider>-->
 
 
       <!--<div class="col-sm-2">-->
-        <!--<div class="form-group">-->
-          <!--<label for="status">{{ $t('general.status') }}</label>-->
-          <!--<input readonly class="form-control" id="status" name="status"-->
-                 <!--type="text"-->
-                 <!--:value="$t('status.' + record.status)"/>-->
-        <!--</div>-->
+      <!--<div class="form-group">-->
+      <!--<label for="status">{{ $t('general.status') }}</label>-->
+      <!--<input readonly class="form-control" id="status" name="status"-->
+      <!--type="text"-->
+      <!--:value="$t('status.' + record.status)"/>-->
+      <!--</div>-->
       <!--</div>-->
     </div>
     <div v-if="record" class="p-2 bg-tab">
@@ -98,7 +97,7 @@
           <template v-slot:title>
             {{ $t('vouchers.codeTabLabel') }}
             <div v-if="record && record.code_infos && record.code_infos.length>0"
-              class="badge badge-warning">
+                 class="badge badge-warning">
               {{ record.code_infos.length }}
             </div>
           </template>
@@ -115,16 +114,16 @@
           </div>
         </b-tab>
         <!--<b-tab title="Emails" class="bg-white py-2">-->
-          <!--<div class="container-fluid">-->
-            <!--<div class="row">-->
-              <!--<div class="col-12">-->
-                <!--<email-table-->
-                    <!--ref="emailTable"-->
-                    <!--@onCommand="onCommandHandler"-->
-                    <!--:emails="record.emails"></email-table>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
+        <!--<div class="container-fluid">-->
+        <!--<div class="row">-->
+        <!--<div class="col-12">-->
+        <!--<email-table-->
+        <!--ref="emailTable"-->
+        <!--@onCommand="onCommandHandler"-->
+        <!--:emails="record.emails"></email-table>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
         <!--</b-tab>-->
         <b-tab title="Leaflet Template" class="bg-white py-2">
           <div class="container-fluid">
@@ -146,7 +145,7 @@
                     v-model="record.template"></tinymce>
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
                   <b-button @click="showCopyTemplateDialog=true"
-                          class="btn btn-primary mb-3 w-100">
+                            class="btn btn-primary mb-3 w-100">
                     {{ $t('vouchers.copyTemplateFrom') }}
                   </b-button>
                   <h6>Token List</h6>
@@ -163,11 +162,11 @@
                   </div>
                 </div>
                 <div class="fullscreen-token-list-panel d-flex flex-column"
-                  v-if="tinyMCEInFullScreen">
+                     v-if="tinyMCEInFullScreen">
                   <div class="flex-grow-1 p-2">
                     <!--<b-button @click="$bvModal.show('voucherSelectDialog')"-->
-                              <!--class="btn btn-primary mb-3 w-100">-->
-                      <!--{{ $t('vouchers.copyTemplateFrom') }}-->
+                    <!--class="btn btn-primary mb-3 w-100">-->
+                    <!--{{ $t('vouchers.copyTemplateFrom') }}-->
                     <!--</b-button>-->
                     <b-button @click="showCopyTemplateDialog=true"
                               class="btn btn-primary mb-3 w-100">
@@ -205,61 +204,61 @@
         @onCommand="onCommandHandler"></voucher-select-dialog>
 
     <!--<b-modal id="copyTemplateDialog"-->
-             <!--size="xl"-->
-             <!--v-model="showCopyTemplateDialog"-->
-             <!--:title="$t('vouchers.copyTemplateFrom')">-->
-      <!--<div class="left-pane">-->
-        <!--{{ $t('menu.agents') }}-->
-        <!--<div class="left-pane-scroll">-->
-          <!--<b-list-group style="line-height:1;">-->
-            <!--<b-list-group-item v-for="agent in agentxs"-->
-              <!--@click="selectedAgent=agent"-->
-            <!--:class="{'active': selectedAgent===agent}"-->
-            <!--:key="agent.id">-->
-              <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agentVouchers.length }}</div>-->
-            <!--</b-list-group-item>-->
-          <!--</b-list-group>-->
-        <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
-      <!--</div>&lt;!&ndash; left-pane &ndash;&gt;-->
-      <!--<div class="right-pane">-->
-        <!--{{ $t('menu.vouchers') }}-->
-        <!--<div class="right-pane-scroll">-->
-          <!--<b-list-group style="line-height:1;">-->
-            <!--<b-list-group-item v-for="voucher in otherVouchers"-->
-                               <!--@click="selectedVoucher=voucher"-->
-                               <!--:class="{'active': selectedVoucher==voucher}"-->
-                               <!--:key="voucher.id">-->
-                <!--{{ voucher.description }}-->
-                <!--<div>-->
-                  <!--<div class="badge badge-primary">-->
-                    <!--{{ voucher.agent ? voucher.agent.name : $t('messages.not_specified') }}-->
-                  <!--</div>-->
-                <!--</div>-->
-            <!--</b-list-group-item>-->
-          <!--</b-list-group>-->
-        <!--</div>&lt;!&ndash; right-pane-scroll &ndash;&gt;-->
-      <!--</div>&lt;!&ndash; right-pane &ndash;&gt;-->
-      <!--<template v-slot:modal-footer>-->
-        <!--<div class="w-100 text-right">-->
-          <!--<div class="btn-toolbar justify-content-end">-->
-              <!--<b-button-->
-                  <!--:disabled="selectedVoucher===null || selectedAgent===null"-->
-                <!--variant="primary"-->
-                <!--size="sm"-->
-                <!--class="min-width-80"-->
-                <!--@click="copyTemplate(selectedVoucher)">-->
-              <!--{{ $t('buttons.ok') }}-->
-            <!--</b-button>-->
-              <!--<b-button-->
-                  <!--variant="secondary"-->
-                  <!--size="sm"-->
-                  <!--class="min-width-80"-->
-                  <!--@click="showCopyTemplateDialog=false">-->
-              <!--{{ $t('buttons.cancel') }}-->
-            <!--</b-button>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</template>-->
+    <!--size="xl"-->
+    <!--v-model="showCopyTemplateDialog"-->
+    <!--:title="$t('vouchers.copyTemplateFrom')">-->
+    <!--<div class="left-pane">-->
+    <!--{{ $t('menu.agents') }}-->
+    <!--<div class="left-pane-scroll">-->
+    <!--<b-list-group style="line-height:1;">-->
+    <!--<b-list-group-item v-for="agent in agentxs"-->
+    <!--@click="selectedAgent=agent"-->
+    <!--:class="{'active': selectedAgent===agent}"-->
+    <!--:key="agent.id">-->
+    <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agentVouchers.length }}</div>-->
+    <!--</b-list-group-item>-->
+    <!--</b-list-group>-->
+    <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
+    <!--</div>&lt;!&ndash; left-pane &ndash;&gt;-->
+    <!--<div class="right-pane">-->
+    <!--{{ $t('menu.vouchers') }}-->
+    <!--<div class="right-pane-scroll">-->
+    <!--<b-list-group style="line-height:1;">-->
+    <!--<b-list-group-item v-for="voucher in otherVouchers"-->
+    <!--@click="selectedVoucher=voucher"-->
+    <!--:class="{'active': selectedVoucher==voucher}"-->
+    <!--:key="voucher.id">-->
+    <!--{{ voucher.description }}-->
+    <!--<div>-->
+    <!--<div class="badge badge-primary">-->
+    <!--{{ voucher.agent ? voucher.agent.name : $t('messages.not_specified') }}-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</b-list-group-item>-->
+    <!--</b-list-group>-->
+    <!--</div>&lt;!&ndash; right-pane-scroll &ndash;&gt;-->
+    <!--</div>&lt;!&ndash; right-pane &ndash;&gt;-->
+    <!--<template v-slot:modal-footer>-->
+    <!--<div class="w-100 text-right">-->
+    <!--<div class="btn-toolbar justify-content-end">-->
+    <!--<b-button-->
+    <!--:disabled="selectedVoucher===null || selectedAgent===null"-->
+    <!--variant="primary"-->
+    <!--size="sm"-->
+    <!--class="min-width-80"-->
+    <!--@click="copyTemplate(selectedVoucher)">-->
+    <!--{{ $t('buttons.ok') }}-->
+    <!--</b-button>-->
+    <!--<b-button-->
+    <!--variant="secondary"-->
+    <!--size="sm"-->
+    <!--class="min-width-80"-->
+    <!--@click="showCopyTemplateDialog=false">-->
+    <!--{{ $t('buttons.cancel') }}-->
+    <!--</b-button>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</template>-->
     <!--</b-modal>-->
   </div>
 </template>
@@ -283,7 +282,7 @@
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
 
   export default {
-    mixins: [DataRecordMixin,appMixin],
+    mixins: [DataRecordMixin, appMixin],
     components: {
       agentCodeTable,
       // emailTable,
@@ -321,7 +320,7 @@
         showCopyTemplateDialog: false,
         processingButtons: [],
         tinymceOptions: {
-          twoWay:true
+          twoWay: true
         },
         tinymceToolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat | fullscreen',
         tinyMCEInFullScreen: false,
@@ -406,6 +405,7 @@
       onRefreshed () {
         const vm = this
 
+        console.log('onRefreshed :: vm.record: ', vm.record)
         // qrcode
         vm.qrcodeConfig = {
           id: 0,
@@ -480,7 +480,7 @@
         const vm = this
         // console.log('onEditorInit :: tinyMCE: ', tinyMCE)
         tinyMCE.get('yoovEditor').setContent(vm.record.template ? vm.record.template : '')
-        tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function(e) {
+        tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function (e) {
           vm.tinyMCEInFullScreen = e.state
         })
         // tinymce.get('yoovEditor').setContent('<p>hello world</p>')
@@ -582,6 +582,11 @@
         // console.log('createTempLeaflet :: codeRecord: ', codeRecord)
         const tempRecord = JSON.parse(JSON.stringify(vm.record))
         delete tempRecord['code_infos']
+        const codeConfigs = [
+          vm.qrcodeConfig,
+          vm.barcodeConfig
+        ]
+        tempRecord.code_configs = codeConfigs
         const data = {
           urlCommand: '/templates/create_temp',
           data: {
@@ -619,13 +624,14 @@
             break
           case 'update_code_info_field':
             // console.log('update_code_info_field :: payload: ', payload)
-            vm.setCodeFieldValue( payload.row, payload.fieldName, payload.fieldValue)
+            vm.setCodeFieldValue(payload.row, payload.fieldName, payload.fieldValue)
             // let codeInfo = vm.getCodeInfo(payload.row)
             // codeInfo[payload.fieldName] = payload.fieldValue
             break
           case 'clear_all_code_info':
             // vm.record.code_infos = []
             vm.record.code_fields = ''
+            vm.record.code_infos = [];
             // vm.record.qr_code_composition = ''
 
             vm.qrcodeConfig.composition = ''
@@ -667,9 +673,9 @@
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
           case 'setQrCodeComposition':
-            vm.qrcodeConfig.composition =  '{' + payload.data + '}'
-            vm.barcodeConfig.composition =  '{' + payload.data + '}'
-            // vm.record.qr_code_composition = '{' + payload.data + '}'
+            vm.qrcodeConfig.composition = '{' + payload.data + '}'
+            vm.barcodeConfig.composition = '{' + payload.data + '}'
+          // vm.record.qr_code_composition = '{' + payload.data + '}'
         }
       },
       exportCodes () {
@@ -947,7 +953,6 @@
     line-height: 1;
   }
 
-
   #copyTemplateDialog___BV_modal_outer_ {
     z-index: 2000 !important;
   }
@@ -963,6 +968,7 @@
   .mce-fullscreen .mce-edit-area.mce-container {
     padding-right: 240px;
   }
+
   .mce-fullscreen .mce-edit-area.mce-container {
     height: 100%;
   }
@@ -988,46 +994,46 @@
   }
 
   /*.left-pane {*/
-     /*padding-right: 10px;*/
-     /*flex-grow: 1;*/
+  /*padding-right: 10px;*/
+  /*flex-grow: 1;*/
   /*}*/
 
   /*.right-pane {*/
-    /*flex-grow: 1;*/
+  /*flex-grow: 1;*/
   /*}*/
 
   /*.left-pane-scroll {*/
-    /*overflow-y: scroll;*/
-    /*height: 0;*/
-    /*min-height: 100%;*/
+  /*overflow-y: scroll;*/
+  /*height: 0;*/
+  /*min-height: 100%;*/
   /*}*/
 
   /*.right-pane-scroll {*/
-    /*overflow-y: scroll;*/
-    /*height: 0;*/
-    /*min-height: 100%;*/
+  /*overflow-y: scroll;*/
+  /*height: 0;*/
+  /*min-height: 100%;*/
   /*}*/
 
   /*#copyTemplateDialog {*/
-    /*display: flex !important;*/
-    /*flex-direction: column;*/
+  /*display: flex !important;*/
+  /*flex-direction: column;*/
   /*}*/
 
   /*#copyTemplateDialog .modal-dialog {*/
-    /*flex-grow: 1;*/
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*width: 100%;*/
+  /*flex-grow: 1;*/
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  /*width: 100%;*/
   /*}*/
   /*#copyTemplateDialog .modal-dialog [role=document] {*/
-    /*flex-grow: 1;*/
-    /*display: flex;*/
-    /*flex-direction: column;*/
+  /*flex-grow: 1;*/
+  /*display: flex;*/
+  /*flex-direction: column;*/
   /*}*/
   /*#copyTemplateDialog .modal-dialog [role=document] .modal-body {*/
-    /*flex-grow: 1;*/
-    /*display: flex;*/
-    /*flex-direction: row;*/
+  /*flex-grow: 1;*/
+  /*display: flex;*/
+  /*flex-direction: row;*/
   /*}*/
 
 </style>

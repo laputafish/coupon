@@ -53,6 +53,7 @@
     "email_not_registered_yet": "Email was not registered yet!",
     "verification_link_is_sent_please_check_your_email": "Verification link is sent. Please check your email.",
     "verification_successful": "Verification Successfully!",
+    "successfully_deleted": "Successfully Deleted!",
     "see_all_messages": "See All Messages",
     "overwrite_existing_content": "Overwrite existing content?",
     "unauthorized": "Access Denied!",
@@ -66,7 +67,9 @@
     "not_specified": "Not Specified",
     "some_errors_occurred_during_export": "Some errors occurred during export!",
     "goto_login_page": "Goto login page",
-    "template_copied_successfully": "Template copied successfully."
+    "template_copied_successfully": "Template copied successfully.",
+    "type_delete_to_force_deletion": "Type 'DELETE' to force deletion.",
+    "this_agent_has_related_vouchers": "This agent has related voucher(s)."
   },
   "menu": {
     "dashboard": "Dashboard",
