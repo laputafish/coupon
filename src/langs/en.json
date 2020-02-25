@@ -109,6 +109,7 @@
     "voucher_count": "Vouchers"
   },
   "vouchers": {
+    "image_code": "Image Code",
     "qr_code": "QR Code",
     "email_sent_total": "Email Sent/Total",
     "creation_date": "Created At",

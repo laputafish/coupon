@@ -8,13 +8,13 @@
                @onCommand="onCommandHandler"></title-row>
     <div class="w-100 text-right" style="margin-top:-20px;">
       <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
-      <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record.created_at }}</div>
+      <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record ? record.created_at : '' }}</div>
     </div>
 
-    <!-- ********* -->
-    <!-- Row #0 -->
-    <!-- ********* -->
-    <div class="row" v-if="record">
+    <div class="row mb-2" v-if="record">
+      <!-- ********* -->
+      <!-- Row #0 -->
+      <!-- ********* -->
       <data-input width="4" id="description" labelTag="general.description" v-model="record.description"></data-input>
       <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
                        v-model="record.activation_date"></data-input-date>
@@ -22,12 +22,10 @@
                        v-model="record.expiry_date"></data-input-date>
       <data-input-readonly width="4" id="status" labelTag="general.status"
                            :value="$t('status.'+record.status)"></data-input-readonly>
-    </div>
 
-    <!-- ********* -->
-    <!-- Row #1 -->
-    <!-- ********* -->
-    <div class="row mb-2">
+      <!-- ********* -->
+      <!-- Row #1 -->
+      <!-- ********* -->
       <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
                          :options="agents"
                          optionLabelField="name"></data-input-select>
@@ -35,41 +33,44 @@
                            <!--v-model="record.created_at"></data-input-readonly>-->
 
       <div class="col-sm-4">
-        <label>QR Code <div class="badge badge-info">{qr_code}</div></label>
-        <input class="form-control">
+        <label>QR Code <div class="badge badge-info">{qrcode}</div></label>
+        <input class="form-control" v-model="qrcodeConfig.composition">
         <div class="d-flex flex-row align-items-center">
           <small class="line-height-1 d-inline mr-1">Size</small>
-          <vue-range-slider :min="100" :max="300" ref="slider" style="width:100%;" v-model="record.qr_code_size">
+          <vue-range-slider :min="5" :max="20" ref="slider" style="width:100%;" v-model="qrcodeConfig.width">
             <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
               {{ value }}
             </div>
           </vue-range-slider>
-          <div class="line-height-1 text-nowrap">{{ record.qr_code_size }} px</div>
+          <div class="line-height-1 text-nowrap">{{ qrcodeConfig.width }} px</div>
         </div>
       </div>
       <div class="col-sm-4">
         <div class="d-flex flex-row justify-content-between">
           <label>Barcode <div class="badge badge-info">{barcode}</div></label>
-          <select v-mode="record.barcodeType">
-            <option value="C39">Code 39</option>
-            <option value="C128">Code 128</option>
-          </select>
+          <!--<select v-model="record.barcodeType">-->
+            <!--<option value="C39">Code 39</option>-->
+            <!--<option value="C128">Code 128</option>-->
+          <!--</select>-->
         </div>
-        <input class="form-control">
+        <input class="form-control" v-model="barcodeConfig.composition">
         <div class="d-flex flex-row align-items-center">
-          <small class="text-nowrap line-height-1 d-inline mr-1">Size (x)</small>
-          <small class="bg-primary border p-0 px-2">1</small>
-          <small class="border p-0 px-2">2</small>
-          <small class="border p-0 px-2">3</small>
-          <small class="border p-0 px-2">4</small>
-          <small class="border p-0 px-2">5</small>
 
-          <small class="text-nowrap line-height-1 d-inline ml-2 mr-1">Size (y)</small>
-          <vue-range-slider :min="30" :max="100" ref="slider" style="width:100%;" v-model="record.qr_code_size">
+          <small class="text-nowrap line-height-1 d-inline mr-1">Width/bar</small>
+          <vue-range-slider :min="1" :max="5" ref="slider" style="width:100%;" v-model="barcodeConfig.width">
             <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
               {{ value }}
             </div>
           </vue-range-slider>
+          <div class="line-height-1 text-nowrap">{{ barcodeConfig.width }}</div>
+
+          <small class="text-nowrap line-height-1 d-inline ml-2 mr-1">Height</small>
+          <vue-range-slider :min="30" :max="99" ref="slider" style="width:100%;" v-model="barcodeConfig.height">
+            <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
+              {{ value }}
+            </div>
+          </vue-range-slider>
+          <div class="line-height-1 text-nowrap">{{ barcodeConfig.height }}</div>
         </div>
       </div>
       <!--<data-input width="3"-->
@@ -301,35 +302,6 @@
     },
     data () {
       return {
-        agentxs: [
-          {id: 1, name: 'agent 1'},
-          {id: 2, name: 'agent 2'},
-          {id: 3, name: 'agent 3'},
-          {id: 4, name: 'agent 4'},
-          {id: 5, name: 'agent 5'},
-          {id: 6, name: 'agent 6'},
-          {id: 7, name: 'agent 7'},
-          {id: 8, name: 'agent 8'},
-          {id: 9, name: 'agent 9'},
-          {id: 10, name: 'agent 10'},
-          {id: 11, name: 'agent 11'},
-          {id: 12, name: 'agent 12'},
-          {id: 13, name: 'agent 13'},
-          {id: 14, name: 'agent 14'},
-          {id: 15, name: 'agent 15'},
-          {id: 16, name: 'agent 16'},
-          {id: 17, name: 'agent 17'},
-          {id: 18, name: 'agent 18'},
-          {id: 19, name: 'agent 19'},
-          {id: 20, name: 'agent 20'},
-          {id: 21, name: 'agent 21'},
-          {id: 22, name: 'agent 22'},
-          {id: 23, name: 'agent 23'},
-          {id: 24, name: 'agent 24'},
-          {id: 25, name: 'agent 25'},
-          {id: 26, name: 'agent 26'},
-          {id: 27, name: 'agent 27'},
-        ],
         apiPath: '/vouchers',
         titleField: 'description',
         record: null,
@@ -352,7 +324,17 @@
           twoWay:true
         },
         tinymceToolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat | fullscreen',
-        tinyMCEInFullScreen: false
+        tinyMCEInFullScreen: false,
+        qrcodeConfig: {
+          composition: '',
+          width: 0,
+          height: 0
+        },
+        barcodeConfig: {
+          composition: '',
+          width: 0,
+          height: 0
+        }
       }
     },
     props: {
@@ -421,6 +403,41 @@
       vm.refresh(vm.recordId)
     },
     methods: {
+      onRefreshed () {
+        const vm = this
+
+        // qrcode
+        vm.qrcodeConfig = {
+          id: 0,
+          composition: '',
+          'code_group': 'qrcode',
+          'code_type': 'QRCODE',
+          width: 160,
+          height: 160
+        }
+        const qrcodes = vm.record.code_configs.filter(config => {
+          return config.code_group === 'qrcode'
+        })
+        if (qrcodes && qrcodes.length > 0) {
+          vm.qrcodeConfig = qrcodes[0]
+        }
+
+        // barcode
+        vm.barcodeConfig = {
+          id: 0,
+          composition: '',
+          'code_group': 'barcode',
+          'code_type': 'C128',
+          width: 3,
+          height: 12
+        }
+        const barcodes = vm.record.code_configs.filter(config => {
+          return config.code_group === 'barcode'
+        })
+        if (barcodes && barcodes.length > 0) {
+          vm.barcodeConfig = barcodes[0]
+        }
+      },
       onFullscreenStateChanged (full) {
         alert('onFull')
       },
@@ -607,9 +624,12 @@
             // codeInfo[payload.fieldName] = payload.fieldValue
             break
           case 'clear_all_code_info':
-            vm.record.code_infos = []
+            // vm.record.code_infos = []
             vm.record.code_fields = ''
-            vm.record.qr_code_composition = ''
+            // vm.record.qr_code_composition = ''
+
+            vm.qrcodeConfig.composition = ''
+            vm.barcodeConfig.composition = ''
 
             if (typeof payload.callback === 'function') {
               payload.callback()
@@ -647,7 +667,9 @@
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
           case 'setQrCodeComposition':
-            vm.record.qr_code_composition = '{' + payload.data + '}'
+            vm.qrcodeConfig.composition =  '{' + payload.data + '}'
+            vm.barcodeConfig.composition =  '{' + payload.data + '}'
+            // vm.record.qr_code_composition = '{' + payload.data + '}'
         }
       },
       exportCodes () {
@@ -804,6 +826,11 @@
       save (callback) {
         const vm = this
         console.log('VoucherRecord :; save')
+        const codeConfigs = [
+          vm.qrcodeConfig,
+          vm.barcodeConfig
+        ]
+        vm.record.code_configs = codeConfigs
         const data = {
           urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
           // options: {
@@ -818,7 +845,8 @@
         const action = vm.record.id === 0 ? 'AUTH_POST' : 'AUTH_PUT'
         vm.$store.dispatch(action, data).then(
           response => {
-            vm.$toaster.success(vm.$t('messages.saved_successfully'))
+            const successMessage = vm.$t('messages.saved_successfully')
+            vm.$toaster.success(successMessage)
             // console.log('save: response: ', response)
             vm.loading = false
             console.log('after save: response: ', response)
