@@ -88,3 +88,18 @@ div[name=Datatable] .-page-size-select {
 label {
   margin-bottom: 0.25rem !important;
 }
+
+/* tinymce icons */
+i.mce-i-[FONT-AWESOME-CLASSNAME]:before {   // FONT-AWESOME-CLASSNAME e.g. "icon-youtube"
+  content: "[FONT-AWESOME-CONTENT]";       // FONT-AWESOME-CONTENT e.g. "\f166"
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  color: #000;
+  font-size: 1.5em;
+  padding-right: 0.5em;
+  position: absolute;
+  top: 15%;
+  left: 0;
+}

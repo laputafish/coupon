@@ -46,7 +46,7 @@ const actions = {
     // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
     /*const promise = */
-    console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
+    // console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
     // console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
     //   resolve(accessToken)
@@ -58,7 +58,7 @@ const actions = {
       if (getters.accessToken !== payload) {
         localStorage.setItem('accessToken', payload)
         commit('setAccessToken', payload)
-        console.log('SET_TOKEN :: token = ' + payload)
+        // console.log('SET_TOKEN :: token = ' + payload)
         resolve(payload)
       } else {
         resolve(payload)
@@ -68,10 +68,10 @@ const actions = {
 
   [types.FETCH_USER] ({commit, dispatch}) {
     return new Promise((resolve, reject) =>  {
-      console.log('FETCH_USER')
+      // console.log('FETCH_USER')
       dispatch('AUTH_POST', '/auth/me').then(
         response => {
-          console.log('FETCH_USER :: response: ', response)
+          // console.log('FETCH_USER :: response: ', response)
           commit('setUser', response)
           resolve(response)
         },

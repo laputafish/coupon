@@ -1,7 +1,10 @@
 import * as types from './constants_types'
 
 const state = {
-  constants: '',
+  constants: {
+    apiUrl: '',
+    appHost: ''
+  },
 }
 
 const getters = {
@@ -10,6 +13,9 @@ const getters = {
   },
   apiUrl: state => {
     return state.constants ? state.constants.apiUrl : ''
+  },
+  appHost: state => {
+    return state.constants ? state.constants.appHost : ''
   }
 }
 
@@ -24,7 +30,8 @@ const actions = {
     /*const promise = */
     // new Promise((resolve) => {
     const env = {
-      apiUrl: process.env.VUE_APP_API_URL
+      apiUrl: process.env.VUE_APP_API_URL,
+      appHost: process.env.VUE_APP_HOST
     }
     // console.log('FETCH_CONSTANTS :: env: ', env)
     commit('setConstants', env)

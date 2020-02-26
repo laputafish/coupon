@@ -129,7 +129,8 @@
     "available_after_saving": "Available after Saving",
     "copyTemplateFrom": "Copy Template From ...",
     "no_of_codes": "No. of Codes",
-    "codeTabLabel": "Coupon Codes"
+    "codeTabLabel": "Coupon Codes",
+    "images": "Images"
   },
   "login": {
     "digital_coupon": "Digital Coupon",

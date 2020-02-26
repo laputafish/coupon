@@ -292,7 +292,7 @@ const mixin = Vue.util.mergeOptions(appMixin, {
         }
       }, () => {
         vm.loading = false
-        vm.showSessionExpired()
+        vm.showSessionExpired('module data')
       })
     },
     // refreshDataRecord (id) {

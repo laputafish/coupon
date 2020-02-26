@@ -166,7 +166,7 @@
             },
             () => {
               vm.loading = false
-              vm.showSessionExpired()
+              vm.showSessionExpired('agent vouchers')
               // vm.$dialog.alert('Vouchers: ' + vm.$t('messages.error_during_loading'))
             }
           )

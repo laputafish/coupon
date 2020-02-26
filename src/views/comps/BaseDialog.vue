@@ -2,7 +2,7 @@
   <b-modal :id="id"
            :size="size"
            :value="value"
-           :title="$t('vouchers.copyTemplateFrom')">
+           :title="title">
     <slot name="dialogBody">
     </slot>
     <template v-slot:modal-footer>

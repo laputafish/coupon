@@ -137,10 +137,10 @@
                     ref="yoovEditor"
                     class="flex-grow-1 bg-muted"
                     @editorInit="onEditorInit()"
-                    @onFullscreenStateChanged="onFullscreenStateChanged"
                     style="min-height:480px;"
                     id="yoovEditor"
                     :toolbar1="tinymceToolbar1"
+                    :other_options="tinymceOtherOptions"
                     :options="tinymceOptions"
                     v-model="record.template"></tinymce>
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
@@ -163,7 +163,7 @@
                 </div>
                 <div class="fullscreen-token-list-panel d-flex flex-column"
                      v-if="tinyMCEInFullScreen">
-                  <div class="flex-grow-1 p-2">
+                  <div class="flex-grow-1 p-2 bg-muted">
                     <!--<b-button @click="$bvModal.show('voucherSelectDialog')"-->
                     <!--class="btn btn-primary mb-3 w-100">-->
                     <!--{{ $t('vouchers.copyTemplateFrom') }}-->
@@ -202,64 +202,10 @@
         :initialAgentId="record ? record.agent_id : 0"
         v-model="showCopyTemplateDialog"
         @onCommand="onCommandHandler"></voucher-select-dialog>
-
-    <!--<b-modal id="copyTemplateDialog"-->
-    <!--size="xl"-->
-    <!--v-model="showCopyTemplateDialog"-->
-    <!--:title="$t('vouchers.copyTemplateFrom')">-->
-    <!--<div class="left-pane">-->
-    <!--{{ $t('menu.agents') }}-->
-    <!--<div class="left-pane-scroll">-->
-    <!--<b-list-group style="line-height:1;">-->
-    <!--<b-list-group-item v-for="agent in agentxs"-->
-    <!--@click="selectedAgent=agent"-->
-    <!--:class="{'active': selectedAgent===agent}"-->
-    <!--:key="agent.id">-->
-    <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agentVouchers.length }}</div>-->
-    <!--</b-list-group-item>-->
-    <!--</b-list-group>-->
-    <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
-    <!--</div>&lt;!&ndash; left-pane &ndash;&gt;-->
-    <!--<div class="right-pane">-->
-    <!--{{ $t('menu.vouchers') }}-->
-    <!--<div class="right-pane-scroll">-->
-    <!--<b-list-group style="line-height:1;">-->
-    <!--<b-list-group-item v-for="voucher in otherVouchers"-->
-    <!--@click="selectedVoucher=voucher"-->
-    <!--:class="{'active': selectedVoucher==voucher}"-->
-    <!--:key="voucher.id">-->
-    <!--{{ voucher.description }}-->
-    <!--<div>-->
-    <!--<div class="badge badge-primary">-->
-    <!--{{ voucher.agent ? voucher.agent.name : $t('messages.not_specified') }}-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</b-list-group-item>-->
-    <!--</b-list-group>-->
-    <!--</div>&lt;!&ndash; right-pane-scroll &ndash;&gt;-->
-    <!--</div>&lt;!&ndash; right-pane &ndash;&gt;-->
-    <!--<template v-slot:modal-footer>-->
-    <!--<div class="w-100 text-right">-->
-    <!--<div class="btn-toolbar justify-content-end">-->
-    <!--<b-button-->
-    <!--:disabled="selectedVoucher===null || selectedAgent===null"-->
-    <!--variant="primary"-->
-    <!--size="sm"-->
-    <!--class="min-width-80"-->
-    <!--@click="copyTemplate(selectedVoucher)">-->
-    <!--{{ $t('buttons.ok') }}-->
-    <!--</b-button>-->
-    <!--<b-button-->
-    <!--variant="secondary"-->
-    <!--size="sm"-->
-    <!--class="min-width-80"-->
-    <!--@click="showCopyTemplateDialog=false">-->
-    <!--{{ $t('buttons.cancel') }}-->
-    <!--</b-button>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</template>-->
-    <!--</b-modal>-->
+    <image-select-dialog
+        :title="$t('vouchers.images')"
+        v-model="showImageSelectDialog"
+        @onCommand="onCommandHandler"></image-select-dialog>
   </div>
 </template>
 
@@ -271,7 +217,7 @@
   import DataRecordMixin from '@/mixins/DataRecordMixin'
 
   import agentCodeTable from './comps/AgentCodeTable'
-  import emailTable from './comps/EmailTable'
+  // import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
   // import datePicker from 'vue2-datepicker'
   import 'vue2-datepicker/index.css'
@@ -280,6 +226,9 @@
   // import vueRangeSlider from 'vue-range-slider'
 
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
+  import imageSelectDialog from './dialogs/ImageSelectDialog'
+
+  import $ from 'jquery'
 
   export default {
     mixins: [DataRecordMixin, appMixin],
@@ -292,7 +241,8 @@
       ...formInputs,
       // ,
       vueRangeSlider,
-      voucherSelectDialog
+      voucherSelectDialog,
+      imageSelectDialog
       // ,
       // yoovEditor
       // ,
@@ -308,7 +258,6 @@
         // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
         defaultTemplateKeyGroups: [],
         // agents: [],
-        showCopyTemplateDialog: false,
         // showCopyTemplateDialogx: false,
         allVouchers: [],
 
@@ -318,11 +267,81 @@
         agentVouchers: [],
 
         showCopyTemplateDialog: false,
+        showImageSelectDialog: false,
         processingButtons: [],
         tinymceOptions: {
           twoWay: true
         },
-        tinymceToolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat | fullscreen',
+        tinymceOtherOptions: {
+          icons: 'small',
+          setup: function (editor) {
+            // *********************
+            // Embed Image
+            //**********************
+            var inpEmbed = $('<input id="tinymce-embedder" type="file" name="pic" accept="image/*" style="display:none">')
+            $(editor.getElement()).parent().append(inpEmbed)
+
+            editor.addButton('embedImage', {
+              tooltip: 'Embed Image',
+              icon: 'image',
+              onclick: function () {
+                inpEmbed.trigger('click')
+              }
+            })
+
+            inpEmbed.on("change", function () {
+              var input = inpEmbed.get(0)
+              var file = input.files[0]
+              var fr = new FileReader()
+              fr.onload = function () {
+                var img = new Image()
+                img.src = fr.result
+                editor.insertContent('<img src="' + img.src + '"/>')
+                inpEmbed.val('')
+              }
+              fr.readAsDataURL(file);
+            })
+
+            // *********************
+            // Upload Image
+            //**********************
+            var inpUpload = $('<input id="tinymce-uploader" type="file" name="pic" accept="image/*" style="display:none">')
+            $(editor.getElement()).parent().append(inpUpload)
+
+            editor.addButton('uploadImage', {
+              tooltip: 'Upload Image',
+              icon: 'upload',
+              onclick: function () {
+                inpUpload.trigger('click')
+              }
+            })
+
+            // *********************
+            // Select Image
+            //**********************
+            editor.addButton('selectImage', {
+              tooltip: 'Select Image',
+              icon: 'browse',
+              classes: 'select-image'
+            })
+
+            //
+            // inpUpload.on("change",function(){
+            //   this.uploadImage(inpUpload, editor)
+            // })
+            //
+
+          }
+        },
+        tinymceToolbar1: 'undo redo | ' +
+        'formatselect | ' +
+        'bold italic strikethrough forecolor backcolor | ' +
+        'link embedImage uploadImage selectImage | ' +
+        'alignleft aligncenter alignright alignjustify | ' +
+        'numlist bullist outdent indent | ' +
+        'removeformat | ' +
+        'fullscreen',
+
         tinyMCEInFullScreen: false,
         qrcodeConfig: {
           composition: '',
@@ -394,6 +413,9 @@
     mounted () {
       const vm = this
 
+      vm.showCopyTemplateDialog = false
+      vm.showImageSelectDialog = false
+
       vm.$store.dispatch('FETCH_AGENTS')
       // vm.fetchAgents();
       vm.fetchVouchers();
@@ -405,7 +427,7 @@
       onRefreshed () {
         const vm = this
 
-        console.log('onRefreshed :: vm.record: ', vm.record)
+        // console.log('onRefreshed :: vm.record: ', vm.record)
         // qrcode
         vm.qrcodeConfig = {
           id: 0,
@@ -438,12 +460,12 @@
           vm.barcodeConfig = barcodes[0]
         }
       },
-      onFullscreenStateChanged (full) {
-        alert('onFull')
-      },
+      // onFullscreenStateChanged (full) {
+      //   alert('onFull')
+      // },
       copyTemplate (selectedVoucher) {
         const vm = this
-        console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
+        // console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
         vm.showCopyTemplateDialog = false
         if (vm.record.template && vm.record.template.trim() !== '') {
           vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
@@ -478,7 +500,6 @@
       },
       onEditorInit () {
         const vm = this
-        // console.log('onEditorInit :: tinyMCE: ', tinyMCE)
         tinyMCE.get('yoovEditor').setContent(vm.record.template ? vm.record.template : '')
         tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function (e) {
           vm.tinyMCEInFullScreen = e.state
@@ -487,7 +508,116 @@
         // console.log('tinymce: ', tinymce)
         // vm.$refs.yoovEditor.setContent('<p>hello world</p>')
         // console.log('template: ', vm.record.template)
+
+        vm.addTinyMCEButtonEvents(tinyMCE.get('yoovEditor'))
       },
+      addTinyMCEButtonEvents (editor) {
+        const vm = this
+
+        // Upload Image
+        var editorObj = $('#yoovEditor')
+        var inpUpload = $(editorObj).parent().find('input#tinymce-uploader')
+        $(inpUpload).off('change').on('change', function () {
+          vm.uploadImage(inpUpload, editor)
+        })
+
+        const objTinymce = $('#yoovEditor').prev('.mce-tinymce')
+        console.log('VoucherRecord :: objTinymce :: ', objTinymce)
+
+        const btnSelectImage = $(objTinymce).find('.mce-select-image button')
+        console.log('VoucherRecord :: btnSelectImage :: ', btnSelectImage)
+
+        $(btnSelectImage).off('click').on('click', function () {
+          vm.showImageSelectDialog = true
+        })
+
+
+        // Select Image
+
+        //   '' +
+        //   ' inpUpload = $(\'<input id="tinymce-uploader' +
+        //   '' +
+        //   '')
+        // vm.addTinyMCEButtonEmbedImage(editor, 'embedImage')
+        // vm.addTinyMCEButtonUploadImage(editor, 'uploadImage')
+        // vm.tinymceToolbar1 = 'undo redo | formatselect | bold italic strikethrough forecolor backcolor | link embedImage uploadImage | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat | fullscreen'
+      },
+      uploadImage (inpUpload, editor) {
+        const vm = this
+        var input = inpUpload.get(0);
+        var data = new FormData();
+        data.append('file', input.files[0]);
+        // data.append('image[file]', input.files[0]);
+
+        const url = vm.$store.getters.apiUrl + '/media/upload'
+        const bearerToken = 'bearer ' + vm.$store.getters.accessToken
+        console.log('uploadImage')
+        $.ajax({
+          headers: {'Authorization': bearerToken},
+          url: url,
+          type: 'POST',
+          data: data,
+          processData: false, // Don't process the files
+          contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+          success: function (data, textStatus, jqXHR) {
+            console.log('VoucherRecord :: uploadImage :: response :: data: ', data)
+            editor.insertContent('<img class="content-img" src="' + data.imageUrl + '"/>');
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log('VoucherRecord :: uploadImage :: error')
+            if (jqXHR.responseText) {
+              const errors = JSON.parse(jqXHR.responseText).errors
+              alert('Error uploading image: ' + errors.join(", ") + '. Make sure the file is an image and has extension jpg/jpeg/png.');
+            }
+          }
+        });
+      },
+      addTinyMCEButtonEmbedImage (editor, buttonName) {
+        const vm = this
+        // alert('addTinyMCEButtonEmbedImage')
+        // var inpEmbed = $('<input id="tinymce-embedder" type="file" name="pic" accept="image/*" style="display:none">')
+        // $(editor.getElement()).parent().append(inpEmbed)
+        //
+        // inpEmbed.on("change", function () {
+        //   var input = inpEmbed.get(0)
+        //   var file = input.files[0]
+        //   var fr = new FileReader()
+        //   fr.onload = function () {
+        //     var img = new Image()
+        //     img.src = fr.result
+        //     editor.insertContent('<img src="' + img.src + '"/>')
+        //     inpEmbed.val('')
+        //   }
+        //   fr.readAsDataURL(file);
+        // })
+        //
+        // editor.addButton(buttonName, {
+        //   tooltip: 'Embed Image',
+        //   icon: 'upload',
+        //   onclick: function () {
+        //     inpEmbed.trigger('click')
+        //   }
+        // })
+      },
+      // addTinyMCEButtonUploadImage (editor, buttonName) {
+      //   const vm = this
+      //   alert('addTinyMCEButtonUploadImage')
+      //   var inpUpload = $('<input id="tinymce-uploader" type="file" name="pic" accept="image/*" style="display:none">')
+      //   $(editor.getElement()).parent().append(inpUpload)
+      //
+      //   inpUpload.on("change",function(){
+      //     this.uploadImage(inpUpload, editor)
+      //   })
+      //
+      //   editor.addButton( buttonName, {
+      //     tooltip: 'Upload Image',
+      //     icon: 'image',
+      //     onclick: function() {
+      //       inpUpload.trigger('click')
+      //     }
+      //   })
+      //
+      // },
       // fetchAgents () {
       //   const vm = this
       //   vm.$store.dispatch('AUTH_GET', '/agents').then(
@@ -516,7 +646,7 @@
             vm.allVouchers = response
           },
           () => {
-            vm.showSessionExpired
+            vm.showSessionExpired('vouchers')
             // vm.$dialog.alert('Voucher Selection: ' + vm.$t('messages.error_during_loading'))
           }
         )
@@ -547,7 +677,7 @@
             }
           },
           () => {
-            vm.showSessionExpired()
+            vm.showSessionExpired('template keys')
             // vm.$dialog.alert('Template Keys: ' + vm.$t('messages.error_during_loading'))
           }
         )
@@ -603,16 +733,18 @@
         })
       },
       showLeaflet (key) {
-        const vm = this
-        // console.log('showLeaflet ::  key= ' + key)
         const url = window.location.origin + '/coupons/' + key
-        // const url = vm.$store.getters.constants.apiUrl + '/templates/view/' + key
         window.open(url, '_blank');
       },
       onCommandHandler (payload) {
         const vm = this
-        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
+        // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'selectImage':
+            const editor = tinyMCE.get('yoovEditor')
+            const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
+            editor.insertContent('<img class="content-img" src="' + url + '"/>');
+            break
           case 'copyTemplate':
             vm.copyTemplate(payload.voucher)
             break
@@ -694,7 +826,7 @@
       },
       setCodeFieldValue (row, fieldName, fieldValue) {
         const vm = this
-        const result = null
+        // const result = null
         for (let i = 0; i < vm.record.code_infos.length; i++) {
           const codeInfo = vm.record.code_infos[i]
           // console.log('record.codeInfo[code] = ' + codeInfo['code'])
@@ -957,6 +1089,11 @@
     z-index: 2000 !important;
   }
 
+  #imageSelectDialog___BV_modal_outer_ {
+    z-index: 2000 !important;
+  }
+
+  imageSelectDialog
   .token-list li > div.badge {
     cursor: pointer;
   }
@@ -989,9 +1126,9 @@
     padding-bottom: 120px;
   }
 
-  .fullscreen-token-list-panel > div {
-    background-color: lightgray;
-  }
+  /*.fullscreen-token-list-panel > div {*/
+  /*background-color: lightgray;*/
+  /*}*/
 
   /*.left-pane {*/
   /*padding-right: 10px;*/

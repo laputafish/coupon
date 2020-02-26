@@ -35,10 +35,10 @@ const AppMixin = {
     //   })
     //   // vm.$dialog.alert(html, {html: true})
     // },
-    showSessionExpired () {
+    showSessionExpired (module) {
       const vm = this
       vm.$dialog
-        .confirm('Session expired. Please login again.', {
+        .confirm('Session expired. Please login again. (' + module + ')', {
           okText: vm.$t('messages.goto_login_page')
         })
         .then(() => {

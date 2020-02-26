@@ -14,7 +14,9 @@ const actions = {
         urlCommand: payload
       }
     }
-    if (!payload.options) {payload.options = {}}
+    if (!payload.options) {
+      payload.options = {}
+    }
     payload.options.headers = {Authorization: 'bearer ' + token}
     return dispatch('COMMON_DELETE', payload)
   },
@@ -108,7 +110,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       dispatch('AUTH_REFRESH').then(
         token => {
-          console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
+          // console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
           if (typeof payload !== 'object') {
             payload = {
               urlCommand: payload
@@ -160,7 +162,9 @@ const actions = {
         }
         if (payload.query) {
           const paginationConfig = helpers.addPagination(payload.query)
-          if (!getPayload.params) { getPayload.params = {} }
+          if (!getPayload.params) {
+            getPayload.params = {}
+          }
           getPayload.params = {
             ...getPayload.params,
             ...paginationConfig.params
@@ -187,28 +191,28 @@ const actions = {
 
   [types.AUTH_REFRESH] ({rootGetters, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      console.log('AUTH_REFRESH')
-        let url =  rootGetters.constants.apiUrl + '/auth/refresh'
-        let options = {
-          headers: {
-            Authorization: 'bearer ' + rootGetters.accessToken
-          }
+      // console.log('AUTH_REFRESH')
+      let url = rootGetters.constants.apiUrl + '/auth/refresh'
+      let options = {
+        headers: {
+          Authorization: 'bearer ' + rootGetters.accessToken
         }
-        Vue.axios.post(url, {}, options)
-          .then(response => {
-            const accessToken = response.data.result.access_token
-            dispatch('SET_TOKEN', accessToken).then(() => {
-              resolve(accessToken)
-            })
+      }
+      Vue.axios.post(url, {}, options)
+        .then(response => {
+          const accessToken = response.data.result.access_token
+          dispatch('SET_TOKEN', accessToken).then(() => {
+            resolve(accessToken)
           })
-          .catch(error => {
-            // Vue.$dialog(Vue.$t('messages.session_invalid_or_expired_goto_login_page'))
-            //   .then(() => {
-            //     Vue.$router.push({name: 'Logout'})
-            //   })
-            reject(error.response.data)
-          })
-     })
+        })
+        .catch(error => {
+          // Vue.$dialog(Vue.$t('messages.session_invalid_or_expired_goto_login_page'))
+          //   .then(() => {
+          //     Vue.$router.push({name: 'Logout'})
+          //   })
+          reject(error.response.data)
+        })
+    })
   },
 
   [types.AUTH_POST] ({dispatch}, payload) {
