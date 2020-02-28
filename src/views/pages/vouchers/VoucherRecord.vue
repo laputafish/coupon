@@ -1093,7 +1093,6 @@
     z-index: 2000 !important;
   }
 
-  imageSelectDialog
   .token-list li > div.badge {
     cursor: pointer;
   }

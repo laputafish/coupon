@@ -57,7 +57,7 @@
         })
         .catch(() => {
           vm.loading = false
-          vm.showSessionExpired('menu')
+          // vm.showSessionExpired('menu')
         })
     },
     components: {
