@@ -215,25 +215,24 @@ const mixin = Vue.util.mergeOptions(appMixin, {
     // },
 
     deleteRow (row) {
-      //
-      // const vm = this
-      // let data = {
-      //   urlCommand: vm.apiPath + '/' + row.id
-      // }
-      // vm.loading = true
-      // vm.$store.dispatch('AUTH_DELETE', data).then(
-      //   () => {
-      //     vm.loading = false
-      //     vm.selectedId = 0
-      //     vm.onQueryChangedHandler()
-      //     vm.$toaster.success(vm.$t('messages.successfully_deleted'))
-      //     vm.refreshDataList()
-      //   },
-      //   error => {
-      //     vm.loading = false
-      //     vm.$toaster.error(vm.$t('messages.' + error.messageTag))
-      //   }
-      // )
+      const vm = this
+      let data = {
+        urlCommand: vm.apiPath + '/' + row.id
+      }
+      vm.loading = true
+      vm.$store.dispatch('AUTH_DELETE', data).then(
+        () => {
+          vm.loading = false
+          vm.selectedId = 0
+          vm.onQueryChangedHandler()
+          vm.$toaster.success(vm.$t('messages.successfully_deleted'))
+          vm.refreshDataList()
+        },
+        error => {
+          vm.loading = false
+          vm.$toaster.error(vm.$t('messages.' + error.messageTag))
+        }
+      )
     },
     updateMode () {
       const vm = this

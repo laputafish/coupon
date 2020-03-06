@@ -105,12 +105,12 @@ const actions = {
   //     })
   //   })
   // },
-
-  [types.AUTH_GET] ({dispatch}, payload) {
+  [types.REFRESH_AUTH_GET] ({dispatch}, payload) {
     return new Promise((resolve, reject) => {
+      console.log('AUTH_GET :: payload: ', payload)
       dispatch('AUTH_REFRESH').then(
-        token => {
-          // console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
+        () => {
+          // console.log('AUTH_GET :: payload: ', payload)
           if (typeof payload !== 'object') {
             payload = {
               urlCommand: payload
@@ -119,16 +119,42 @@ const actions = {
           if (!payload.options) {
             payload.options = {}
           }
-          payload.options.headers = {Authorization: 'bearer ' + token}
-          dispatch('COMMON_GET', payload).then(
-            response => {
+          dispatch('AUTH_GET', payload)
+            .then(response => {
               resolve(response)
-            }
-          ).catch(
-            error => {
+            })
+            .catch(error => {
               reject(error)
-            }
-          )
+            })
+          // payload.options.headers = {Authorization: 'bearer ' + token}
+          // dispatch('COMMON_POST', payload)
+          //   .then(response => {
+          //     resolve(response)
+          //   })
+          //   .catch(error => {
+          //     reject(error)
+          //   })
+        }
+      )
+    })
+  },
+
+  [types.AUTH_GET] ({dispatch, rootGetters}, payload) {
+    return new Promise((resolve, reject) => {
+      const token = rootGetters.accessToken
+      // console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
+      if (typeof payload !== 'object') {
+        payload = {
+          urlCommand: payload
+        }
+      }
+      if (!payload.options) {
+        payload.options = {}
+      }
+      payload.options.headers = {Authorization: 'bearer ' + token}
+      dispatch('COMMON_GET', payload).then(
+        response => {
+          resolve(response)
         }
       ).catch(
         error => {
@@ -215,10 +241,10 @@ const actions = {
     })
   },
 
-  [types.AUTH_POST] ({dispatch}, payload) {
+  [types.REFRESH_AUTH_POST] ({dispatch}, payload) {
     return new Promise((resolve, reject) => {
       dispatch('AUTH_REFRESH').then(
-        token => {
+        () => {
           // console.log('AUTH_GET :: payload: ', payload)
           if (typeof payload !== 'object') {
             payload = {
@@ -228,16 +254,46 @@ const actions = {
           if (!payload.options) {
             payload.options = {}
           }
-          payload.options.headers = {Authorization: 'bearer ' + token}
-          dispatch('COMMON_POST', payload)
+          dispatch('AUTH_POST', payload)
             .then(response => {
               resolve(response)
             })
             .catch(error => {
               reject(error)
             })
+          // payload.options.headers = {Authorization: 'bearer ' + token}
+          // dispatch('COMMON_POST', payload)
+          //   .then(response => {
+          //     resolve(response)
+          //   })
+          //   .catch(error => {
+          //     reject(error)
+          //   })
         }
       )
+    })
+  },
+
+  [types.AUTH_POST] ({dispatch, rootGetters}, payload) {
+    return new Promise((resolve, reject) => {
+      // console.log('AUTH_GET :: payload: ', payload)
+      if (typeof payload !== 'object') {
+        payload = {
+          urlCommand: payload
+        }
+      }
+      if (!payload.options) {
+        payload.options = {}
+      }
+      console.log('AUTH_POST :: payload: ', payload)
+      payload.options.headers = {Authorization: 'bearer ' + rootGetters.accessToken}
+      dispatch('COMMON_POST', payload)
+        .then(response => {
+          resolve(response)
+        })
+        .catch(error => {
+          reject(error)
+        })
     })
   },
 
@@ -291,27 +347,18 @@ const actions = {
 
   [types.AUTH_PUT] ({rootGetters, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      dispatch('AUTH_REFRESH').then(
-        token => {
-          // console.log('AUTH_PUT :: payload: ', payload)
-          if (typeof payload !== 'object') {
-            payload = {
-              urlCommand: payload
-            }
-          }
-          if (!payload.options) {
-            payload.options = {}
-          }
-          payload.options.headers = {Authorization: 'bearer ' + token}
-          dispatch('COMMON_PUT', payload).then(
-            response => {
-              resolve(response)
-            }
-          ).catch(
-            error => {
-              reject(error)
-            }
-          )
+      if (typeof payload !== 'object') {
+        payload = {
+          urlCommand: payload
+        }
+      }
+      if (!payload.options) {
+        payload.options = {}
+      }
+      payload.options.headers = {Authorization: 'bearer ' + rootGetters.accessToken}
+      dispatch('COMMON_PUT', payload).then(
+        response => {
+          resolve(response)
         }
       ).catch(
         error => {

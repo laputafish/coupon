@@ -70,7 +70,10 @@ const getKeyPairArray = (str, pairSeparator, keyValueSeparator) => {
 
 const addPagination = (query, config) => {
   if (query) {
-    const page = Math.floor(query.offset / query.limit) + 1
+    let page = 1
+    if (query.offset && query.limit) {
+      page = Math.floor(query.offset / query.limit) + 1
+    }
     if (typeof config === 'undefined') {
       config = {}
     }

@@ -107,8 +107,13 @@
                 <agent-code-table
                     ref="agentCodeTable"
                     @onCommand="onCommandHandler"
-                    :codeInfos="record.code_infos"
+                    :voucherId="record.id"
                     :codeFieldsStr="record.code_fields"></agent-code-table>
+                <!--<agent-code-table-->
+                    <!--ref="agentCodeTable"-->
+                    <!--@onCommand="onCommandHandler"-->
+                    <!--:codeInfos="record.code_infos"-->
+                    <!--:codeFieldsStr="record.code_fields"></agent-code-table>-->
               </div>
             </div>
           </div>
@@ -427,8 +432,9 @@
       onRefreshed () {
         const vm = this
 
-        // console.log('onRefreshed :: vm.record: ', vm.record)
+        // *****************
         // qrcode
+        // *****************
         vm.qrcodeConfig = {
           id: 0,
           composition: '',
@@ -444,7 +450,9 @@
           vm.qrcodeConfig = qrcodes[0]
         }
 
+        // *****************
         // barcode
+        // *****************
         vm.barcodeConfig = {
           id: 0,
           composition: '',
@@ -786,7 +794,7 @@
             }
             break
           case 'save':
-            vm.save()
+            vm.save(payload.callback)
             break
           case 'save_and_back':
             vm.save(() => {
@@ -969,6 +977,7 @@
           vm.barcodeConfig
         ]
         vm.record.code_configs = codeConfigs
+
         const data = {
           urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
           // options: {

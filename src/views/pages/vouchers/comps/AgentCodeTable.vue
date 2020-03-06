@@ -55,7 +55,7 @@
       </file-upload>
     </div>
   </div>
-  <div v-if="codeInfos.length>0" id="code-table">
+  <div v-if="data.length>0" id="code-table">
      <datatable v-cloak v-bind="$data"
                 :columns="columns"></datatable>
   </div>
@@ -100,7 +100,8 @@ export default {
       query: {
         filter: '',
         sort: '',
-        order: ''
+        order: '',
+        page: 0
       },
       xprops: {
         buttons: ['view', 'delete'],
@@ -111,30 +112,34 @@ export default {
       HeaderSettings: false,
       selectedRow: null,
       defaultColumns: [
-        {title: 'general.key', thComp: 'ThCommonHeader', tdComp: 'TdKey', field: 'key', sortable: true},
-        {title: 'general.remark', thComp: 'ThCommonHeader', tdComp: 'TdCommonInput', field: 'remark'},
+        {title: 'general.key', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdKey', field: 'key', sortable: true},
+        {title: 'general.remark', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonInput', field: 'remark'},
         {
           title: 'vouchers.sent_on',
           thComp: 'ThCommonHeader',
+          tdClass: 'align-middle',
           tdComp: 'TdCommonInputDate',
           field: 'sent_on',
           sortable: true
         },
-        {title: 'general.status', thComp: 'ThCommonHeader', tdComp: 'TdCommonStatus', field: 'status', sortable: true},
-        {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id', sortable: true}
+        {title: 'general.status', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonStatus', field: 'status', sortable: true},
+        {title: 'general.action', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonOpt', field: 'id', sortable: true}
       ],
       searchValue: '',
       searchInputTimer: 3000,
       filterFields: '*',
-
+      codeInfos: {
+        type: Array,
+        default () {
+          return []
+        }
+      }
     }
   },
   props: {
-    codeInfos: {
-      type: Array,
-      default () {
-        return []
-      }
+    voucherId: {
+      type: Number,
+      default: 0
     },
     codeFieldsStr: {
       type: String,
@@ -154,6 +159,21 @@ export default {
     }
   },
   watch: {
+    files: {
+      handler: function () {
+        const vm = this
+        if (vm.voucherId === 0) {
+          alert('voucherId === 0')
+          vm.$emit('onCommand', {
+            command: 'save',
+            callback: response => {
+              vm.voucherId = response.id
+            }
+          })
+        }
+      },
+      deep: true
+    },
     codeInfos: {
       handler: function (newValue) {
         // console.log('AgentCodeTable :: watch(codeInfos) :: newValue: ', newValue)
@@ -172,11 +192,24 @@ export default {
       // console.log('watch(codeFieldsStr) :: newValue: ', newValue)
       vm.setColumns(newValue)
     },
-    query: {
-      handler: function () {
+    voucherId: {
+      handler: function (newValue) {
         const vm = this
+        if (vm.voucherId !== 0) {
+          console.log('watch(voucherId) :: voucherId = ' + newValue)
+          vm.onQueryChangedHandler(newValue)
+        }
+      }
+    },
+    query: {
+      handler: function (newValue) {
+        const vm = this
+        if (vm.voucherId !== 0) {
+          console.log('watch(query) && voucherId !== 0: ', vm.voucherId)
+          vm.onQueryChangedHandler(newValue)
+        }
         // console.log('AGentCodeTable :: watch(query): ', newValue)
-        vm.refreshList()
+        // vm.refreshList()
       },
       deep: true
     },
@@ -198,6 +231,7 @@ export default {
     const vm = this
     vm.setColumns(vm.codeFieldsStr)
     vm.setTableData(vm.codeInfos)
+    vm.query.page = 1
   },
   created () {
     const vm = this
@@ -279,7 +313,31 @@ export default {
       return filtered
     },
 
-    refreshList () {
+    onQueryChangedHandler (query) {
+      const vm = this
+      if (vm.voucherId !== 0) {
+        console.log('onQueryChangedHandler :: voucherId = ' + vm.voucherId)
+        if (typeof query === 'undefined') {
+          query = vm.query
+        }
+        if (vm.voucherId === 0) {
+          alert('vm.voucherId = 0')
+          return;
+        }
+        const data = {
+          urlCommand: '/vouchers/' + vm.voucherId + '/codes',
+          query: query
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(response => {
+          console.log('AUTH_GET :: response: ', response)
+          vm.total = response.total
+          vm.data = vm.parseCodeInfoData(response.data)
+          vm.$forceUpdate()
+        })
+      }
+    },
+
+    refreshList2 () {
       const vm = this
       console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
       const filterValue = vm.getFilterValue(vm.query.filter)
@@ -406,13 +464,13 @@ export default {
 
       for (let i = 0; i < codeFields.length; i++) {
         const field = codeFields[i]
-        let tdClass = 'text-left'
+        let tdClass = 'text-left align-middle'
         let thClass = 'text-left'
         switch (field['type']) {
           case 'date':
           case 'integer':
-            tdClass = 'text-center'
-            thClass = 'text-center'
+            tdClass = 'text-center align-middle'
+            thClass = 'text-center align-middle'
             break;
         }
         vm.columns.push({
@@ -428,13 +486,12 @@ export default {
       }
     },
 
-    setTableData (codeInfos) {
+    parseCodeInfoData (infoData) {
       const vm = this
-      // console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
-      const result = []
-      if (vm.columns)
-        for (let i = 0; i < codeInfos.length; i++) {
-          const codeRecord = codeInfos[i]
+      let result = []
+      if (vm.columns) {
+        for (let i = 0; i < infoData.length; i++) {
+          const codeRecord = infoData[i]
           const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
           const arFieldValues = fieldsStr.split('|')
 
@@ -450,8 +507,36 @@ export default {
           obj['sent_on'] = codeRecord['sent_on']
           result.push(obj)
         }
-      vm.allData = result
-      vm.total = result.length
+      } else {
+        result = infoData
+      }
+      return result
+    },
+
+    setTableData (tableData) {
+      const vm = this
+      // console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
+      // const result = []
+      // if (vm.columns)
+      //   for (let i = 0; i < tableData.length; i++) {
+      //     const codeRecord = tableData[i]
+      //     const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
+      //     const arFieldValues = fieldsStr.split('|')
+      //
+      //     const obj = {
+      //       id: i
+      //     }
+      //     for (let j = 0; j < arFieldValues.length; j++) {
+      //       obj['field' + j] = arFieldValues[j]
+      //     }
+      //     obj['status'] = codeRecord['status']
+      //     obj['key'] = codeRecord['key']
+      //     obj['remark'] = codeRecord['remark']
+      //     obj['sent_on'] = codeRecord['sent_on']
+      //     result.push(obj)
+      //   }
+      vm.allData = vm.parseCodeInfoData(tableData)
+      vm.total = vm.allData.length
     },
 
     // getCodeData (values) {
@@ -486,6 +571,10 @@ export default {
         this.edit = false
       }
       if (newFile && newFile.success) {
+        // newFile.response.result = {
+        //    data: ...
+        //    fields: ...
+        // }
         vm.onUploaded(newFile.response.result)
         // vm.setColumns(fields);
         // vm.data = vm.getCodeData(values)

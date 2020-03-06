@@ -8,3 +8,4 @@ export const AUTH_POST = 'AUTH_POST'
 export const AUTH_PUT = 'AUTH_PUT'
 export const AUTH_DELETE = 'AUTH_DELETE'
 export const AUTH_REFRESH = 'AUTH_REFRESH' // refresh token
+export const REFRESH_AUTH_GET = 'REFRESH_AUTH_GET'
