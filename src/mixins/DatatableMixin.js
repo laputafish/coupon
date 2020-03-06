@@ -36,7 +36,7 @@ const mixin = Vue.util.mergeOptions(appMixin, {
                      <font-awesome-icon icon="spinner" class="fa-spin" />
                   </h3>
                   <button type="button"
-                          @click="newRecord()"
+                          @click="onCommandHandler({command: 'new'})"
                           class="btn btn-primary ml-auto">
                     <i class="fas fa-plus"></i>
                   </button>
@@ -120,13 +120,31 @@ const mixin = Vue.util.mergeOptions(appMixin, {
     // },
     newRecord () {
       const vm = this
-      vm.$router.push({name: vm.routeName, params: {id: 0}})
+      const data = {
+        urlCommand: '/vouchers/0'
+      }
+      vm.$store.dispatch('AUTH_GET', data).then(response => {
+          if (typeof vm.onRecordCreated === 'function') {
+            console.log('newRecord :: onRecordCreated is function')
+            vm.onRecordCreated(response)
+          } else {
+            console.log('newRecord :: onRecordCreated is not function')
+            vm.$router.push({name: vm.routeName, params: {id: response.id}})
+          }
+        },
+        error => {
+          vm.$toaster.warning(error.message)
+        }
+      )
     },
 
     onCommandHandler (payload) {
       const vm = this
       const command = payload.command
       switch (command) {
+        case 'new':
+          vm.newRecord()
+          break
         case 'deleteByForce':
           vm.doDeleteRow(vm.selectedRow, () => {
             vm.selectedRow = null

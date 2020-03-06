@@ -8,7 +8,6 @@ const mutations = {}
 const actions = {
   [types.AUTH_DELETE] ({rootGetters, dispatch}, payload) {
     const token = rootGetters.accessToken
-    console.log('AUTH_DELETE :: payload: ', payload)
     if (typeof payload !== 'object') {
       payload = {
         urlCommand: payload

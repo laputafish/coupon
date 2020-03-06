@@ -24,14 +24,14 @@
     </div>
     <div class="">
       <button type="button"
-              :disabled="allData.length===0"
+              :disabled="data.length===0"
               class="btn btn-danger min-width-100 mr-1"
               @click="deleteAll()">
         <i class="fas fa-times"></i>
         <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
       </button>
       <button type="button"
-              :disabled="allData.length===0"
+              :disabled="data.length===0"
               class="btn btn-warning min-width-100 mr-1"
               @click="exportExcel()">
         <i class="fas fa-times"></i>
@@ -44,13 +44,15 @@
           class="btn btn-primary"
           :post-action="postAction"
           :drop="!edit"
+          :data="{id: voucherId}"
           :headers="authHeaders"
           v-model="files"
           @success="onSuccess()"
           @input-filter="inputFilter"
           @input-file="inputFile"
           ref="upload">
-        <i class="fa fa-upload"></i>
+        <i v-if="uploading" class="fa fa-fw fa-spinner fa-spin"></i>
+        <i v-else class="fa fa-upload"></i>
         Upload File
       </file-upload>
     </div>
@@ -85,11 +87,13 @@ export default {
   components: {
     fileUpload,
     ...dtCommon,
-    ...dtComps,
-    helpers
+    ...dtComps
+    // ,
+    // helpers
   },
   data () {
     return {
+      uploading: false,
       loading: false,
       files: [],
       edit: false,
@@ -252,13 +256,34 @@ export default {
       const vm = this
       vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
         () => {
+          vm.doDeleteAll()
           vm.$emit('onCommand', {
-            command: 'clear_all_code_info',
-            callback: () => {
-              vm.$toaster.success('All codes are deleted.')
-            }
+            command: 'setRecordField',
+            fieldName: 'code_count',
+            fieldValue: 0
           })
+
+          // vm.$emit('onCommand', {
+          //   command: 'clear_all_code_info',
+          //   callback: () => {
+          //     vm.$toaster.success('All codes are deleted.')
+          //   }
+          // })
         })
+    },
+    doDeleteAll () {
+      const vm = this
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucherId + '/codes'
+      }
+      vm.$store.dispatch('AUTH_DELETE', data).then(() => {
+        vm.$toaster.success(vm.$t('messages.all_codes_are_removed'))
+        vm.$emit('onCommand', {
+          command: 'setQrCodeComposition',
+          data: ''
+        })
+        vm.onQueryChangedHandler(vm.query)
+      })
     },
     setSearchValue (search) {
       const vm = this
@@ -296,22 +321,22 @@ export default {
       return result
     },
 
-    getFilteredData (filterValue) {
-      const vm = this
-      const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
-      const filtered = vm.allData.filter(item => {
-        let valid = false
-        for (let i = 0; i < codeFields.length; i++) {
-          const fieldName = 'field' + i
-          if (item[fieldName].indexOf(filterValue) >= 0) {
-            valid = true
-            break
-          }
-        }
-        return valid
-      })
-      return filtered
-    },
+    // getFilteredData (filterValue) {
+    //   const vm = this
+    //   const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
+    //   const filtered = vm.allData.filter(item => {
+    //     let valid = false
+    //     for (let i = 0; i < codeFields.length; i++) {
+    //       const fieldName = 'field' + i
+    //       if (item[fieldName].indexOf(filterValue) >= 0) {
+    //         valid = true
+    //         break
+    //       }
+    //     }
+    //     return valid
+    //   })
+    //   return filtered
+    // },
 
     onQueryChangedHandler (query) {
       const vm = this
@@ -337,34 +362,34 @@ export default {
       }
     },
 
-    refreshList2 () {
-      const vm = this
-      console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
-      const filterValue = vm.getFilterValue(vm.query.filter)
-      let filtered = []
-
-      vm.loading = true
-
-      if (filterValue === '') {
-        filtered = vm.allData
-      } else {
-        filtered = vm.getFilteredData(filterValue)
-      }
-      vm.total = filtered.length
-      let end = vm.query.offset + vm.query.limit
-      if (end > vm.total) {
-        end = vm.total
-      }
-      // console.log('AgentCodeTable :: refreshList :: allDAta.length = ' + vm.allData.length)
-      // console.log('AgentCodeTable :: refreshList :: offset = ' + vm.query.offset)
-      // console.log('AgentCodeTable :: refreshList :: vm.total = ' + vm.total)
-      // console.log('AgentCodeTable :: refreshList :: vm.query.limit = ' + vm.query.limit)
-      // console.log('AgentCodeTable :: refreshList :: end = ' + end)
-
-      vm.data = filtered.slice(vm.query.offset, end)
-      vm.loading = false
-      // console.log('AgentCodeTable :: watch(query)')
-    },
+    // refreshList2 () {
+    //   const vm = this
+    //   console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
+    //   const filterValue = vm.getFilterValue(vm.query.filter)
+    //   let filtered = []
+    //
+    //   vm.loading = true
+    //
+    //   if (filterValue === '') {
+    //     filtered = vm.allData
+    //   } else {
+    //     filtered = vm.getFilteredData(filterValue)
+    //   }
+    //   vm.total = filtered.length
+    //   let end = vm.query.offset + vm.query.limit
+    //   if (end > vm.total) {
+    //     end = vm.total
+    //   }
+    //   // console.log('AgentCodeTable :: refreshList :: allDAta.length = ' + vm.allData.length)
+    //   // console.log('AgentCodeTable :: refreshList :: offset = ' + vm.query.offset)
+    //   // console.log('AgentCodeTable :: refreshList :: vm.total = ' + vm.total)
+    //   // console.log('AgentCodeTable :: refreshList :: vm.query.limit = ' + vm.query.limit)
+    //   // console.log('AgentCodeTable :: refreshList :: end = ' + end)
+    //
+    //   vm.data = filtered.slice(vm.query.offset, end)
+    //   vm.loading = false
+    //   // console.log('AgentCodeTable :: watch(query)')
+    // },
     row2CodeInfo (row) {
       const vm = this
       const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
@@ -563,6 +588,7 @@ export default {
         // console.log('newFile')
         this.$nextTick(function () {
           this.edit = true
+          this.uploading = true
           this.$refs.upload.active = true
         })
       }
@@ -585,6 +611,62 @@ export default {
     },
 
     onUploaded (result) {
+      const vm = this
+      // result = {
+      //    code_fields: "barcode:string|serialno:string|actdate:date|exdate:date"
+      //    new: 9
+      //    updated: 0
+      // }
+      //
+      if (result.codeFields) {
+        const newCodeFieldsStr = result.codeFields
+        if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
+          if (newCodeFieldsStr !== vm.codeFieldsStr) {
+            // goAhead = false
+            const options = {
+              cancelText: vm.$t('buttons.close')
+            }
+            vm.$dialog.warning(vm.$t('messages.fields_not_matched_please_delete_all_first'), options)
+          } else {
+            vm.$emit('onCommand', {
+              command: 'setCodeFields',
+              value: newCodeFieldsStr
+            })
+            vm.$emit('onCommand', {
+              command: 'setRecordField',
+              fieldName: 'code_count',
+              fieldValue: result.codeCount
+            })
+            if (result.code_composition) {
+              vm.$emit('onCommand', {
+                command: 'setQrCodeComposition',
+                data: result.code_composition
+              })
+            }
+            let msgs = []
+            if (result.existing > 0) {
+              msgs.push(result.existing + ' code(s) are duplicated')
+            } else {
+              msgs.push('No code(s) is duplicated')
+            }
+            if (result.new > 0) {
+              msgs.push(result.new + ' code(s) are added')
+            } else {
+              msgs.push('no code(s) are added')
+            }
+            vm.$toaster.success(msgs.join(' and ') + '.')
+            vm.uploading = false
+          }
+          vm.onQueryChangedHandler(vm.query)
+        } else {
+          vm.onQueryChangedHandler(vm.query)
+        }
+      } else {
+        vm.$dialog.warning(vm.$t('messages.error_occurred'))
+      }
+    },
+
+    onUploaded2 (result) {
       const vm = this
       // result = {
       //    fields: [

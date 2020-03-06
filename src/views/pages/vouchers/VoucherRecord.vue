@@ -6,9 +6,12 @@
                :processingButtons="processingButtons"
                :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
-    <div class="w-100 text-right" style="margin-top:-20px;">
-      <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
-      <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record ? record.created_at : '' }}</div>
+    <div class="w-100 d-flex flex-row justify-content-between" style="margin-top:-20px;">
+      <div style="color:rgba(0,0,0,.6);">#{{ record ? record.id : 0 }}</div>
+      <div>
+        <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
+        <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record ? record.created_at : '' }}</div>
+      </div>
     </div>
 
     <div class="row mb-2" v-if="record">
@@ -96,9 +99,9 @@
         <b-tab class="bg-white py-2">
           <template v-slot:title>
             {{ $t('vouchers.codeTabLabel') }}
-            <div v-if="record && record.code_infos && record.code_infos.length>0"
+            <div v-if="record && record.code_count>0"
                  class="badge badge-warning">
-              {{ record.code_infos.length }}
+              {{ record.code_count }}
             </div>
           </template>
           <div class="container-fluid">
@@ -768,19 +771,19 @@
             // let codeInfo = vm.getCodeInfo(payload.row)
             // codeInfo[payload.fieldName] = payload.fieldValue
             break
-          case 'clear_all_code_info':
-            // vm.record.code_infos = []
-            vm.record.code_fields = ''
-            vm.record.code_infos = [];
-            // vm.record.qr_code_composition = ''
-
-            vm.qrcodeConfig.composition = ''
-            vm.barcodeConfig.composition = ''
-
-            if (typeof payload.callback === 'function') {
-              payload.callback()
-            }
-            break
+          // case 'clear_all_code_info':
+          //   // vm.record.code_infos = []
+          //   vm.record.code_fields = ''
+          //   vm.record.code_infos = [];
+          //   // vm.record.qr_code_composition = ''
+          //
+          //   vm.qrcodeConfig.composition = ''
+          //   vm.barcodeConfig.composition = ''
+          //
+          //   if (typeof payload.callback === 'function') {
+          //     payload.callback()
+          //   }
+          //   break
           case 'delete_code_info':
             vm.record.code_infos.splice(payload.index, 1)
             break
@@ -804,6 +807,9 @@
           // case 'saveTemp':
           //   vm.saveTemp()
           //   break
+          case 'setRecordField':
+            vm.record[payload.fieldName] = payload.fieldValue
+            break
           case 'setCodeFields':
             vm.record.code_fields = vm.createCodeFieldStr(payload.value)
             break
@@ -813,8 +819,12 @@
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
           case 'setQrCodeComposition':
-            vm.qrcodeConfig.composition = '{' + payload.data + '}'
-            vm.barcodeConfig.composition = '{' + payload.data + '}'
+            if (vm.qrcodeConfig.composition === '' || payload.data === '') {
+              vm.qrcodeConfig.composition = payload.data
+            }
+            if (vm.barcodeConfig.composition === '' || payload.data === '') {
+              vm.barcodeConfig.composition = payload.data
+            }
           // vm.record.qr_code_composition = '{' + payload.data + '}'
         }
       },

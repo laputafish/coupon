@@ -69,7 +69,8 @@
     "goto_login_page": "Goto login page",
     "template_copied_successfully": "Template copied successfully.",
     "type_delete_to_force_deletion": "Type 'DELETE' to force deletion.",
-    "this_agent_has_related_vouchers": "This agent has related voucher(s)."
+    "this_agent_has_related_vouchers": "This agent has related voucher(s).",
+    "all_codes_are_removed": "All codes are removed!"
   },
   "menu": {
     "dashboard": "Dashboard",
