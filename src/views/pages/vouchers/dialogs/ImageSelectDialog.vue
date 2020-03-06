@@ -203,6 +203,9 @@
 </script>
 
 <style>
+  /*************************/
+  /* Content Configuration */
+  /*************************/
   .left-pane {
     display: none;
     padding-right: 10px;
@@ -225,6 +228,9 @@
     min-height: 100%;
   }
 
+  /************************/
+  /* Dialog Configuration */
+  /************************/
   #imageSelectDialog {
     display: flex !important;
     flex-direction: column;
