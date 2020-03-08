@@ -26,14 +26,17 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Datatable from 'vue2-datatable-component'
 import VuejsDialog from 'vuejs-dialog'
+import VuejsDialogMixin from 'vuejs-dialog/dist/vuejs-dialog-mixin.min.js'
 import VModal from 'vue-js-modal'
 import Toaster from 'v-toaster'
 import VueClipboard from 'vue-clipboard2'
 import VueCarousel from 'vue-carousel'
+import VueLoading from 'vue-loading-overlay'
 
 // include the default style
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import 'v-toaster/dist/v-toaster.css'
+import 'vue-loading-overlay/dist/vue-loading.css'
 
 import {ValidationProvider, extend} from 'vee-validate'
 import {required, email, confirmed} from 'vee-validate/dist/rules'
@@ -51,6 +54,7 @@ Vue.use(VModal, 'dialog')
 Vue.use(Toaster, {timeout: 3000})
 Vue.use(VueClipboard)
 Vue.use(VueCarousel)
+Vue.use(VueLoading)
 
 // axios.interceptors.response.use(
 //     function (response) {
@@ -88,7 +92,7 @@ extend('confirmed', {...confirmed, message: 'Password not matched.'})
 extend('nonzero', value => {
   return value !== 0
 })
-
+Vue.component('vue-loading', VueLoading)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('validationProvider', ValidationProvider)
 

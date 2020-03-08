@@ -7,5 +7,9 @@ export const AUTH_GET = 'AUTH_GET'
 export const AUTH_POST = 'AUTH_POST'
 export const AUTH_PUT = 'AUTH_PUT'
 export const AUTH_DELETE = 'AUTH_DELETE'
-export const AUTH_REFRESH = 'AUTH_REFRESH' // refresh token
+export const AUTH_REFRESH = 'AUTH_REFRESH'
+
 export const REFRESH_AUTH_GET = 'REFRESH_AUTH_GET'
+export const REFRESH_AUTH_POST = 'REFRESH_AUTH_POST'
+export const REFRESH_AUTH_PUT = 'REFRESH_AUTH_PUT'
+export const REFRESH_AUTH_DELETE = 'REFRESH_AUTH_DELETE'

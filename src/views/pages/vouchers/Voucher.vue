@@ -20,7 +20,7 @@
         columns: (() => {
           const cols = [
             {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
-            {title: 'general.description', thComp: 'ThCommonHeader', tdComp: 'TdCommonClick', field: 'description'},
+            {title: 'general.description', thComp: 'ThCommonHeader', tdComp: 'TdDescription', field: 'description'},
             {title: 'agents.agent', thComp: 'ThCommonHeader', tdComp: 'TdAgent', field: 'agent'},
             {
               title: 'vouchers.activation_date',

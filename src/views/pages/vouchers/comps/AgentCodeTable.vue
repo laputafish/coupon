@@ -17,7 +17,7 @@
           </div>
         </div>
       </form>
-      <h3 v-if="loading" class="d-inline-block ml-3 my-0 mr-auto">
+      <h3 v-if="appLoading" class="d-inline-block ml-3 my-0 mr-auto">
          <font-awesome-icon icon="spinner" class="fa-spin"/>
       </h3>
       <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
@@ -51,8 +51,8 @@
           @input-filter="inputFilter"
           @input-file="inputFile"
           ref="upload">
-        <i v-if="uploading" class="fa fa-fw fa-spinner fa-spin"></i>
-        <i v-else class="fa fa-upload"></i>
+        <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
+        <font-awesome-icon icon="upload"></font-awesome-icon>
         Upload File
       </file-upload>
     </div>
@@ -73,6 +73,9 @@
   <!--</div>-->
   <!--</div>-->
   <!--</b-modal>-->
+  <vue-loading
+      :active.sync="uploading"
+      :can-cancel="true"></vue-loading>
 </div>
 </template>
 
@@ -81,7 +84,7 @@ import Vue from 'vue'
 import fileUpload from 'vue-upload-component'
 import dtCommon from '@/views/comps/datatable'
 import dtComps from './dtComps'
-import helpers from '@/helpers'
+// import helpers from '@/helpers'
 
 export default {
   components: {
@@ -93,8 +96,8 @@ export default {
   },
   data () {
     return {
+      appLoading: false,
       uploading: false,
-      loading: false,
       files: [],
       edit: false,
       columns: [],
@@ -108,7 +111,7 @@ export default {
         page: 0
       },
       xprops: {
-        buttons: ['view', 'delete'],
+        buttons: ['view', 'delete', 'update'],
         // buttons: ['edit','view','delete'],
         eventbus: new Vue(),
         actionButtonSize: 'xs'
@@ -126,18 +129,18 @@ export default {
           field: 'sent_on',
           sortable: true
         },
-        {title: 'general.status', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonStatus', field: 'status', sortable: true},
+        {title: 'general.status', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCodeStatus', field: 'status', sortable: true},
         {title: 'general.action', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonOpt', field: 'id', sortable: true}
       ],
       searchValue: '',
       searchInputTimer: 3000,
-      filterFields: '*',
-      codeInfos: {
-        type: Array,
-        default () {
-          return []
-        }
-      }
+      filterFields: '*'
+      // ,      codeInfos: {
+      //   type: Array,
+      //   default () {
+      //     return []
+      //   }
+      // }
     }
   },
   props: {
@@ -178,20 +181,21 @@ export default {
       },
       deep: true
     },
-    codeInfos: {
-      handler: function (newValue) {
-        // console.log('AgentCodeTable :: watch(codeInfos) :: newValue: ', newValue)
-        const vm = this
-        vm.setTableData(newValue)
-        vm.refreshList()
-      },
-      deep: true
-    },
+    // codeInfos: {
+    //   handler: function (newValue) {
+    //     // console.log('AgentCodeTable :: watch(codeInfos) :: newValue: ', newValue)
+    //     const vm = this
+    //     vm.setTableData(newValue)
+    //     vm.refreshList()
+    //   },
+    //   deep: true
+    // },
     codeFieldsStr: function (newValue) {
       // codeFields is string in format:
       //
       // Code:string|Serial No:string|activate_date:date
       //
+      console.log('watch(codeFieldsStr) : newValue: ' + newValue)
       const vm = this
       // console.log('watch(codeFieldsStr) :: newValue: ', newValue)
       vm.setColumns(newValue)
@@ -234,7 +238,7 @@ export default {
   mounted () {
     const vm = this
     vm.setColumns(vm.codeFieldsStr)
-    vm.setTableData(vm.codeInfos)
+    // vm.setTableData(vm.codeInfos)
     vm.query.page = 1
   },
   created () {
@@ -246,6 +250,43 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    saveCodeInfo (row) {
+      const vm = this
+      const codeInfo = vm.row2CodeInfo(row)
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucherId + '/codes/' + row.id,
+        data: codeInfo
+      }
+      vm.$store.dispatch('REFRESH_AUTH_PUT', data).then(
+        () => {
+          vm.$toaster.success(vm.$t('messages.saved_successfully'))
+        }
+      ).catch(
+        () => {
+          vm.$toaster.danger(vm.$t('messages.saved_failed'))
+        }
+      )
+    },
+    // row2CodeInfo (row) {
+    //   const vm = this
+    //   const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
+    //   const codeFieldCount = codeFields.length
+    //
+    //   const code = row['field0']
+    //   const extraFieldsArray = []
+    //   for (let i = 1; i < codeFieldCount; i++) {
+    //     const fieldName = 'field' + i
+    //     extraFieldsArray.push(row[fieldName])
+    //   }
+    //
+    //   */
+    //
+    //   return {
+    //     id: row.id,
+    //     order: row.order,
+    //     code:
+    //   }
+    // },
     exportExcel () {
       const vm = this
       vm.$emit('onCommand', {
@@ -340,6 +381,8 @@ export default {
 
     onQueryChangedHandler (query) {
       const vm = this
+      console.log('onQueryChangedHandler :: query: ', query)
+      console.log('onQueryChangedHandler :: codeFieldsStr: ', vm.codeFieldsStr)
       if (vm.voucherId !== 0) {
         console.log('onQueryChangedHandler :: voucherId = ' + vm.voucherId)
         if (typeof query === 'undefined') {
@@ -368,7 +411,7 @@ export default {
     //   const filterValue = vm.getFilterValue(vm.query.filter)
     //   let filtered = []
     //
-    //   vm.loading = true
+    //   vm.appLoading = true
     //
     //   if (filterValue === '') {
     //     filtered = vm.allData
@@ -387,7 +430,7 @@ export default {
     //   // console.log('AgentCodeTable :: refreshList :: end = ' + end)
     //
     //   vm.data = filtered.slice(vm.query.offset, end)
-    //   vm.loading = false
+    //   vm.appLoading = false
     //   // console.log('AgentCodeTable :: watch(query)')
     // },
     row2CodeInfo (row) {
@@ -406,16 +449,16 @@ export default {
         id: row.id,
         order: row.order,
         code: code,
-        "extra_fields": extraFieldsArray.join('|'),
+        'extra_fields': extraFieldsArray.join('|'),
         key: row.key,
         remark: row.remark,
-        "sent_on": row.sent_on,
+        'sent_on': row.sent_on,
         status: row.status
       }
     },
     onRowCommandHandler (payload) {
       const vm = this
-      // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+      console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
         case 'edit':
           alert('onRowCommandHandler :; edit')
@@ -435,18 +478,66 @@ export default {
               })
             })
           break
-        case 'updateField':
-          vm.$emit('onCommand', {
-            command: 'update_code_info_field',
-            row: vm.row2CodeInfo(payload.row),
-            fieldName: payload.fieldName,
-            fieldValue: payload.fieldValue
-          })
+        case 'update': // = save
+          vm.saveCodeInfo(payload.row);
           break
+        case 'updateField':
+          console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
+          // vm.$emit('onCommand', {
+          vm.setCodeFieldValue(
+            payload.row,
+            // vm.row2CodeInfo(payload.row),
+            payload.fieldName,
+            payload.fieldValue
+          )
+          // )
+          //   command: 'update_code_info_field',
+          //   row: vm.row2CodeInfo(payload.row),
+          //   fieldName: payload.fieldName,
+          //   fieldValue: payload.fieldValue
+          // })
+          break
+      }
+    },
+    setCodeFieldValue (row, fieldName, fieldValue) {
+      console.log('setCodeFieldValue :: row: ', row)
+      console.log('setCodeFieldValue :: fieldName: ', fieldName)
+      console.log('setCodeFieldValue :: fieldValue: ', fieldValue)
+      const vm = this
+      for (let i = 0; i < vm.data.length; i++) {
+        if (vm.data[i] == row) {
+          console.log('vm.data[' + i + '] == row')
+          vm.data[i][fieldName] = fieldValue
+          break
+        } else {
+          console.log('vm.data[' + i + '] not equals to row')
+        }
+      }
+    },
+    setCodeFieldValue2 (row, fieldName, fieldValue) {
+      const vm = this
+      // const result = null
+      console.log('setCodeFieldValue: row[code] = ' + row['code'])
+      console.log('setCodeFieldValue: row[extra_fields] = ' + row['extra_fields'])
+      for (let i = 0; i < vm.data.length; i++) {
+        const codeInfo = vm.data[i]
+        // console.log('record.codeInfo[code] = ' + codeInfo['code'])
+        // console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
+        //
+        // console.log('row.codeInfo[code] = ' + row['code'])
+        // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
+console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['code'])
+        if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
+          // console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
+          vm.data[i][fieldName] = fieldValue
+          // result = codeInfo
+          break
+        }
       }
     },
     getCodeFieldsFromStr (fieldStr) {
       const result = []
+      console.log('getCodeFieldsFromStr: fieldStr = ' + fieldStr)
       if (fieldStr !== null && fieldStr !== '') {
         const arTitleType = fieldStr.split('|')
         for (let i = 0; i < arTitleType.length; i++) {
@@ -458,6 +549,7 @@ export default {
           })
         }
       }
+      console.log('getCodeFieldsFromStr: result: ', result)
       return result
     },
 
@@ -467,6 +559,7 @@ export default {
       // Code:string|Serial No:string|activate_date:date
       //
       const vm = this
+      console.log('setColumns: fieldsStr = ' + fieldsStr)
       const codeFields = vm.getCodeFieldsFromStr(fieldsStr);
       // codeFields = [
       //    {
@@ -521,7 +614,8 @@ export default {
           const arFieldValues = fieldsStr.split('|')
 
           const obj = {
-            id: i
+            id: codeRecord['id'],
+            order: codeRecord['order']
           }
           for (let j = 0; j < arFieldValues.length; j++) {
             obj['field' + j] = arFieldValues[j]
@@ -620,13 +714,17 @@ export default {
       //
       if (result.codeFields) {
         const newCodeFieldsStr = result.codeFields
+        console.log('onUploaded :: vm.codeFieldStr = ' + vm.codeFieldsStr)
+        console.log('onUploaded :: newCodeFieldsStr = ' + newCodeFieldsStr)
         if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
+          console.log('onUploaded :: vm.codeFieldsStr !== blank')
           if (newCodeFieldsStr !== vm.codeFieldsStr) {
+            console.log('onUploaded :: newCodeFieldsStr !== vm.codeFieldsStr')
             // goAhead = false
             const options = {
               cancelText: vm.$t('buttons.close')
             }
-            vm.$dialog.warning(vm.$t('messages.fields_not_matched_please_delete_all_first'), options)
+            vm.$dialog.alert(vm.$t('messages.fields_not_matched_please_delete_all_first'), options)
           } else {
             vm.$emit('onCommand', {
               command: 'setCodeFields',
@@ -666,71 +764,71 @@ export default {
       }
     },
 
-    onUploaded2 (result) {
-      const vm = this
-      // result = {
-      //    fields: [
-      //      {title: 'PCC', type: 'string'},
-      //      {title: 'PCC', type: 'string'},
-      //      {title: 'PCC', type: 'string'},
-      //      {title: 'PCC', type: 'string'}
-      //    ],
-      //    values: [ ... ]
-      // }
-      //
-      const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
-      console.log('onUploaded :: newCodeFieldsStr: ', newCodeFieldsStr)
-      // let goAhead = true
-      // console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
-      // console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
-      if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
-        if (newCodeFieldsStr !== vm.codeFieldsStr) {
-          // goAhead = false
-          const options = {
-            okText: vm.$t('buttons.continue'),
-            cancelText: vm.$t('buttons.cancel')
-          }
-          vm.$dialog.confirm(vm.$t('messages.fields_not_matched_please_delete_all_first'), options).then(
-            () => {
-              vm.$emit('onCommand', {
-                command: 'clear_all_code_info',
-                callback: () => {
-                  vm.importCodes(result)
-                }
-              })
-            }
-          )
-        } else {
-          vm.importCodes(result)
-        }
-      } else {
-        vm.importCodes(result)
-      }
-    },
-
-    importCodes (result) {
-      console.log('importCodes :: result: ', result)
-      const vm = this
-      // const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
-
-      // console.log('codeFieldsStr: ' + vm.codeFieldsStr)
-      // console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
-
-      // console.log('equal: ' + (vm.codeFieldsStr === newCodeFieldsStr ? 'yes' : 'no'))
-      vm.$emit('onCommand', {
-        command: 'setCodeFields',
-        value: result.fields
-      })
-      vm.$emit('onCommand', {
-        command: 'setCodeDataRows',
-        value: result.data
-      })
-
-      vm.$emit('onCommand', {
-        command: 'setQrCodeComposition',
-        data: helpers.str2token('code_', result.fields[0].title)
-      })
-    },
+    // onUploaded2 (result) {
+    //   const vm = this
+    //   // result = {
+    //   //    fields: [
+    //   //      {title: 'PCC', type: 'string'},
+    //   //      {title: 'PCC', type: 'string'},
+    //   //      {title: 'PCC', type: 'string'},
+    //   //      {title: 'PCC', type: 'string'}
+    //   //    ],
+    //   //    values: [ ... ]
+    //   // }
+    //   //
+    //   const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
+    //   console.log('onUploaded :: newCodeFieldsStr: ', newCodeFieldsStr)
+    //   // let goAhead = true
+    //   // console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
+    //   // console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
+    //   if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
+    //     if (newCodeFieldsStr !== vm.codeFieldsStr) {
+    //       // goAhead = false
+    //       const options = {
+    //         okText: vm.$t('buttons.continue'),
+    //         cancelText: vm.$t('buttons.cancel')
+    //       }
+    //       vm.$dialog.confirm(vm.$t('messages.fields_not_matched_please_delete_all_first'), options).then(
+    //         () => {
+    //           vm.$emit('onCommand', {
+    //             command: 'clear_all_code_info',
+    //             callback: () => {
+    //               vm.importCodes(result)
+    //             }
+    //           })
+    //         }
+    //       )
+    //     } else {
+    //       vm.importCodes(result)
+    //     }
+    //   } else {
+    //     vm.importCodes(result)
+    //   }
+    // },
+    //
+    // importCodes (result) {
+    //   console.log('importCodes :: result: ', result)
+    //   const vm = this
+    //   // const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
+    //
+    //   // console.log('codeFieldsStr: ' + vm.codeFieldsStr)
+    //   // console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
+    //
+    //   // console.log('equal: ' + (vm.codeFieldsStr === newCodeFieldsStr ? 'yes' : 'no'))
+    //   vm.$emit('onCommand', {
+    //     command: 'setCodeFields',
+    //     value: result.fields
+    //   })
+    //   vm.$emit('onCommand', {
+    //     command: 'setCodeDataRows',
+    //     value: result.data
+    //   })
+    //
+    //   vm.$emit('onCommand', {
+    //     command: 'setQrCodeComposition',
+    //     data: helpers.str2token('code_', result.fields[0].title)
+    //   })
+    // },
     getCodeFieldsStrFromArray (fields) {
       const result = []
       for (let i = 0; i < fields.length; i++) {

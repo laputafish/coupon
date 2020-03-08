@@ -70,7 +70,8 @@
     "template_copied_successfully": "Template copied successfully.",
     "type_delete_to_force_deletion": "Type 'DELETE' to force deletion.",
     "this_agent_has_related_vouchers": "This agent has related voucher(s).",
-    "all_codes_are_removed": "All codes are removed!"
+    "all_codes_are_removed": "All codes are removed!",
+    "template_missing": "Template Missing!"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -131,7 +132,8 @@
     "copyTemplateFrom": "Copy Template From ...",
     "no_of_codes": "No. of Codes",
     "codeTabLabel": "Coupon Codes",
-    "images": "Images"
+    "images": "Images",
+    "notes_or_version": "notes / version"
   },
   "login": {
     "digital_coupon": "Digital Coupon",

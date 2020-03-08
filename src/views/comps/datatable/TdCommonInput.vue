@@ -28,6 +28,7 @@ export default {
   methods: {
     updateFieldValue (newValue) {
       const vm = this
+      console.log('TdCommonInput :: updateFieldValue : newValue: ', newValue)
       vm.xprops.eventbus.$emit('onRowCommand', {
         command: 'updateField',
         row: vm.row,

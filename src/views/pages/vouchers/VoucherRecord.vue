@@ -1,4 +1,4 @@
-<template>
+a<template>
   <div class="container-fluid">
     <title-row :record="record"
                :titleField="titleField"
@@ -18,7 +18,25 @@
       <!-- ********* -->
       <!-- Row #0 -->
       <!-- ********* -->
-      <data-input width="4" id="description" labelTag="general.description" v-model="record.description"></data-input>
+      <div class="col-sm-4">
+        <div class="form-group mb-1">
+          <label for="description">{{ $t('general.description') }}</label>
+          <input class="form-control"
+                 id="description"
+                 name="description"
+                 type="text"
+                 v-model="record.description"/>
+          <input class="form-control"
+                 :placeholder="$t('vouchers.notes_or_version')"
+                 id="notes"
+                 name="notes"
+                 type="text"
+                 style="padding: 0.25rem 0.75rem;line-height: 1.2;height:1.4rem;"
+                 v-model="record.notes"/>
+        </div>
+      </div>
+
+      <!--<data-input width="4" id="description" labelTag="general.description" v-model="record.description"></data-input>-->
       <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
                        v-model="record.activation_date"></data-input-date>
       <data-input-date width="2" id="expiry_date" labelTag="vouchers.expiry_date"
@@ -765,12 +783,13 @@
           case 'select_voucher':
             alert('voucher selected')
             break
-          case 'update_code_info_field':
-            // console.log('update_code_info_field :: payload: ', payload)
-            vm.setCodeFieldValue(payload.row, payload.fieldName, payload.fieldValue)
-            // let codeInfo = vm.getCodeInfo(payload.row)
-            // codeInfo[payload.fieldName] = payload.fieldValue
-            break
+          // case 'update_code_info_field':
+          //   // console.log('update_code_info_field :: payload: ', payload)
+          //   vm.setCodeFieldValue(payload.row, payload.fieldName, payload.fieldValue)
+          //   // let codeInfo = vm.getCodeInfo(payload.row)
+          //   // codeInfo[payload.fieldName] = payload.fieldValue
+          //   break
+
           // case 'clear_all_code_info':
           //   // vm.record.code_infos = []
           //   vm.record.code_fields = ''
@@ -788,12 +807,16 @@
             vm.record.code_infos.splice(payload.index, 1)
             break
           case 'view_leaflet':
-            if (payload.row.key === '') {
-              vm.createTempLeaflet(payload.row)
+            if (vm.record.template && vm.record.template.trim() !== '') {
+              if (payload.row.key === '') {
+                vm.createTempLeaflet(payload.row)
+              } else {
+                vm.save(() => {
+                  vm.showLeaflet(payload.row.key)
+                })
+              }
             } else {
-              vm.save(() => {
-                vm.showLeaflet(payload.row.key)
-              })
+              vm.$dialog.alert(vm.$t('messages.template_missing'))
             }
             break
           case 'save':
@@ -811,7 +834,8 @@
             vm.record[payload.fieldName] = payload.fieldValue
             break
           case 'setCodeFields':
-            vm.record.code_fields = vm.createCodeFieldStr(payload.value)
+            vm.record.code_fields = payload.value // vm.createCodeFieldStr(payload.value)
+            console.log('VoucherRecord :: setCodeFields = ' + vm.record.code_fields)
             break
           case 'setCodeDataRows':
             // console.log('onCommandHandler :: setCodeData :: payload.value: ', payload.value)
@@ -842,25 +866,25 @@
           }
         )
       },
-      setCodeFieldValue (row, fieldName, fieldValue) {
-        const vm = this
-        // const result = null
-        for (let i = 0; i < vm.record.code_infos.length; i++) {
-          const codeInfo = vm.record.code_infos[i]
-          // console.log('record.codeInfo[code] = ' + codeInfo['code'])
-          // console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
-          //
-          // console.log('row.codeInfo[code] = ' + row['code'])
-          // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
-
-          if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
-            // console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
-            vm.record.code_infos[i][fieldName] = fieldValue
-            // result = codeInfo
-            break
-          }
-        }
-      },
+      // setCodeFieldValue (row, fieldName, fieldValue) {
+      //   const vm = this
+      //   // const result = null
+      //   for (let i = 0; i < vm.record.code_infos.length; i++) {
+      //     const codeInfo = vm.record.code_infos[i]
+      //     // console.log('record.codeInfo[code] = ' + codeInfo['code'])
+      //     // console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
+      //     //
+      //     // console.log('row.codeInfo[code] = ' + row['code'])
+      //     // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
+      //
+      //     if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
+      //       // console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
+      //       vm.record.code_infos[i][fieldName] = fieldValue
+      //       // result = codeInfo
+      //       break
+      //     }
+      //   }
+      // },
       getCodeInfo (row) {
         const vm = this
         let result = null
@@ -883,9 +907,9 @@
         // codeDataList = [
         //    ['value1', 'value2', 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4'],
-        //    ['value1', 'value2', 'value3', 'value4'],
+        //    ['value1', 'value2',setCodeFields 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4']
-        // ]
+        // ]setCodeFields
         console.log('updateCodeInfos :: newCodeDataList: ', newCodeDataList)
         const vm = this
         let existingCodes = []
