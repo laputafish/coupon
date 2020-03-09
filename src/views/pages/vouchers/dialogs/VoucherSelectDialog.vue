@@ -34,15 +34,25 @@
                                :class="{'active': selectedVoucher==voucher}"
                                class="voucher-item"
                                :key="voucher.id">
-              <h5 class="p-0 m-0">{{ voucher.description }}</h5>
-              <small class="voucher-note d-flex flex-row justify-content-between">
-                <div class="mr-auto d-inline-block">
-                  Coupon Count: <div class="d-inline note-value">{{ voucher.code_count }}</div>
-                </div>
-                <div class="d-inline-block">
-                  Created at: <div class="d-inline note-value">{{ voucher.created_at }}</div>
-                </div>
-              </small>
+              <div class="float-right">
+                <small class="voucher-note d-flex flex-column justify-content-start">
+                  <div class="">
+                    {{ $t('vouchers.coupons') }}: <div class="d-inline note-value">{{ voucher.code_count }}</div>
+                  </div>
+                  <div class="">
+                    {{ $t('general.created_at') }}: <div class="d-inline note-value">{{ voucher.created_at }}</div>
+                  </div>
+                </small>
+              </div>
+              <div class="d-flex flex-column justify-content-center voucher-item-title-block">
+              <template v-if="voucher.notes">
+                <h5 class="p-0 m-0 voucher-item-description">{{ voucher.description }}</h5>
+                <small class="voucher-item-notes">{{ voucher.notes }}</small>
+              </template>
+              <template v-else>
+                <h5 class="p-0 m-0 voucher-item-description">{{ voucher.description }}</h5>
+              </template>
+              </div>
             </b-list-group-item>
           </b-list-group>
         </div><!-- right-pane-scroll -->
@@ -189,12 +199,14 @@
 </script>
 
 <style>
-  .left-pane {
+  #voucherSelectDialog .left-pane {
+    display: block;
     padding-right: 10px;
     width: 40%;
   }
 
-  .right-pane {
+  #voucherSelectDialog .right-pane {
+    display: block;
     width: 60%;
   }
 
@@ -204,6 +216,23 @@
     min-height: 100%;
   }
 
+  .right-pane-scroll .voucher-item-description {
+    line-height: 1.1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .right-pane-scroll .voucher-item-notes {
+    line-height: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .right-pane-scroll .voucher-item-notes {
+    color: rgba(0,0,0,.6);
+  }
+  .right-pane-scroll .voucher-item-title-block {
+    height: 32px;
+  }
   .right-pane-scroll {
     overflow-y: scroll;
     height: 0;
@@ -234,6 +263,15 @@
     flex-direction: row;
   }
 
+  #voucherSelectDialog .list-group-item.active {
+    background-color: #0080ff;
+  }
+  #voucherSelectDialog .list-group-item.active:hover {
+    background-color: #3299ff;
+  }
+  #voucherSelectDialog .list-group-item:hover {
+    background-color: #f6f6f6;
+  }
   #voucherSelectDialog .list-group-item {
     cursor: pointer;
   }

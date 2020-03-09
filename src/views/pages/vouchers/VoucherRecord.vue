@@ -7,7 +7,7 @@ a<template>
                :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
     <div class="w-100 d-flex flex-row justify-content-between" style="margin-top:-20px;">
-      <div style="color:rgba(0,0,0,.6);">#{{ record ? record.id : 0 }}</div>
+      <div style="color:rgba(0,0,0,.6);">{{ record ? '#' + record.id : '' }}</div>
       <div>
         <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
         <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record ? record.created_at : '' }}</div>
@@ -18,16 +18,20 @@ a<template>
       <!-- ********* -->
       <!-- Row #0 -->
       <!-- ********* -->
-      <div class="col-sm-4">
+      <!--<data-input width="3" id="description" labelTag="vouchers.title"-->
+                  <!--v-model="record.description"></data-input>-->
+      <!--<data-input width="3" id="notes" labelTag="vouchers.sub_title"-->
+                  <!--v-model="record.notes"></data-input>-->
+      <div class="col-sm-6">
         <div class="form-group mb-1">
-          <label for="description">{{ $t('general.description') }}</label>
+          <label for="description">{{ $t('vouchers.title') }}</label>
           <input class="form-control"
                  id="description"
                  name="description"
                  type="text"
                  v-model="record.description"/>
           <input class="form-control"
-                 :placeholder="$t('vouchers.notes_or_version')"
+                 :placeholder="$t('vouchers.sub_title')"
                  id="notes"
                  name="notes"
                  type="text"
@@ -41,7 +45,7 @@ a<template>
                        v-model="record.activation_date"></data-input-date>
       <data-input-date width="2" id="expiry_date" labelTag="vouchers.expiry_date"
                        v-model="record.expiry_date"></data-input-date>
-      <data-input-readonly width="4" id="status" labelTag="general.status"
+      <data-input-readonly width="2" id="status" labelTag="general.status"
                            :value="$t('status.'+record.status)"></data-input-readonly>
 
       <!-- ********* -->
@@ -94,6 +98,7 @@ a<template>
           <div class="line-height-1 text-nowrap">{{ barcodeConfig.height }}</div>
         </div>
       </div>
+
       <!--<data-input width="3"-->
       <!--id="qr_code_composition"-->
       <!--labelTag="vouchers.qr_code_composition"-->
@@ -170,7 +175,7 @@ a<template>
                     :options="tinymceOptions"
                     v-model="record.template"></tinymce>
                 <div class="flex-grow-0 p-2 bg-muted ml-2">
-                  <b-button @click="showCopyTemplateDialog=true"
+                  <b-button @click="showingCopyTemplateDialog=true"
                             class="btn btn-primary mb-3 w-100">
                     {{ $t('vouchers.copyTemplateFrom') }}
                   </b-button>
@@ -194,7 +199,7 @@ a<template>
                     <!--class="btn btn-primary mb-3 w-100">-->
                     <!--{{ $t('vouchers.copyTemplateFrom') }}-->
                     <!--</b-button>-->
-                    <b-button @click="showCopyTemplateDialog=true"
+                    <b-button @click="showingCopyTemplateDialog=true"
                               class="btn btn-primary mb-3 w-100">
                       {{ $t('vouchers.copyTemplateFrom') }}
                     </b-button>
@@ -226,11 +231,11 @@ a<template>
     <voucher-select-dialog
         :title="$t('vouchers.copyTemplateFrom')"
         :initialAgentId="record ? record.agent_id : 0"
-        v-model="showCopyTemplateDialog"
+        v-model="showingCopyTemplateDialog"
         @onCommand="onCommandHandler"></voucher-select-dialog>
     <image-select-dialog
         :title="$t('vouchers.images')"
-        v-model="showImageSelectDialog"
+        v-model="showingImageSelectDialog"
         @onCommand="onCommandHandler"></image-select-dialog>
   </div>
 </template>
@@ -284,7 +289,7 @@ a<template>
         // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
         defaultTemplateKeyGroups: [],
         // agents: [],
-        // showCopyTemplateDialogx: false,
+        // showingCopyTemplateDialogx: false,
         allVouchers: [],
 
         // Template selection
@@ -292,8 +297,8 @@ a<template>
         // selectedVoucher: null,
         agentVouchers: [],
 
-        showCopyTemplateDialog: false,
-        showImageSelectDialog: false,
+        showingCopyTemplateDialog: false,
+        showingImageSelectDialog: false,
         processingButtons: [],
         tinymceOptions: {
           twoWay: true
@@ -439,8 +444,8 @@ a<template>
     mounted () {
       const vm = this
 
-      vm.showCopyTemplateDialog = false
-      vm.showImageSelectDialog = false
+      vm.showingCopyTemplateDialog = false
+      vm.showingImageSelectDialog = false
 
       vm.$store.dispatch('FETCH_AGENTS')
       // vm.fetchAgents();
@@ -495,7 +500,7 @@ a<template>
       copyTemplate (selectedVoucher) {
         const vm = this
         // console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
-        vm.showCopyTemplateDialog = false
+        vm.showingCopyTemplateDialog = false
         if (vm.record.template && vm.record.template.trim() !== '') {
           vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
             () => {
@@ -557,7 +562,7 @@ a<template>
         console.log('VoucherRecord :: btnSelectImage :: ', btnSelectImage)
 
         $(btnSelectImage).off('click').on('click', function () {
-          vm.showImageSelectDialog = true
+          vm.showingImageSelectDialog = true
         })
 
 

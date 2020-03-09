@@ -56,6 +56,13 @@ export default {
   border: none;
   cursor: pointer;
 }
+.image-item:hover .image-border {
+  border-color: #f6f6f6;
+}
+
+.image-item.active:hover .image-border {
+  border-color: #3299ff;
+}
 .image-item .image-border {
   border: 5px solid transparent;
   position: absolute;
@@ -66,10 +73,13 @@ export default {
 }
 
 .image-item.active .image-border {
-  border-color: rgba(0, 123, 255, 1);
+  border-color:  #0080ff;
 }
 .image-item img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
 }
 </style>

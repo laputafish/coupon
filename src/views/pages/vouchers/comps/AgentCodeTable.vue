@@ -712,6 +712,7 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
       //    updated: 0
       // }
       //
+      vm.uploading = false
       if (result.codeFields) {
         const newCodeFieldsStr = result.codeFields
         console.log('onUploaded :: vm.codeFieldStr = ' + vm.codeFieldsStr)
@@ -753,14 +754,13 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
               msgs.push('no code(s) are added')
             }
             vm.$toaster.success(msgs.join(' and ') + '.')
-            vm.uploading = false
           }
           vm.onQueryChangedHandler(vm.query)
         } else {
           vm.onQueryChangedHandler(vm.query)
         }
       } else {
-        vm.$dialog.warning(vm.$t('messages.error_occurred'))
+        vm.$dialog.alert(vm.$t('messages.error_occurred_maybe_invalid_format'))
       }
     },
 

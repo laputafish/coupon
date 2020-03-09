@@ -71,7 +71,8 @@
     "type_delete_to_force_deletion": "Type 'DELETE' to force deletion.",
     "this_agent_has_related_vouchers": "This agent has related voucher(s).",
     "all_codes_are_removed": "All codes are removed!",
-    "template_missing": "Template Missing!"
+    "template_missing": "Template Missing!",
+    "error_occurred_maybe_invalid_format": "Error occurred. Maybe Invalid Format!"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -133,7 +134,9 @@
     "no_of_codes": "No. of Codes",
     "codeTabLabel": "Coupon Codes",
     "images": "Images",
-    "notes_or_version": "notes / version"
+    "title": "Title",
+    "sub_title": "Sub-title",
+    "coupons": "Coupon(s)"
   },
   "login": {
     "digital_coupon": "Digital Coupon",
