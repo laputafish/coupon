@@ -18375,13 +18375,13 @@ html.maximized-card {
   font-size: 0.875rem !important;
 }
 
-.btn-default {
+.btn.btn-default {
   background-color: #f8f9fa;
   border-color: #ddd;
   color: #444;
 }
 
-.btn-default:hover, .btn-default:active, .btn-default.hover {
+.btn.btn-default:hover, .btn-default:active, .btn-default.hover {
   background-color: #e9ecef;
   color: #2b2b2b;
 }

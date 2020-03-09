@@ -11,8 +11,15 @@
       ...dtComps,
       dataRecord
     },
+    computed: {
+      agents () {
+        const vm = this
+        return vm.$store.getters.agents
+      }
+    },
     data () {
       return {
+        tableFilers: [],
         tableId: 'voucher-table',
         moduleNameTag: 'menu.vouchers',
         apiPath: '/vouchers',
@@ -29,6 +36,7 @@
               field: 'activation_date'
             },
             {title: 'general.expiry_date', thComp: 'ThCommonHeader', tdComp: 'TdCommonDate', field: 'expiry_date'},
+            {title: 'general.created_at', thComp: 'ThCommonHeader', tdComp: 'TdCommonDate', field: 'created_at'},
             {
               title: 'vouchers.no_of_codes',
               thComp: 'ThCommonHeader',
@@ -49,10 +57,39 @@
         ]
       }
     },
+    watch: {
+      agents: function (newValue) {
+        this.setTableFilters()
+      },
+      selectedFilter: function (newValue) {
+        const vm = this
+        if (newValue === 0) {
+          vm.query.filter = ''
+        } else {
+          vm.query.filter = 'agent_id:' + newValue
+        }
+      }
+
+    },
     methods: {
+      setTableFilters () {
+        const vm = this
+        let filters = [
+          {caption: 'All', value: 0}
+        ]
+        for (let i = 0; i < vm.agents.length; i++) {
+          filters.push({
+            caption: vm.agents[i].name,
+            value: vm.agents[i].id
+          })
+        }
+        vm.tableFilters = filters
+      },
       onMounting () {
+        const vm = this
         this.xprops.buttons = ['edit', 'delete']
         // this.xprops.buttons = ['edit', 'print', 'download', 'delete']
+        vm.setTableFilters()
       },
       onRecordCreated (responseData) {
         const vm = this

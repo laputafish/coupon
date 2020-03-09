@@ -220,12 +220,14 @@
     line-height: 1.1;
     white-space: nowrap;
     text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .right-pane-scroll .voucher-item-notes {
     line-height: 1;
     white-space: nowrap;
     text-overflow: ellipsis;
+    overflow: hidden;
   }
   .right-pane-scroll .voucher-item-notes {
     color: rgba(0,0,0,.6);

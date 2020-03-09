@@ -1,5 +1,5 @@
 <template>
-  <div class="action-btn-group btn-group-gap"
+  <div class="text-nowrap action-btn-group btn-group-gap"
     :class="customClass">
     <button v-for="(btn,index) in buttons"
             :key="index"

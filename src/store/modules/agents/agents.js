@@ -7,12 +7,14 @@ const state = {
 
 const getters = {
   agents: (state) => {
+    console.log('getters :: agents: ', state.agents)
     return state.agents
   }
 }
 
 const mutations = {
   setAgents (state, payload) {
+    console.log('setAgents :: payload: ', payload)
     state.agents = payload
   }
 }
@@ -20,6 +22,7 @@ const mutations = {
 const actions = {
   [types.FETCH_AGENTS] ({commit, rootGetters, dispatch}) {
     return new Promise((resolve, reject) => {
+      console.log('FETCH_AGENTS')
       const data = {
         urlCommand: '/agents',
         options: {

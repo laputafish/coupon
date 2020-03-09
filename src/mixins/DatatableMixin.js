@@ -15,6 +15,17 @@ const mixin = Vue.util.mergeOptions(appMixin, {
         <div class="bg-module mx-2 p-2">
           <div v-if="mode==='list'" class="container-fluid">
             <div class="row">
+              <div v-if="tableFilters.length>0" class="col-12 text-center">
+                <div class="btn-group">
+                  <button class="btn"
+                    v-for="filter in tableFilters"
+                    @click="selectedFilter=filter.value"
+                    :key="filter.value"
+                    :class="{'btn-primary':selectedFilter===filter.value,'btn-default':selectedFilter!==filter.value}">
+                    {{ filter.caption }}
+                  </button>
+                </div>
+              </div>
               <div class="col-12">
                 <div class="btn-toolbar mb-1 justify-content-between align-items-center"
                  role="toolbar" 
@@ -38,6 +49,7 @@ const mixin = Vue.util.mergeOptions(appMixin, {
                   <button type="button"
                           @click="onCommandHandler({command: 'new'})"
                           class="btn btn-primary ml-auto">
+                    <i class="fas fa-plus"></i>
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
@@ -65,6 +77,8 @@ const mixin = Vue.util.mergeOptions(appMixin, {
   },
   data () {
     return {
+      tableFilters: [],
+      selectedFilter: 0,
       searchValue: '',
       searchable: false,
       loading: false,
