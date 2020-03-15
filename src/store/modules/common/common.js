@@ -140,6 +140,7 @@ const actions = {
 
   [types.AUTH_GET] ({dispatch, rootGetters}, payload) {
     return new Promise((resolve, reject) => {
+      console.log('AUTH_GET :: payload: ', payload)
       const token = rootGetters.accessToken
       // console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
       if (typeof payload !== 'object') {
@@ -200,6 +201,7 @@ const actions = {
       } else {
         urlCommand = payload
       }
+      console.log('COMMON_GET :: getPayload: ', getPayload)
       const url = rootGetters.apiUrl + urlCommand
       // console.log('COMMON_GET url=' + url)
       // console.log('COMMON_GET config: ', getPayload)

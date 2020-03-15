@@ -98,27 +98,14 @@ a<template>
           <div class="line-height-1 text-nowrap">{{ barcodeConfig.height }}</div>
         </div>
       </div>
-
-      <!--<data-input width="3"-->
-      <!--id="qr_code_composition"-->
-      <!--labelTag="vouchers.qr_code_composition"-->
-      <!--v-model="record.qr_code_composition"></data-input>-->
-
-      <!--<data-input-slider width="3" id="qr_code_size" labelTag="vouchers.qr_code_size" v-model="record.qr_code_size"-->
-      <!--:min="100" :max="300"></data-input-slider>-->
-
-
-      <!--<div class="col-sm-2">-->
-      <!--<div class="form-group">-->
-      <!--<label for="status">{{ $t('general.status') }}</label>-->
-      <!--<input readonly class="form-control" id="status" name="status"-->
-      <!--type="text"-->
-      <!--:value="$t('status.' + record.status)"/>-->
-      <!--</div>-->
-      <!--</div>-->
     </div>
     <div v-if="record" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
+        <!--
+         ******************
+          Agent Code Table
+         ******************
+        -->
         <b-tab class="bg-white py-2">
           <template v-slot:title>
             {{ $t('vouchers.codeTabLabel') }}
@@ -144,18 +131,103 @@ a<template>
             </div>
           </div>
         </b-tab>
-        <!--<b-tab title="Emails" class="bg-white py-2">-->
-        <!--<div class="container-fluid">-->
-        <!--<div class="row">-->
-        <!--<div class="col-12">-->
-        <!--<email-table-->
-        <!--ref="emailTable"-->
-        <!--@onCommand="onCommandHandler"-->
-        <!--:emails="record.emails"></email-table>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</b-tab>-->
+
+        <!--
+        *****************
+         Sharing
+        *****************
+        -->
+        <b-tab id="sharingTab" title="Sharing" class="bg-white py-2">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="d-inline-block">
+                  <div class="image-wrapper m-2">
+                    <div class="image-bkgd">
+                      <img src="http://evoucherapi/media/image/6"/>
+                    </div>
+                  </div>
+                  <div class="btn-toolbar mt-1 justify-content-center">
+                    <!-- upload sharing image -->
+                    <file-upload
+                        extensions="jpg,jpeg,gif,png"
+                        accept="image/png,image/gif,image/jpeg,image/webp"
+                        input-id="imageFile"
+                        name="file"
+                        class="btn btn-primary"
+                        :post-action="sharingImagePostAction"
+                        :drop="!editingUploadFile"
+                        :data="{id: record.id}"
+                        :headers="authHeaders"
+                        v-model="files"
+                        @input-filter="inputFilter"
+                        @input-file="inputFile"
+                        ref="uploadSharingImage">
+                      <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
+                      <font-awesome-icon icon="upload"></font-awesome-icon>
+                      Upload File
+                    </file-upload>
+                    <button type="button"
+                            class="btn btn-danger m-x-1">
+                      <i class="fas fa-times"></i>&nbsp;Remove</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group mb-1">
+                      <label for="sharingTitle">{{ $t('general.title') }}</label>
+                      <input class="form-control"
+                             id="sharingTitle"
+                             name="sharingTitle"
+                             type="text"
+                             v-model="record.sharingTitle"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group mb-1">
+                      <label for="sharingDescription">{{ $t('general.description') }}</label>
+                      <textarea rows="6"
+                                 class="form-control"
+                             id="sharingDescription"
+                             name="sharingDescription"
+                             type="text"
+                             v-model="record.sharingDescription"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-3"></div>
+            </div>
+          </div>
+        </b-tab>
+
+        <!--
+        *****************
+         Email List
+        *****************
+        -->
+        <b-tab v-if="false" title="Emails" class="bg-white py-2">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <email-table
+                ref="emailTable"
+                @onCommand="onCommandHandler"
+                :emails="record.emails"></email-table>
+              </div>
+            </div>
+          </div>
+        </b-tab>
+
+        <!--
+        *****************
+         Template Editor
+        *****************
+        -->
         <b-tab title="Leaflet Template" class="bg-white py-2">
           <div class="container-fluid">
             <div class="row">
@@ -228,6 +300,13 @@ a<template>
         <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin"/>
       </h4>
     </div>
+    <image-cropper-dialog
+        id="imageCropperDialog"
+        ref="imageCropperDialog"
+      :imageSrc="sharingImageSrc"
+      :voucherId="recordId"
+      v-model="showingImageCropperDialog"
+      @onCommand="onCommandHandler"></image-cropper-dialog>
     <voucher-select-dialog
         :title="$t('vouchers.copyTemplateFrom')"
         :initialAgentId="record ? record.agent_id : 0"
@@ -235,14 +314,17 @@ a<template>
         @onCommand="onCommandHandler"></voucher-select-dialog>
     <image-select-dialog
         :title="$t('vouchers.images')"
+        scope="tinymce"
         v-model="showingImageSelectDialog"
         @onCommand="onCommandHandler"></image-select-dialog>
   </div>
 </template>
 
 <script>
+  import vueCropper from 'vue-cropper'
   import titleRow from '@/views/comps/TitleRow'
   import formInputs from '@/views/comps/forms'
+  import fileUpload from 'vue-upload-component'
 
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
@@ -258,13 +340,16 @@ a<template>
 
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
   import imageSelectDialog from './dialogs/ImageSelectDialog'
+  import imageCropperDialog from './dialogs/ImageCropperDialog'
 
   import $ from 'jquery'
 
   export default {
     mixins: [DataRecordMixin, appMixin],
     components: {
+      imageCropperDialog,
       agentCodeTable,
+      fileUpload,
       // emailTable,
       // datePicker,
       tinymce,
@@ -285,6 +370,11 @@ a<template>
         apiPath: '/vouchers',
         titleField: 'description',
         record: null,
+
+        // Upload Sharing Image
+        editingUploadFile: false,
+        files: [],
+
         loading: false,
         // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
         defaultTemplateKeyGroups: [],
@@ -299,6 +389,11 @@ a<template>
 
         showingCopyTemplateDialog: false,
         showingImageSelectDialog: false,
+
+        // sharing Image properties
+        sharingImageSrc: '',
+        showingImageCropperDialog: false,
+
         processingButtons: [],
         tinymceOptions: {
           twoWay: true
@@ -393,6 +488,16 @@ a<template>
       }
     },
     computed: {
+      authHeaders () {
+        const vm = this
+        return {
+          Authorization: 'bearer ' + vm.$store.getters.accessToken
+        }
+      },
+      sharingImagePostAction () {
+        const vm = this
+        return vm.$store.getters.apiUrl + '/media/upload'
+      },
       agents () {
         return this.$store.getters.agents
       },
@@ -403,7 +508,7 @@ a<template>
           result = vm.allVouchers.filter(voucher => {
             return voucher.id !== vm.record.id
           })
-        }
+        }d
         return result
       },
       templateKeyGroups () {
@@ -446,6 +551,7 @@ a<template>
 
       vm.showingCopyTemplateDialog = false
       vm.showingImageSelectDialog = false
+      vm.showingImageCropperDialog = false
 
       vm.$store.dispatch('FETCH_AGENTS')
       // vm.fetchAgents();
@@ -455,6 +561,45 @@ a<template>
       vm.refresh(vm.recordId)
     },
     methods: {
+      inputFilter (newFile, oldFile, prevent) {
+        const vm = this
+        if (newFile && !oldFile) {
+          // Filter non-image file
+          if (!/\.(jpg|jpeg|png|gif)$/i.test(newFile.name)) {
+            vm.$toaster.warning('Invalid Image File Format!')
+            return prevent()
+          }
+        }
+      },
+
+      inputFile (newFile, oldFile) {
+        const vm = this
+        console.log('inputFile')
+        if (newFile && !oldFile) {
+          this.$nextTick(function () {
+            this.editingUploadFile = true
+            this.uploading = true
+            this.$refs.uploadSharingImage.active = true
+          })
+        }
+        if (!newFile && oldFile) {
+          this.edit = false
+        }
+        if (newFile && newFile.success) {
+          vm.onUploaded(newFile.response.result)
+        }
+      },
+
+      onUploaded (result) {
+        const vm = this
+        console.log('onUploaded :: result: ', result)
+        vm.sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
+        vm.$bvModal.show('imageCropperDialog')
+        // vm.showingImageCropperDialog = true
+        vm.$nextTick(() => {
+          vm.$refs.imageCropperDialog.startCrop()
+        })
+      },
       onRefreshed () {
         const vm = this
 
@@ -581,9 +726,10 @@ a<template>
         var input = inpUpload.get(0);
         var data = new FormData();
         data.append('file', input.files[0]);
+        data.append('scope', 'tinymce');
         // data.append('image[file]', input.files[0]);
 
-        const url = vm.$store.getters.apiUrl + '/media/upload'
+        const url = vm.$store.getters.apiUrl + '/media/upload_image'
         const bearerToken = 'bearer ' + vm.$store.getters.accessToken
         console.log('uploadImage')
         $.ajax({
@@ -593,8 +739,9 @@ a<template>
           data: data,
           processData: false, // Don't process the files
           contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-          success: function (data, textStatus, jqXHR) {
-            console.log('VoucherRecord :: uploadImage :: response :: data: ', data)
+          success: function (response, textStatus, jqXHR) {
+            console.log('VoucherRecord :: uploadImage :: response :: data: ', response)
+            const data = response.result
             editor.insertContent('<img class="content-img" src="' + data.imageUrl + '"/>');
           },
           error: function (jqXHR, textStatus, errorThrown) {
@@ -778,6 +925,7 @@ a<template>
             const editor = tinyMCE.get('yoovEditor')
             const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
             editor.insertContent('<img class="content-img" src="' + url + '"/>');
+            vm.$toaster.success('Image Added')
             break
           case 'copyTemplate':
             vm.copyTemplate(payload.voucher)
@@ -1220,4 +1368,25 @@ a<template>
   /*flex-direction: row;*/
   /*}*/
 
+  #sharingTab .btn-toolbar .btn {
+    margin: 0 1px !important;
+  }
+  #sharingTab .image-wrapper {
+    border: 2px solid darkgray;
+  }
+  #sharingTab .image-wrapper .image-bkgd {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    background-color: lightgray;
+  }
+  #sharingTab .image-wrapper .image-bkgd img {
+    margin-top: auto;
+    align-self: center;
+    margin-bottom: auto;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 </style>

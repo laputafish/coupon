@@ -32,6 +32,7 @@ import Toaster from 'v-toaster'
 import VueClipboard from 'vue-clipboard2'
 import VueCarousel from 'vue-carousel'
 import VueLoading from 'vue-loading-overlay'
+import VueCropper from 'vue-cropper'
 
 // include the default style
 import 'vuejs-dialog/dist/vuejs-dialog.min.css'
@@ -55,6 +56,7 @@ Vue.use(Toaster, {timeout: 3000})
 Vue.use(VueClipboard)
 Vue.use(VueCarousel)
 Vue.use(VueLoading)
+Vue.use(VueCropper)
 
 // axios.interceptors.response.use(
 //     function (response) {

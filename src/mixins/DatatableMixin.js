@@ -50,7 +50,6 @@ const mixin = Vue.util.mergeOptions(appMixin, {
                           @click="onCommandHandler({command: 'new'})"
                           class="btn btn-primary ml-auto">
                     <i class="fas fa-plus"></i>
-                    <i class="fas fa-plus"></i>
                   </button>
                 </div>
               </div>
