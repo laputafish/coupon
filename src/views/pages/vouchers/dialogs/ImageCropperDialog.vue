@@ -167,6 +167,9 @@
         console.log('imageCropperDialog :; onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
+          case 'onClosing':
+            vm.deleteMedia(vm.mediaId)
+            break
           case 'ok':
             this.$refs.cropper.getCropBlob( blob => {
               let formData = new FormData()
@@ -174,6 +177,7 @@
               const filename = 'image-name-' + (new Date()).getTime() + '.jpg'
               formData.append('name', filename)
               formData.append('file', blob, filename)
+              formData.append('width', 256)
 
               console.log('ImageCropperDialog :: onCommandHandler ::  formData: ', formData)
               // const data = {
@@ -222,7 +226,15 @@
       },
 
       deleteMedia (mediaId) {
-        alert('deleteMedia(' + mediaId + ')')
+        const vm = this
+        const data = {
+          urlCommand: '/medias/' + mediaId
+        }
+        vm.$store.dispatch('AUTH_DELETE', data).then(
+          response => {
+            console.log('ImageCropperDialog :: AUTH_DELETE :: response: ', response)
+          }
+        )
       }
       // fetchAgents () {
       //   const vm = this

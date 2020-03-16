@@ -74,7 +74,8 @@
     "this_agent_has_related_vouchers": "This agent has related voucher(s).",
     "all_codes_are_removed": "All codes are removed!",
     "template_missing": "Template Missing!",
-    "error_occurred_maybe_invalid_format": "Error occurred. Maybe Invalid Format!"
+    "error_occurred_maybe_invalid_format": "Error occurred. Maybe Invalid Format!",
+    "deleted_successfully": "Deleted Successfully."
   },
   "menu": {
     "dashboard": "Dashboard",

@@ -68,6 +68,7 @@ import TablesJsGrid from '@/views/pages/tables/TablesJsGrid.vue'
 import Voucher from '@/views/pages/vouchers/Voucher.vue'
 import Agent from '@/views/pages/agents/Agent.vue'
 import Coupon from '@/views/pages/coupons/Coupon.vue'
+import CouponLinkSharingTest from '@/views/pages/coupons/CouponLinkSharingTest.vue'
 
 
 Vue.use(VueRouter)
@@ -107,6 +108,11 @@ const ifAuthenticated = (to, from, next) => {
 }
 
 const allRoutes = [
+  {
+    path: '/coupons/test/:id/:timestamp',
+    name: 'CouponLinkSharingTest',
+    component: CouponLinkSharingTest
+  },
   {
     path: '/coupons/:key',
     name: 'Coupon',

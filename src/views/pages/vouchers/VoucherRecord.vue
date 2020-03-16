@@ -134,79 +134,6 @@
 
         <!--
         *****************
-         Sharing
-        *****************
-        -->
-        <b-tab id="sharingTab" title="Sharing" class="bg-white py-2">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="d-inline-block">
-                  <div class="image-wrapper m-2">
-                    <div class="image-bkgd">
-                      <img :src="sharingImageSrc"/>
-                    </div>
-                  </div>
-                  <div class="btn-toolbar mt-1 justify-content-center">
-                    <!-- upload sharing image -->
-                    <file-upload
-                        extensions="jpg,jpeg,gif,png"
-                        accept="image/png,image/gif,image/jpeg,image/webp"
-                        input-id="imageFile"
-                        name="file"
-                        class="btn btn-primary"
-                        :post-action="sharingImagePostAction"
-                        :drop="!editingUploadFile"
-                        :data="{id: record.id}"
-                        :headers="authHeaders"
-                        v-model="files"
-                        @input-filter="inputFilter"
-                        @input-file="inputFile"
-                        ref="uploadSharingImage">
-                      <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
-                      <font-awesome-icon icon="upload"></font-awesome-icon>
-                      Upload File
-                    </file-upload>
-                    <button type="button"
-                            class="btn btn-danger m-x-1">
-                      <i class="fas fa-times"></i>&nbsp;Remove</button>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div class="row">
-                  <div class="col-sm-12">
-                    <div class="form-group mb-1">
-                      <label for="sharingTitle">{{ $t('general.title') }}</label>
-                      <input class="form-control"
-                             id="sharingTitle"
-                             name="sharingTitle"
-                             type="text"
-                             v-model="record.sharing_title"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-sm-12">
-                    <div class="form-group mb-1">
-                      <label for="sharingDescription">{{ $t('general.description') }}</label>
-                      <textarea rows="6"
-                                 class="form-control"
-                             id="sharingDescription"
-                             name="sharingDescription"
-                             type="text"
-                             v-model="record.sharing_description"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-3"></div>
-            </div>
-          </div>
-        </b-tab>
-
-        <!--
-        *****************
          Email List
         *****************
         -->
@@ -293,6 +220,98 @@
             </div>
           </div>
         </b-tab>
+
+        <!--
+*****************
+ Sharing
+*****************
+-->
+        <b-tab id="sharingTab" title="Sharing" class="bg-white py-2">
+          <div class="p-2 d-flex flex-row justify-content-start">
+            <div class="mx-1 d-inline-block">
+                  <div class="image-wrapper m-2">
+                    <div class="image-bkgd">
+                      <img :src="sharingImageSrc"/>
+                    </div>
+                  </div>
+                  <div class="btn-toolbar mt-1 justify-content-center">
+                    <!-- upload sharing image -->
+                    <file-upload
+                        extensions="jpg,jpeg,gif,png"
+                        accept="image/png,image/gif,image/jpeg,image/webp"
+                        input-id="imageFile"
+                        name="file"
+                        class="btn btn-primary"
+                        :post-action="sharingImagePostAction"
+                        :drop="!editingUploadFile"
+                        :data="{id: record.id}"
+                        :headers="authHeaders"
+                        v-model="files"
+                        @input-filter="inputFilter"
+                        @input-file="inputFile"
+                        ref="uploadSharingImage">
+                      <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
+                      <font-awesome-icon icon="upload"></font-awesome-icon>
+                      Upload
+                    </file-upload>
+                    <button type="button"
+                            @click="removeSharingImage"
+                            class="btn btn-danger m-x-1">
+                      <i class="fas fa-times"></i>&nbsp;Remove</button>
+                  </div>
+                  <div class="mx-2">
+                    <small>* Safe resolution: 256x256</small>
+                  </div>
+                </div>
+            <div class="mx-2 flex-grow-1">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group mb-1">
+                    <div class="float-right">
+                      <small>* max. 35 chars for safety.</small>
+                    </div>
+                    <label for="sharingTitle">{{ $t('general.title') }} <div class="badge badge-primary">{{ sharingTitleCharCount }}</div></label>
+                    <input class="form-control"
+                           id="sharingTitle"
+                           name="sharingTitle"
+                           type="text"
+                           v-model="record.sharing_title"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group mb-1">
+                    <div class="float-right">
+                      <small>* max. 65 chars for safety.</small>
+                    </div>
+                    <label for="sharingDescription">{{ $t('general.description') }} <div class="badge badge-primary">{{ sharingDescriptionCharCount }}</div></label>
+                    <textarea rows="6"
+                              class="form-control"
+                              id="sharingDescription"
+                              name="sharingDescription"
+                              type="text"
+                              v-model="record.sharing_description"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row" v-if="record">
+                <div class="col-sm-12">
+                  <div class="d-flex flex-row justify-content-start align-items-center"
+                    @click="copyLink()">
+                    <div class="badge badge-info">
+                      {{ testLink }}
+                    </div>
+                    <div class="px-1 d-inline-block copy-link" @click="copyLink()">
+                      <font-awesome-icon icon="copy"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </b-tab>
+
       </b-tabs>
     </div>
     <div v-else class="text-center">
@@ -477,7 +496,8 @@
           composition: '',
           width: 0,
           height: 0
-        }
+        },
+        testLink: ''
       }
     },
     props: {
@@ -486,7 +506,33 @@
         default: 0
       }
     },
+
     computed: {
+      // testLink () {
+      //   const vm = this
+      //   return window.location.origin + '/coupons/test/' + vm.record.id + '/' + new Date().getTime()
+      // },
+      copyLink () {
+        const vm = this
+        vm.$copyText( vm.testLink )
+        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+      },
+      sharingTitleCharCount () {
+        const vm = this
+        let result = 0
+        if (vm.record ) {
+          result = vm.record.sharing_title.length
+        }
+        return result
+      },
+      sharingDescriptionCharCount () {
+        const vm = this
+        let result = 0
+        if (vm.record ) {
+          result = vm.record.sharing_description.length
+        }
+        return result
+      },
       sharingImageSrc () {
         const vm = this
         let result = ''
@@ -566,8 +612,25 @@
       vm.fetchDefaultTemplateKeys()
 
       vm.refresh(vm.recordId)
+
+      vm.testLink = window.location.origin + '/coupons/test/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
+      removeSharingImage () {
+        const vm = this
+        const data = {
+          urlCommand: '/medias/' + vm.record.sharing_media_id,
+          data: {
+            type: 'temp'
+          }
+        }
+        vm.$store.dispatch('AUTH_PUT', data).then(
+          () => {
+            vm.$toaster.success(vm.$t('messages.deleteSuccessfully'))
+            vm.record.sharing_media_id = 0
+          }
+        )
+      },
       inputFilter (newFile, oldFile, prevent) {
         const vm = this
         if (newFile && !oldFile) {
@@ -1398,5 +1461,8 @@
     width: 100%;
     height: auto;
     object-fit: contain;
+  }
+  #sharingTab .copy-link {
+    cursor: pointer;
   }
 </style>

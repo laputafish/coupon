@@ -85,6 +85,9 @@
     methods: {
       closeDialog () {
         const vm = this
+        vm.$emit('onCommand', {
+          command: 'onClosing'
+        })
         vm.$emit('input',false)
         vm.$bvModal.hide(vm.id)
       }
