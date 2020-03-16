@@ -10,39 +10,39 @@
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
       <!--<div class="left-pane">-->
-        <!--{{ $t('menu.agents') }}-->
-        <!--<div class="left-pane-scroll">-->
-          <!--<b-list-group style="line-height:1;">-->
-            <!--<b-list-group-item v-for="agent in agents"-->
-                               <!--@click="selectedAgent=agent"-->
-                               <!--:class="{'active': selectedAgent && selectedAgent.id===agent.id}"-->
-                               <!--:key="agent.id">-->
-              <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agent.voucher_count }}</div>-->
-            <!--</b-list-group-item>-->
-          <!--</b-list-group>-->
-        <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
+      <!--{{ $t('menu.agents') }}-->
+      <!--<div class="left-pane-scroll">-->
+      <!--<b-list-group style="line-height:1;">-->
+      <!--<b-list-group-item v-for="agent in agents"-->
+      <!--@click="selectedAgent=agent"-->
+      <!--:class="{'active': selectedAgent && selectedAgent.id===agent.id}"-->
+      <!--:key="agent.id">-->
+      <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agent.voucher_count }}</div>-->
+      <!--</b-list-group-item>-->
+      <!--</b-list-group>-->
+      <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
       <!--</div>&lt;!&ndash; left-pane &ndash;&gt;-->
       <div class="right-pane">
         <!--<div class="d-flex flex-row justify-content-center">-->
-          <!--<div class="btn-group">-->
-            <!--<button class="btn"-->
-                    <!--@click="objectFitMode='cover'"-->
-                    <!--:class="{'btn-primary':objectFitMode==='cover','btn-outline-primary':objectFitMode==='contain'}">-->
-              <!--Cover</button>-->
+        <!--<div class="btn-group">-->
+        <!--<button class="btn"-->
+        <!--@click="objectFitMode='cover'"-->
+        <!--:class="{'btn-primary':objectFitMode==='cover','btn-outline-primary':objectFitMode==='contain'}">-->
+        <!--Cover</button>-->
 
-            <!--<button class="btn"-->
-                    <!--@click="objectFitMode='contain'"-->
-                    <!--:class="{'btn-primary':objectFitMode==='contain','btn-outline-primary':objectFitMode==='cover'}">-->
-              <!--Contain</button>-->
-          <!--</div>-->
+        <!--<button class="btn"-->
+        <!--@click="objectFitMode='contain'"-->
+        <!--:class="{'btn-primary':objectFitMode==='contain','btn-outline-primary':objectFitMode==='cover'}">-->
+        <!--Contain</button>-->
+        <!--</div>-->
         <!--</div>-->
         <div class="right-pane-scroll">
           <image-item
-               v-for="image in images"
-               :key="image.id"
-               :imageItem="image"
-               @onCommand="onCommandHandler"
-               :activeImage="selectedImage">
+              v-for="image in images"
+              :key="image.id"
+              :imageItem="image"
+              @onCommand="onCommandHandler"
+              :activeImage="selectedImage">
           </image-item>
         </div>
       </div>
@@ -77,6 +77,10 @@
       initialAgentId: {
         type: Number,
         default: 0
+      },
+      scope: {
+        type: String,
+        default: ''
       }
     },
     computed: {
@@ -89,7 +93,7 @@
       event: 'input'
     },
     watch: {
-      value: function(newValue) {
+      value: function (newValue) {
         const vm = this
         console.log('ImageSelectDialog :: watch(value)')
         vm.fetchImages()
@@ -119,7 +123,15 @@
     methods: {
       fetchImages () {
         const vm = this
-        vm.$store.dispatch('AUTH_GET', '/medias').then(
+        const data = {
+          urlCommand: '/medias',
+          options: {
+            params: {
+              scope: vm.scope
+            }
+          }
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(
           response => {
             vm.images = response
           }
@@ -206,23 +218,23 @@
   /*************************/
   /* Content Configuration */
   /*************************/
-  .left-pane {
+  #imageSelectDialog .left-pane {
     display: none;
     padding-right: 10px;
     width: 40%;
   }
 
-  .right-pane {
+  #imageSelectDialog .right-pane {
     width: 100%;
   }
 
-  .left-pane-scroll {
+  #imageSelectDialog .left-pane .left-pane-scroll {
     overflow-y: scroll;
     height: 0;
     min-height: 100%;
   }
 
-  .right-pane-scroll {
+  #imageSelectDialog .right-pane .right-pane-scroll {
     overflow-y: scroll;
     height: 0;
     min-height: 100%;
@@ -264,7 +276,7 @@
   }
 
   #imageSelectDialog .list-group-item .voucher-note {
-    color: rgba(0,0,0,.3);
+    color: rgba(0, 0, 0, .3);
   }
 
   #imageSelectDialog .list-group-item .voucher-note .note-value {
@@ -272,7 +284,7 @@
   }
 
   #imageSelectDialog .list-group-item.active .voucher-note {
-    color: rgba(255,255,255,.5);
+    color: rgba(255, 255, 255, .5);
   }
 
   #imageSelectDialog .list-group-item.active .voucher-note .note-value {

@@ -205,37 +205,37 @@
     width: 40%;
   }
 
-  #voucherSelectDialog .right-pane {
-    display: block;
-    width: 60%;
-  }
-
-  .left-pane-scroll {
+  #voucherSelectDialog .left-pane .left-pane-scroll {
     overflow-y: scroll;
     height: 0;
     min-height: 100%;
   }
 
-  .right-pane-scroll .voucher-item-description {
+  #voucherSelectDialog .right-pane {
+    display: block;
+    width: 60%;
+  }
+
+  #voucherSelectDialog .right-pane .right-pane-scroll .voucher-item-description {
     line-height: 1.1;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
-  .right-pane-scroll .voucher-item-notes {
+  #voucherSelectDialog .right-pane .right-pane-scroll .voucher-item-notes {
     line-height: 1;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
-  .right-pane-scroll .voucher-item-notes {
+  #voucherSelectDialog .right-pane .right-pane-scroll .voucher-item-notes {
     color: rgba(0,0,0,.6);
   }
-  .right-pane-scroll .voucher-item-title-block {
+  #voucherSelectDialog .right-pane .right-pane-scroll .voucher-item-title-block {
     height: 32px;
   }
-  .right-pane-scroll {
+  #voucherSelectDialog .right-pane .right-pane-scroll {
     overflow-y: scroll;
     height: 0;
     min-height: 100%;

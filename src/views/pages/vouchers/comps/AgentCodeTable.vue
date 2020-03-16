@@ -47,7 +47,6 @@
           :data="{id: voucherId}"
           :headers="authHeaders"
           v-model="files"
-          @success="onSuccess()"
           @input-filter="inputFilter"
           @input-file="inputFile"
           ref="upload">
@@ -55,6 +54,41 @@
         <font-awesome-icon icon="upload"></font-awesome-icon>
         Upload File
       </file-upload>
+      <!--<file-upload-->
+          <!--extensions="xlsx"-->
+          <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
+          <!--name="file"-->
+          <!--class="btn btn-primary"-->
+          <!--:post-action="postAction"-->
+          <!--:drop="!edit"-->
+          <!--:data="{id: voucherId}"-->
+          <!--:headers="authHeaders"-->
+          <!--v-model="files"-->
+          <!--@input-filter="inputFilter"-->
+          <!--@input-file="inputFile"-->
+          <!--ref="upload">-->
+        <!--&lt;!&ndash;<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />&ndash;&gt;-->
+        <!--<font-awesome-icon icon="upload"></font-awesome-icon>-->
+        <!--Upload File-->
+      <!--</file-upload>-->
+      <!--<file-upload-->
+          <!--extensions="xlsx"-->
+          <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
+          <!--name="file"-->
+          <!--class="btn btn-primary"-->
+          <!--:post-action="postAction"-->
+          <!--:drop="!edit"-->
+          <!--:data="{id: voucherId}"-->
+          <!--:headers="authHeaders"-->
+          <!--v-model="files"-->
+          <!--@success="onSuccess()"-->
+          <!--@input-filter="inputFilter"-->
+          <!--@input-file="inputFile"-->
+          <!--ref="upload">-->
+        <!--&lt;!&ndash;<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />&ndash;&gt;-->
+        <!--<font-awesome-icon icon="upload"></font-awesome-icon>-->
+        <!--Upload File-->
+      <!--</file-upload>-->
     </div>
   </div>
   <div v-if="data.length>0" id="code-table">
@@ -842,9 +876,10 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
       }
       return result.join('|')
     },
-    onSuccess () {
-      // alert('success')
-    },
+    // onSuccess () {
+    //   alert('AgentCodeTable')
+    //   // alert('success')
+    // },
 
     inputFilter (newFile, oldFile, prevent) {
       // console.log('inputFilter')
