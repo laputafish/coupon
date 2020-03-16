@@ -4,14 +4,15 @@
       :title="title"
       modalType="confirmation"
       size="xl"
+      :okButtonState="true"
       :value="value"
       @onCommand="onCommandHandler"
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
       <div class="left-pane">
         Image
-        <div class="left-pane-scroll d-flex flex-column justify-content-center align-items-center">
-          <div class="cut flex-grow-1" style="width:100%;height:100%;">
+        <div class="left-pane-scroll d-flex flex-column">
+          <div class="cut" style="width:800px;height:400px;">
             <vue-cropper ref="cropper"
                          :img="imageSrc"
                          :output-size="option.outputSize"
@@ -37,7 +38,17 @@
       <div class="right-pane">
         Preview
         <div class="right-pane-scroll">
-          <div v-if="previews" class="show-preview" :style="{'width': previews.w + 'px', 'height': previews.h + 'px',  'overflow': 'hidden', 'margin': '5px'}">
+          <!--<div class="rectangle-stencil" :style="style">-->
+          <!--<preview-result-->
+          <!--classname="circle-stencil__preview"-->
+          <!--:img="img"-->
+          <!--:width="stencilCoordinates.width"-->
+          <!--:height="stencilCoordinates.height"-->
+          <!--:coordinates="resultCoordinates"-->
+          <!--/>-->
+          <!--</div>-->
+          <div v-if="previews" class="show-preview"
+               :style="{'width': previews.w + 'px', 'height': previews.h + 'px',  'overflow': 'hidden', 'margin': '5px'}">
             <div>
             <!--<div :style="previews.div">-->
               <img :src="previews.url" :style="previews.img">
@@ -53,20 +64,22 @@
 <script>
   import baseDialog from '@/views/comps/BaseDialog'
   import appMixin from '@/mixins/AppMixin'
+  import {VueCropper} from 'vue-cropper'
 
   export default {
     mixins: [appMixin],
     components: {
-      baseDialog
+      baseDialog,
+      vueCropper: VueCropper
     },
     props: {
       voucherId: {
         type: Number,
         default: 0
       },
-      imageSrc: {
-        type: String,
-        default: ''
+      mediaId: {
+        type: Number,
+        default: 0
       },
       title: {
         type: String,
@@ -101,7 +114,7 @@
           info: true,
           full: false,
           fixed: true,
-          fixedNumber: [1,1],
+          fixedNumber: [1, 1],
           canMove: true,
           canMoveBox: true,
           fixedBox: false,
@@ -122,6 +135,9 @@
       // vm.$refs.cropper.startCrop()
     },
     methods: {
+      change ({coordinates, canvas}) {
+        console.log(coordinates, canvas)
+      },
       startCrop () {
         const vm = this
         console.log('ImageCropperDialog::startCrop() $refs: ', vm.$refs)
@@ -137,7 +153,7 @@
         vm.$refs.cropper.clearCrop()
         vm.$refs.cropper.changeScale(1)
       },
-      realTime(data) {
+      realTime (data) {
         this.previews = data
         console.log('realTime() :: data: ', data)
       },
@@ -147,13 +163,66 @@
       },
 
       onCommandHandler (payload) {
-        // const vm = this
+        const vm = this
         console.log('imageCropperDialog :; onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
           case 'ok':
-            break
+            this.$refs.cropper.getCropBlob( blob => {
+              let formData = new FormData()
+              console.log('ImageCropperDialog :: onCommandHandler ::  blob: ', blob)
+              const filename = 'image-name-' + (new Date()).getTime() + '.jpg'
+              formData.append('name', filename)
+              formData.append('file', blob, filename)
+
+              console.log('ImageCropperDialog :: onCommandHandler ::  formData: ', formData)
+              // const data = {
+              //   urlCommand: '/media/upload',
+              //   data: formData
+              // }
+
+              vm.$http.post(vm.$store.getters.apiUrl + '/media/upload',
+                formData, {
+                  contentType: false,
+                  processData: false,
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'bearer ' + vm.$store.getters.accessToken
+                  }
+                }
+              ).then(
+                response => {
+                  console.log('post :: response: ', response)
+                  vm.$emit('onCommand', {
+                    command: 'setRecordField',
+                    fieldName: 'sharing_media_id',
+                    fieldValue: response.data.result.imageId
+                  })
+                  vm.deleteMedia(vm.mediaId)
+                  vm.$bvModal.hide('imageCropperDialog')
+                }
+              )
+
+              // vm.$store.dispatch('AUTH_POST', data).then(
+              //   response => {
+              //     vm.$emit('onCommand', {
+              //       command: 'setRecordField',
+              //       fieldName: 'sharing_media_id',
+              //       fieldValue: response.imageId
+              //     })
+              //     vm.deleteMedia(vm.mediaId)
+              //   },
+              //   error => {
+              //     console.log('upload image error: ', error)
+              //   }
+              // )
+          })
+          break
         }
+      },
+
+      deleteMedia (mediaId) {
+        alert('deleteMedia(' + mediaId + ')')
       }
       // fetchAgents () {
       //   const vm = this
@@ -167,7 +236,26 @@
       //     }
       //   )
       // }
+    },
+    computed: {
+      imageSrc () {
+        const vm = this
+        return vm.$store.getters.appHost + '/media/image/' + vm.mediaId
+      }
     }
+
+    // ,
+    // computed: {
+    //   style() {
+    //     const { height, width, left, top } = this.stencilCoordinates;
+    //     return {
+    //       width: `${width}px`,
+    //       height: `${height}px`,
+    //       left: `${left}px`,
+    //       top: `${top}px`
+    //     };
+    //   }
+    // }
   }
 </script>
 
@@ -175,7 +263,7 @@
   #imageCropperDialog .left-pane {
     display: block;
     padding-right: 10px;
-    flex-grow:1;
+    flex-grow: 1;
     overflow-y: hidden;
   }
 
@@ -187,16 +275,15 @@
 
   #imageCropperDialog .right-pane {
     display: block;
-    flex-grow:0;
+    flex-grow: 0;
   }
 
   #imageCropperDialog .right-pane-scroll {
     overflow: hidden;
     height: 0;
     min-height: 100%;
-    width:266px;
+    width: 266px;
   }
-
 
   #imageCropperDialog .right-pane-scroll .voucher-item-description {
     line-height: 1.1;
@@ -211,14 +298,17 @@
     text-overflow: ellipsis;
     overflow: hidden;
   }
+
   #imageCropperDialog .right-pane-scroll .voucher-item-notes {
-    color: rgba(0,0,0,.6);
+    color: rgba(0, 0, 0, .6);
   }
+
   #imageCropperDialog .right-pane-scroll .show-preview img {
     width: 256px;
     height: auto;
     object-fit: contain;
   }
+
   #imageCropperDialog .right-pane-scroll .voucher-item-title-block {
     height: 32px;
   }
@@ -250,12 +340,15 @@
   #imageCropperDialog .list-group-item.active {
     background-color: #0080ff;
   }
+
   #imageCropperDialog .list-group-item.active:hover {
     background-color: #3299ff;
   }
+
   #imageCropperDialog .list-group-item:hover {
     background-color: #f6f6f6;
   }
+
   #imageCropperDialog .list-group-item {
     cursor: pointer;
   }
@@ -265,7 +358,7 @@
   }
 
   #imageCropperDialog .list-group-item .voucher-note {
-    color: rgba(0,0,0,.3);
+    color: rgba(0, 0, 0, .3);
   }
 
   #imageCropperDialog .list-group-item .voucher-note .note-value {
@@ -273,7 +366,7 @@
   }
 
   #imageCropperDialog .list-group-item.active .voucher-note {
-    color: rgba(255,255,255,.5);
+    color: rgba(255, 255, 255, .5);
   }
 
   #imageCropperDialog .list-group-item.active .voucher-note .note-value {
@@ -283,4 +376,35 @@
   #imageCropperDialog .modal-dialog [role=document] {
     max-height: 520px;
   }
+
+  .circle-stencil {
+    border-radius: 50%;
+    cursor: move;
+    position: absolute;
+    border: dashed 2px white;
+    box-sizing: border-box;
+
+  &
+  __handler {
+    position: absolute;
+    right: 15%;
+    top: 14%;
+    z-index: 1;
+    cursor: ne-resize;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(50%, -50%);
+  }
+
+  &
+  __preview {
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  }
+
 </style>

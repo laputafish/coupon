@@ -23,6 +23,7 @@
     "v-toaster": "^1.0.3",
     "vee-validate": "^3.2.5",
     "vue": "^2.6.11",
+    "vue-advanced-cropper": "^0.16.0",
     "vue-axios": "^2.1.5",
     "vue-carousel": "^0.18.0",
     "vue-clipboard2": "^0.3.1",

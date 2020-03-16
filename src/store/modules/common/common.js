@@ -323,7 +323,7 @@ const actions = {
       if (payload.options) {
         options = payload.options
       }
-
+console.log('COMMON_POST :: data: ', data)
       const url = rootGetters.constants.apiUrl + urlCommand
       Vue.axios.post(url, data, options).then(function (response) {
         if (response.data.status) {

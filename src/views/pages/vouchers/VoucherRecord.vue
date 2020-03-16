@@ -1,4 +1,4 @@
-a<template>
+<template>
   <div class="container-fluid">
     <title-row :record="record"
                :titleField="titleField"
@@ -144,7 +144,7 @@ a<template>
                 <div class="d-inline-block">
                   <div class="image-wrapper m-2">
                     <div class="image-bkgd">
-                      <img src="http://evoucherapi/media/image/6"/>
+                      <img :src="sharingImageSrc"/>
                     </div>
                   </div>
                   <div class="btn-toolbar mt-1 justify-content-center">
@@ -182,7 +182,7 @@ a<template>
                              id="sharingTitle"
                              name="sharingTitle"
                              type="text"
-                             v-model="record.sharingTitle"/>
+                             v-model="record.sharing_title"/>
                     </div>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ a<template>
                              id="sharingDescription"
                              name="sharingDescription"
                              type="text"
-                             v-model="record.sharingDescription"/>
+                             v-model="record.sharing_description"/>
                     </div>
                   </div>
                 </div>
@@ -303,7 +303,7 @@ a<template>
     <image-cropper-dialog
         id="imageCropperDialog"
         ref="imageCropperDialog"
-      :imageSrc="sharingImageSrc"
+      :mediaId="selectedTempMediaId"
       :voucherId="recordId"
       v-model="showingImageCropperDialog"
       @onCommand="onCommandHandler"></image-cropper-dialog>
@@ -321,7 +321,6 @@ a<template>
 </template>
 
 <script>
-  import vueCropper from 'vue-cropper'
   import titleRow from '@/views/comps/TitleRow'
   import formInputs from '@/views/comps/forms'
   import fileUpload from 'vue-upload-component'
@@ -391,7 +390,7 @@ a<template>
         showingImageSelectDialog: false,
 
         // sharing Image properties
-        sharingImageSrc: '',
+        selectedTempMediaId: 0,
         showingImageCropperDialog: false,
 
         processingButtons: [],
@@ -488,6 +487,14 @@ a<template>
       }
     },
     computed: {
+      sharingImageSrc () {
+        const vm = this
+        let result = ''
+        if (vm.record) {
+          result = vm.$store.getters.appHost + '/media/image/' + vm.record.sharing_media_id
+        }
+        return result
+      },
       authHeaders () {
         const vm = this
         return {
@@ -593,7 +600,8 @@ a<template>
       onUploaded (result) {
         const vm = this
         console.log('onUploaded :: result: ', result)
-        vm.sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
+        vm.selectedTempMediaId = result.imageId
+        // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
         vm.$bvModal.show('imageCropperDialog')
         // vm.showingImageCropperDialog = true
         vm.$nextTick(() => {
@@ -984,6 +992,8 @@ a<template>
           //   vm.saveTemp()
           //   break
           case 'setRecordField':
+            console.log('onCommandHandler :; setRecordField :: fieldName = ' + payload.fieldName)
+            console.log('onCommandHandler :; setRecordField :: fieldValue = ' + payload.fieldValue)
             vm.record[payload.fieldName] = payload.fieldValue
             break
           case 'setCodeFields':
