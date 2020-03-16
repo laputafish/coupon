@@ -840,7 +840,7 @@ a<template>
             break
           case 'setCodeFields':
             vm.record.code_fields = payload.value // vm.createCodeFieldStr(payload.value)
-            console.log('VoucherRecord :: setCodeFields = ' + vm.record.code_fields)
+            // console.log('VoucherRecord :: setCodeFields = ' + vm.record.code_fields)
             break
           case 'setCodeDataRows':
             // console.log('onCommandHandler :: setCodeData :: payload.value: ', payload.value)

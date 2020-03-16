@@ -66,16 +66,16 @@
     },
     mounted () {
       const vm = this
-      console.log('Login.vue :: mounted')
+      // console.log('Login.vue :: mounted')
       if (vm.mode === 'development') {
         vm.credentials.email = 'yoovcoupon@gmail.com'
         vm.credentials.password = 'yoovYoov'
       }
       if (vm.$route.name === 'Logout') {
-        console.log('  is logout route')
+        // console.log('  is logout route')
         vm.logout()
       } else {
-        console.log('  not logout route')
+        // console.log('  not logout route')
       }
     },
     methods: {
@@ -88,7 +88,7 @@
         // vm.loading = true
         vm.$store.dispatch('AUTH_POST', postData).then(
           () => {
-            console.log('Logout :: AUTH_POST .then')
+            // console.log('Logout :: AUTH_POST .then')
             vm.loading = false
             vm.$store.dispatch('SET_TOKEN', '').then(()=> {
               vm.$router.replace({name: 'login'})
@@ -116,12 +116,12 @@
         vm.loading = true
         vm.$store.dispatch('COMMON_POST', postData).then(
           response => {
-            console.log('login :: response: ', response)
+            // console.log('login :: response: ', response)
             vm.loading = false
             vm.$store.dispatch('SET_TOKEN', response.access_token).then(()=> {
               vm.gotoNextUrl('/dashboard')
             }, () => {console.log('#3 setToken fails')}).catch(() => {
-              console.log('#3 caught')
+              // console.log('#3 caught')
             })
           },
           error => {
@@ -137,7 +137,7 @@
         if (!nextUrl) {
           nextUrl = defaultUrl
         }
-        console.log('gotoNextUrl :: nextUrl = ' + nextUrl)
+        // console.log('gotoNextUrl :: nextUrl = ' + nextUrl)
         localStorage.removeItem('nextUrl');
         vm.$router.push(nextUrl);
       }

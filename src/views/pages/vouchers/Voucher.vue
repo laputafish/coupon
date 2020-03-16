@@ -91,9 +91,23 @@
         // this.xprops.buttons = ['edit', 'print', 'download', 'delete']
         vm.setTableFilters()
       },
+      // onCreatingRecord (data) {
+      //   const vm = this
+      //   // data: {
+      //   //    urlCommand: ...
+      //   // }
+      //   data['data'] = {
+      //     'agent_id': vm.selectedFilter
+      //   }
+      //   return data
+      // },
       onRecordCreated (responseData) {
         const vm = this
         const record = responseData.data
+        console.log('VoucherRecord :: onRecordCreated :: record: ', record)
+        if (vm.selectedFilter !== 0) {
+          record['agent_id'] = vm.selectedFilter
+        }
         console.log('VoucherRecord :: onRecordCreated :: record: ', record)
         vm.saveRecord(record, (record) => {
           vm.$router.push({name: vm.routeName, params: {id: record.id}})

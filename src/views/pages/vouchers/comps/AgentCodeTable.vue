@@ -715,12 +715,17 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
       vm.uploading = false
       if (result.codeFields) {
         const newCodeFieldsStr = result.codeFields
-        console.log('onUploaded :: vm.codeFieldStr = ' + vm.codeFieldsStr)
-        console.log('onUploaded :: newCodeFieldsStr = ' + newCodeFieldsStr)
-        if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
-          console.log('onUploaded :: vm.codeFieldsStr !== blank')
-          if (newCodeFieldsStr !== vm.codeFieldsStr) {
-            console.log('onUploaded :: newCodeFieldsStr !== vm.codeFieldsStr')
+        // console.log('onUploaded :: vm.codeFieldStr = ' + vm.codeFieldsStr)
+        // console.log('onUploaded :: newCodeFieldsStr = ' + newCodeFieldsStr)
+        // if current code fields has valid entries
+
+        if (vm.codeFieldsStr == newCodeFieldsStr) {
+          vm.onQueryChangedHandler(vm.query)
+        } else {
+        // if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
+        //   console.log('onUploaded :: vm.codeFieldsStr !== blank')
+          if (newCodeFieldsStr !== vm.codeFieldsStr && vm.codeFieldsStr !== null) {
+            // console.log('onUploaded :: newCodeFieldsStr !== vm.codeFieldsStr')
             // goAhead = false
             const options = {
               cancelText: vm.$t('buttons.close')
@@ -756,9 +761,10 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
             vm.$toaster.success(msgs.join(' and ') + '.')
           }
           vm.onQueryChangedHandler(vm.query)
-        } else {
-          vm.onQueryChangedHandler(vm.query)
         }
+        // else {
+        //   vm.onQueryChangedHandler(vm.query)
+        // }
       } else {
         vm.$dialog.alert(vm.$t('messages.error_occurred_maybe_invalid_format'))
       }

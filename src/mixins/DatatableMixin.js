@@ -50,7 +50,6 @@ const mixin = Vue.util.mergeOptions(appMixin, {
                           @click="onCommandHandler({command: 'new'})"
                           class="btn btn-primary ml-auto">
                     <i class="fas fa-plus"></i>
-                    <i class="fas fa-plus"></i>
                   </button>
                 </div>
               </div>
@@ -134,15 +133,15 @@ const mixin = Vue.util.mergeOptions(appMixin, {
     // },
     newRecord () {
       const vm = this
-      const data = {
-        urlCommand: '/vouchers/0'
+      let data = {
+        urlCommand: '/vouchers/0',
       }
       vm.$store.dispatch('AUTH_GET', data).then(response => {
           if (typeof vm.onRecordCreated === 'function') {
-            console.log('newRecord :: onRecordCreated is function')
+            // console.log('newRecord :: onRecordCreated is function')
             vm.onRecordCreated(response)
           } else {
-            console.log('newRecord :: onRecordCreated is not function')
+            // console.log('newRecord :: onRecordCreated is not function')
             vm.$router.push({name: vm.routeName, params: {id: response.id}})
           }
         },

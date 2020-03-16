@@ -84,7 +84,7 @@
     watch: {
       loading: function (newValue) {
         const vm = this
-        console.log('TitleRow :: watch(loading) : ' + newValue)
+        // console.log('TitleRow :: watch(loading) : ' + newValue)
         if (newValue) {
           vm.currentIcon = 'spinner'
           vm.currentIconClass = 'spin'
@@ -116,7 +116,7 @@
       },
       onCommandHandler (payload) {
         const command = payload.command
-        console.log('TitleRow :; onCommandHandler :; command = ' + command)
+        // console.log('TitleRow :; onCommandHandler :; command = ' + command)
         const vm = this
         switch (command) {
           case 'save':

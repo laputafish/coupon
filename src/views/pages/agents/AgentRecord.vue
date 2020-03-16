@@ -141,7 +141,7 @@
       },
       onCommandHandler (payload) {
         const vm = this
-        console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
+        // console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
         switch (payload.command) {
           case 'save':
             vm.save()

@@ -102,7 +102,7 @@
           }
         }
         vm.loading = true
-        console.log('submit :: COMMON_POST => ' + postData.urlCommand)
+        // console.log('submit :: COMMON_POST => ' + postData.urlCommand)
         vm.$store.dispatch('COMMON_POST', postData).then(
           (response) => {
             vm.loading = false
@@ -110,7 +110,7 @@
           },
           (error) => {
             vm.loading = false
-            console.log('error: ', error)
+            // console.log('error: ', error)
             vm.message = vm.$t('messages.' + error.messageTag)
           }
         )

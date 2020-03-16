@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     onInput (obj) {
-      console.log('onInput :: obj: ', obj)
+      // console.log('onInput :: obj: ', obj)
     }
   }
 }
