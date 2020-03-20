@@ -110,6 +110,7 @@
         }
         console.log('VoucherRecord :: onRecordCreated :: record: ', record)
         vm.saveRecord(record, (record) => {
+          console.log('Voucher.vue :: onRecordCreated :: saveRecord record: ', record)
           vm.$router.push({name: vm.routeName, params: {id: record.id}})
         })
       },
