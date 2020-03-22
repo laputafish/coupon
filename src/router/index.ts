@@ -113,16 +113,16 @@ const allRoutes = [
     name: 'CouponLinkSharingTest',
     component: CouponLinkSharingTest
   },
-  {
-    path: '/coupons/:key',
-    name: 'Coupon',
-    component: Coupon
-  },
-  {
-    path: '/coupons/temp/:key',
-    name: 'TempCoupon',
-    component: Coupon
-  },
+  // {
+  //   path: '/coupons/:key',
+  //   name: 'Coupon',
+  //   component: Coupon
+  // },
+  // {
+  //   path: '/coupons/temp/:key',
+  //   name: 'TempCoupon',
+  //   component: Coupon
+  // },
   {
     path: '/',
     redirect: '/home',

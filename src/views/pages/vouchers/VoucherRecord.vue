@@ -613,7 +613,7 @@
 
       vm.refresh(vm.recordId)
 
-      vm.testLink = window.location.origin + '/coupons/test/' + vm.recordId + '/' + new Date().getTime()
+      vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
       removeSharingImage () {
@@ -673,6 +673,13 @@
       },
       onRefreshed () {
         const vm = this
+
+        if (!vm.record.sharing_title) {
+          vm.record.sharing_title = ''
+        }
+        if (!vm.record.sharing_description) {
+          vm.record.sharing_description = ''
+        }
 
         // *****************
         // qrcode
@@ -985,7 +992,8 @@
         })
       },
       showLeaflet (key) {
-        const url = window.location.origin + '/coupons/' + key
+        const vm = this
+        const url = vm.$store.getters.appHost + '/coupons/' + key
         window.open(url, '_blank');
       },
       onCommandHandler (payload) {

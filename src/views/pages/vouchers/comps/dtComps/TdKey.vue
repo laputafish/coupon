@@ -22,7 +22,7 @@
     methods: {
       copyLink () {
         const vm = this
-        vm.$copyText( window.location.origin + '/coupons/' + vm.value)
+        vm.$copyText( vm.$store.getters.appHost + '/coupons/' + vm.value)
         vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
       }
     }

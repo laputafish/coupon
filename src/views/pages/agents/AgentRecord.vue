@@ -106,7 +106,9 @@
           response => {
             vm.loading = false
             vm.record.id = response.id
+            vm.$store.dispatch('FETCH_AGENTS')
             vm.$toaster.success(vm.$t('messages.saved_successfully'))
+
             // vm.$router.go(-1);
           },
           error => {

@@ -10,7 +10,7 @@
            class="form-control"
            :value="value"
            @input="$event=>$emit('input',$event.target.value)">
-      <span>{{ errors[0] }}</span>
+      <span class="input-error">{{ errors[0] }}</span>
     </validation-provider>
   </div>
 </div>
@@ -51,3 +51,14 @@ export default {
   }
 }
 </script>
+
+<style>
+.input-error {
+  position: absolute;
+  padding: 0;
+  top: 100%;
+  margin: 0;
+  line-height: 1;
+  margin-top: -0.375rem;
+}
+</style>

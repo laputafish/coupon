@@ -15,7 +15,7 @@ const mixin = Vue.util.mergeOptions(appMixin, {
         <div class="bg-module mx-2 p-2">
           <div v-if="mode==='list'" class="container-fluid">
             <div class="row">
-              <div v-if="tableFilters.length>0" class="col-12 text-center">
+              <div v-if="tableFilters.length>0" class="col-12 text-center mb-2">
                 <div class="btn-group">
                   <button class="btn"
                     v-for="filter in tableFilters"
@@ -134,15 +134,16 @@ const mixin = Vue.util.mergeOptions(appMixin, {
     newRecord () {
       const vm = this
       let data = {
-        urlCommand: '/vouchers/0',
+        urlCommand: vm.apiPath + '/0',
+        // urlCommand: '/vouchers/0',
       }
       vm.$store.dispatch('AUTH_GET', data).then(response => {
           if (typeof vm.onRecordCreated === 'function') {
             // console.log('newRecord :: onRecordCreated is function')
             vm.onRecordCreated(response)
           } else {
-            // console.log('newRecord :: onRecordCreated is not function')
-            vm.$router.push({name: vm.routeName, params: {id: response.id}})
+            console.log('newRecord :: onRecordCreated is not function')
+            vm.$router.push({name: vm.routeName, params: {id: response.data.id}})
           }
         },
         error => {
