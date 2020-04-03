@@ -220,7 +220,7 @@ const actions = {
 
   [types.AUTH_REFRESH] ({rootGetters, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      // console.log('AUTH_REFRESH')
+      console.log('AUTH_REFRESH')
       let url = rootGetters.constants.apiUrl + '/auth/refresh'
       let options = {
         headers: {

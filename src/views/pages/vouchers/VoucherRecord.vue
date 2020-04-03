@@ -1239,7 +1239,7 @@
 
       save (callback) {
         const vm = this
-        console.log('VoucherRecord :; save')
+        console.log('VoucherRecord :: save')
         const codeConfigs = [
           vm.qrcodeConfig,
           vm.barcodeConfig
@@ -1258,6 +1258,7 @@
         vm.loading = true
         vm.$forceUpdate()
         const action = vm.record.id === 0 ? 'AUTH_POST' : 'AUTH_PUT'
+        // console.log('action = ' + action)
         vm.$store.dispatch(action, data).then(
           response => {
             const successMessage = vm.$t('messages.saved_successfully')

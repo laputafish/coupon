@@ -285,13 +285,14 @@ export default {
   },
   methods: {
     saveCodeInfo (row) {
+      console.log('saveCodeInfo : row: ', row)
       const vm = this
       const codeInfo = vm.row2CodeInfo(row)
       const data = {
         urlCommand: '/vouchers/' + vm.voucherId + '/codes/' + row.id,
         data: codeInfo
       }
-      vm.$store.dispatch('REFRESH_AUTH_PUT', data).then(
+      vm.$store.dispatch('AUTH_PUT', data).then(
         () => {
           vm.$toaster.success(vm.$t('messages.saved_successfully'))
         }
