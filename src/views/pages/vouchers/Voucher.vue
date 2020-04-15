@@ -29,14 +29,31 @@
             {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
             {title: 'general.description', thComp: 'ThCommonHeader', tdComp: 'TdDescription', field: 'description'},
             {title: 'agents.agent', thComp: 'ThCommonHeader', tdComp: 'TdAgent', field: 'agent'},
+            {title: 'QR/Barcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCodes', field: 'id'},
             {
               title: 'vouchers.activation_date',
               thComp: 'ThCommonHeader',
               tdComp: 'TdCommonDate',
+              thClass: 'text-center',
+              tdClass: 'text-center',
               field: 'activation_date'
             },
-            {title: 'general.expiry_date', thComp: 'ThCommonHeader', tdComp: 'TdCommonDate', field: 'expiry_date'},
-            {title: 'general.created_at', thComp: 'ThCommonHeader', tdComp: 'TdCommonDate', field: 'created_at'},
+            {
+              title: 'general.expiry_date',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdCommonDate',
+              thClass: 'text-center',
+              tdClass: 'text-center',
+              field: 'expiry_date'
+            },
+            {
+              title: 'general.created_at',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdCommonDate',
+              thClass: 'text-center',
+              tdClass: 'text-center',
+              field: 'created_at'
+            },
             {
               title: 'vouchers.no_of_codes',
               thComp: 'ThCommonHeader',

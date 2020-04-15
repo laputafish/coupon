@@ -1,7 +1,10 @@
 <template>
   <div class="td-common-link" @click="onClick">
     <div v-if="row.notes" class="d-flex flex-column" style="line-height:1.1;">
-      {{ value }}
+      <div class="d-flex flex-row justify-content-start">
+        <span>{{ value }}</span>
+        <div class="badge badge-info ml-2">{{ row['id'] }}</div>
+      </div>
       <small class="voucher-notes">{{ row.notes }}</small>
     </div>
     <div v-else>
