@@ -30,7 +30,7 @@
                  name="description"
                  type="text"
                  v-model="record.description"/>
-          <input class="form-control"
+          <input class="form-control mt-1"
                  :placeholder="$t('vouchers.sub_title')"
                  id="notes"
                  name="notes"
