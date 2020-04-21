@@ -75,7 +75,8 @@
     "all_codes_are_removed": "All codes are removed!",
     "template_missing": "Template Missing!",
     "error_occurred_maybe_invalid_format": "Error occurred. Maybe Invalid Format!",
-    "deleted_successfully": "Deleted Successfully."
+    "deleted_successfully": "Deleted Successfully.",
+    "code_exists_are_you_sure": "Some code(s) exists. They may be removed completely. Are you sure?"
   },
   "menu": {
     "dashboard": "Dashboard",

@@ -512,11 +512,6 @@
       //   const vm = this
       //   return window.location.origin + '/coupons/test/' + vm.record.id + '/' + new Date().getTime()
       // },
-      copyLink () {
-        const vm = this
-        vm.$copyText( vm.testLink )
-        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
-      },
       sharingTitleCharCount () {
         const vm = this
         let result = 0
@@ -616,6 +611,11 @@
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
+      copyLink () {
+        const vm = this
+        vm.$copyText( vm.testLink )
+        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+      },
       removeSharingImage () {
         const vm = this
         const data = {
@@ -1077,10 +1077,13 @@
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
           case 'setQrCodeComposition':
+            console.log('setQrCodeComposition :: payload.data: ', payload.data)
             if (vm.qrcodeConfig.composition === '' || payload.data === '') {
+              console.log('setQrCodeComposition: vm.qrcodeConfig.composition === "" || payload.data === ""')
               vm.qrcodeConfig.composition = payload.data
             }
             if (vm.barcodeConfig.composition === '' || payload.data === '') {
+              console.log('setQrCodeComposition: vm.barcodeConfig.composition === "" || payload.data === ""')
               vm.barcodeConfig.composition = payload.data
             }
           // vm.record.qr_code_composition = '{' + payload.data + '}'

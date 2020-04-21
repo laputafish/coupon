@@ -47,6 +47,7 @@
           :data="{id: voucherId}"
           :headers="authHeaders"
           v-model="files"
+          @click="checkCodeExists"
           @input-filter="inputFilter"
           @input-file="inputFile"
           ref="upload">
@@ -54,6 +55,10 @@
         <font-awesome-icon icon="upload"></font-awesome-icon>
         Upload File
       </file-upload>
+      <button class="btn btn-primary" @click="$refs.upload.click()">
+        <font-awesome-icon icon="upload"></font-awesome-icon>
+        Upload File
+      </button>
       <!--<file-upload-->
           <!--extensions="xlsx"-->
           <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
@@ -197,6 +202,10 @@ export default {
     postAction () {
       const vm = this
       return vm.$store.getters.apiUrl + '/agent_codes/upload'
+    },
+    hasSomeCode() {
+      const vm = this
+      return vm.data.length > 0
     }
   },
   watch: {
@@ -284,6 +293,9 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    checkCodeExists () {
+      alert('check')
+    },
     saveCodeInfo (row) {
       console.log('saveCodeInfo : row: ', row)
       const vm = this
@@ -358,6 +370,10 @@ export default {
           command: 'setQrCodeComposition',
           data: ''
         })
+        vm.$emit('onCommand', {
+          command: 'setCodeFields',
+          value: ''
+        })
         vm.onQueryChangedHandler(vm.query)
       })
     },
@@ -416,10 +432,12 @@ export default {
 
     onQueryChangedHandler (query) {
       const vm = this
-      console.log('onQueryChangedHandler :: query: ', query)
-      console.log('onQueryChangedHandler :: codeFieldsStr: ', vm.codeFieldsStr)
+      vm.reloadCodeList(query)
+    },
+
+    reloadCodeList (query) {
+      const vm = this
       if (vm.voucherId !== 0) {
-        console.log('onQueryChangedHandler :: voucherId = ' + vm.voucherId)
         if (typeof query === 'undefined') {
           query = vm.query
         }
@@ -709,19 +727,24 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
     //   return records
     // },
 
+    uploadFile () {
+      const vm = this
+      vm.$nextTick(function () {
+        vm.edit = true
+        vm.uploading = true
+        vm.$refs.upload.active = true
+      })
+    },
+
     inputFile (newFile, oldFile) {
       const vm = this
       // console.log('inputFile :: newFile: ' + (newFile ? 'yes' : 'no'))
       // console.log('inputFile :: oldFile: ' + (oldFile ? 'yes' : 'no'))
       if (newFile && !oldFile) {
-        // console.log('newFile')
-        this.$nextTick(function () {
-          this.edit = true
-          this.uploading = true
-          this.$refs.upload.active = true
-        })
+        vm.uploadFile()
       }
       if (!newFile && oldFile) {
+        console.log('not newFile and oldFile')
         // console.log('not newFile')
         this.edit = false
       }
@@ -742,59 +765,54 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
     onUploaded (result) {
       const vm = this
       // result = {
-      //    code_fields: "barcode:string|serialno:string|actdate:date|exdate:date"
+      //    codeFields: "barcode:string|serialno:string|actdate:date|exdate:date"
       //    new: 9
       //    updated: 0
       // }
       //
       vm.uploading = false
       if (result.codeFields) {
+        console.log('onUploaded :: result.codeFields: ', result.codeFields)
         const newCodeFieldsStr = result.codeFields
-        // console.log('onUploaded :: vm.codeFieldStr = ' + vm.codeFieldsStr)
-        // console.log('onUploaded :: newCodeFieldsStr = ' + newCodeFieldsStr)
-        // if current code fields has valid entries
-
+        console.log('onUploaded :: newCodefieldsStr = ' + newCodeFieldsStr)
         if (vm.codeFieldsStr == newCodeFieldsStr) {
-          vm.onQueryChangedHandler(vm.query)
+          console.log('onUploaded :: vm.codeFieldsStr == newCodefieldsStr')
+          vm.reloadCodeList(vm.query)
         } else {
-        // if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
-        //   console.log('onUploaded :: vm.codeFieldsStr !== blank')
-          if (newCodeFieldsStr !== vm.codeFieldsStr && vm.codeFieldsStr !== null) {
-            // console.log('onUploaded :: newCodeFieldsStr !== vm.codeFieldsStr')
-            // goAhead = false
-            const options = {
-              cancelText: vm.$t('buttons.close')
-            }
-            vm.$dialog.alert(vm.$t('messages.fields_not_matched_please_delete_all_first'), options)
-          } else {
+          // if (newCodeFieldsStr !== vm.codeFieldsStr && vm.codeFieldsStr !== null) {
+          //   const options = {
+          //     cancelText: vm.$t('buttons.close')
+          //   }
+          //   vm.$dialog.alert(vm.$t('messages.fields_not_matched_please_delete_all_first'), options)
+          // } else {
+          vm.$emit('onCommand', {
+            command: 'setCodeFields',
+            value: newCodeFieldsStr
+          })
+          vm.$emit('onCommand', {
+            command: 'setRecordField',
+            fieldName: 'code_count',
+            fieldValue: result.codeCount
+          })
+          if (result.code_composition) {
             vm.$emit('onCommand', {
-              command: 'setCodeFields',
-              value: newCodeFieldsStr
+              command: 'setQrCodeComposition',
+              data: result.code_composition
             })
-            vm.$emit('onCommand', {
-              command: 'setRecordField',
-              fieldName: 'code_count',
-              fieldValue: result.codeCount
-            })
-            if (result.code_composition) {
-              vm.$emit('onCommand', {
-                command: 'setQrCodeComposition',
-                data: result.code_composition
-              })
-            }
-            let msgs = []
-            if (result.existing > 0) {
-              msgs.push(result.existing + ' code(s) are duplicated')
-            } else {
-              msgs.push('No code(s) is duplicated')
-            }
-            if (result.new > 0) {
-              msgs.push(result.new + ' code(s) are added')
-            } else {
-              msgs.push('no code(s) are added')
-            }
-            vm.$toaster.success(msgs.join(' and ') + '.')
           }
+          let msgs = []
+          if (result.existing > 0) {
+            msgs.push(result.existing + ' code(s) are duplicated')
+          } else {
+            msgs.push('No code(s) is duplicated')
+          }
+          if (result.new > 0) {
+            msgs.push(result.new + ' code(s) are added')
+          } else {
+            msgs.push('no code(s) are added')
+          }
+          vm.$toaster.success(msgs.join(' and ') + '.')
+          // }
           vm.onQueryChangedHandler(vm.query)
         }
         // else {
