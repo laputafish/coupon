@@ -158,13 +158,13 @@
         <b-tab class="bg-white py-2">
           <template v-slot:title>
             {{ $t('vouchers.questionnaire_template') }}
-            <div v-if="record && record.code_count>0"
-                 @click.prevent.stop="useQuestionnaire=!useQuestionnaire"
+            <div v-if="record"
+                 @click.prevent.stop="record.has_questionnaire=!record.has_questionnaire"
                  class="badge">
-              <div v-show="useQuestionnaire">
+              <div v-show="record.has_questionnaire">
                 <i class="fas fa-lg fa-check-square"></i>
               </div>
-              <div v-show="!useQuestionnaire">
+              <div v-show="!record.has_questionnaire">
                 <i class="fas fa-lg fa-square"></i>
               </div>
             </div>
@@ -172,12 +172,22 @@
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">
+                <div class="mb-1 d-flex flex-row align-items-center">
+                  <div class="mr-1">LINK:</div>
+                  <div v-if="record.questionnaire_key===''" class="badge badge-muted">Link is available after saving.</div>
+                  <div v-else class="badge badge-success mr-2 questionnaire-link"
+                    @click="copyQuestionnaireLink()">{{ questionnaireLink }}</div>
+                  <div class="d-inline-block copy-link"
+                       @click="copyQuestionnaireLink()">
+                    <font-awesome-icon icon="copy"/>
+                  </div>
+                </div>
                 <template-editor
                     @onCommand="onCommandHandler"
                     v-model="record.questionnaire">
-                  <div slot="sidePanel">
+                  <template v-slot:sidePanel>
                     <h1>Side Panel</h1>
-                  </div>
+                  </template>
                 </template-editor>
               </div>
             </div>
@@ -334,11 +344,11 @@
               <div class="row" v-if="record">
                 <div class="col-sm-12">
                   <div class="d-flex flex-row justify-content-start align-items-center"
-                    @click="copyLink()">
+                    @click="copySharingLink()">
                     <div class="badge badge-info">
                       {{ testLink }}
                     </div>
-                    <div class="px-1 d-inline-block copy-link" @click="copyLink()">
+                    <div class="px-1 d-inline-block copy-link" @click="copySharingLink()">
                       <font-awesome-icon icon="copy"/>
                     </div>
                   </div>
@@ -403,6 +413,7 @@
   export default {
     mixins: [DataRecordMixin, appMixin],
     components: {
+      templateEditor,
       imageCropperDialog,
       agentCodeTable,
       fileUpload,
@@ -426,7 +437,6 @@
         apiPath: '/vouchers',
         titleField: 'description',
         record: null,
-        useQuestionnaire: false,
 
         // Upload Sharing Image
         editingUploadFile: false,
@@ -452,6 +462,7 @@
         showingImageCropperDialog: false,
 
         processingButtons: [],
+
         tinymceOptions: {
           twoWay: true
         },
@@ -547,6 +558,10 @@
     },
 
     computed: {
+      questionnaireLink () {
+        const vm = this
+        return vm.$store.getters.apiUrl + '/q/' + vm.record.questionnaire_key
+      },
       // testLink () {
       //   const vm = this
       //   return window.location.origin + '/coupons/test/' + vm.record.id + '/' + new Date().getTime()
@@ -650,7 +665,13 @@
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
-      copyLink () {
+
+      copyQuestionnaireLink () {
+        const vm = this
+        vm.$copyText( vm.questionnaireLink )
+        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+      },
+      copySharingLink () {
         const vm = this
         vm.$copyText( vm.testLink )
         vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
@@ -797,6 +818,7 @@
       onEditorInit () {
         const vm = this
         tinyMCE.get('yoovEditor').setContent(vm.record.template ? vm.record.template : '')
+        tinyMCE.get('yoovEditor').save()
         tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function (e) {
           vm.tinyMCEInFullScreen = e.state
         })
@@ -1515,5 +1537,13 @@
   }
   #sharingTab .copy-link {
     cursor: pointer;
+  }
+
+  .questionnaire-link {
+    background-color: #28a745;
+    cursor: pointer;
+  }
+  .questionnaire-link:hover {
+    background-color: #52b86a;
   }
 </style>

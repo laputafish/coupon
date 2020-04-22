@@ -1,7 +1,7 @@
 <template>
   <div class="td-common-link" @click="onClick">
     <div v-if="row.notes" class="d-flex flex-column" style="line-height:1.1;">
-      <div class="d-flex flex-row justify-content-start">
+      <div class="d-flex flex-row justify-content-start align-items-start">
         <span>{{ value }}</span>
         <div class="badge badge-info ml-2">{{ row['id'] }}</div>
       </div>
