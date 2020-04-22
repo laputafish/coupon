@@ -55,10 +55,6 @@
         <font-awesome-icon icon="upload"></font-awesome-icon>
         Upload File
       </file-upload>
-      <button class="btn btn-primary" @click="$refs.upload.click()">
-        <font-awesome-icon icon="upload"></font-awesome-icon>
-        Upload File
-      </button>
       <!--<file-upload-->
           <!--extensions="xlsx"-->
           <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
@@ -730,7 +726,6 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
     uploadFile () {
       const vm = this
       vm.$nextTick(function () {
-        vm.edit = true
         vm.uploading = true
         vm.$refs.upload.active = true
       })
@@ -741,7 +736,15 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
       // console.log('inputFile :: newFile: ' + (newFile ? 'yes' : 'no'))
       // console.log('inputFile :: oldFile: ' + (oldFile ? 'yes' : 'no'))
       if (newFile && !oldFile) {
-        vm.uploadFile()
+        vm.edit = true
+        if (vm.hasSomeCode) {
+          vm.$dialog.confirm(vm.$t('messages.code_exists_append_same_column_are_you_sure')).then(
+            () => {
+              vm.uploadFile()
+            })
+        } else {
+          vm.uploadFile()
+        }
       }
       if (!newFile && oldFile) {
         console.log('not newFile and oldFile')

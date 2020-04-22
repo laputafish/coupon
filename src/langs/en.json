@@ -76,7 +76,7 @@
     "template_missing": "Template Missing!",
     "error_occurred_maybe_invalid_format": "Error occurred. Maybe Invalid Format!",
     "deleted_successfully": "Deleted Successfully.",
-    "code_exists_are_you_sure": "Some code(s) exists. They may be removed completely. Are you sure?"
+    "code_exists_append_same_column_are_you_sure": "Code(s) exists. They may be removed completely if columns are different. Are you sure?"
   },
   "menu": {
     "dashboard": "Dashboard",
@@ -140,7 +140,8 @@
     "images": "Images",
     "title": "Title",
     "sub_title": "Sub-title",
-    "coupons": "Coupon(s)"
+    "coupons": "Coupon(s)",
+    "questionnaire_template": "Questionnaire Template"
   },
   "login": {
     "digital_coupon": "Digital Coupon",

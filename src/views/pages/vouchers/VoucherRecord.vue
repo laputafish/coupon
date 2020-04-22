@@ -152,6 +152,40 @@
 
         <!--
         *****************
+         Questionnaire
+        *****************
+        -->
+        <b-tab class="bg-white py-2">
+          <template v-slot:title>
+            {{ $t('vouchers.questionnaire_template') }}
+            <div v-if="record && record.code_count>0"
+                 @click.prevent.stop="useQuestionnaire=!useQuestionnaire"
+                 class="badge">
+              <div v-show="useQuestionnaire">
+                <i class="fas fa-lg fa-check-square"></i>
+              </div>
+              <div v-show="!useQuestionnaire">
+                <i class="fas fa-lg fa-square"></i>
+              </div>
+            </div>
+          </template>
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <template-editor
+                    @onCommand="onCommandHandler"
+                    v-model="record.questionnaire">
+                  <div slot="sidePanel">
+                    <h1>Side Panel</h1>
+                  </div>
+                </template-editor>
+              </div>
+            </div>
+          </div>
+        </b-tab>
+
+        <!--
+        *****************
          Template Editor
         *****************
         -->
@@ -162,42 +196,19 @@
               </div>
             </div>
             <div class="row" v-if="record">
-              <div class="col-12 d-flex flex-row">
-                <tinymce
-                    ref="yoovEditor"
-                    class="flex-grow-1 bg-muted"
-                    @editorInit="onEditorInit()"
-                    style="min-height:480px;"
-                    id="yoovEditor"
-                    :toolbar1="tinymceToolbar1"
-                    :other_options="tinymceOtherOptions"
-                    :options="tinymceOptions"
-                    v-model="record.template"></tinymce>
-                <div class="flex-grow-0 p-2 bg-muted ml-2">
-                  <b-button @click="showingCopyTemplateDialog=true"
-                            class="btn btn-primary mb-3 w-100">
-                    {{ $t('vouchers.copyTemplateFrom') }}
-                  </b-button>
-                  <h6>Token List</h6>
-                  <div v-for="keyGroup in templateKeyGroups"
-                       :key="keyGroup['name']">
-                    {{ $t('vouchers.' + keyGroup['name']) }}
-                    <ul class="token-list list-unstyled px-2 mb-1">
-                      <li v-for="templateKey in keyGroup.keys"
-                          :key="templateKey">
-                        <div @click="insertKey(templateKey)"
-                             class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="fullscreen-token-list-panel d-flex flex-column"
-                     v-if="tinyMCEInFullScreen">
-                  <div class="flex-grow-1 p-2 bg-muted">
-                    <!--<b-button @click="$bvModal.show('voucherSelectDialog')"-->
-                    <!--class="btn btn-primary mb-3 w-100">-->
-                    <!--{{ $t('vouchers.copyTemplateFrom') }}-->
-                    <!--</b-button>-->
+              <div class="col-12">
+                <div class="d-flex flex-row">
+                  <tinymce
+                      ref="yoovEditor"
+                      class="flex-grow-1 bg-muted"
+                      @editorInit="onEditorInit()"
+                      style="min-height:480px;"
+                      id="yoovEditor"
+                      :toolbar1="tinymceToolbar1"
+                      :other_options="tinymceOtherOptions"
+                      :options="tinymceOptions"
+                      v-model="record.template"></tinymce>
+                  <div class="flex-grow-0 p-2 bg-muted ml-2">
                     <b-button @click="showingCopyTemplateDialog=true"
                               class="btn btn-primary mb-3 w-100">
                       {{ $t('vouchers.copyTemplateFrom') }}
@@ -215,6 +226,31 @@
                       </ul>
                     </div>
                   </div>
+                  <div class="fullscreen-token-list-panel d-flex flex-column"
+                       v-if="tinyMCEInFullScreen">
+                    <div class="flex-grow-1 p-2 bg-muted">
+                      <!--<b-button @click="$bvModal.show('voucherSelectDialog')"-->
+                      <!--class="btn btn-primary mb-3 w-100">-->
+                      <!--{{ $t('vouchers.copyTemplateFrom') }}-->
+                      <!--</b-button>-->
+                      <b-button @click="showingCopyTemplateDialog=true"
+                                class="btn btn-primary mb-3 w-100">
+                        {{ $t('vouchers.copyTemplateFrom') }}
+                      </b-button>
+                      <h6>Token List</h6>
+                      <div v-for="keyGroup in templateKeyGroups"
+                           :key="keyGroup['name']">
+                        {{ $t('vouchers.' + keyGroup['name']) }}
+                        <ul class="token-list list-unstyled px-2 mb-1">
+                          <li v-for="templateKey in keyGroup.keys"
+                              :key="templateKey">
+                            <div @click="insertKey(templateKey)"
+                                 class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -222,10 +258,10 @@
         </b-tab>
 
         <!--
-*****************
- Sharing
-*****************
--->
+        *****************
+         Sharing
+        *****************
+        -->
         <b-tab id="sharingTab" title="Sharing" class="bg-white py-2">
           <div class="p-2 d-flex flex-row justify-content-start">
             <div class="mx-1 d-inline-block">
@@ -343,11 +379,13 @@
   import titleRow from '@/views/comps/TitleRow'
   import formInputs from '@/views/comps/forms'
   import fileUpload from 'vue-upload-component'
+  import templateEditor from './comps/TemplateEditor'
 
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
 
   import agentCodeTable from './comps/AgentCodeTable'
+
   // import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
   // import datePicker from 'vue2-datepicker'
@@ -388,6 +426,7 @@
         apiPath: '/vouchers',
         titleField: 'description',
         record: null,
+        useQuestionnaire: false,
 
         // Upload Sharing Image
         editingUploadFile: false,
