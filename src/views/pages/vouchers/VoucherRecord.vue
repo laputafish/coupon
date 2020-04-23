@@ -19,9 +19,9 @@
       <!-- Row #0 -->
       <!-- ********* -->
       <!--<data-input width="3" id="description" labelTag="vouchers.title"-->
-                  <!--v-model="record.description"></data-input>-->
+      <!--v-model="record.description"></data-input>-->
       <!--<data-input width="3" id="notes" labelTag="vouchers.sub_title"-->
-                  <!--v-model="record.notes"></data-input>-->
+      <!--v-model="record.notes"></data-input>-->
       <div class="col-sm-6">
         <div class="form-group mb-1">
           <label for="description">{{ $t('vouchers.title') }}</label>
@@ -123,10 +123,10 @@
                     :voucherId="record.id"
                     :codeFieldsStr="record.code_fields"></agent-code-table>
                 <!--<agent-code-table-->
-                    <!--ref="agentCodeTable"-->
-                    <!--@onCommand="onCommandHandler"-->
-                    <!--:codeInfos="record.code_infos"-->
-                    <!--:codeFieldsStr="record.code_fields"></agent-code-table>-->
+                <!--ref="agentCodeTable"-->
+                <!--@onCommand="onCommandHandler"-->
+                <!--:codeInfos="record.code_infos"-->
+                <!--:codeFieldsStr="record.code_fields"></agent-code-table>-->
               </div>
             </div>
           </div>
@@ -142,62 +142,18 @@
             <div class="row">
               <div class="col-12">
                 <email-table
-                ref="emailTable"
-                @onCommand="onCommandHandler"
-                :emails="record.emails"></email-table>
-              </div>
-            </div>
-          </div>
-        </b-tab>
-
-        <!--
-        *****************
-         Questionnaire
-        *****************
-        -->
-        <b-tab class="bg-white py-2">
-          <template v-slot:title>
-            {{ $t('vouchers.questionnaire_template') }}
-            <div v-if="record"
-                 @click.prevent.stop="record.has_questionnaire=!record.has_questionnaire"
-                 class="badge">
-              <div v-show="record.has_questionnaire">
-                <i class="fas fa-lg fa-check-square"></i>
-              </div>
-              <div v-show="!record.has_questionnaire">
-                <i class="fas fa-lg fa-square"></i>
-              </div>
-            </div>
-          </template>
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-12">
-                <div class="mb-1 d-flex flex-row align-items-center">
-                  <div class="mr-1">LINK:</div>
-                  <div v-if="record.questionnaire_key===''" class="badge badge-muted">Link is available after saving.</div>
-                  <div v-else class="badge badge-success mr-2 questionnaire-link"
-                    @click="copyQuestionnaireLink()">{{ questionnaireLink }}</div>
-                  <div class="d-inline-block copy-link"
-                       @click="copyQuestionnaireLink()">
-                    <font-awesome-icon icon="copy"/>
-                  </div>
-                </div>
-                <template-editor
+                    ref="emailTable"
                     @onCommand="onCommandHandler"
-                    v-model="record.questionnaire">
-                  <template v-slot:sidePanel>
-                    <h1>Side Panel</h1>
-                  </template>
-                </template-editor>
+                    :emails="record.emails"></email-table>
               </div>
             </div>
           </div>
         </b-tab>
 
         <!--
-        *****************
-         Template Editor
-        *****************
+        **************************
+         Leaflet Template Editor
+        **************************
         -->
         <b-tab title="Leaflet Template" class="bg-white py-2">
           <div class="container-fluid">
@@ -272,7 +228,7 @@
          Sharing
         *****************
         -->
-        <b-tab id="sharingTab" title="Sharing" class="bg-white py-2">
+        <b-tab id="sharingTab" title="Sharing Context" class="bg-white py-2">
           <div class="p-2 d-flex flex-row justify-content-start">
             <div class="mx-1 d-inline-block">
                   <div class="image-wrapper m-2">
@@ -344,7 +300,7 @@
               <div class="row" v-if="record">
                 <div class="col-sm-12">
                   <div class="d-flex flex-row justify-content-start align-items-center"
-                    @click="copySharingLink()">
+                       @click="copySharingLink()">
                     <div class="badge badge-info">
                       {{ testLink }}
                     </div>
@@ -353,6 +309,96 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </b-tab>
+
+        <!--
+        *****************
+         Custom Link
+        *****************
+        -->
+        <!--<b-tab class="bg-white py-2">-->
+          <!--<template v-slot:title>-->
+            <!--{{ $t('vouchers.custom_link') }}-->
+            <!--({{ customLink }})-->
+          <!--</template>-->
+          <!--<div class="container-fluid">-->
+            <!--<div class="row">-->
+              <!--<div class="col-12">-->
+                <!--<div class="mb-1 d-flex flex-row align-items-center">-->
+                  <!--<div class="mr-1">LINK:</div>-->
+                  <!--<div v-if="!record.has_questionnaire">-->
+                    <!--Questionnaire is not used.-->
+                  <!--</div>-->
+                  <!--<div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">-->
+                    <!--Link is available after saving.-->
+                  <!--</div>-->
+                  <!--<div v-else class="badge badge-success mr-2 questionnaire-link d-flex flex-row align-items-center"-->
+                       <!--@click="copyQuestionnaireLink()">-->
+                    <!--{{ questionnaireLink }}-->
+                    <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</b-tab>-->
+
+        <custom-link-tab
+          title="Custom Link"
+          :record="record"
+          @onCommand="onCommandHandler"></custom-link-tab>
+
+        <custom-templates-tab
+          title="Custom Templates"
+          :templates="allTemplates"
+          @onCommand="onCommandHandler"></custom-templates-tab>
+
+        <!--
+        *****************
+         Questionnaire
+        *****************
+        -->
+        <b-tab class="bg-white py-2">
+          <template v-slot:title>
+            {{ $t('vouchers.questionnaire_template') }}
+            <div v-if="record"
+                 @click.prevent.stop="record.has_questionnaire=!record.has_questionnaire"
+                 class="badge">
+              <div v-show="record.has_questionnaire">
+                <i class="fas fa-lg fa-check-square"></i>
+              </div>
+              <div v-show="!record.has_questionnaire">
+                <i class="fas fa-lg fa-square"></i>
+              </div>
+            </div>
+          </template>
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="mb-1 d-flex flex-row align-items-center">
+                  <div class="mr-1">LINK:</div>
+                  <div v-if="!record.has_questionnaire">
+                    Questionnaire is not used.
+                  </div>
+                  <div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">
+                    Link is available after saving.
+                  </div>
+                  <div v-else class="badge badge-success mr-2 questionnaire-link d-flex flex-row align-items-center"
+                       @click="copyQuestionnaireLink()">
+                    {{ questionnaireLink }}
+                    <font-awesome-icon class="ml-1" icon="copy"/>
+                  </div>
+                </div>
+                <template-editor
+                    @onCommand="onCommandHandler"
+                    v-model="record.questionnaire">
+                  <template v-slot:sidePanel>
+                    <h1>Side Panel</h1>
+                  </template>
+                </template-editor>
               </div>
             </div>
           </div>
@@ -368,10 +414,10 @@
     <image-cropper-dialog
         id="imageCropperDialog"
         ref="imageCropperDialog"
-      :mediaId="selectedTempMediaId"
-      :voucherId="recordId"
-      v-model="showingImageCropperDialog"
-      @onCommand="onCommandHandler"></image-cropper-dialog>
+        :mediaId="selectedTempMediaId"
+        :voucherId="recordId"
+        v-model="showingImageCropperDialog"
+        @onCommand="onCommandHandler"></image-cropper-dialog>
     <voucher-select-dialog
         :title="$t('vouchers.copyTemplateFrom')"
         :initialAgentId="record ? record.agent_id : 0"
@@ -408,6 +454,9 @@
   import imageSelectDialog from './dialogs/ImageSelectDialog'
   import imageCropperDialog from './dialogs/ImageCropperDialog'
 
+  import customTemplatesTab from './comps/CustomTemplatesTab'
+  import customLinkTab from './comps/CustomLinkTab'
+
   import $ from 'jquery'
 
   export default {
@@ -425,7 +474,9 @@
       // ,
       vueRangeSlider,
       voucherSelectDialog,
-      imageSelectDialog
+      imageSelectDialog,
+      customTemplatesTab,
+      customLinkTab
       // ,
       // yoovEditor
       // ,
@@ -558,10 +609,25 @@
     },
 
     computed: {
-      questionnaireLink () {
+      allTemplates () {
         const vm = this
-        return vm.$store.getters.apiUrl + '/q/' + vm.record.questionnaire_key
+        var result = []
+        result.push({
+          id: 0,
+          name: 'Questionnaire',
+          content: vm.record.questionnaire
+        })
+        for (var i = 0; i < vm.record.custom_templates.length; i++) {
+          var customTemplate = vm.record.custom_templates[i]
+          result.push({
+            id: customTemplate.id,
+            name: customTemplate.name,
+            content: customTemplate.content
+          })
+        }
+        return result
       },
+
       // testLink () {
       //   const vm = this
       //   return window.location.origin + '/coupons/test/' + vm.record.id + '/' + new Date().getTime()
@@ -666,11 +732,7 @@
     },
     methods: {
 
-      copyQuestionnaireLink () {
-        const vm = this
-        vm.$copyText( vm.questionnaireLink )
-        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
-      },
+
       copySharingLink () {
         const vm = this
         vm.$copyText( vm.testLink )

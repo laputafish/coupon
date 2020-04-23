@@ -141,7 +141,8 @@
     "title": "Title",
     "sub_title": "Sub-title",
     "coupons": "Coupon(s)",
-    "questionnaire_template": "Questionnaire Template"
+    "questionnaire_template": "Questionnaire Template",
+    "custom_link" : "Custom Link"
   },
   "login": {
     "digital_coupon": "Digital Coupon",
