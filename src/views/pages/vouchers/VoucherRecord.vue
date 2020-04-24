@@ -51,13 +51,13 @@
       <!-- ********* -->
       <!-- Row #1 -->
       <!-- ********* -->
-      <data-input-select width="4" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
+      <data-input-select width="2" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
                          :options="agents"
                          optionLabelField="name"></data-input-select>
       <!--<data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"-->
       <!--v-model="record.created_at"></data-input-readonly>-->
 
-      <div class="col-sm-4">
+      <div class="col-sm-2">
         <label>QR Code <div class="badge badge-info">{qrcode}</div></label>
         <input class="form-control" v-model="qrcodeConfig.composition">
         <div class="d-flex flex-row align-items-center">
@@ -70,7 +70,7 @@
           <div class="line-height-1 text-nowrap">{{ qrcodeConfig.width }} px</div>
         </div>
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-2">
         <div class="d-flex flex-row justify-content-between">
           <label>Barcode <div class="badge badge-info">{barcode}</div></label>
           <!--<select v-model="record.barcodeType">-->
@@ -80,7 +80,6 @@
         </div>
         <input class="form-control" v-model="barcodeConfig.composition">
         <div class="d-flex flex-row align-items-center">
-
           <small class="text-nowrap line-height-1 d-inline mr-1">Width/bar</small>
           <vue-range-slider :min="1" :max="5" ref="slider" style="width:100%;" v-model="barcodeConfig.width">
             <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
@@ -88,8 +87,9 @@
             </div>
           </vue-range-slider>
           <div class="line-height-1 text-nowrap">{{ barcodeConfig.width }}</div>
-
-          <small class="text-nowrap line-height-1 d-inline ml-2 mr-1">Height</small>
+        </div>
+        <div class="d-flex flex-row align-items-center">
+          <small class="text-nowrap line-height-1 d-inline mr-1">Height</small>
           <vue-range-slider :min="30" :max="99" ref="slider" style="width:100%;" v-model="barcodeConfig.height">
             <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
               {{ value }}
@@ -98,7 +98,63 @@
           <div class="line-height-1 text-nowrap">{{ barcodeConfig.height }}</div>
         </div>
       </div>
+
+      <div class="col-sm-6">
+        <div class="d-flex flex-row">
+          <label>Voucher Type</label>
+        </div>
+        <div class="d-flex flex-row justify-content-between align-items-start voucher-type-selection">
+          <div class="flex-grow-1">
+                    <!--:class="{'active':record.voucher_type=='voucher'}"-->
+            <button type="button"
+                    :class="{'btn-primary':record.voucher_type==='voucher','btn-light':record.voucher_type!=='voucher'}"
+                    @click="record.voucher_type='voucher'"
+                    class="btn w-100 mr-1">
+              <img class="voucher-type-icon" data-toggle="tooltip" title="Voucher" src="/img/voucher.png"/>
+              <img class="voucher-type-icon white-icon" data-toggle="tooltip" title="Voucher" src="/img/voucher-w.png"/>
+            </button>
+          </div>
+          <div class="flex-grow-1 p-l-1">
+                    <!--:class="{'active':record.voucher_type==='form'}"-->
+            <button type="button"
+                    :class="{'btn-success':record.voucher_type==='form','btn-light':record.voucher_type!=='form'}"
+                    @click="record.voucher_type='form'"
+                    class="btn w-100 ml-1">
+              <div class="d-flex flex-row justify-content-center align-items-center">
+                <img class="voucher-type-icon flex-grow-1"
+                     data-toggle="tooltip"
+                     title="Form Filling"
+                     src="/img/form.png"/>
+                <img class="voucher-type-icon flex-grow-1 white-icon"
+                     data-toggle="tooltip"
+                     title="Form Filling"
+                     src="/img/form-w.png"/>
+                <i class="fa fa-play"></i>
+                <img class="voucher-type-icon flex-grow-1"
+                     data-toggle="tooltip"
+                     title="Voucher"
+                     src="/img/voucher.png"/>
+                <img class="voucher-type-icon flex-grow-1 white-icon"
+                     data-toggle="tooltip"
+                     title="Voucher"
+                     src="/img/voucher-w.png"/>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div v-if="record.voucher_type==='form'"
+             class="position-absolute d-flex flex-row justify-content-center align-items-center"
+            style="left:0;right:0;">
+          <small class="mr-1">Form Link</small>
+          <div class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"
+               @click="copyCustomLink()">
+            {{ customLink }}
+            <font-awesome-icon class="ml-1" icon="copy"/>
+          </div>
+        </div>
+      </div>
     </div>
+
     <div v-if="record" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
         <!--
@@ -335,7 +391,7 @@
                   <!--<div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">-->
                     <!--Link is available after saving.-->
                   <!--</div>-->
-                  <!--<div v-else class="badge badge-success mr-2 questionnaire-link d-flex flex-row align-items-center"-->
+                  <!--<div v-else class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"-->
                        <!--@click="copyQuestionnaireLink()">-->
                     <!--{{ questionnaireLink }}-->
                     <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
@@ -346,15 +402,17 @@
           <!--</div>-->
         <!--</b-tab>-->
 
-        <custom-link-tab
-          title="Custom Link"
+        <form-filling-tab
+            v-if="record.voucher_type==='form'"
+          title="Form Filling"
           :record="record"
-          @onCommand="onCommandHandler"></custom-link-tab>
+          @onCommand="onCommandHandler"></form-filling-tab>
 
-        <custom-templates-tab
-          title="Custom Templates"
+        <form-page-templates-tab
+            v-if="record.voucher_type==='form'"
+          title="Form Page Templates"
           :templates="allTemplates"
-          @onCommand="onCommandHandler"></custom-templates-tab>
+          @onCommand="onCommandHandler"></form-page-templates-tab>
 
         <!--
         *****************
@@ -386,7 +444,7 @@
                   <div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">
                     Link is available after saving.
                   </div>
-                  <div v-else class="badge badge-success mr-2 questionnaire-link d-flex flex-row align-items-center"
+                  <div v-else class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"
                        @click="copyQuestionnaireLink()">
                     {{ questionnaireLink }}
                     <font-awesome-icon class="ml-1" icon="copy"/>
@@ -454,8 +512,8 @@
   import imageSelectDialog from './dialogs/ImageSelectDialog'
   import imageCropperDialog from './dialogs/ImageCropperDialog'
 
-  import customTemplatesTab from './comps/CustomTemplatesTab'
-  import customLinkTab from './comps/CustomLinkTab'
+  import formFillingTab from './comps/FormFillingTab'
+  import formPageTemplatesTab from './comps/FormPageTemplatesTab'
 
   import $ from 'jquery'
 
@@ -475,8 +533,8 @@
       vueRangeSlider,
       voucherSelectDialog,
       imageSelectDialog,
-      customTemplatesTab,
-      customLinkTab
+      formPageTemplatesTab,
+      formFillingTab
       // ,
       // yoovEditor
       // ,
@@ -609,20 +667,26 @@
     },
 
     computed: {
+      customLink () {
+        const vm = this
+        return vm.$store.getters.apiUrl + '/q/' + vm.record.custom_link_key
+      },
       allTemplates () {
         const vm = this
         var result = []
         result.push({
           id: 0,
           name: 'Questionnaire',
-          content: vm.record.questionnaire
+          content: vm.record.questionnaire,
+          system: true
         })
         for (var i = 0; i < vm.record.custom_templates.length; i++) {
           var customTemplate = vm.record.custom_templates[i]
           result.push({
             id: customTemplate.id,
             name: customTemplate.name,
-            content: customTemplate.content
+            content: customTemplate.content,
+            system: false
           })
         }
         return result
@@ -731,8 +795,11 @@
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
-
-
+      copyCustomLink () {
+        const vm = this
+        vm.$copyText(vm.customLink)
+        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+      },
       copySharingLink () {
         const vm = this
         vm.$copyText( vm.testLink )
@@ -1199,6 +1266,13 @@
             vm.updateCodeInfos(payload.value)
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
+          case 'updateField':
+            var fieldName = payload.fieldName
+            var fieldValue = payload.fieldValue
+            console.log('onCommandHandler :: updateField :; fieldName = ' + fieldName)
+            console.log('onCommandHandler :: updateField :; fieldValue = ' + fieldValue)
+            vm.record[fieldName] = fieldValue
+            break
           case 'setQrCodeComposition':
             console.log('setQrCodeComposition :: payload.data: ', payload.data)
             if (vm.qrcodeConfig.composition === '' || payload.data === '') {
@@ -1601,11 +1675,59 @@
     cursor: pointer;
   }
 
-  .questionnaire-link {
+  .custom-link {
     background-color: #28a745;
     cursor: pointer;
   }
-  .questionnaire-link:hover {
+  .custom-link:hover {
     background-color: #52b86a;
+  }
+  .voucher-type-icon {
+    height:48px;
+    width:auto;
+    object-fit:contain;
+  }
+  .btn-voucher-type {
+    color: #555;
+    background-color: lightgray;
+    border-color: #ccc;
+    box-shadow: none;
+  }
+  .btn-voucher-type.active {
+    color: #ffffff;
+    background-color: #007bff;
+    border-color: #007bff;
+    box-shadow: none;
+  }
+  .btn-voucher-type.active:hover {
+    color: #ffffff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+  }
+  .btn-voucher-type img.white-icon {
+    display: none;
+  }
+  .btn-voucher-type.active img.white-icon {
+    display: inline-block;
+  }
+  .btn-voucher-type.active img {
+    display: none;
+  }
+
+  
+  .voucher-type-selection .btn-light img.white-icon {
+    display: none;
+  }
+  .voucher-type-selection .btn-light img:not(.white-icon) {
+    display: inline-block;
+  }
+
+  .voucher-type-selection .btn-success img.white-icon,
+  .voucher-type-selection .btn-primary img.white-icon {
+    display: inline-block;
+  }
+  .voucher-type-selection .btn-success img:not(.white-icon),
+  .voucher-type-selection .btn-primary img:not(.white-icon) {
+    display: none;
   }
 </style>

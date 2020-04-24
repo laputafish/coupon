@@ -4,7 +4,7 @@
             class="btn"
             v-for="option in options"
             :key="option.name"
-            @click="$emit('input', option.value)"
+            @click="selectOption(option.value)"
             :class="{'btn-success': option.value === value, 'btn-light': option.value !== value}">
       {{ option.name }}
     </button>
@@ -27,6 +27,13 @@ export default {
       default () {
         return []
       }
+    }
+  },
+  methods: {
+    selectOption (value) {
+      const vm = this
+      console.log('DataRadioToggle :: selectOption :: value: ', value)
+      vm.$emit('input', value)
     }
   }
 }

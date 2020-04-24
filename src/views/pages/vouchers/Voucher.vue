@@ -29,6 +29,14 @@
             {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
             {title: 'general.description', thComp: 'ThCommonHeader', tdComp: 'TdDescription', field: 'description'},
             {title: 'agents.agent', thComp: 'ThCommonHeader', tdComp: 'TdAgent', field: 'agent'},
+            {
+              title: 'general.type',
+              thComp: 'ThCommonHeader',
+              thClass: 'text-center',
+              tdComp: 'TdType',
+              tdClass: 'text-center',
+              field: 'voucher_type'
+            },
             {title: 'QR/Barcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCodes', field: 'id'},
             {
               title: 'vouchers.activation_date',
