@@ -69,7 +69,7 @@ import Voucher from '@/views/pages/vouchers/Voucher.vue'
 import Agent from '@/views/pages/agents/Agent.vue'
 import Coupon from '@/views/pages/coupons/Coupon.vue'
 import CouponLinkSharingTest from '@/views/pages/coupons/CouponLinkSharingTest.vue'
-
+import Test from '@/views/Test.vue'
 
 Vue.use(VueRouter)
 
@@ -141,6 +141,10 @@ const allRoutes = [
         component: Profile
       }
     ]
+  },
+  {
+    path: '/test',
+    component: Test
   },
   {
     path: '/auth',

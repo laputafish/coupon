@@ -737,14 +737,15 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
       // console.log('inputFile :: oldFile: ' + (oldFile ? 'yes' : 'no'))
       if (newFile && !oldFile) {
         vm.edit = true
-        if (vm.hasSomeCode) {
-          vm.$dialog.confirm(vm.$t('messages.code_exists_append_same_column_are_you_sure')).then(
-            () => {
-              vm.uploadFile()
-            })
-        } else {
-          vm.uploadFile()
-        }
+        vm.uploadFile()
+        // if (vm.hasSomeCode) {
+        //   vm.$dialog.confirm(vm.$t('messages.code_exists_append_same_column_are_you_sure')).then(
+        //     () => {
+        //       vm.uploadFile()
+        //     })
+        // } else {
+        //   vm.uploadFile()
+        // }
       }
       if (!newFile && oldFile) {
         console.log('not newFile and oldFile')
@@ -767,6 +768,7 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
 
     onUploaded (result) {
       const vm = this
+      console.log('onUploaded');
       // result = {
       //    codeFields: "barcode:string|serialno:string|actdate:date|exdate:date"
       //    new: 9
@@ -780,7 +782,7 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
         console.log('onUploaded :: newCodefieldsStr = ' + newCodeFieldsStr)
         if (vm.codeFieldsStr == newCodeFieldsStr) {
           console.log('onUploaded :: vm.codeFieldsStr == newCodefieldsStr')
-          vm.reloadCodeList(vm.query)
+          // vm.reloadCodeList(vm.query)
         } else {
           // if (newCodeFieldsStr !== vm.codeFieldsStr && vm.codeFieldsStr !== null) {
           //   const options = {
@@ -803,21 +805,21 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
               data: result.code_composition
             })
           }
-          let msgs = []
-          if (result.existing > 0) {
-            msgs.push(result.existing + ' code(s) are duplicated')
-          } else {
-            msgs.push('No code(s) is duplicated')
-          }
-          if (result.new > 0) {
-            msgs.push(result.new + ' code(s) are added')
-          } else {
-            msgs.push('no code(s) are added')
-          }
-          vm.$toaster.success(msgs.join(' and ') + '.')
-          // }
-          vm.onQueryChangedHandler(vm.query)
         }
+        let msgs = []
+        if (result.existing > 0) {
+          msgs.push(result.existing + ' code(s) are duplicated')
+        } else {
+          msgs.push('No code(s) is duplicated')
+        }
+        if (result.new > 0) {
+          msgs.push(result.new + ' code(s) are added')
+        } else {
+          msgs.push('no code(s) are added')
+        }
+        vm.$toaster.success(msgs.join(' and ') + '.')
+        // }
+        vm.onQueryChangedHandler(vm.query)
         // else {
         //   vm.onQueryChangedHandler(vm.query)
         // }
