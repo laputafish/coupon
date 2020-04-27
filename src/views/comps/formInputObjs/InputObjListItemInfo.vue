@@ -5,8 +5,12 @@
       <input-obj-title
           :inputObj="inputObj"></input-obj-title>
       <div class="d-flex flex-row mt-1">
-        <small class="pr-1">Question</small>
+        <small class="pr-1">{{ label }}</small>
         <div class="input-obj-question badge badge-info">{{ inputObj.question }}</div>
+        <div v-if="inputObj.required"
+          class="badge badge-danger ml-1">
+          <i class="fas fa-bahai"></i>
+        </div>
       </div>
       <div v-if="inputObj.options.length>0" class="d-flex flex-row mt-1">
         <small class="pr-1">Options</small>
@@ -37,6 +41,10 @@ export default {
     inputObj: {
       type: Object,
       default: null
+    },
+    label: {
+      type: String,
+      default: ''
     }
   }
 }

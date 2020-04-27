@@ -1,61 +1,105 @@
 <template>
   <div>
-    <!-- simple-text | number | email -->
-    <div v-if="useInputElement(inputObj)" class="d-flex flex-column">
+    <!-- simple-text | number | email | text -->
+    <div v-if="isInputElement(inputObj)" class="d-flex flex-column border">
       <div class="p-2 border bg-primary">
         <input-obj-title :inputObj="inputObj"></input-obj-title>
       </div>
-      <table class="table table-hover details-field-table">
-        <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
-        <fields-table-row :label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
-        <fields-table-row :label="Notes" :value="inputObj.notes" fieldName="notes" @onCommand="onCommandHandler"></fields-table-row>
-      </table>
-    </div>
-
-    <!-- text -->
-    <div v-else-if="inputObj.inputType==='text'"
-      class="d-flex flex-column">
-      <input-obj-title :inputObj="inputObj"></input-obj-title>
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
+          <fields-table-row label="Notes" :value="inputObj.notes" fieldName="notes" @onCommand="onCommandHandler"></fields-table-row>
+        </table>
+      </div>
     </div>
 
     <!-- name -->
-    <div v-else-if="inputObj.inputType==='name'"
-         class="d-flex flex-column border">
-      <input-obj-title :inputObj="inputObj"></input-obj-title>
-      <div>
-        <div class="badge badge-warning">{{ inputObjTypeName(inputObj.inputType) }}</div>
+    <div v-else-if="inputObj.inputType==='name'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary">
+        <input-obj-title :inputObj="inputObj"></input-obj-title>
       </div>
-
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
+          <fields-table-row label="Notes" :value="notes1" notes="* first name" fieldName="notes1" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="notes2" notes="* last name" fieldName="notes2" @onCommand="onCommandHandler"></fields-table-row>
+        </table>
+      </div>
     </div>
 
     <!-- phone -->
-    <div v-else-if="inputObj.inputType==='phone'"
-         class="d-flex flex-column">
-      <input-obj-title :inputObj="inputObj"></input-obj-title>
+    <div v-else-if="inputObj.inputType==='phone'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary">
+        <input-obj-title :inputObj="inputObj"></input-obj-title>
+      </div>
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
+          <fields-table-row label="Notes" :value="notes1" notes="* first name" fieldName="notes1" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="notes2" notes="* last name" fieldName="notes2" @onCommand="onCommandHandler"></fields-table-row>
+        </table>
+      </div>
     </div>
 
     <!-- single-choice -->
-    <div v-else-if="inputObj.inputType==='single-choice'"
-         class="d-flex flex-column">
-      <h1>Single Choice</h1>
+    <div v-else-if="inputObj.inputType==='single-choice'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary">
+        <input-obj-title :inputObj="inputObj"></input-obj-title>
+      </div>
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
+          <fields-table-row-options label="Options" :value="inputObj.options" fieldName="options" @onCommand="onCommandHandler"></fields-table-row-options>
+        </table>
+      </div>
     </div>
 
     <!-- multiple-choice -->
-    <div v-else-if="inputObj.inputType==='multiple-choice'"
-         class="d-flex flex-column">
-      <h1>Multiple Choice</h1>
+    <div v-else-if="inputObj.inputType==='multiple-choice'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary">
+        <input-obj-title :inputObj="inputObj"></input-obj-title>
+      </div>
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
+          <fields-table-row-options label="Options" :value="inputObj.options" fieldName="options" @onCommand="onCommandHandler"></fields-table-row-options>        </table>
+      </div>
     </div>
 
     <!-- image -->
-    <div v-else-if="inputObj.inputType==='image'"
-         class="d-flex flex-column">
-      <h1>Image</h1>
+    <div v-else-if="inputObj.inputType==='image'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary">
+        <input-obj-title :inputObj="inputObj"></input-obj-title>
+      </div>
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+        </table>
+      </div>
     </div>
 
     <!-- label -->
-    <div v-else-if="inputObj.inputType==='label'"
-         class="d-flex flex-column">
-      <h1>Label</h1>
+    <div v-else-if="inputObj.inputType==='label'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary">
+        <input-obj-title :inputObj="inputObj"></input-obj-title>
+      </div>
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Remark" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -63,13 +107,17 @@
 <script>
 import inputObjTitle from './InputObjTitle'
 import fieldsTableRow from './FieldsTableRow'
-import fieldsTableRowCaption from './FieldsTableRowCaption'
+import fieldsTableRowYesNo from './FieldsTableRowYesNo'
+import fieldsTableRowOptions from './FieldsTableRowOptions'
+
+// import fieldsTableRowCaption from './FieldsTableRowCaption'
 
 export default {
   components: {
     inputObjTitle,
     fieldsTableRow,
-    fieldsTableRowCaption
+    fieldsTableRowYesNo,
+    fieldsTableRowOptions
   },
   props: {
     inputObj: {
@@ -80,12 +128,28 @@ export default {
   computed: {
     inputObjTypes () {
       return this.$store.getters.inputObjTypes
+    },
+    multiNotes () {
+      const vm = this
+      var result = ['','']
+      var segs = vm.inputObj.notes.split('|')
+      result[0] = segs[0]
+      if (segs.length > 1) {
+        result[1] = segs[1]
+      }
+      return result
+    },
+    notes1 () {
+      return this.multiNotes[0]
+    },
+    notes2 () {
+      return this.multiNotes[1]
     }
   },
   methods: {
-    useInputElement (inputObj) {
-      const inputTypes = ['simple-input','number','email']
-      return inputTypes.indexOf(inputObj.input_type) >= 0
+    isInputElement (inputObj) {
+      const inputTypes = ['simple-text','number','email','text']
+      return inputTypes.indexOf(inputObj.inputType) >= 0
     },
     inputObjTypeName (inputType) {
       const vm = this
@@ -100,7 +164,8 @@ export default {
       return result
     },
     onCommandHandler (payload) {
-      this.$meit('onCommand', payload)
+      const vm = this
+      vm.$emit('onCommand', payload)
     }
   }
 }

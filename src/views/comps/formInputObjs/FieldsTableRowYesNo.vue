@@ -5,10 +5,16 @@
       <small class="field-notes" v-if="notes !== ''">{{ notes }}</small>
     </td>
     <td>
-      <input :type="type"
-             :value="value"
-             class="form-control"
-             @input="$event=>{updateField($event.target.value)}"/>
+      <div class="btn-group">
+        <button type="button"
+                class="btn"
+                @click="updateField(true)"
+                :class="{'btn-primary':value,'btn-light':!value}">Yes</button>
+        <button type="button"
+                class="btn"
+                @click="updateField(false)"
+                :class="{'btn-primary':!value,'btn-light':value}">No</button>
+      </div>
     </td>
   </tr>
 </template>
@@ -29,8 +35,8 @@ export default {
       value: ''
     },
     value: {
-      type: String,
-      value: ''
+      type: Boolean,
+      value: true
     },
     type: {
       type: String,

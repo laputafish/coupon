@@ -1,6 +1,6 @@
 <template>
   <fields-table-row :value="value" fieldName="name" @onCommand="onCommandHandler">
-    <div slot="label">Caption<br/><small class="text-muted">* Internal Use</small></div>
+    <div slot="labelSlot">Caption<br/><small class="text-muted">* for self reference</small></div>
   </fields-table-row>
 </template>
 

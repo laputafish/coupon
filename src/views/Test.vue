@@ -16,7 +16,13 @@
         </div>
         <div class="row">
           <div class="col-sm-7">
-            <draggable class="input-object-list list-group" tag="ul" v-model="inputObjs" v-bind="dragOptions" :move="onMove" @start="isDragging=true" @end="isDragging=false">
+            <draggable class="input-object-list list-group" tag="ul"
+                       v-model="inputObjs"
+                       v-bind="dragOptions"
+                       :move="onMove"
+                       @start="isDragging=true"
+                       @end="isDragging=false">
+
               <form-input-obj
                   v-for="inputObj in inputObjs"
                   :key="inputObj.id"
@@ -38,7 +44,7 @@
 </template>
 
 <script>
-  import draggable from "vuedraggable";
+  import draggable from "vuedraggable"
   import formInputObj from '@/views/comps/formInputObjs/FormInputObj'
   import formInputDetails from '@/views/comps/formInputObjs/FormInputDetails'
   import inputObjButtonList from '@/views/comps/formInputObjs/InputObjButtonList'
@@ -203,6 +209,47 @@
       ]
     },
     methods: {
+      getSelectedObjIndex () {
+        const vm = this
+        var result = -1
+        for (var i =0; i < vm.inputObjs.length; i++) {
+          if (vm.inputObjs[i] === vm.selectedInputObj) {
+            result = i
+            break
+          }
+        }
+        return result
+      },
+      getInputObjType (type) {
+        const vm = this
+        var result = null
+        for (var i = 0; i < vm.inputObjTypes.length; i++) {
+          var inputObjType = vm.inputObjTypes[i]
+          if (inputObjType.inputType === type) {
+            result = inputObjType
+            break
+          }
+        }
+        return result
+      },
+      getNewInputObj (type) {
+        const vm = this
+        var inputObjType = vm.getInputObjType(type)
+        var result = {
+          id: 0,
+          name: inputObjType.label,
+          fixed: false,
+          inputType: type,
+          question: '',
+          required: true,
+          options: [],
+          notes: ''
+        }
+        return result
+      },
+      resetOptionIds () {
+        const vm = this
+      },
       onCommandHandler (payload) {
         const vm = this
         const command = payload.command
@@ -213,8 +260,34 @@
             break
           case 'newInputObj':
             var inputObjType = payload.value
-            alert('newInputObj: ' + inputObjType)
+            var newObj = vm.getNewInputObj(inputObjType)
+            var currentIndex = vm.getSelectedObjIndex()
+            if (currentIndex === -1) {
+              vm.inputObjs.push(newObj)
+            } else {
+              vm.inputObjs.splice(currentIndex, newObj, 0)
+            }
+            vm.resetOptionIds()
             break
+          case 'updateField':
+            vm.selectedInputObj[payload.fieldName] = payload.fieldValue
+            break
+          case 'removeOptionByIndex':
+            var index = payload.index
+            if (index !== -1 && index <= vm.selectedInputObj.options.length) {
+              vm.selectedInputObj.options.splice(index, 1)
+            }
+            break
+          case 'appendBlankOption':
+            vm.selectedInputObj.options.push('')
+            break
+          case 'updateOptionByIndex':
+            var index = payload.index
+            var newOptionList = JSON.parse(JSON.stringify(vm.selectedInputObj.options))
+            if (index !== -1 && index <= newOptionList.length) {
+              newOptionList[index] = payload.fieldValue
+            }
+            vm.selectedInputObj.options = newOptionList
         }
         console.log('Test :: onCommandHandler :: payload: ', payload)
       },
@@ -245,6 +318,9 @@
       },
       list2String() {
         return JSON.stringify(this.list2, null, 2);
+      },
+      inputObjTypes () {
+        return this.$store.getters.inputObjTypes
       }
     },
     watch: {
