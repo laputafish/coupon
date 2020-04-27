@@ -192,6 +192,10 @@
       },
 
       onUploadedHandler (result) {
+        const vm = this
+        vm.$emit('onCommand', {
+          command: 'update'
+        })
         console.log('onUploadedHandler :: result: ', result)
       }
     },

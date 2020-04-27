@@ -53,7 +53,7 @@ const FormInputObjMixin = {
         vm.record.inputObjs[i].id = i + 1
       }
     },
-
+?????? ?<-- merge onCommandHandler with VoucherRecord.vue
     onCommandHandler (payload) {
       const vm = this
       const command = payload.command
