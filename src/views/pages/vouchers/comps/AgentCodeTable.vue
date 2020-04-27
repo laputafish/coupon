@@ -37,24 +37,12 @@
         <i class="fas fa-times"></i>
         <span class="ml-2">{{ $t('buttons.export') }}</span>
       </button>
-      <file-upload
-          extensions="xlsx"
-          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          name="file"
-          class="btn btn-primary"
-          :post-action="postAction"
-          :drop="!edit"
-          :data="{id: voucherId}"
-          :headers="authHeaders"
-          v-model="files"
-          @click="checkCodeExists"
-          @input-filter="inputFilter"
-          @input-file="inputFile"
-          ref="upload">
-        <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
-        <font-awesome-icon icon="upload"></font-awesome-icon>
-        Upload File
-      </file-upload>
+      <xls-file-upload
+          inputId="uploadCodes"
+          uploadUrl="/agent_codes/upload"
+          :postData="{id: voucherId}"
+          @onUploading="onUploadingHandler"
+          @onUploaded="onUploadedHandler"></xls-file-upload>
       <!--<file-upload-->
           <!--extensions="xlsx"-->
           <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
@@ -65,29 +53,12 @@
           <!--:data="{id: voucherId}"-->
           <!--:headers="authHeaders"-->
           <!--v-model="files"-->
+          <!--@click="checkCodeExists"-->
           <!--@input-filter="inputFilter"-->
           <!--@input-file="inputFile"-->
           <!--ref="upload">-->
         <!--&lt;!&ndash;<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />&ndash;&gt;-->
-        <!--<font-awesome-icon icon="upload"></font-awesome-icon>-->
-        <!--Upload File-->
-      <!--</file-upload>-->
-      <!--<file-upload-->
-          <!--extensions="xlsx"-->
-          <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
-          <!--name="file"-->
-          <!--class="btn btn-primary"-->
-          <!--:post-action="postAction"-->
-          <!--:drop="!edit"-->
-          <!--:data="{id: voucherId}"-->
-          <!--:headers="authHeaders"-->
-          <!--v-model="files"-->
-          <!--@success="onSuccess()"-->
-          <!--@input-filter="inputFilter"-->
-          <!--@input-file="inputFile"-->
-          <!--ref="upload">-->
-        <!--&lt;!&ndash;<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />&ndash;&gt;-->
-        <!--<font-awesome-icon icon="upload"></font-awesome-icon>-->
+        <!--<font-awesome-icon icon="file-import"></font-awesome-icon>-->
         <!--Upload File-->
       <!--</file-upload>-->
     </div>
@@ -116,25 +87,26 @@
 
 <script>
 import Vue from 'vue'
-import fileUpload from 'vue-upload-component'
 import dtCommon from '@/views/comps/datatable'
 import dtComps from './dtComps'
+import xlsFileUpload from '@/views/comps/XlsFileUpload'
+
 // import helpers from '@/helpers'
 
 export default {
   components: {
-    fileUpload,
     ...dtCommon,
-    ...dtComps
+    ...dtComps,
+    xlsFileUpload
     // ,
     // helpers
   },
   data () {
     return {
+      uploadRoute: '/agent_codes/upload',
       appLoading: false,
       uploading: false,
-      files: [],
-      edit: false,
+
       columns: [],
       allData: [],
       data: [],
@@ -187,22 +159,6 @@ export default {
       type: String,
       default: ''
     },
-  },
-  computed: {
-    authHeaders () {
-      const vm = this
-      return {
-        Authorization: 'bearer ' + vm.$store.getters.accessToken
-      }
-    },
-    postAction () {
-      const vm = this
-      return vm.$store.getters.apiUrl + '/agent_codes/upload'
-    },
-    hasSomeCode() {
-      const vm = this
-      return vm.data.length > 0
-    }
   },
   watch: {
     files: {
@@ -289,9 +245,6 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
-    checkCodeExists () {
-      alert('check')
-    },
     saveCodeInfo (row) {
       console.log('saveCodeInfo : row: ', row)
       const vm = this
@@ -575,7 +528,6 @@ export default {
         //
         // console.log('row.codeInfo[code] = ' + row['code'])
         // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
-console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['code'])
         if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
           // console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
           vm.data[i][fieldName] = fieldValue
@@ -683,90 +635,16 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
 
     setTableData (tableData) {
       const vm = this
-      // console.log('AgentCodeTable :: setTableData :: codeInfos: ', codeInfos)
-      // const result = []
-      // if (vm.columns)
-      //   for (let i = 0; i < tableData.length; i++) {
-      //     const codeRecord = tableData[i]
-      //     const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
-      //     const arFieldValues = fieldsStr.split('|')
-      //
-      //     const obj = {
-      //       id: i
-      //     }
-      //     for (let j = 0; j < arFieldValues.length; j++) {
-      //       obj['field' + j] = arFieldValues[j]
-      //     }
-      //     obj['status'] = codeRecord['status']
-      //     obj['key'] = codeRecord['key']
-      //     obj['remark'] = codeRecord['remark']
-      //     obj['sent_on'] = codeRecord['sent_on']
-      //     result.push(obj)
-      //   }
       vm.allData = vm.parseCodeInfoData(tableData)
       vm.total = vm.allData.length
     },
 
-    // getCodeData (values) {
-    //   console.log('getCodeData :: values: ', values)
-    //   const records = []
-    //   for (let i = 0; i < values.length; i++) {
-    //     const record = {}
-    //     const loopRecord = values[i]
-    //     for (let j = 0; j < loopRecord.length; j++) {
-    //       record['id'] = j
-    //       record['field' + j] = loopRecord[j]
-    //     }
-    //     records.push(record)
-    //   }
-    //   console.log('getCodeData :: records: ', records)
-    //   return records
-    // },
-
-    uploadFile () {
-      const vm = this
-      vm.$nextTick(function () {
-        vm.uploading = true
-        vm.$refs.upload.active = true
-      })
+    onUploadingHandler () {
+      console.log('AgentCodeTable :: onUploadingHandler')
+      this.uploading = true
     },
 
-    inputFile (newFile, oldFile) {
-      const vm = this
-      // console.log('inputFile :: newFile: ' + (newFile ? 'yes' : 'no'))
-      // console.log('inputFile :: oldFile: ' + (oldFile ? 'yes' : 'no'))
-      if (newFile && !oldFile) {
-        vm.edit = true
-        vm.uploadFile()
-        // if (vm.hasSomeCode) {
-        //   vm.$dialog.confirm(vm.$t('messages.code_exists_append_same_column_are_you_sure')).then(
-        //     () => {
-        //       vm.uploadFile()
-        //     })
-        // } else {
-        //   vm.uploadFile()
-        // }
-      }
-      if (!newFile && oldFile) {
-        console.log('not newFile and oldFile')
-        // console.log('not newFile')
-        this.edit = false
-      }
-      if (newFile && newFile.success) {
-        // newFile.response.result = {
-        //    data: ...
-        //    fields: ...
-        // }
-        vm.onUploaded(newFile.response.result)
-        // vm.setColumns(fields);
-        // vm.data = vm.getCodeData(values)
-        // vm.total = vm.data.length
-      } else {
-        // console.log('not newFile')
-      }
-    },
-
-    onUploaded (result) {
+    onUploadedHandler (result) {
       const vm = this
       console.log('onUploaded');
       // result = {
@@ -904,26 +782,6 @@ console.log('setCodeFieldValue :: i=' + i + ': codeInfo[code] = ' + codeInfo['co
     //   alert('AgentCodeTable')
     //   // alert('success')
     // },
-
-    inputFilter (newFile, oldFile, prevent) {
-      // console.log('inputFilter')
-      if (newFile && !oldFile) {
-        // Filter non-image file
-        if (!/\.(xlsx)$/i.test(newFile.name)) {
-          alert('you file is not excel file.')
-          return prevent()
-        }
-      }
-      //
-      // if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
-      //   // Create a blob field
-      //   newFile.blob = ''
-      //   let URL = window.URL || window.webkitURL
-      //   if (URL && URL.createObjectURL) {
-      //     newFile.blob = URL.createObjectURL(newFile.file)
-      //   }
-      // }
-    },
 
     search () {
     }

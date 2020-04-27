@@ -1,17 +1,18 @@
 <template>
   <div class="btn-toolbar object-type-list">
-    <button v-for="buttonObj in inputObjTypes"
-            :key="buttonObj.type"
-            type="button"
-            class="btn btn-primary text-center"
+    <div v-for="buttonObj in inputObjTypes"
+         :key="buttonObj.type">
+      <button class="btn btn-primary text-center"
             :class="{'btn-primary':buttonObj.isInut, 'btn-success':!buttonObj.isInput}"
             @click="onButtonClicked(buttonObj.type)">
-      <i v-if="buttonObj.icon"
-         :class="buttonObj.icon"></i>
-      <small v-else>{{ buttonObj.text }}</small>
-      <br/>
-      <small>{{ buttonObj.label }}</small>
-    </button>
+        <i v-if="buttonObj.icon"
+           :class="buttonObj.icon"></i>
+        <small v-else>{{ buttonObj.text }}</small>
+        <br/>
+        <small>{{ buttonObj.label }}</small>
+      </button><br/>
+      <div style="font-size:8pt;" class="text-center">{{ buttonObj.type }}</div>
+    </div>
   </div>
 </template>
 

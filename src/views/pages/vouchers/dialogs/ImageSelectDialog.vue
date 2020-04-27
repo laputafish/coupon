@@ -9,33 +9,7 @@
       @onCommand="onCommandHandler"
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
-      <!--<div class="left-pane">-->
-      <!--{{ $t('menu.agents') }}-->
-      <!--<div class="left-pane-scroll">-->
-      <!--<b-list-group style="line-height:1;">-->
-      <!--<b-list-group-item v-for="agent in agents"-->
-      <!--@click="selectedAgent=agent"-->
-      <!--:class="{'active': selectedAgent && selectedAgent.id===agent.id}"-->
-      <!--:key="agent.id">-->
-      <!--{{ agent.name }}&nbsp;<div class="badge badge-info">{{ agent.voucher_count }}</div>-->
-      <!--</b-list-group-item>-->
-      <!--</b-list-group>-->
-      <!--</div>&lt;!&ndash; left-pane-scroll &ndash;&gt;-->
-      <!--</div>&lt;!&ndash; left-pane &ndash;&gt;-->
       <div class="right-pane">
-        <!--<div class="d-flex flex-row justify-content-center">-->
-        <!--<div class="btn-group">-->
-        <!--<button class="btn"-->
-        <!--@click="objectFitMode='cover'"-->
-        <!--:class="{'btn-primary':objectFitMode==='cover','btn-outline-primary':objectFitMode==='contain'}">-->
-        <!--Cover</button>-->
-
-        <!--<button class="btn"-->
-        <!--@click="objectFitMode='contain'"-->
-        <!--:class="{'btn-primary':objectFitMode==='contain','btn-outline-primary':objectFitMode==='cover'}">-->
-        <!--Contain</button>-->
-        <!--</div>-->
-        <!--</div>-->
         <div class="right-pane-scroll">
           <image-item
               v-for="image in images"

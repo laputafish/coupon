@@ -300,6 +300,52 @@ const actions = {
     })
   },
 
+  [types.AUTH_UPLOAD_IMAGE] ({rootGetters}, payload) {
+    return new Promise((resolve, reject) => {
+      // console.log('AUTH_GET :: payload: ', payload)
+      const url = rootGetters.apiUrl + '/media/upload_image'
+      const data = payload
+      const options = {
+        headers: {
+          Authorization: 'bearer ' + rootGetters.accessToken
+        }
+      }
+      Vue.axios.post(url, data, options).then( response => {
+        resolve(response.data)
+      }, error => {
+        reject(error)
+      })
+      // $.ajax({
+      //   headers: {'Authorization': bearerToken},
+      //   url: url,
+      //   type: 'POST',
+      //   data: payload,
+      //   processData: false,
+      //   contentType: false,
+      //   success: function(response) {
+      //     const data = response.result
+      //     resolve(data)
+      //   },
+      //   error: function(jqXHR) {
+      //     if (jqXHR.responseText) {
+      //       alert('Error uploading image: ' + errors.join(',') +
+      //         '.  Make sure the file is an image and has extension jpg/jpeg/png.')
+      //     }
+      //   }
+      //
+      //
+      // })
+      // payload.options.headers = {Authorization: 'bearer ' + rootGetters.accessToken}
+      // dispatch('COMMON_POST', payload)
+      //   .then(response => {
+      //     resolve(response)
+      //   })
+      //   .catch(error => {
+      //     reject(error)
+      //   })
+    })
+  },
+
   [types.COMMON_POST] ({rootGetters}, payload) {
     // payload = {
     //    data: {..},

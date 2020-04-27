@@ -84,7 +84,9 @@
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-image label="Image Link"
+                                  :value="inputObj.question"
+                                  @onCommand="onCommandHandler"></fields-table-row-image>
         </table>
       </div>
     </div>
@@ -97,7 +99,7 @@
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Remark" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-textarea label="Remark" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row-textarea>
         </table>
       </div>
     </div>
@@ -109,6 +111,8 @@ import inputObjTitle from './InputObjTitle'
 import fieldsTableRow from './FieldsTableRow'
 import fieldsTableRowYesNo from './FieldsTableRowYesNo'
 import fieldsTableRowOptions from './FieldsTableRowOptions'
+import fieldsTableRowTextarea from './FieldsTableRowTextarea'
+import fieldsTableRowImage from './FieldsTableRowImage'
 
 // import fieldsTableRowCaption from './FieldsTableRowCaption'
 
@@ -117,7 +121,9 @@ export default {
     inputObjTitle,
     fieldsTableRow,
     fieldsTableRowYesNo,
-    fieldsTableRowOptions
+    fieldsTableRowOptions,
+    fieldsTableRowTextarea,
+    fieldsTableRowImage
   },
   props: {
     inputObj: {
@@ -147,6 +153,9 @@ export default {
     }
   },
   methods: {
+    updateImageLink (imgSrc) {
+
+    },
     isInputElement (inputObj) {
       const inputTypes = ['simple-text','number','email','text']
       return inputTypes.indexOf(inputObj.inputType) >= 0

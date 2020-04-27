@@ -2,16 +2,22 @@
   <div class="flex-grow-1 d-flex flex-row">
     <input-obj-icon :inputObjType="inputObj.inputType"></input-obj-icon>
     <div class="d-flex flex-column flex-grow-1">
-      <input-obj-title
-          :inputObj="inputObj"></input-obj-title>
+      <!-- Title -->
+      <input-obj-title :inputObj="inputObj"></input-obj-title>
+
       <div class="d-flex flex-row mt-1">
         <small class="pr-1">{{ label }}</small>
         <div class="input-obj-question badge badge-info">{{ inputObj.question }}</div>
-        <div v-if="inputObj.required"
+        <div v-if="inputObj.required && isInput"
           class="badge badge-danger ml-1">
           <i class="fas fa-bahai"></i>
         </div>
       </div>
+
+      <div v-if="inputObj.inputType==='image'">
+        <img class="input-obj-image-show" :src="inputObj.question"/>
+      </div>
+
       <div v-if="inputObj.options.length>0" class="d-flex flex-row mt-1">
         <small class="pr-1">Options</small>
         <div class="input-obj-options line-height-1">
@@ -46,6 +52,23 @@ export default {
       type: String,
       default: ''
     }
+  },
+  computed: {
+    isInput () {
+      const vm = this
+      var result = true
+      for (var i = 0; i < vm.inputObjTypes.length; i++) {
+        var objType = vm.inputObjTypes[i]
+        if (objType.type === vm.inputObj.inputType) {
+          result = objType.isInput
+          break
+        }
+      }
+      return result
+    },
+    inputObjTypes () {
+      return this.$store.getters.inputObjTypes
+    }
   }
 }
 </script>
@@ -61,5 +84,11 @@ export default {
     white-space: normal;
     font-weight: normal;
     text-align: left;
+  }
+
+  .input-obj-image-show {
+    height: 160px;
+    width: auto;
+    object-fit: contain;
   }
 </style>

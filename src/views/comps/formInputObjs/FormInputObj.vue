@@ -6,46 +6,6 @@
     <input-obj-list-item-info
         :inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>
 
-    <!--&lt;!&ndash; simple-text &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='simple-text'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; number &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='number'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; email &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='email'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; text &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='text'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; name &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='name'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; phone &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='phone'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; single-choice &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='single-choice'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; multiple-choice &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='multiple-choice'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; image &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='image'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
-    <!--&lt;!&ndash; label &ndash;&gt;-->
-    <!--<input-obj-list-item-info v-if="inputObj.inputType==='label'"-->
-                   <!--:inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>-->
-
     <!-- Delete Button -->
     <div class="pl-3">
       <button class="btn btn-sm btn-danger btn-circle"
