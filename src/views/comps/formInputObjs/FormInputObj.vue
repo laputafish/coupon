@@ -48,7 +48,7 @@ export default {
       })
     },
     onCommandHandler (payload) {
-
+      alert('FormInputObj :: onCommandHandler :: unhandled')
     }
     // ,
     // inputObjTypeName (inputType) {

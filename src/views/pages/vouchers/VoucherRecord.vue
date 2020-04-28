@@ -521,10 +521,12 @@
   import formFillingTab from './comps/FormFillingTab'
   import formPageTemplatesTab from './comps/FormPageTemplatesTab'
   import questionFormTab from './comps/QuestionFormTab'
+  import formInputObjMixin from '@/mixins/FormInputObjMixin'
+
   import $ from 'jquery'
 
   export default {
-    mixins: [DataRecordMixin, appMixin],
+    mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
       templateEditor,
       imageCropperDialog,
@@ -1415,7 +1417,9 @@
               console.log('setQrCodeComposition: vm.barcodeConfig.composition === "" || payload.data === ""')
               vm.barcodeConfig.composition = payload.data
             }
-          // vm.record.qr_code_composition = '{' + payload.data + '}'
+            break
+          default:
+            vm.onInputObjCommandHandler(payload)
         }
       },
       exportCodes () {

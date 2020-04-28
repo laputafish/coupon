@@ -14,11 +14,11 @@
         </div>
       </div>
 
-      <div v-if="inputObj.inputType==='image'">
+      <div v-if="inputObj.inputType==='image' && inputObj.question!==''">
         <img class="input-obj-image-show" :src="inputObj.question"/>
       </div>
 
-      <div v-if="inputObj.options.length>0" class="d-flex flex-row mt-1">
+      <div v-if="(inputObj.inputType==='single-choice' || inputObj.inputType==='multiple-choice') && inputObj.options.length>0" class="d-flex flex-row mt-1">
         <small class="pr-1">Options</small>
         <div class="input-obj-options line-height-1">
           <div v-for="(option, index) in inputObj.options"

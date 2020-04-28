@@ -83,7 +83,6 @@
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
           <fields-table-row-image label="Image Link"
                                   :value="inputObj.question"
                                   @onCommand="onCommandHandler"></fields-table-row-image>
@@ -92,13 +91,13 @@
     </div>
 
     <!-- label -->
-    <div v-else-if="inputObj.inputType==='label'" class="d-flex flex-column border">
+    <div v-else-if="inputObj.inputType==='remark'" class="d-flex flex-column border">
       <div class="p-2 border bg-primary">
         <input-obj-title :inputObj="inputObj"></input-obj-title>
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>
+          <!--<fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>-->
           <fields-table-row-textarea label="Remark" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row-textarea>
         </table>
       </div>

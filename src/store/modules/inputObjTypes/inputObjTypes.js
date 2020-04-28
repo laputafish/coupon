@@ -11,8 +11,8 @@ const state = {
     {icon: 'fas fa-check-square', text: '', label: 'Choice', type: 'single-choice', isInput: true},
     {icon: 'fas fa-tasks', text: '', label: 'Multi-Choice', type: 'multiple-choice', isInput: true},
     {icon: 'fas fa-image', text: '', label: 'Image', type: 'image', isInput: false},
-    {icon: '', text: 'ABC', label: 'Notes', type: 'notes', isInput: false},
-    {icon: 'fas fa-rock', text: '', label: 'Submit Btn', type: 'submit', isInput: false}
+    {icon: '', text: 'ABC', label: 'Remark', type: 'remark', isInput: false},
+    {icon: 'fas fa-bolt', text: '', label: 'Submit Btn', type: 'submit', isInput: false}
 
   ]
 }

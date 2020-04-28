@@ -8,8 +8,8 @@ const FormInputObjMixin = {
     getSelectedObjIndex (id) {
       const vm = this
       var result = -1
-      for (var i = 0; i < vm.record.inputObjs.length; i++) {
-        if (vm.record.inputObjs[i].id === id) {
+      for (var i = 0; i < vm.record.form_configs.inputObjs.length; i++) {
+        if (vm.record.form_configs.inputObjs[i].id === id) {
           result = i
           break
         }
@@ -48,60 +48,98 @@ const FormInputObjMixin = {
 
     resetOptionIds () {
       const vm = this
-      console.log('resetOptionIds :: vm.record.inputObjs: ', vm.record.inputObjs)
-      for (var i = 0; i < vm.record.inputObjs.length; i++) {
-        vm.record.inputObjs[i].id = i + 1
+      console.log('resetOptionIds :: vm.record.form_configs.inputObjs: ', vm.record.form_configs.inputObjs)
+      for (var i = 0; i < vm.record.form_configs.inputObjs.length; i++) {
+        vm.record.form_configs.inputObjs[i].id = i + 1
       }
     },
-?????? ?<-- merge onCommandHandler with VoucherRecord.vue
-    onCommandHandler (payload) {
+// ?????? ?<-- merge onCommandHandler with VoucherRecord.vue
+    onInputObjCommandHandler (payload) {
       const vm = this
       const command = payload.command
-      var currentIndex = -1
 
       switch (command) {
         case 'newInputObj':
-          var inputObjType = payload.value
-          var newObj = vm.getNewInputObj(inputObjType)
-          currentIndex = vm.getSelectedObjIndex(payload.id)
-          if (currentIndex === -1) {
-            vm.record.inputObjs.push(newObj)
-          } else {
-            vm.record.inputObjs.splice(currentIndex + 1, 0, newObj)
-          }
-          vm.resetOptionIds()
+          vm.newInputObj(payload)
           break
-        case 'updateField':
-          currentIndex = vm.getSelectedObjIndex(payload.id)
-          if (currentIndex !== -1) {
-            vm.record.inputObjs[currentIndex][payload.fieldName] = payload.fieldValue
-          }
+        case 'updateInputObjField':
+          vm.updateInputObjField(payload)
           break
-        case 'removeOptionByIndex':
-          currentIndex = vm.getSelectedObjIndex(payload.id)
-          if (currentIndex !== -1 && index <= vm.record.inputObjs[currentIndex].options.length) {
-            vm.record.inputObjs[currentIndex].options.splice(index, 1)
-          }
+        case 'removeInputObjOption':
+          vm.removeInputObjOption(payload)
           break
-        case 'appendBlankOption':
-          currentIndex = vm.getSelectedObjIndex(payload.id)
-          if (currentIndex !== -1) {
-            vm.record.inputObjs[currentIndex].options.push('')
-          }
+        case 'appendInputObjOption':
+          vm.appendInputObjOption(payload)
           break
-        case 'updateOptionByIndex':
-          var optionIndex = payload.index
-          currentIndex = vm.getSelectedObjIndex(payload.id)
-          if (currentIndex !== -1) {
-            var newOptionList = JSON.parse(JSON.stringify(vm.record.inputObjs[currentIndex].options))
-            if (optionIndex !== -1 && optionIndex <= newOptionList.length) {
-              newOptionList[optionIndex] = payload.fieldValue
-            }
-            vm.record.inputObjs[currentIndex].options = newOptionList
-          }
+        case 'updateInputObjOptionByIndex':
+          vm.updateInputObjOptionByIndex(payload)
           break
+        case 'replaceInputObjs':
+          vm.replaceInputObjs(payload)
+          break
+        case 'updateFormConfigPageConfigField':
+          vm.updateFormConfigPageConfigField(payload)
       }
+    },
+    newInputObj (payload) {
+      const vm = this
+      var inputObjType = payload.value
+      var newObj = vm.getNewInputObj(inputObjType)
+      var currentIndex = vm.getSelectedObjIndex(payload.id)
+      if (currentIndex === -1) {
+        vm.record.form_configs.inputObjs.push(newObj)
+      } else {
+        vm.record.form_configs.inputObjs.splice(currentIndex + 1, 0, newObj)
+      }
+      vm.resetOptionIds()
+    },
+    updateInputObjField (payload) {
+      const vm = this
+      var currentIndex = vm.getSelectedObjIndex(payload.id)
+      if (currentIndex !== -1) {
+        vm.record.form_configs.inputObjs[currentIndex][payload.fieldName] = payload.fieldValue
+      }
+    },
+    removeInputObjOption (payload) {
+      const vm = this
+      var currentIndex = vm.getSelectedObjIndex(payload.id)
+      var optionIndex = payload.index
+      if (currentIndex !== -1 && optionIndex <= vm.record.form_configs.inputObjs[currentIndex].options.length) {
+        vm.record.form_configs.inputObjs[currentIndex].options.splice(optionIndex, 1)
+      }
+    },
+    appendInputObjOption (payload) {
+      const vm = this
+      var currentIndex = vm.getSelectedObjIndex(payload.id)
+      var value = payload.value ? payload.value : ''
+      if (currentIndex !== -1) {
+        vm.record.form_configs.inputObjs[currentIndex].options.push(value)
+      }
+    },
+    updateInputObjOptionByIndex (payload) {
+      const vm = this
+      var optionIndex = payload.index
+      var currentIndex = vm.getSelectedObjIndex(payload.id)
+      if (currentIndex !== -1) {
+        var newOptionList = JSON.parse(JSON.stringify(vm.record.form_configs.inputObjs[currentIndex].options))
+        if (optionIndex !== -1 && optionIndex <= newOptionList.length) {
+          newOptionList[optionIndex] = payload.fieldValue
+        }
+        vm.record.form_configs.inputObjs[currentIndex].options = newOptionList
+      }
+    },
+
+    replaceInputObjs (payload) {
+      const vm = this
+      vm.record.form_configs.inputObjs = payload.value
+    },
+
+    updateFormConfigPageConfigField (payload) {
+      console.log('FormInputObjMixin :: updateFormConfigPageConfigField')
+      const vm = this
+      vm.record.form_configs.pageConfig[payload.fieldName] = payload.fieldValue
     }
+
   }
 }
 

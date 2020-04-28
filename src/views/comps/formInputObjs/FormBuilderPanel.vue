@@ -2,28 +2,49 @@
   <div class="fluid-container p-2">
     <div class="d-flex flex-row justify-content-end pb-1">
       <div class="btn-toolbar">
-
-        <xls-file-upload
-            inputId="uploadQuestions"
-          uploadUrl="/form_questions/upload"
-          :postData="{id: record.id}"
-          @onUploading="onUploadingHandler"
-          @onUploaded="onUploadedHandler"></xls-file-upload>
-
-        <button class="btn btn-outline-primary min-width-100"
-          @click="previewForm">
-          <i class="fas fa-fw fa-mask"></i>
-          Preview
-        </button>
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-12">
         <div slot="header"
-             class="list-group-item mb-1 p-2">
+             class="list-group-item mb-1 p-2 d-flex flex-row justify-content-between">
           <input-obj-button-list
               @onCommand="onCommandHandler"></input-obj-button-list>
+
+          <div style="border-left:lightgray solid 1px; width:80px;"
+               class="flex-grow-1 ml-2 pl-2 justify-content-start">
+            <div :style="{backgroundColor:record.form_configs.pageConfig.bgColor}"
+                 style="width:120px;border-radius:0.5rem;"
+              class="d-flex flex-column d-inline-block text-center px-2 pb-2">
+              <label style="filter:invert(100%);">Background</label>
+              <input :value="record.form_configs.pageConfig.bgColor"
+                style="width:100%;" class="text-center"
+                @input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>
+            </div>
+          </div>
+          <div class="d-flex flex-column">
+            <div class="d-flex flex-row justify-content-end mb-1">
+              <xls-file-upload
+                  inputId="uploadQuestions"
+                  uploadUrl="/form_questions/upload"
+                  :postData="{id: record.id}"
+                  @onUploading="onUploadingHandler"
+                  @onUploaded="onUploadedHandler"></xls-file-upload>
+              <button class="btn btn-outline-primary min-width-100 ml-1"
+                      @click="previewForm">
+                <i class="fas fa-fw fa-mask"></i>
+                Preview
+              </button>
+            </div>
+            <!--<div class="d-flex flex-row justify-content-end">-->
+              <!--<label class="p-0 m-0">Bg Color</label>-->
+              <!--<input :value="record.form_configs.pageConfig.bgColor"-->
+                     <!--style="width:50px;"-->
+                     <!--@input="$event=>updatePageConfigField('color',$event.target.value)"/>-->
+            <!--</div>-->
+          </div>
+
         </div>
         <div class="row">
           <div class="col-sm-7">
@@ -77,7 +98,7 @@
     "Sortablejs"
   ];
   export default {
-    name: "hello",
+    name: "FormBuilderPanel",
     model: {
       prop: 'inputObjs',
       event: 'input'
@@ -113,24 +134,43 @@
       };
     },
     methods: {
+      updatePageConfigField (fieldName, fieldValue) {
+        console.log('FormBuilderPanel :: updatePageConfigField')
+        this.$emit('onCommand', {
+          command: 'updateFormConfigPageConfigField',
+          fieldName: fieldName,
+          fieldValue: fieldValue
+        })
+      },
       previewForm () {
         alert('previewForm')
       },
       onCommandHandler (payload) {
         const vm = this
-        const command = payload.ommand
-
+        const command = payload.command
         switch (command) {
           case 'selectInputObj':
             vm.selectedInputObj = payload.value
             break
           default:
             var newPayload = payload
-            if (command !== 'newInputObj') {
-              newPayload = newPayload.concat({
-                id: vm.selectedInputObj.id
-              })
+            switch (command) {
+              case 'newInputObj':
+                newPayload = newPayload.concat({
+                  id: vm.selectedInputObj.id
+                })
+                break
+              case 'updateField':
+                newPayload['command'] = 'updateInputObjField'
+                break
+              case 'appendBlankOption':
+                newPayload['command'] = 'appendInputObjOption'
+                break
+              case 'updateOptionByIndex':
+                newPayload['command'] = 'updateInputObjOptionByIndex'
+                break
             }
+
             vm.$emit('onCommand', newPayload)
         }
       },
@@ -138,6 +178,7 @@
       onCommandHandler2 (payload) {
         const vm = this
         const command = payload.command
+        var index = -1
 
         switch (command) {
           case 'newInputObj':
@@ -155,7 +196,7 @@
             vm.selectedInputObj[payload.fieldName] = payload.fieldValue
             break
           case 'removeOptionByIndex':
-            var index = payload.index
+            index = payload.index
             if (index !== -1 && index <= vm.selectedInputObj.options.length) {
               vm.selectedInputObj.options.splice(index, 1)
             }
@@ -164,7 +205,7 @@
             vm.selectedInputObj.options.push('')
             break
           case 'updateOptionByIndex':
-            var index = payload.index
+            index = payload.index
             var newOptionList = JSON.parse(JSON.stringify(vm.selectedInputObj.options))
             if (index !== -1 && index <= newOptionList.length) {
               newOptionList[index] = payload.fieldValue
@@ -197,11 +238,21 @@
           command: 'update'
         })
         console.log('onUploadedHandler :: result: ', result)
+        vm.uploading = false
+        vm.$emit('onCommand', {
+          command: 'replaceInputObjs',
+          value: result
+        })
       }
     },
     computed: {
       inputObjs () {
-        return this.record ? this.record.inputObjs : []
+        const vm = this
+        var result = [];
+        if (vm.record && vm.record.form_configs) {
+          result = vm.record.form_configs.inputObjs
+        }
+        return result
       },
       dragOptions() {
         return {
