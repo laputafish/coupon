@@ -107,6 +107,7 @@ const FormInputObjMixin = {
             params: {key: '_' + response.key}
           })
           var url = window.location.origin + route.href
+          url = vm.$store.getters.appHost + '/q/_' + response.key
           console.log('previewQuestionForm :: window.location.origin = ' + window.location.origin)
           console.log('previewQuestionForm :: route.href = ' + route.href)
           console.log('previewQuestionForm :: url = ' + url)
