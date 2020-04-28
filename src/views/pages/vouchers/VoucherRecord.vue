@@ -1812,11 +1812,12 @@
   }
 
   .custom-link {
-    background-color: #28a745;
+    background-color: #a60930;
+    /*background-color: #28a745;*/
     cursor: pointer;
   }
   .custom-link:hover {
-    background-color: #52b86a;
+    background-color: #d00c3d;
   }
   .voucher-type-icon {
     height:48px;

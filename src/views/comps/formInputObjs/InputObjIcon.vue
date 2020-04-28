@@ -1,8 +1,9 @@
 <template>
   <div class="input-object-icon">
-    <i v-if="isIcon"
-       class="fa-fw"
-       :class="activeInputObjType.icon"></i>
+    <!--<i v-if="isIcon"-->
+       <!--class="fa-fw"-->
+       <!--:class="activeInputObjType.icon"></i>-->
+    <font-awesome-icon v-if="isIcon" :icon="['fas', activeInputObjType.newIcon]"/>
     <small v-else>
       {{ activeInputObjType.text }}
     </small>

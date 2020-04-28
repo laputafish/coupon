@@ -1,3 +1,6 @@
+export const USER_POST = 'USER_POST'
+export const USER_GET = 'USER_GET'
+
 export const COMMON_GET = 'COMMON_GET'
 export const COMMON_POST = 'COMMON_POST'
 export const COMMON_PUT = 'COMMON_PUT'

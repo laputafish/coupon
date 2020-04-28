@@ -7,14 +7,15 @@
 
       <div class="d-flex flex-row mt-1">
         <small class="pr-1">{{ label }}</small>
-        <div class="input-obj-question badge badge-info">{{ inputObj.question }}</div>
+
+        <div v-if="inputObj.question && inputObj.question!==''" class="input-obj-question badge badge-info" v-html="questionContext"></div>
         <div v-if="inputObj.required && isInput"
           class="badge badge-danger ml-1">
           <i class="fas fa-bahai"></i>
         </div>
       </div>
 
-      <div v-if="inputObj.inputType==='image' && inputObj.question!==''">
+      <div v-if="inputObj.inputType==='image' && inputObj.question!=='' && inputObj.question !== null">
         <img class="input-obj-image-show" :src="inputObj.question"/>
       </div>
 
@@ -54,6 +55,16 @@ export default {
     }
   },
   computed: {
+    questionContext () {
+      const vm = this
+      var carriageReturn = "\n";
+      var lines = vm.inputObj.question.split(carriageReturn);
+      var result = []
+      for (var i = 0; i < lines.length; i++) {
+        result.push(lines[i])
+      }
+      return result.join('<br/>')
+    },
     isInput () {
       const vm = this
       var result = true
@@ -61,6 +72,17 @@ export default {
         var objType = vm.inputObjTypes[i]
         if (objType.type === vm.inputObj.inputType) {
           result = objType.isInput
+          break
+        }
+      }
+      return result
+    },
+    inputObjType () {
+      const vm = this
+      var result = null
+      for (var i = 0; i < vm.inputObjTypes.length; i++) {
+        if (vm.inputObjTypes[i].type === vm.inputObj.inputType) {
+          result = vm.inputObjTypes[i]
           break
         }
       }

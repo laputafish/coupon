@@ -2,7 +2,7 @@
 <div class="input-object-title px-1 d-flex flex-row align-items-center">
   <div class="badge"
        :class="{'badge-primary':isInput, 'badge-success':!isInput}">{{ inputObjTypeLabel }}</div>
-  <div class="flex-grow-1 pl-2">{{ inputObj.name }}&nbsp;</div>
+  <div v-if="inputObjType.isInput" class="flex-grow-1 pl-2">{{ inputObj.name }}&nbsp;</div>
 </div>
 </template>
 

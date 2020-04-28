@@ -6,8 +6,7 @@
     </td>
     <td>
       <Textarea class="form-control" rows="10"
-                @input="$event=>{updateField($event.target.value)}">
-        {{ value }}
+                @input="$event=>{updateField($event.target.value)}">{{ value }}
       </Textarea>
     </td>
   </tr>

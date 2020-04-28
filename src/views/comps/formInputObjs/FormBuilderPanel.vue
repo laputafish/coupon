@@ -1,8 +1,7 @@
 <template>
   <div class="fluid-container p-2">
     <div class="d-flex flex-row justify-content-end pb-1">
-      <div class="btn-toolbar">
-      </div>
+      <div class="btn-toolbar"></div>
     </div>
 
     <div class="row">
@@ -11,43 +10,43 @@
              class="list-group-item mb-1 p-2 d-flex flex-row justify-content-between">
           <input-obj-button-list
               @onCommand="onCommandHandler"></input-obj-button-list>
-
-          <div style="border-left:lightgray solid 1px; width:80px;"
-               class="flex-grow-1 ml-2 pl-2 justify-content-start">
+          <div class="d-flex flex-row justify-content-end mb-1">
             <div :style="{backgroundColor:record.form_configs.pageConfig.bgColor}"
                  style="width:120px;border-radius:0.5rem;"
-              class="d-flex flex-column d-inline-block text-center px-2 pb-2">
+                 class="d-flex flex-column d-inline-block text-center px-2 pb-2 mr-1">
               <label style="filter:invert(100%);">Background</label>
               <input :value="record.form_configs.pageConfig.bgColor"
-                style="width:100%;" class="text-center"
-                @input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>
+                     style="width:100%;" class="text-center"
+                     @input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>
             </div>
+            <xls-file-upload
+                inputId="uploadQuestions"
+                uploadUrl="/form_questions/upload"
+                :postData="{id: record.id}"
+                class="align-self-start"
+                @onUploading="onUploadingHandler"
+                @onUploaded="onUploadedHandler"></xls-file-upload>
+            <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start"
+                    @click="previewForm">
+              <i class="fas fa-fw fa-mask"></i>
+              Preview
+            </button>
           </div>
-          <div class="d-flex flex-column">
-            <div class="d-flex flex-row justify-content-end mb-1">
-              <xls-file-upload
-                  inputId="uploadQuestions"
-                  uploadUrl="/form_questions/upload"
-                  :postData="{id: record.id}"
-                  @onUploading="onUploadingHandler"
-                  @onUploaded="onUploadedHandler"></xls-file-upload>
-              <button class="btn btn-outline-primary min-width-100 ml-1"
-                      @click="previewForm">
-                <i class="fas fa-fw fa-mask"></i>
-                Preview
-              </button>
-            </div>
-            <!--<div class="d-flex flex-row justify-content-end">-->
-              <!--<label class="p-0 m-0">Bg Color</label>-->
-              <!--<input :value="record.form_configs.pageConfig.bgColor"-->
-                     <!--style="width:50px;"-->
-                     <!--@input="$event=>updatePageConfigField('color',$event.target.value)"/>-->
+            <!--<div style="border-left:lightgray solid 1px; width:80px;"-->
+            <!--class="flex-grow-1 ml-2 pl-2 justify-content-start">-->
             <!--</div>-->
-          </div>
+            <!--<div class="d-flex flex-column">-->
+            <!--&lt;!&ndash;<div class="d-flex flex-row justify-content-end">&ndash;&gt;-->
+            <!--&lt;!&ndash;<label class="p-0 m-0">Bg Color</label>&ndash;&gt;-->
+            <!--&lt;!&ndash;<input :value="record.form_configs.pageConfig.bgColor"&ndash;&gt;-->
+            <!--&lt;!&ndash;style="width:50px;"&ndash;&gt;-->
+            <!--&lt;!&ndash;@input="$event=>updatePageConfigField('color',$event.target.value)"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--</div>-->
 
         </div>
         <div class="row">
-          <div class="col-sm-7">
+          <div class="col-sm-7" style="max-height: 640px; overflow-y: scroll;">
             <draggable class="input-object-list list-group" tag="ul"
                        v-model="inputObjs"
                        v-bind="dragOptions"
@@ -56,8 +55,8 @@
                        @end="isDragging=false">
 
               <form-input-obj
-                  v-for="inputObj in inputObjs"
-                  :key="inputObj.id"
+                  v-for="(inputObj, index) in inputObjs"
+                  :key="index"
                   @onCommand="onCommandHandler"
                   :selected="selectedInputObj==inputObj"
                   :inputObj="inputObj"></form-input-obj>
@@ -119,13 +118,13 @@
       inputObjButtonList,
       xlsFileUpload
     },
-    data() {
+    data () {
       return {
         uploadRoute: '/form_input_objs/upload',
         uploading: false,
         selectedInputObj: null,
         list: message.map((name, index) => {
-          return { name, order: index + 1, fixed: false };
+          return {name, order: index + 1, fixed: false};
         }),
         list2: [],
         editable: true,
@@ -143,7 +142,9 @@
         })
       },
       previewForm () {
-        alert('previewForm')
+        this.$emit('onCommand', {
+          command: 'previewQuestionForm'
+        })
       },
       onCommandHandler (payload) {
         const vm = this
@@ -153,26 +154,53 @@
             vm.selectedInputObj = payload.value
             break
           default:
-            var newPayload = payload
-            switch (command) {
-              case 'newInputObj':
-                newPayload = newPayload.concat({
-                  id: vm.selectedInputObj.id
-                })
-                break
-              case 'updateField':
-                newPayload['command'] = 'updateInputObjField'
-                break
-              case 'appendBlankOption':
-                newPayload['command'] = 'appendInputObjOption'
-                break
-              case 'updateOptionByIndex':
-                newPayload['command'] = 'updateInputObjOptionByIndex'
-                break
+            if (vm.selectedInputObj) {
+              var objIndex = vm.getSelectedInputObjIndex()
+              var newPayload = payload
+              switch (command) {
+                case 'newInputObj':
+                  newPayload['objIndex'] = objIndex
+                  break
+                case 'deleteInputObj':
+                  objIndex = vm.getInputObjIndex(payload.inputObj)
+                  newPayload['objIndex'] = objIndex
+                  break
+                case 'updateField':
+                  console.log('FormBuilderPanel :: onCommandHandler :: updateFIeld: newPayload: ', newPayload)
+                  newPayload['command'] = 'updateInputObjField'
+                  newPayload['objIndex'] = objIndex
+                  break
+                case 'appendBlankOption':
+                  newPayload['command'] = 'appendInputObjOption'
+                  newPayload['objIndex'] = objIndex
+                  break
+                case 'updateOptionByIndex':
+                  newPayload['command'] = 'updateInputObjOptionByIndex'
+                  newPayload['objIndex'] = objIndex
+                  break
+              }
+              vm.$emit('onCommand', newPayload)
             }
-
-            vm.$emit('onCommand', newPayload)
         }
+      },
+
+      getInputObjIndex (inputObj) {
+        const vm = this
+        var result = -1
+        if (inputObj) {
+          for (var i = 0; i < vm.inputObjs.length; i++) {
+            if (vm.inputObjs[i] === inputObj) {
+              result = i
+              break
+            }
+          }
+        }
+        return result
+      },
+
+      getSelectedInputObjIndex () {
+        const vm = this
+        return vm.getInputObjIndex(vm.selectedInputObj)
       },
 
       onCommandHandler2 (payload) {
@@ -219,7 +247,7 @@
         console.log('selectInputObj :: inputObj: ', inputObj)
         vm.selectedInputObj = inputObj
       },
-      onMove({ relatedContext, draggedContext }) {
+      onMove ({relatedContext, draggedContext}) {
         const relatedElement = relatedContext.element;
         const draggedElement = draggedContext.element;
         return (
@@ -254,7 +282,7 @@
         }
         return result
       },
-      dragOptions() {
+      dragOptions () {
         return {
           animation: 0,
           group: "description",
@@ -262,10 +290,10 @@
           ghostClass: "ghost"
         };
       },
-      listString() {
+      listString () {
         return JSON.stringify(this.list, null, 2);
       },
-      list2String() {
+      list2String () {
         return JSON.stringify(this.list2, null, 2);
       },
       inputObjTypes () {
@@ -273,7 +301,7 @@
       }
     },
     watch: {
-      isDragging(newValue) {
+      isDragging (newValue) {
         if (newValue) {
           this.delayedDragging = true;
           return;
@@ -290,29 +318,37 @@
   .flip-list-move {
     transition: transform 0.5s;
   }
+
   .no-move {
     transition: transform 0s;
   }
+
   .ghost {
     opacity: 0.5;
     background: #c8ebfb;
   }
+
   .list-group {
     min-height: 20px;
   }
+
   .list-group-item {
     cursor: move;
   }
+
   .list-group-item i {
     cursor: pointer;
   }
+
   .object-type-list button small {
     line-height: 1;
   }
+
   .object-type-list button {
     width: 80px;
     padding: 2px;
   }
+
   .input-object-list .list-group-item {
     padding: 0.25rem 0.5rem;
   }

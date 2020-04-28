@@ -24,6 +24,10 @@ export default {
     inputObjListItemInfo
   },
   props: {
+    index: {
+      type: Number,
+      default: 0
+    },
     inputObj: {
       type: Object,
       default: null
@@ -33,12 +37,24 @@ export default {
       default: false
     }
   },
+
   computed: {
     // inputObjTypes () {
     //   return this.$store.getters.inputObjTypes
     // }
   },
   methods: {
+    deleteObj () {
+      const vm = this
+      vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
+        () => {
+          vm.$emit('onCommand', {
+            command: 'deleteInputObj',
+            inputObj: vm.inputObj
+          })
+        }
+      )
+    },
     selectInputObj () {
       const vm = this
       console.log('FormInputObj :: selectInputObj')

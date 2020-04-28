@@ -369,9 +369,55 @@ const actions = {
       if (payload.options) {
         options = payload.options
       }
-console.log('COMMON_POST :: data: ', data)
       const url = rootGetters.constants.apiUrl + urlCommand
       Vue.axios.post(url, data, options).then(function (response) {
+        if (response.data.status) {
+          resolve(response.data.result)
+        } else {
+          // console.log('response.data.status = false')
+          reject(response.data.result)
+          // if (response.data.result.message) {
+          //   reject(response.data.result.message)
+          // } else {
+          //   reject(response.data.result)
+          // }
+        }
+      }).catch((error) => {
+        if (error.response.data) {
+          if (error.response.data.result) {
+            reject(error.response.data.result)
+          }
+        }
+        reject(error.response.data)
+      })
+    })
+  },
+
+  [types.USER_GET] ({rootGetters}, payload) {
+    // payload = {
+    //    data: {..},
+    //    options: {
+    //      headers: {..}
+    //    }
+    // }
+    return new Promise((resolve, reject) => {
+      let urlCommand
+      let data
+      let options = {}
+
+      // get url
+      if (typeof payload === 'object') {
+        urlCommand = payload.urlCommand
+        data = payload.data
+      } else {
+        urlCommand = payload
+      }
+
+      if (payload.options) {
+        options = payload.options
+      }
+      const url = rootGetters.constants.appHost + urlCommand
+      Vue.axios.get(url, data, options).then(function (response) {
         if (response.data.status) {
           resolve(response.data.result)
         } else {

@@ -71,6 +71,8 @@ import Coupon from '@/views/pages/coupons/Coupon.vue'
 import CouponLinkSharingTest from '@/views/pages/coupons/CouponLinkSharingTest.vue'
 import Test from '@/views/Test.vue'
 
+import QuestionForm from '@/views/pages/questionForms/QuestionForm.vue'
+
 Vue.use(VueRouter)
 
 const checkIfMember = (to, from, next) => {
@@ -112,6 +114,11 @@ const allRoutes = [
     path: '/coupons/test/:id/:timestamp',
     name: 'CouponLinkSharingTest',
     component: CouponLinkSharingTest
+  },
+  {
+    path: '/f/:key',
+    name: 'QuestionFormPreview',
+    component: QuestionForm
   },
   // {
   //   path: '/coupons/:key',
