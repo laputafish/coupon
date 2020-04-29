@@ -1322,6 +1322,7 @@
       },
       onCommandHandler (payload) {
         const vm = this
+        console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
         // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
           case 'selectImage':

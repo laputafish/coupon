@@ -11,13 +11,15 @@
           <input-obj-button-list
               @onCommand="onCommandHandler"></input-obj-button-list>
           <div class="d-flex flex-row justify-content-end mb-1">
-            <div :style="{backgroundColor:record.form_configs.pageConfig.bgColor}"
-                 style="width:120px;border-radius:0.5rem;"
-                 class="d-flex flex-column d-inline-block text-center px-2 pb-2 mr-1">
-              <label style="filter:invert(100%);">Background</label>
-              <input :value="record.form_configs.pageConfig.bgColor"
-                     style="width:100%;" class="text-center"
-                     @input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>
+            <div class="d-flex flex-column d-inline-block mx-1">
+                <div class="text-center px-2 pb-2"
+                     style="width:120px;border-radius:0.5rem;"
+                     :style="{backgroundColor:record.form_configs.pageConfig.bgColor}">
+                  <label style="filter:invert(100%);">Background</label>
+                  <input :value="record.form_configs.pageConfig.bgColor"
+                         style="width:100%;" class="text-center"
+                         @input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>
+                </div>
             </div>
             <xls-file-upload
                 inputId="uploadQuestions"
@@ -26,27 +28,33 @@
                 class="align-self-start"
                 @onUploading="onUploadingHandler"
                 @onUploaded="onUploadedHandler"></xls-file-upload>
-            <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start"
+            <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start no-wrap"
+                    style="white-space: nowrap;"
                     @click="previewForm">
               <i class="fas fa-fw fa-mask"></i>
               Preview
             </button>
           </div>
-            <!--<div style="border-left:lightgray solid 1px; width:80px;"-->
-            <!--class="flex-grow-1 ml-2 pl-2 justify-content-start">-->
-            <!--</div>-->
-            <!--<div class="d-flex flex-column">-->
-            <!--&lt;!&ndash;<div class="d-flex flex-row justify-content-end">&ndash;&gt;-->
-            <!--&lt;!&ndash;<label class="p-0 m-0">Bg Color</label>&ndash;&gt;-->
-            <!--&lt;!&ndash;<input :value="record.form_configs.pageConfig.bgColor"&ndash;&gt;-->
-            <!--&lt;!&ndash;style="width:50px;"&ndash;&gt;-->
-            <!--&lt;!&ndash;@input="$event=>updatePageConfigField('color',$event.target.value)"/>&ndash;&gt;-->
-            <!--&lt;!&ndash;</div>&ndash;&gt;-->
-            <!--</div>-->
+          <!--<div style="border-left:lightgray solid 1px; width:80px;"-->
+          <!--class="flex-grow-1 ml-2 pl-2 justify-content-start">-->
+          <!--</div>-->
+          <!--<div class="d-flex flex-column">-->
+          <!--&lt;!&ndash;<div class="d-flex flex-row justify-content-end">&ndash;&gt;-->
+          <!--&lt;!&ndash;<label class="p-0 m-0">Bg Color</label>&ndash;&gt;-->
+          <!--&lt;!&ndash;<input :value="record.form_configs.pageConfig.bgColor"&ndash;&gt;-->
+          <!--&lt;!&ndash;style="width:50px;"&ndash;&gt;-->
+          <!--&lt;!&ndash;@input="$event=>updatePageConfigField('color',$event.target.value)"/>&ndash;&gt;-->
+          <!--&lt;!&ndash;</div>&ndash;&gt;-->
+          <!--</div>-->
 
         </div>
         <div class="row">
           <div class="col-sm-7" style="max-height: 640px; overflow-y: scroll;">
+            <button class="btn w-100 mb-1"
+                    :class="{'btn-primary':!selectedInputObj,'btn-light':selectedInputObj}"
+                    @click="showPageProperty">
+              Page Attributes
+            </button>
             <draggable class="input-object-list list-group" tag="ul"
                        v-model="inputObjs"
                        v-bind="dragOptions"
@@ -67,6 +75,60 @@
                 v-if="selectedInputObj"
                 :inputObj="selectedInputObj"
                 @onCommand="onCommandHandler"></form-input-details>
+            <div v-else>
+              <div class="d-flex flex-column border">
+                <div class="p-2 border bg-primary text-center">
+                  Page Attributes
+                </div>
+                <div class="p-2">
+                    <table class="table table-hover details-field-table">
+                      <fields-table-row label="Background Color" :value="pageConfig.bgColor"
+                                        notes="(e.g. #FFEEDD)"
+                                        fieldName="bgColor"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+                      <fields-table-row label="Text Color" :value="pageConfig.bgColor"
+                                        notes="(e.g. white)"
+                                        fieldName="color"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+
+                      <fields-table-row label="Max. Width" :value="pageConfig.maxWidth"
+                                        notes="(e.g. 640px)"
+                                        fieldName="maxWidth"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+                      <fields-table-row label="Padding (Top)" :value="pageConfig.bgColor"
+                                        notes="(e.g. 60px)"
+                                        fieldName="paddingTop"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+                      <fields-table-row label="Font Size" :value="pageConfig.bgColor"
+                                        notes="(e.g. 14px)"
+                                        fieldName="fontSize"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+
+                      <fields-table-row label="Button Color (Selected)" :value="pageConfig.bgColor"
+                                        notes="(e.g. yellow)"
+                                        fieldName="selectedChoiceColor"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+                      <fields-table-row label="Button Text Color (Selected)" :value="pageConfig.bgColor"
+                                        notes="(e.g. black)"
+                                        fieldName="selectedChoiceTextColor"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+                      <fields-table-row label="Other Styles" :value="pageConfig.bgColor"
+                                        notes=""
+                                        fieldName="others"
+                                        scope="pageConfig"
+                                        @onCommand="onCommandHandler"></fields-table-row>
+
+                    </table>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -85,6 +147,7 @@
   import inputObjButtonList from '@/views/comps/formInputObjs/InputObjButtonList'
 
   import xlsFileUpload from '@/views/comps/XlsFileUpload'
+  import fieldsTableRow from '@/views/comps/formInputObjs/FieldsTableRow'
 
   const message = [
     "vue.draggable",
@@ -116,7 +179,8 @@
       formInputObj,
       formInputDetails,
       inputObjButtonList,
-      xlsFileUpload
+      xlsFileUpload,
+      fieldsTableRow
     },
     data () {
       return {
@@ -133,10 +197,15 @@
       };
     },
     methods: {
+      showPageProperty () {
+        const vm = this
+        vm.selectedInputObj = null;
+
+      },
       updatePageConfigField (fieldName, fieldValue) {
         console.log('FormBuilderPanel :: updatePageConfigField')
         this.$emit('onCommand', {
-          command: 'updateFormConfigPageConfigField',
+          command: 'updatePageConfigField',
           fieldName: fieldName,
           fieldValue: fieldValue
         })
@@ -154,33 +223,33 @@
             vm.selectedInputObj = payload.value
             break
           default:
-            if (vm.selectedInputObj) {
-              var objIndex = vm.getSelectedInputObjIndex()
-              var newPayload = payload
-              switch (command) {
-                case 'newInputObj':
-                  newPayload['objIndex'] = objIndex
-                  break
-                case 'deleteInputObj':
-                  objIndex = vm.getInputObjIndex(payload.inputObj)
-                  newPayload['objIndex'] = objIndex
-                  break
-                case 'updateField':
-                  console.log('FormBuilderPanel :: onCommandHandler :: updateFIeld: newPayload: ', newPayload)
-                  newPayload['command'] = 'updateInputObjField'
-                  newPayload['objIndex'] = objIndex
-                  break
-                case 'appendBlankOption':
-                  newPayload['command'] = 'appendInputObjOption'
-                  newPayload['objIndex'] = objIndex
-                  break
-                case 'updateOptionByIndex':
-                  newPayload['command'] = 'updateInputObjOptionByIndex'
-                  newPayload['objIndex'] = objIndex
-                  break
-              }
-              vm.$emit('onCommand', newPayload)
+            var objIndex = vm.getSelectedInputObjIndex()
+            var newPayload = payload
+            switch (command) {
+              case 'newInputObj':
+                newPayload['objIndex'] = objIndex
+                break
+              case 'deleteInputObj':
+                objIndex = vm.getInputObjIndex(payload.inputObj)
+                newPayload['objIndex'] = objIndex
+                break
+              case 'updateField':
+                console.log('FormBuilderPanel :: onCommandHandler :: updateFIeld: newPayload: ', newPayload)
+                newPayload['command'] = newPayload['scope'] === 'pageConfig' ?
+                  'updatePageConfigField' :
+                  'updateInputObjField'
+                newPayload['objIndex'] = objIndex
+                break
+              case 'appendBlankOption':
+                newPayload['command'] = 'appendInputObjOption'
+                newPayload['objIndex'] = objIndex
+                break
+              case 'updateOptionByIndex':
+                newPayload['command'] = 'updateInputObjOptionByIndex'
+                newPayload['objIndex'] = objIndex
+                break
             }
+            vm.$emit('onCommand', newPayload)
         }
       },
 
@@ -272,16 +341,27 @@
           value: result
         })
       }
-    },
+    }
+    ,
     computed: {
       inputObjs () {
         const vm = this
-        var result = [];
+        var result = []
         if (vm.record && vm.record.form_configs) {
           result = vm.record.form_configs.inputObjs
         }
         return result
-      },
+      }
+      ,
+      pageConfig () {
+        const vm = this
+        var result = {}
+        if (vm.record && vm.record.form_configs && vm.record.form_configs.page_config) {
+          result = vm.record.form_configs.page_config
+        }
+        return result
+      }
+      ,
       dragOptions () {
         return {
           animation: 0,
@@ -289,17 +369,21 @@
           disabled: !this.editable,
           ghostClass: "ghost"
         };
-      },
+      }
+      ,
       listString () {
         return JSON.stringify(this.list, null, 2);
-      },
+      }
+      ,
       list2String () {
         return JSON.stringify(this.list2, null, 2);
-      },
+      }
+      ,
       inputObjTypes () {
         return this.$store.getters.inputObjTypes
       }
-    },
+    }
+    ,
     watch: {
       isDragging (newValue) {
         if (newValue) {
@@ -311,7 +395,8 @@
         });
       }
     }
-  };
+  }
+  ;
 </script>
 
 <style>
@@ -351,5 +436,13 @@
 
   .input-object-list .list-group-item {
     padding: 0.25rem 0.5rem;
+  }
+
+  .page-property {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin-bottom: 2px;
   }
 </style>

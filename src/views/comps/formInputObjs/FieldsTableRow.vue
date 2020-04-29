@@ -39,6 +39,10 @@ export default {
     fieldName: {
       type: String,
       value: ''
+    },
+    scope: {
+      type: String,
+      value: ''
     }
   },
   methods: {
@@ -46,6 +50,7 @@ export default {
       const vm = this
       vm.$emit('onCommand', {
         command: 'updateField',
+        scope: vm.scope,
         fieldName: vm.fieldName,
         fieldValue: fieldValue
       })

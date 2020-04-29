@@ -57,6 +57,7 @@ const FormInputObjMixin = {
     onInputObjCommandHandler (payload) {
       const vm = this
       const command = payload.command
+      console.log('onInputObjCommandHandler: payload: ', payload)
 
       switch (command) {
         case 'newInputObj':
@@ -81,8 +82,8 @@ const FormInputObjMixin = {
         case 'replaceInputObjs':
           vm.replaceInputObjs(payload)
           break
-        case 'updateFormConfigPageConfigField':
-          vm.updateFormConfigPageConfigField(payload)
+        case 'updatePageConfigField':
+          vm.updatePageConfigField(payload)
           break
         case 'previewQuestionForm':
           vm.previewQuestionForm()
@@ -186,8 +187,8 @@ const FormInputObjMixin = {
       vm.record.form_configs.inputObjs = payload.value
     },
 
-    updateFormConfigPageConfigField (payload) {
-      console.log('FormInputObjMixin :: updateFormConfigPageConfigField')
+    updatePageConfigField (payload) {
+      console.log('FormInputObjMixin :: updatePageConfigField')
       const vm = this
       vm.record.form_configs.pageConfig[payload.fieldName] = payload.fieldValue
     }
