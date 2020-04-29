@@ -154,12 +154,12 @@ const actions = {
       payload.options.headers = {Authorization: 'bearer ' + token}
       dispatch('COMMON_GET', payload).then(
         response => {
-          console.log('COMMON_GET.then: response: ', response)
+          console.log('AUTH_GET > COMMON_GET.then: response: ', response)
           resolve(response)
         }
       ).catch(
         error => {
-          console.log('COMMON_GET.catch: error: ', error)
+          console.log('AUTH_GET > COMMON_GET.catch: error: ', error)
           reject(error)
         }
       )
@@ -213,7 +213,7 @@ const actions = {
           // Error('Get Record Fails! (url=' + url + ')'))
         }
       }).catch((error) => {
-        reject(error.response)
+        reject(error)
       })
     })
   },

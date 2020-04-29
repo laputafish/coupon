@@ -1,10 +1,10 @@
 <template>
   <tr>
-    <td class="align-top p-t-3 line-height-1">
+    <td class="align-top p-t-3 line-height-1 label-cell">
       <div>{{ label }}</div>
       <small class="field-notes" v-if="notes !== ''">{{ notes }}</small>
     </td>
-    <td>
+    <td class="value-cell">
       <Textarea class="form-control" rows="10"
                 @input="$event=>{updateField($event.target.value)}">{{ value }}
       </Textarea>

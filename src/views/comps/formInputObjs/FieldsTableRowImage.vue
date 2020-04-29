@@ -1,10 +1,10 @@
 <template>
   <tr>
-    <td class="align-middle line-height-1">
+    <td class="align-middle line-height-1 label-cell">
       <div>{{ label }}</div>
       <small class="field-notes" v-if="notes !== ''">{{ notes }}</small>
     </td>
-    <td>
+    <td class="value-cell">
       <div ref="imageInput" class="input-group">
         <input :type="type"
                :value="value"

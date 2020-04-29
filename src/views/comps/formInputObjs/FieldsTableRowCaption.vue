@@ -1,7 +1,9 @@
 <template>
-  <fields-table-row :value="value" fieldName="name" @onCommand="onCommandHandler">
-    <div slot="labelSlot">Caption<br/><small class="text-muted">* for self reference</small></div>
-  </fields-table-row>
+  <fields-table-row
+      label="Caption"
+      notes="* used as header of export file"
+      :value="value"
+      fieldName="name" @onCommand="onCommandHandler"></fields-table-row>
 </template>
 
 <script>

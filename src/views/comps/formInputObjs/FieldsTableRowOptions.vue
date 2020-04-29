@@ -1,10 +1,10 @@
 <template>
   <tr>
-    <td class="align-top line-height-1 pt-3">
+    <td class="align-top line-height-1 pt-3 label-cell">
       <div>{{ label }}</div>
       <small class="field-notes" v-if="notes !== ''">{{ notes }}</small>
     </td>
-    <td>
+    <td class="value-cell">
       <draggable class="input-option-list list-group" tag="ul"
                  :value="optionItems"
                  @input="newOptionItems=>updateItemOrder(newOptionItems)"

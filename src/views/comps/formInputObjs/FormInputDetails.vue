@@ -7,8 +7,8 @@
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" fieldName="name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
+          <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
           <fields-table-row label="Notes" :value="inputObj.notes" fieldName="notes" @onCommand="onCommandHandler"></fields-table-row>
         </table>
@@ -22,8 +22,8 @@
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" fieldName="name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
+          <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
           <fields-table-row label="Notes" :value="notes1" notes="* first name" fieldName="notes1" @onCommand="onCommandHandler"></fields-table-row>
           <fields-table-row label="Notes" :value="notes2" notes="* last name" fieldName="notes2" @onCommand="onCommandHandler"></fields-table-row>
@@ -38,8 +38,8 @@
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" fieldName="name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
+          <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
           <fields-table-row label="Notes" :value="notes1" notes="* first name" fieldName="notes1" @onCommand="onCommandHandler"></fields-table-row>
           <fields-table-row label="Notes" :value="notes2" notes="* last name" fieldName="notes2" @onCommand="onCommandHandler"></fields-table-row>
@@ -54,8 +54,8 @@
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" fieldName="name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
+          <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
           <fields-table-row-options label="Options" :value="inputObj.options" fieldName="options" @onCommand="onCommandHandler"></fields-table-row-options>
         </table>
@@ -69,8 +69,8 @@
       </div>
       <div class="p-2">
         <table class="table table-hover details-field-table">
-          <fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" fieldName="name" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Question" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
+          <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
           <fields-table-row-options label="Options" :value="inputObj.options" fieldName="options" @onCommand="onCommandHandler"></fields-table-row-options>        </table>
       </div>
@@ -109,6 +109,8 @@
 <script>
 import inputObjTitle from './InputObjTitle'
 import fieldsTableRow from './FieldsTableRow'
+import fieldsTableRowCaption from './FieldsTableRowCaption'
+import fieldsTableRowQuestion from './FieldsTableRowQuestion'
 import fieldsTableRowYesNo from './FieldsTableRowYesNo'
 import fieldsTableRowOptions from './FieldsTableRowOptions'
 import fieldsTableRowTextarea from './FieldsTableRowTextarea'
@@ -120,6 +122,8 @@ export default {
   components: {
     inputObjTitle,
     fieldsTableRow,
+    fieldsTableRowCaption,
+    fieldsTableRowQuestion,
     fieldsTableRowYesNo,
     fieldsTableRowOptions,
     fieldsTableRowTextarea,
@@ -184,5 +188,10 @@ export default {
   table.details-field-table tr td {
     border: none !important;
     padding: 3px;
+  }
+  .label-cell {
+  }
+  .value-cell {
+    width: 80%;
   }
 </style>

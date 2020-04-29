@@ -159,7 +159,7 @@
             }
           },
           error => {
-            vm.$toast.danger(vm.$t('messages.' + error.messageTag))
+            vm.$toaster.error(vm.$t('messages.' + error.messageTag))
           }
         )
       }

@@ -34,7 +34,6 @@ const FormInputObjMixin = {
       const vm = this
       var inputObjType = vm.getInputObjType(type)
       var result = {
-        id: 0,
         name: inputObjType.label,
         fixed: false,
         inputType: type,
@@ -46,13 +45,13 @@ const FormInputObjMixin = {
       return result
     },
 
-    resetOptionIds () {
-      const vm = this
-      console.log('resetOptionIds :: vm.record.form_configs.inputObjs: ', vm.record.form_configs.inputObjs)
-      for (var i = 0; i < vm.record.form_configs.inputObjs.length; i++) {
-        vm.record.form_configs.inputObjs[i].id = i + 1
-      }
-    },
+    // resetOptionIds () {
+    //   const vm = this
+    //   console.log('resetOptionIds :: vm.record.form_configs.inputObjs: ', vm.record.form_configs.inputObjs)
+    //   for (var i = 0; i < vm.record.form_configs.inputObjs.length; i++) {
+    //     vm.record.form_configs.inputObjs[i].id = i + 1
+    //   }
+    // },
 // ?????? ?<-- merge onCommandHandler with VoucherRecord.vue
     onInputObjCommandHandler (payload) {
       const vm = this
@@ -79,11 +78,17 @@ const FormInputObjMixin = {
         case 'updateInputObjOptionByIndex':
           vm.updateInputObjOptionByIndex(payload)
           break
+        case 'removeInputObjOptionByIndex':
+          vm.removeInputObjOptionByIndex(payload)
+          break
         case 'replaceInputObjs':
           vm.replaceInputObjs(payload)
           break
         case 'updatePageConfigField':
           vm.updatePageConfigField(payload)
+          break
+        case 'exportFormConfigs':
+          vm.exportFormConfigs()
           break
         case 'previewQuestionForm':
           vm.previewQuestionForm()
@@ -92,34 +97,37 @@ const FormInputObjMixin = {
       }
     },
 
-    previewQuestionForm () {
+    exportFormConfigs () {
       const vm = this
       const postData = {
-        urlCommand: '/form_questions/preview/create',
+        urlCommand: '/form_questions/temp/create',
         data: {
           formConfigs: vm.record.form_configs
         }
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
         response => {
-          console.log('previewQuestionForm :: repsonse: ', response)
-          var route = vm.$router.resolve({
-            name: 'QuestionFormPreview',
-            params: {key: '_' + response.key}
-          })
-          var url = window.location.origin + route.href
-          url = vm.$store.getters.appHost + '/q/_' + response.key
-          console.log('previewQuestionForm :: window.location.origin = ' + window.location.origin)
-          console.log('previewQuestionForm :: route.href = ' + route.href)
-          console.log('previewQuestionForm :: url = ' + url)
-
-          console.log('previewQuestionForm :: route: ', route)
-          // get the key for temporary form
+          const url = vm.$store.getters.appHost + '/d/_' + response.key
           window.open(url, '_blank')
         },
-        error => {
+        error => {vm.$toaster.error(error.message)}
+      )
+    },
 
+    previewQuestionForm () {
+      const vm = this
+      const postData = {
+        urlCommand: '/form_questions/temp/create',
+        data: {
+          formConfigs: vm.record.form_configs
         }
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        response => {
+          const url = vm.$store.getters.appHost + '/q/_' + response.key
+          window.open(url, '_blank')
+        },
+        error => {vm.$toaster.error(error.message)}
       )
     },
 
@@ -135,7 +143,7 @@ const FormInputObjMixin = {
       } else {
         inputObjs.splice(currentIndex + 1, 0, newObj)
       }
-      vm.resetOptionIds()
+      // vm.resetOptionIds()
       vm.record.form_configs.inputObjs = inputObjs
       // vm.$forceUpdate()
     },
@@ -167,6 +175,17 @@ const FormInputObjMixin = {
       var value = payload.value ? payload.value : ''
       if (currentIndex !== -1) {
         vm.record.form_configs.inputObjs[currentIndex].options.push(value)
+      }
+    },
+    removeInputObjOptionByIndex (payload) {
+      console.log('removeInputObjOptionByIndex :: payload: ', payload)
+      const vm = this
+      var optionIndex = payload.index
+      var currentIndex = payload.objIndex
+      if (currentIndex !== -1) {
+        var newOptionList = JSON.parse(JSON.stringify(vm.record.form_configs.inputObjs[currentIndex].options))
+        newOptionList.splice(optionIndex, 1)
+        vm.record.form_configs.inputObjs[currentIndex].options = newOptionList
       }
     },
     updateInputObjOptionByIndex (payload) {

@@ -10,15 +10,20 @@ const mixin = Vue.util.mergeOptions(appMixin, {
         urlCommand: vm.apiPath + '/' + id
       }
       vm.loading = true
-      vm.$store.dispatch('AUTH_GET', data).then(function (response) {
-        vm.loading = false
-        // console.log('refresh :: response: ', response)
-        vm.record = response.data
-        if (typeof vm.onRefreshed === 'function') {
-          vm.onRefreshed()
+      vm.$store.dispatch('AUTH_GET', data).then(
+        response => {
+          vm.loading = false
+          // console.log('refresh :: response: ', response)
+          vm.record = response.data
+          if (typeof vm.onRefreshed === 'function') {
+            vm.onRefreshed()
+          }
+          vm.$forceUpdate()
+        },
+        error => {
+          console.log('DataRecordMixin: error: ', error)
         }
-        vm.$forceUpdate()
-      })
+      )
     }
   }
 })

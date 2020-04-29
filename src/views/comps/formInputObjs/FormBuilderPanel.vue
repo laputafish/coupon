@@ -11,21 +11,29 @@
           <input-obj-button-list
               @onCommand="onCommandHandler"></input-obj-button-list>
           <div class="d-flex flex-row justify-content-end mb-1">
-            <div class="d-flex flex-column d-inline-block mx-1">
-                <div class="text-center px-2 pb-2"
-                     style="width:120px;border-radius:0.5rem;"
-                     :style="{backgroundColor:record.form_configs.pageConfig.bgColor}">
-                  <label style="filter:invert(100%);">Background</label>
-                  <input :value="record.form_configs.pageConfig.bgColor"
-                         style="width:100%;" class="text-center"
-                         @input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>
-                </div>
-            </div>
+            <!--<div class="d-flex flex-column d-inline-block mx-1">-->
+                <!--<div class="text-center px-2 pb-2"-->
+                     <!--style="width:120px;border-radius:0.5rem;"-->
+                     <!--:style="{backgroundColor:record.form_configs.pageConfig.bgColor}">-->
+                  <!--<label style="filter:invert(100%);">Background</label>-->
+                  <!--<input :value="record.form_configs.pageConfig.bgColor"-->
+                         <!--style="width:100%;" class="text-center"-->
+                         <!--@input="$event=>updatePageConfigField('bgColor',$event.target.value)"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start no-wrap"
+                    style="white-space: nowrap;"
+                    @click="exportForm">
+              <i class="fas fa-fw fa-download"></i>
+              Export
+            </button>
+
+
             <xls-file-upload
                 inputId="uploadQuestions"
                 uploadUrl="/form_questions/upload"
                 :postData="{id: record.id}"
-                class="align-self-start"
+                class="align-self-start ml-1"
                 @onUploading="onUploadingHandler"
                 @onUploaded="onUploadedHandler"></xls-file-upload>
             <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start no-wrap"
@@ -82,46 +90,59 @@
                 </div>
                 <div class="p-2">
                     <table class="table table-hover details-field-table">
+                      <!-- bgColor -->
                       <fields-table-row label="Background Color" :value="pageConfig.bgColor"
                                         notes="(e.g. #FFEEDD)"
                                         fieldName="bgColor"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
-                      <fields-table-row label="Text Color" :value="pageConfig.bgColor"
+
+                      <!-- color -->
+                      <fields-table-row label="Text Color" :value="pageConfig.color"
                                         notes="(e.g. white)"
                                         fieldName="color"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
 
+                      <!-- maxWidth -->
                       <fields-table-row label="Max. Width" :value="pageConfig.maxWidth"
                                         notes="(e.g. 640px)"
                                         fieldName="maxWidth"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
-                      <fields-table-row label="Padding (Top)" :value="pageConfig.bgColor"
+
+                      <!-- paddingTop -->
+                      <fields-table-row label="Padding (Top)" :value="pageConfig.paddingTop"
                                         notes="(e.g. 60px)"
                                         fieldName="paddingTop"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
-                      <fields-table-row label="Font Size" :value="pageConfig.bgColor"
+
+                      <!-- fontSize -->
+                      <fields-table-row label="Font Size" :value="pageConfig.fontSize"
                                         notes="(e.g. 14px)"
                                         fieldName="fontSize"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
 
-                      <fields-table-row label="Button Color (Selected)" :value="pageConfig.bgColor"
+                      <!-- selectedChoiceColor -->
+                      <fields-table-row label="Choice color if selected" :value="pageConfig.selectedChoiceColor"
                                         notes="(e.g. yellow)"
                                         fieldName="selectedChoiceColor"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
-                      <fields-table-row label="Button Text Color (Selected)" :value="pageConfig.bgColor"
+
+                      <!-- selectedChoiceTextColor -->
+                      <fields-table-row label="Choice text Color if selected" :value="pageConfig.selectedChoiceTextColor"
                                         notes="(e.g. black)"
                                         fieldName="selectedChoiceTextColor"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
-                      <fields-table-row label="Other Styles" :value="pageConfig.bgColor"
+
+                      <!-- style -->
+                      <fields-table-row label="Other styles" :value="pageConfig.style"
                                         notes=""
-                                        fieldName="others"
+                                        fieldName="style"
                                         scope="pageConfig"
                                         @onCommand="onCommandHandler"></fields-table-row>
 
@@ -210,6 +231,11 @@
           fieldValue: fieldValue
         })
       },
+      exportForm () {
+        this.$emit('onCommand', {
+          command: 'exportFormConfigs'
+        })
+      },
       previewForm () {
         this.$emit('onCommand', {
           command: 'previewQuestionForm'
@@ -248,6 +274,10 @@
                 newPayload['command'] = 'updateInputObjOptionByIndex'
                 newPayload['objIndex'] = objIndex
                 break
+              case 'removeOptionByIndex':
+                newPayload['command'] = 'removeInputObjOptionByIndex'
+                newPayload['objIndex'] = objIndex
+                break
             }
             vm.$emit('onCommand', newPayload)
         }
@@ -272,45 +302,6 @@
         return vm.getInputObjIndex(vm.selectedInputObj)
       },
 
-      onCommandHandler2 (payload) {
-        const vm = this
-        const command = payload.command
-        var index = -1
-
-        switch (command) {
-          case 'newInputObj':
-            var inputObjType = payload.value
-            var newObj = vm.getNewInputObj(inputObjType)
-            var currentIndex = vm.getSelectedObjIndex()
-            if (currentIndex === -1) {
-              vm.inputObjs.push(newObj)
-            } else {
-              vm.inputObjs.splice(currentIndex + 1, 0, newObj)
-            }
-            vm.resetOptionIds()
-            break
-          case 'updateField':
-            vm.selectedInputObj[payload.fieldName] = payload.fieldValue
-            break
-          case 'removeOptionByIndex':
-            index = payload.index
-            if (index !== -1 && index <= vm.selectedInputObj.options.length) {
-              vm.selectedInputObj.options.splice(index, 1)
-            }
-            break
-          case 'appendBlankOption':
-            vm.selectedInputObj.options.push('')
-            break
-          case 'updateOptionByIndex':
-            index = payload.index
-            var newOptionList = JSON.parse(JSON.stringify(vm.selectedInputObj.options))
-            if (index !== -1 && index <= newOptionList.length) {
-              newOptionList[index] = payload.fieldValue
-            }
-            vm.selectedInputObj.options = newOptionList
-        }
-        console.log('Test :: onCommandHandler :: payload: ', payload)
-      },
       selectInputObj (inputObj) {
         const vm = this
         console.log('selectInputObj :: inputObj: ', inputObj)
@@ -356,8 +347,8 @@
       pageConfig () {
         const vm = this
         var result = {}
-        if (vm.record && vm.record.form_configs && vm.record.form_configs.page_config) {
-          result = vm.record.form_configs.page_config
+        if (vm.record && vm.record.form_configs && vm.record.form_configs.pageConfig) {
+          result = vm.record.form_configs.pageConfig
         }
         return result
       }
