@@ -70,19 +70,19 @@
                        @start="isDragging=true"
                        @end="isDragging=false">
 
-              <form-input-obj
+              <pane-list-item
                   v-for="(inputObj, index) in inputObjs"
                   :key="index"
                   @onCommand="onCommandHandler"
                   :selected="selectedInputObj==inputObj"
-                  :inputObj="inputObj"></form-input-obj>
+                  :inputObj="inputObj"></pane-list-item>
             </draggable>
           </div>
           <div class="col-sm-5">
-            <form-input-details
+            <pane-details
                 v-if="selectedInputObj"
                 :inputObj="selectedInputObj"
-                @onCommand="onCommandHandler"></form-input-details>
+                @onCommand="onCommandHandler"></pane-details>
             <div v-else>
               <div class="d-flex flex-column border">
                 <div class="p-2 border bg-primary text-center">
@@ -163,8 +163,8 @@
 
 <script>
   import draggable from "vuedraggable"
-  import formInputObj from '@/views/comps/formInputObjs/FormInputObj'
-  import formInputDetails from '@/views/comps/formInputObjs/FormInputDetails'
+  import paneListItem from '@/views/comps/formInputObjs/PaneListItem'
+  import paneDetails from '@/views/comps/formInputObjs/PaneDetails'
   import inputObjButtonList from '@/views/comps/formInputObjs/InputObjButtonList'
 
   import xlsFileUpload from '@/views/comps/XlsFileUpload'
@@ -197,8 +197,8 @@
     },
     components: {
       draggable,
-      formInputObj,
-      formInputDetails,
+      paneListItem,
+      paneDetails,
       inputObjButtonList,
       xlsFileUpload,
       fieldsTableRow
@@ -268,6 +268,10 @@
                 break
               case 'appendBlankOption':
                 newPayload['command'] = 'appendInputObjOption'
+                newPayload['objIndex'] = objIndex
+                break
+              case 'updateOptions':
+                newPayload['command'] = 'updateInputObjOptions'
                 newPayload['objIndex'] = objIndex
                 break
               case 'updateOptionByIndex':

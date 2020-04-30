@@ -75,6 +75,9 @@ const FormInputObjMixin = {
         case 'appendInputObjOption':
           vm.appendInputObjOption(payload)
           break
+        case 'updateInputObjOptions':
+          vm.updateInputObjOptions(payload)
+          break
         case 'updateInputObjOptionByIndex':
           vm.updateInputObjOptionByIndex(payload)
           break
@@ -175,6 +178,13 @@ const FormInputObjMixin = {
       var value = payload.value ? payload.value : ''
       if (currentIndex !== -1) {
         vm.record.form_configs.inputObjs[currentIndex].options.push(value)
+      }
+    },
+    updateInputObjOptions (payload) {
+      const vm = this
+      var currentIndex = payload.objIndex
+      if (currentIndex !== -1) {
+        vm.record.form_configs.inputObjs[currentIndex].options = payload.options
       }
     },
     removeInputObjOptionByIndex (payload) {

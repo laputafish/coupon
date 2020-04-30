@@ -7,15 +7,15 @@
 
       <div class="d-flex flex-row mt-1">
         <small class="pr-1">{{ label }}</small>
-
-        <div v-if="inputObj.question && inputObj.question!==''" class="input-obj-question badge badge-info" v-html="questionContext"></div>
+        <div v-if="inputObj.question && inputObj.question!==''"
+             class="input-obj-question badge badge-info" v-html="questionContext"></div>
         <div v-if="inputObj.required && isInput"
           class="badge badge-danger ml-1">
           <i class="fas fa-bahai"></i>
         </div>
       </div>
 
-      <div v-if="inputObj.inputType==='image' && inputObj.question!=='' && inputObj.question !== null">
+      <div v-if="inputObj.inputType==='output-image' && inputObj.question!=='' && inputObj.question !== null">
         <img class="input-obj-image-show" :src="inputObj.question"/>
       </div>
 

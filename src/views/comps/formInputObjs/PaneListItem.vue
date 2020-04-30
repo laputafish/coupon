@@ -3,8 +3,8 @@
       @click="selectInputObj"
     :class="{'bg-primary':selected,'bg-muted':!selected}">
 
-    <input-obj-list-item-info
-        :inputObj="inputObj" @onCommand="onCommandHandler"></input-obj-list-item-info>
+    <pane-list-item-info
+        :inputObj="inputObj" @onCommand="onCommandHandler"></pane-list-item-info>
 
     <!-- Delete Button -->
     <div class="pl-3">
@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import inputObjListItemInfo from './InputObjListItemInfo'
+import paneListItemInfo from './PaneListItemInfo'
 
 export default {
   components: {
-    inputObjListItemInfo
+    paneListItemInfo
   },
   props: {
     index: {

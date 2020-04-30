@@ -10,16 +10,110 @@ const state = {
     {icon: 'fas fa-phone', newIcon: 'phone', text: '', label: 'Phone', type: 'phone', isInput: true},
     {icon: 'fas fa-check-square', newIcon: 'check-square', text: '', label: 'Choice', type: 'single-choice', isInput: true},
     {icon: 'fas fa-tasks', newIcon: 'tasks', text: '', label: 'Multi-Choice', type: 'multiple-choice', isInput: true},
-    {icon: 'fas fa-image', newIcon: 'image', text: '', label: 'Image', type: 'image', isInput: false},
-    {icon: '', newIcon: '', text: 'ABC', label: 'Remark', type: 'remark', isInput: false},
-    {icon: 'fas fa-bolt', newIcon: 'bolt', text: '', label: 'Submit Btn', type: 'submit', isInput: false}
+    {icon: 'fas fa-image', newIcon: 'image', text: '', label: 'Image', type: 'output-image', isInput: false},
+    {icon: '', newIcon: '', text: 'ABC', label: 'Remark', type: 'output-remark', isInput: false},
+    {icon: 'fas fa-bolt', newIcon: 'bolt', text: '', label: 'Submit Btn', type: 'output-submit', isInput: false}
+  ],
+  attributeInfos: {
+    width: {caption:'Width', styleName:'width', optionGroup:'option1'},
+    height: {caption: 'Height', styleName:'height', optionGroup: 'option1'},
+    alignment: {caption: 'Alignment', styleName: 'text-align', optionGroup: 'option2'},
+    fontSize: {caption: 'Font Size', styleName: 'font-size', optionGroup: 'option2'},
+    textColor: {caption: 'Text Color', styleName: 'color', optionGroup: 'option1'},
+    paddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'option1'},
+    paddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'option1'},
+    paddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'option1'},
+    paddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'option1'},
+    color: {caption: 'Color', styleName: 'background-color', optionGroup: 'option1'},
 
-  ]
+    containerPaddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'option2'},
+    containerPaddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'option2'},
+    containerPaddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'option2'},
+    containerPaddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'option2'},
+    containerBackgroundColor: {caption: 'Background Color', styleName: 'background-color', optionGroup: 'option2'}
+  },
+  userAttributes: {
+    'output-image': [
+      {
+        caption: 'Attributes',
+        attributeKeys: [
+          'width',
+          'height',
+          'alignment'
+        ]
+      },
+      {
+        caption: 'Container Attributes',
+        attributeKeys: [
+          'containerPaddingTop',
+          'containerPaddingBottom',
+          'containerPaddingLeft',
+          'containerPaddingRight',
+          'containerBackgroundColor'
+        ]
+      }
+    ],
+    'output-remark': [
+      {
+        caption: 'Attributes',
+        attributeKeys: [
+          'width',
+          'height',
+          'alignment',
+          'fontSize',
+          'textColor'
+        ]
+      },
+      {
+        caption: 'Container Attributes',
+        attributeKeys: [
+          'containerPaddingTop',
+          'containerPaddingBottom',
+          'containerPaddingLeft',
+          'containerPaddingRight',
+          'containerBackgroundColor'
+        ]
+      }
+    ],
+    'output-submit': [
+      {
+        caption: 'Attributes',
+        attributeKeys: [
+          'width',
+          'height',
+          'alignment',
+          'fontSize',
+          'textColor',
+          'paddingTop',
+          'paddingBottom',
+          'paddingLeft',
+          'paddingRight',
+          'color'
+        ]
+      },
+      {
+        caption: 'Container Attributes',
+        attributeKeys: [
+          'containerPaddingTop',
+          'containerPaddingBottom',
+          'containerPaddingLeft',
+          'containerPaddingRight',
+          'containerBackgroundColor'
+        ]
+      }
+    ]
+  }
 }
 
 const getters = {
   inputObjTypes: (state) => {
     return state.inputObjTypes
+  },
+  attributeInfos: (state) => {
+    return state.attributeInfos
+  },
+  userAttributes: (state) => {
+    return state.userAttributes
   },
   iconList: (state) => {
     var result = []

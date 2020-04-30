@@ -2,9 +2,10 @@
   <div>
     <!-- simple-text | number | email | text -->
     <div v-if="isInputElement(inputObj)" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
@@ -17,9 +18,10 @@
 
     <!-- name -->
     <div v-else-if="inputObj.inputType==='name'" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
@@ -33,9 +35,10 @@
 
     <!-- phone -->
     <div v-else-if="inputObj.inputType==='phone'" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
@@ -49,9 +52,10 @@
 
     <!-- single-choice -->
     <div v-else-if="inputObj.inputType==='single-choice'" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
@@ -64,9 +68,10 @@
 
     <!-- multiple-choice -->
     <div v-else-if="inputObj.inputType==='multiple-choice'" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
@@ -77,10 +82,11 @@
     </div>
 
     <!-- image -->
-    <div v-else-if="inputObj.inputType==='image'" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+    <div v-else-if="inputObj.inputType==='output-image'" class="d-flex flex-column border">
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <fields-table-row-image label="Image Link"
@@ -88,26 +94,48 @@
                                   fieldName="question"
                                   @onCommand="onCommandHandler"></fields-table-row-image>
         </table>
+        <attribute-set
+          :attributeSet="inputObj.inputType"
+          :value="inputObj.options"
+          @onCommand="onCommandHandler"></attribute-set>
       </div>
     </div>
 
     <!-- Remark -->
-    <div v-else-if="inputObj.inputType==='remark'" class="d-flex flex-column border">
-      <div class="p-2 border bg-primary">
-        <input-obj-title :inputObj="inputObj"></input-obj-title>
-      </div>
+    <div v-else-if="inputObj.inputType==='output-remark'" class="d-flex flex-column border">
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <!--<fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>-->
           <fields-table-row-textarea label="Remark" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row-textarea>
         </table>
+        <attribute-set
+            :attributeSet="inputObj.inputType"
+            :value="inputObj.options"
+            @onCommand="onCommandHandler"></attribute-set>
       </div>
     </div>
+
+    <!-- Submit Button -->
+    <div v-else-if="inputObj.inputType==='output-submit'" class="d-flex flex-column border">
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary"><input-obj-title :inputObj="inputObj"></input-obj-title></div>-->
+      <div class="p-2">
+        <attribute-set
+            :attributeSet="inputObj.inputType"
+            :value="inputObj.options"
+            @onCommand="onCommandHandler"></attribute-set>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
-import inputObjTitle from './InputObjTitle'
+// import inputObjTitle from './InputObjTitle'
 import fieldsTableRow from './FieldsTableRow'
 import fieldsTableRowCaption from './FieldsTableRowCaption'
 import fieldsTableRowQuestion from './FieldsTableRowQuestion'
@@ -115,19 +143,23 @@ import fieldsTableRowYesNo from './FieldsTableRowYesNo'
 import fieldsTableRowOptions from './FieldsTableRowOptions'
 import fieldsTableRowTextarea from './FieldsTableRowTextarea'
 import fieldsTableRowImage from './FieldsTableRowImage'
+import paneDetailsTitle from './PaneDetailsTitle'
+import attributeSet from './AttributeSet'
 
 // import fieldsTableRowCaption from './FieldsTableRowCaption'
 
 export default {
   components: {
-    inputObjTitle,
+    // inputObjTitle,
     fieldsTableRow,
     fieldsTableRowCaption,
     fieldsTableRowQuestion,
     fieldsTableRowYesNo,
     fieldsTableRowOptions,
     fieldsTableRowTextarea,
-    fieldsTableRowImage
+    fieldsTableRowImage,
+    paneDetailsTitle,
+    attributeSet
   },
   props: {
     inputObj: {
@@ -142,10 +174,11 @@ export default {
     multiNotes () {
       const vm = this
       var result = ['','']
-      var segs = vm.inputObj.notes.split('|')
-      result[0] = segs[0]
-      if (segs.length > 1) {
-        result[1] = segs[1]
+      var segs = []
+      if (vm.inputObj.notes) {
+        segs = vm.inputObj.notes.split('|')
+        if (segs.length > 0) result[0] = segs[0]
+        if (segs.length > 1) result[1] = segs[1]
       }
       return result
     },
