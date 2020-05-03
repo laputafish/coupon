@@ -6,6 +6,7 @@
     </td>
     <td class="value-cell">
       <input :type="type"
+             :placeholder="placeholder"
              :value="value"
              class="form-control"
              @input="$event=>{updateField($event.target.value)}"/>
@@ -41,6 +42,10 @@ export default {
       value: ''
     },
     scope: {
+      type: String,
+      value: ''
+    },
+    placeholder: {
       type: String,
       value: ''
     }

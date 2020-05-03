@@ -8,14 +8,15 @@
       <div class="d-flex flex-row mt-1">
         <small class="pr-1">{{ label }}</small>
         <div v-if="inputObj.question && inputObj.question!==''"
-             class="input-obj-question badge badge-info" v-html="questionContext"></div>
-        <div v-if="inputObj.required && isInput"
-          class="badge badge-danger ml-1">
+             class="input-obj-question badge badge-info"
+             v-html="questionContext"></div>
+        <div v-if="inputObj.required && isInput" class="badge badge-danger ml-1">
           <i class="fas fa-bahai"></i>
         </div>
       </div>
 
-      <div v-if="inputObj.inputType==='output-image' && inputObj.question!=='' && inputObj.question !== null">
+      <div v-if="inputObj.inputType==='output-image' && inputObj.question!=='' && inputObj.question !== null"
+        class="p-1">
         <img class="input-obj-image-show" :src="inputObj.question"/>
       </div>
 
@@ -57,7 +58,7 @@ export default {
   computed: {
     questionContext () {
       const vm = this
-      var carriageReturn = "\n";
+      var carriageReturn = "|";
       var lines = vm.inputObj.question.split(carriageReturn);
       var result = []
       for (var i = 0; i < lines.length; i++) {
@@ -100,6 +101,7 @@ export default {
     white-space: normal;
     font-weight: normal;
     text-align: left;
+    line-height: 1.2;
   }
 
   .input-obj-option {

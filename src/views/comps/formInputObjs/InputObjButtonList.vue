@@ -20,12 +20,22 @@
 export default {
   computed: {
     inputObjTypes () {
-      return this.$store.getters.inputObjTypes
+      const vm = this
+      return this.$store.getters.inputObjTypes.filter(item => {
+        return !item.fixed && (!item.isInput || vm.includeInputObjs)
+      })
+    }
+  },
+  props: {
+    includeInputObjs: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
     onButtonClicked (inputObjType) {
       const vm = this
+      console.log('InputObjButtonList :: onButtonClicked : inputObjType: ', inputObjType)
       vm.$emit('onCommand', {
         command: 'newInputObj',
         value: inputObjType
@@ -34,3 +44,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.object-type-list button {
+  line-height: 1.3;
+  padding: 7px 0;
+}
+</style>

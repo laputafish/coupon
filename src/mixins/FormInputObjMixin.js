@@ -2,14 +2,20 @@ const FormInputObjMixin = {
   computed: {
     inputObjTypes () {
       return this.$store.getters.inputObjTypes
+    },
+    DEFAULT_FORM_CONFIGS () {
+      return this.$store.getters.DEFAULT_FORM_CONFIGS
     }
   },
   methods: {
-    getSelectedObjIndex (id) {
+    newFormKey () {
+      return (Date.now() + Math.random()).toString(36).replace('.', '')
+    },
+    getSelectedObjIndex (id, formConfigs) {
       const vm = this
       var result = -1
-      for (var i = 0; i < vm.record.form_configs.inputObjs.length; i++) {
-        if (vm.record.form_configs.inputObjs[i].id === id) {
+      for (var i = 0; i < formConfigs.inputObjs.length; i++) {
+        if (formConfigs.inputObjs[i].id === id) {
           result = i
           break
         }
@@ -57,55 +63,76 @@ const FormInputObjMixin = {
       const vm = this
       const command = payload.command
       console.log('onInputObjCommandHandler: payload: ', payload)
-
-      switch (command) {
-        case 'newInputObj':
-          vm.newInputObj(payload)
-          break
-        case 'deleteInputObj':
-          vm.deleteInputObj(payload)
-          break
-        case 'updateInputObjField':
-          console.log('FormInputObjMixin :: onInputObjCommandHandler :: updateInputObjField: payload: ', payload)
-          vm.updateInputObjField(payload)
-          break
-        case 'removeInputObjOption':
-          vm.removeInputObjOption(payload)
-          break
-        case 'appendInputObjOption':
-          vm.appendInputObjOption(payload)
-          break
-        case 'updateInputObjOptions':
-          vm.updateInputObjOptions(payload)
-          break
-        case 'updateInputObjOptionByIndex':
-          vm.updateInputObjOptionByIndex(payload)
-          break
-        case 'removeInputObjOptionByIndex':
-          vm.removeInputObjOptionByIndex(payload)
-          break
-        case 'replaceInputObjs':
-          vm.replaceInputObjs(payload)
-          break
-        case 'updatePageConfigField':
-          vm.updatePageConfigField(payload)
-          break
-        case 'exportFormConfigs':
-          vm.exportFormConfigs()
-          break
-        case 'previewQuestionForm':
-          vm.previewQuestionForm()
-          break
-
+      var formConfigs = vm.getFormConfigsByKey(payload.key)
+      if (formConfigs) {
+        switch (command) {
+          case 'newInputObj':
+            vm.newInputObj(payload, formConfigs)
+            break
+          case 'deleteInputObj':
+            vm.deleteInputObj(payload, formConfigs)
+            break
+          case 'updateInputObjField':
+            console.log('FormInputObjMixin :: onInputObjCommandHandler :: updateInputObjField: payload: ', payload)
+            vm.updateInputObjField(payload, formConfigs)
+            break
+          case 'removeInputObjOption':
+            vm.removeInputObjOption(payload, formConfigs)
+            break
+          case 'appendInputObjOption':
+            vm.appendInputObjOption(payload, formConfigs)
+            break
+          case 'updateInputObjOptions':
+            vm.updateInputObjOptions(payload, formConfigs)
+            break
+          case 'updateInputObjOptionByIndex':
+            vm.updateInputObjOptionByIndex(payload, formConfigs)
+            break
+          case 'removeInputObjOptionByIndex':
+            vm.removeInputObjOptionByIndex(payload, formConfigs)
+            break
+          case 'replaceInputObjs':
+            vm.replaceInputObjs(payload, formConfigs)
+            break
+          case 'updatePageConfigField':
+            vm.updatePageConfigField(payload, formConfigs)
+            break
+          case 'exportFormConfigs':
+            vm.exportFormConfigs(payload, formConfigs)
+            break
+          case 'clearForm':
+            vm.clearForm(payload.key);
+            break
+          case 'previewQuestionForm':
+            vm.previewQuestionForm(payload, formConfigs)
+            break
+        }
       }
     },
 
-    exportFormConfigs () {
+    clearForm (key) {
+      const vm = this
+      switch (key) {
+        case 'question':
+          vm.record.form_configs = vm.DEFAULT_FORM_CONFIGS
+          break
+        default:
+          for (var i = 0; i < vm.record.custom_forms.length; i++) {
+            var customForm = vm.record.custom_forms[i]
+            if (customForm.form_key === key) {
+              vm.record.custom_forms[i].form_configs = vm.DEFAULT_FORM_CONFIGS
+              break
+            }
+          }
+      }
+    },
+
+    exportFormConfigs (payload, formConfigs) {
       const vm = this
       const postData = {
         urlCommand: '/form_questions/temp/create',
         data: {
-          formConfigs: vm.record.form_configs
+          formConfigs: formConfigs
         }
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
@@ -117,12 +144,52 @@ const FormInputObjMixin = {
       )
     },
 
-    previewQuestionForm () {
+    // selectFormConfigs (key, callback) {
+    //   const vm = this
+    //   var formConfigs = null
+    //   switch (key) {
+    //     case 'question':
+    //       formConfigs = vm.record.form_configs
+    //       break
+    //     case 'thankyou':
+    //       formConfigs = vm.record.thankyou_configs
+    //       break
+    //     case 'sorry':
+    //       formConfigs = vm.record.sorry_configs
+    //       break
+    //   }
+    //   if (formConfigs !== null) {
+    //     callback(formConfigs)
+    //   } else {
+    //     vm.$toaster.error('Form configs not defined!')
+    //   }
+    // },
+
+    getFormConfigsByKey (key) {
+      const vm = this
+      var formConfigs = null
+      switch (key) {
+        case 'question':
+          formConfigs = vm.record.form_configs
+          break
+        default:
+          for (var i = 0; i < vm.record.custom_forms.length; i++) {
+            var customForm = vm.record.custom_forms[i]
+            if (customForm.form_key === key) {
+              formConfigs = customForm.form_configs
+              break
+            }
+          }
+      }
+      return formConfigs
+    },
+
+    previewQuestionForm (payload, formConfigs) {
       const vm = this
       const postData = {
         urlCommand: '/form_questions/temp/create',
         data: {
-          formConfigs: vm.record.form_configs
+          formConfigs: formConfigs
         }
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
@@ -130,96 +197,106 @@ const FormInputObjMixin = {
           const url = vm.$store.getters.appHost + '/q/_' + response.key
           window.open(url, '_blank')
         },
-        error => {vm.$toaster.error(error.message)}
+        error => {
+          vm.$toaster.error(error.message)
+        }
       )
     },
 
-    newInputObj (payload) {
+    newInputObj (payload, formConfigs) {
       const vm = this
+      console.log('FormInputObjMixin :: newInputObj: payload: ', payload)
+      console.log('FormInputObjMixin :: newInputObj: formConfigs: ', formConfigs)
+
       var inputObjType = payload.value
       var newObj = vm.getNewInputObj(inputObjType)
       var currentIndex = payload.objIndex
-      var inputObjs = JSON.parse(JSON.stringify(vm.record.form_configs.inputObjs))
+      var inputObjs = JSON.parse(JSON.stringify(formConfigs.inputObjs))
 
       if (currentIndex === -1) {
         inputObjs.push(newObj)
       } else {
         inputObjs.splice(currentIndex + 1, 0, newObj)
       }
-      // vm.resetOptionIds()
-      vm.record.form_configs.inputObjs = inputObjs
-      // vm.$forceUpdate()
+      formConfigs.inputObjs = inputObjs
     },
-    deleteInputObj (payload) {
+
+    deleteInputObj (payload, formConfigs) {
       const vm = this
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        vm.record.form_configs.inputObjs.splice(currentIndex, 1)
+        formConfigs.inputObjs.splice(currentIndex, 1)
       }
     },
-    updateInputObjField (payload) {
+
+    updateInputObjField (payload, formConfigs) {
       const vm = this
+      console.log('FormInputObjMixin :: updateInputObjField :: payload: ', payload)
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        vm.record.form_configs.inputObjs[currentIndex][payload.fieldName] = payload.fieldValue
+        formConfigs.inputObjs[currentIndex][payload.fieldName] = payload.fieldValue.replace(/[\n\r]/g, '|');
       }
     },
-    removeInputObjOption (payload) {
+
+    removeInputObjOption (payload, formConfigs) {
       const vm = this
-      var currentIndex = vm.getSelectedObjIndex(payload.id)
+      var currentIndex = vm.getSelectedObjIndex(payload.id, formConfigs)
       var optionIndex = payload.objIndex
-      if (currentIndex !== -1 && optionIndex <= vm.record.form_configs.inputObjs[currentIndex].options.length) {
-        vm.record.form_configs.inputObjs[currentIndex].options.splice(optionIndex, 1)
+      if (currentIndex !== -1 && optionIndex <= formConfigs.inputObjs[currentIndex].options.length) {
+        formConfigs.inputObjs[currentIndex].options.splice(optionIndex, 1)
       }
     },
-    appendInputObjOption (payload) {
+    appendInputObjOption (payload, formConfigs) {
       const vm = this
       var currentIndex = payload.objIndex
       var value = payload.value ? payload.value : ''
       if (currentIndex !== -1) {
-        vm.record.form_configs.inputObjs[currentIndex].options.push(value)
+        formConfigs.inputObjs[currentIndex].options.push(value)
       }
     },
-    updateInputObjOptions (payload) {
+
+    updateInputObjOptions (payload, formConfigs) {
       const vm = this
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        vm.record.form_configs.inputObjs[currentIndex].options = payload.options
+        formConfigs.inputObjs[currentIndex].options = payload.options
       }
     },
-    removeInputObjOptionByIndex (payload) {
+
+    removeInputObjOptionByIndex (payload, formConfigs) {
       console.log('removeInputObjOptionByIndex :: payload: ', payload)
       const vm = this
       var optionIndex = payload.index
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        var newOptionList = JSON.parse(JSON.stringify(vm.record.form_configs.inputObjs[currentIndex].options))
+        var newOptionList = JSON.parse(JSON.stringify( formConfigs.inputObjs[currentIndex].options))
         newOptionList.splice(optionIndex, 1)
-        vm.record.form_configs.inputObjs[currentIndex].options = newOptionList
+        formConfigs.inputObjs[currentIndex].options = newOptionList
       }
     },
-    updateInputObjOptionByIndex (payload) {
+
+    updateInputObjOptionByIndex (payload, formConfigs) {
       const vm = this
       var optionIndex = payload.index
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        var newOptionList = JSON.parse(JSON.stringify(vm.record.form_configs.inputObjs[currentIndex].options))
+        var newOptionList = JSON.parse(JSON.stringify(formConfigs.inputObjs[currentIndex].options))
         if (optionIndex !== -1 && optionIndex <= newOptionList.length) {
           newOptionList[optionIndex] = payload.fieldValue
         }
-        vm.record.form_configs.inputObjs[currentIndex].options = newOptionList
+        formConfigs.inputObjs[currentIndex].options = newOptionList
       }
     },
 
-    replaceInputObjs (payload) {
+    replaceInputObjs (payload, formConfigs) {
       const vm = this
-      vm.record.form_configs.inputObjs = payload.value
+      formConfigs.inputObjs = payload.value
     },
 
-    updatePageConfigField (payload) {
+    updatePageConfigField (payload, formConfigs) {
       console.log('FormInputObjMixin :: updatePageConfigField')
       const vm = this
-      vm.record.form_configs.pageConfig[payload.fieldName] = payload.fieldValue
+      formConfigs.pageConfig[payload.fieldName] = payload.fieldValue
     }
 
   }

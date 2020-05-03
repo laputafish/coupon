@@ -15,7 +15,9 @@
         Style
       </td>
       <td class="value-cell">
-        <input class="form-control" v-model="userStyle"/>
+        <input class="form-control"
+               :value="userStyle"
+               @input="$event=>updateOtherStyle($event.target.value)"/>
       </td>
     </tr>
   </table>
@@ -59,6 +61,15 @@ export default {
     }
   },
   methods: {
+    updateOtherStyle (value) {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'updateOtherStyle',
+        optionIndex: vm.optionIndex,
+        userStyle: vm.userStyle,
+        value: value
+      })
+    },
     updateKeyPair (key, value) {
       const vm = this
       vm.$emit('onCommand', {
@@ -122,7 +133,7 @@ export default {
         }
       }
 
-      // valuate remaining styles
+      // evaluate remaining styles
       vm.userStyle = ''
       for (var attributeName in optionStyleKeyPairs) {
         if (usedStyleAttributeNames.indexOf(attributeName) == -1) {

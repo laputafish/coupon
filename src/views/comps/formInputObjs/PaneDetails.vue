@@ -1,5 +1,17 @@
 <template>
   <div>
+    <div v-if="inputObj.inputType==='system-page'" class="d-flex flex-column border">
+      <div class="p-2 border bg-primary text-center">
+        Page Attributes
+      </div>
+      <div class="p-2">
+        <attribute-set
+            attributeSet="system-page"
+            :value="inputObj.options"
+            @onCommand="onCommandHandler"></attribute-set>
+      </div>
+    </div>
+
     <!-- simple-text | number | email | text -->
     <div v-if="isInputElement(inputObj)" class="d-flex flex-column border">
       <pane-details-title :inputObj="inputObj"></pane-details-title>
@@ -11,7 +23,7 @@
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
           <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
-          <fields-table-row label="Notes" :value="inputObj.notes" fieldName="notes" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note1" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
         </table>
       </div>
     </div>
@@ -27,8 +39,8 @@
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
           <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
-          <fields-table-row label="Notes" :value="notes1" notes="* first name" fieldName="notes1" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Notes" :value="notes2" notes="* last name" fieldName="notes2" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note1" notes="* first name" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note2" notes="* last name" fieldName="note2" @onCommand="onCommandHandler"></fields-table-row>
         </table>
       </div>
     </div>
@@ -44,8 +56,8 @@
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
           <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
-          <fields-table-row label="Notes" :value="notes1" notes="* first name" fieldName="notes1" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Notes" :value="notes2" notes="* last name" fieldName="notes2" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note1" notes="* first name" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note2" notes="* last name" fieldName="note2" @onCommand="onCommandHandler"></fields-table-row>
         </table>
       </div>
     </div>
@@ -110,7 +122,10 @@
       <div class="p-2">
         <table class="table table-hover details-field-table">
           <!--<fields-table-row label="Caption" notes="* for self reference" :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row>-->
-          <fields-table-row-textarea label="Remark" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row-textarea>
+          <fields-table-row-textarea label="Remark"
+                                     :value="inputObj.question.replace('|', '\n')"
+                                     fieldName="question"
+                                     @onCommand="onCommandHandler"></fields-table-row-textarea>
         </table>
         <attribute-set
             :attributeSet="inputObj.inputType"
@@ -124,6 +139,9 @@
       <pane-details-title :inputObj="inputObj"></pane-details-title>
       <!--<div class="p-2 border bg-primary"><input-obj-title :inputObj="inputObj"></input-obj-title></div>-->
       <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row label="Button Label" placeholder="Submit" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
+        </table>
         <attribute-set
             :attributeSet="inputObj.inputType"
             :value="inputObj.options"
@@ -170,23 +188,6 @@ export default {
   computed: {
     inputObjTypes () {
       return this.$store.getters.inputObjTypes
-    },
-    multiNotes () {
-      const vm = this
-      var result = ['','']
-      var segs = []
-      if (vm.inputObj.notes) {
-        segs = vm.inputObj.notes.split('|')
-        if (segs.length > 0) result[0] = segs[0]
-        if (segs.length > 1) result[1] = segs[1]
-      }
-      return result
-    },
-    notes1 () {
-      return this.multiNotes[0]
-    },
-    notes2 () {
-      return this.multiNotes[1]
     }
   },
   methods: {
@@ -223,8 +224,9 @@ export default {
     padding: 3px;
   }
   .label-cell {
+    line-height: 1.1;
   }
   .value-cell {
-    width: 80%;
+    width: 70%;
   }
 </style>

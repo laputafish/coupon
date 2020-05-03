@@ -58,7 +58,9 @@
       <!--v-model="record.created_at"></data-input-readonly>-->
 
       <div class="col-sm-2">
-        <label>QR Code <div class="badge badge-info">{qrcode}</div></label>
+        <label>QR Code
+          <div class="badge badge-info">{qrcode}</div>
+        </label>
         <input class="form-control" v-model="qrcodeConfig.composition">
         <div class="d-flex flex-row align-items-center">
           <small class="line-height-1 d-inline mr-1">Size</small>
@@ -72,7 +74,9 @@
       </div>
       <div class="col-sm-2">
         <div class="d-flex flex-row justify-content-between">
-          <label>Barcode <div class="badge badge-info">{barcode}</div></label>
+          <label>Barcode
+            <div class="badge badge-info">{barcode}</div>
+          </label>
           <!--<select v-model="record.barcodeType">-->
           <!--<option value="C39">Code 39</option>-->
           <!--<option value="C128">Code 128</option>-->
@@ -105,7 +109,7 @@
         </div>
         <div class="d-flex flex-row justify-content-between align-items-start voucher-type-selection">
           <div class="flex-grow-1">
-                    <!--:class="{'active':record.voucher_type=='voucher'}"-->
+            <!--:class="{'active':record.voucher_type=='voucher'}"-->
             <button type="button"
                     :class="{'btn-primary':record.voucher_type==='voucher','btn-light':record.voucher_type!=='voucher'}"
                     @click="record.voucher_type='voucher'"
@@ -115,7 +119,7 @@
             </button>
           </div>
           <div class="flex-grow-1 p-l-1">
-                    <!--:class="{'active':record.voucher_type==='form'}"-->
+            <!--:class="{'active':record.voucher_type==='form'}"-->
             <button type="button"
                     :class="{'btn-success':record.voucher_type==='form','btn-light':record.voucher_type!=='form'}"
                     @click="record.voucher_type='form'"
@@ -144,7 +148,7 @@
         </div>
         <div v-if="record.voucher_type==='form'"
              class="position-absolute d-flex flex-row justify-content-center align-items-center"
-            style="left:0;right:0;">
+             style="left:0;right:0;">
           <small class="mr-1">Form Link</small>
           <div class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"
                @click="copyCustomLink()">
@@ -243,7 +247,8 @@
                         <li v-for="templateKey in keyGroup.keys"
                             :key="templateKey">
                           <div @click="insertKey(templateKey)"
-                               class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
+                               class="badge badge-info">{{ '{'+templateKey+'}' }}
+                          </div>
                         </li>
                       </ul>
                     </div>
@@ -267,7 +272,8 @@
                           <li v-for="templateKey in keyGroup.keys"
                               :key="templateKey">
                             <div @click="insertKey(templateKey)"
-                                 class="badge badge-info">{{ '{'+templateKey+'}' }}</div>
+                                 class="badge badge-info">{{ '{'+templateKey+'}' }}
+                            </div>
                           </li>
                         </ul>
                       </div>
@@ -287,40 +293,41 @@
         <b-tab id="sharingTab" title="Sharing Context" class="bg-white py-2">
           <div class="p-2 d-flex flex-row justify-content-start">
             <div class="mx-1 d-inline-block">
-                  <div class="image-wrapper m-2">
-                    <div class="image-bkgd">
-                      <img :src="sharingImageSrc"/>
-                    </div>
-                  </div>
-                  <div class="btn-toolbar mt-1 justify-content-center">
-                    <!-- upload sharing image -->
-                    <file-upload
-                        extensions="jpg,jpeg,gif,png"
-                        accept="image/png,image/gif,image/jpeg,image/webp"
-                        input-id="imageFile"
-                        name="file"
-                        class="btn btn-primary"
-                        :post-action="sharingImagePostAction"
-                        :drop="!editingUploadFile"
-                        :data="{id: record.id}"
-                        :headers="authHeaders"
-                        v-model="files"
-                        @input-filter="inputFilter"
-                        @input-file="inputFile"
-                        ref="uploadSharingImage">
-                      <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
-                      <font-awesome-icon icon="upload"></font-awesome-icon>
-                      Upload
-                    </file-upload>
-                    <button type="button"
-                            @click="removeSharingImage"
-                            class="btn btn-danger m-x-1">
-                      <i class="fas fa-times"></i>&nbsp;Remove</button>
-                  </div>
-                  <div class="mx-2">
-                    <small>* Safe resolution: 256x256</small>
-                  </div>
+              <div class="image-wrapper m-2">
+                <div class="image-bkgd">
+                  <img :src="sharingImageSrc"/>
                 </div>
+              </div>
+              <div class="btn-toolbar mt-1 justify-content-center">
+                <!-- upload sharing image -->
+                <file-upload
+                    extensions="jpg,jpeg,gif,png"
+                    accept="image/png,image/gif,image/jpeg,image/webp"
+                    input-id="imageFile"
+                    name="file"
+                    class="btn btn-primary"
+                    :post-action="sharingImagePostAction"
+                    :drop="!editingUploadFile"
+                    :data="{id: record.id}"
+                    :headers="authHeaders"
+                    v-model="files"
+                    @input-filter="inputFilter"
+                    @input-file="inputFile"
+                    ref="uploadSharingImage">
+                  <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
+                  <font-awesome-icon icon="upload"></font-awesome-icon>
+                  Upload
+                </file-upload>
+                <button type="button"
+                        @click="removeSharingImage"
+                        class="btn btn-danger m-x-1">
+                  <i class="fas fa-times"></i>&nbsp;Remove
+                </button>
+              </div>
+              <div class="mx-2">
+                <small>* Safe resolution: 256x256</small>
+              </div>
+            </div>
             <div class="mx-2 flex-grow-1">
               <div class="row">
                 <div class="col-sm-12">
@@ -328,7 +335,9 @@
                     <div class="float-right">
                       <small>* max. 35 chars for safety.</small>
                     </div>
-                    <label for="sharingTitle">{{ $t('general.title') }} <div class="badge badge-primary">{{ sharingTitleCharCount }}</div></label>
+                    <label for="sharingTitle">{{ $t('general.title') }}
+                      <div class="badge badge-primary">{{ sharingTitleCharCount }}</div>
+                    </label>
                     <input class="form-control"
                            id="sharingTitle"
                            name="sharingTitle"
@@ -343,7 +352,9 @@
                     <div class="float-right">
                       <small>* max. 65 chars for safety.</small>
                     </div>
-                    <label for="sharingDescription">{{ $t('general.description') }} <div class="badge badge-primary">{{ sharingDescriptionCharCount }}</div></label>
+                    <label for="sharingDescription">{{ $t('general.description') }}
+                      <div class="badge badge-primary">{{ sharingDescriptionCharCount }}</div>
+                    </label>
                     <textarea rows="6"
                               class="form-control"
                               id="sharingDescription"
@@ -376,49 +387,49 @@
         *****************
         -->
         <!--<b-tab class="bg-white py-2">-->
-          <!--<template v-slot:title>-->
-            <!--{{ $t('vouchers.custom_link') }}-->
-            <!--({{ customLink }})-->
-          <!--</template>-->
-          <!--<div class="container-fluid">-->
-            <!--<div class="row">-->
-              <!--<div class="col-12">-->
-                <!--<div class="mb-1 d-flex flex-row align-items-center">-->
-                  <!--<div class="mr-1">LINK:</div>-->
-                  <!--<div v-if="!record.has_questionnaire">-->
-                    <!--Questionnaire is not used.-->
-                  <!--</div>-->
-                  <!--<div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">-->
-                    <!--Link is available after saving.-->
-                  <!--</div>-->
-                  <!--<div v-else class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"-->
-                       <!--@click="copyQuestionnaireLink()">-->
-                    <!--{{ questionnaireLink }}-->
-                    <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
-                  <!--</div>-->
-                <!--</div>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
+        <!--<template v-slot:title>-->
+        <!--{{ $t('vouchers.custom_link') }}-->
+        <!--({{ customLink }})-->
+        <!--</template>-->
+        <!--<div class="container-fluid">-->
+        <!--<div class="row">-->
+        <!--<div class="col-12">-->
+        <!--<div class="mb-1 d-flex flex-row align-items-center">-->
+        <!--<div class="mr-1">LINK:</div>-->
+        <!--<div v-if="!record.has_questionnaire">-->
+        <!--Questionnaire is not used.-->
+        <!--</div>-->
+        <!--<div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">-->
+        <!--Link is available after saving.-->
+        <!--</div>-->
+        <!--<div v-else class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"-->
+        <!--@click="copyQuestionnaireLink()">-->
+        <!--{{ questionnaireLink }}-->
+        <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
         <!--</b-tab>-->
 
         <form-filling-tab
             v-if="record.voucher_type==='form'"
-          title="Form Filling"
-          :record="record"
-          @onCommand="onCommandHandler"></form-filling-tab>
+            title="Form Filling"
+            :record="record"
+            @onCommand="onCommandHandler"></form-filling-tab>
 
-        <question-form-tab
+        <custom-forms-tab
             v-if="record.voucher_type==='form'"
-            title="Question Form"
-          :record="record"
-          @onCommand="onCommandHandler"></question-form-tab>
+            title="Custom Forms"
+            :record="record"
+            @onCommand="onCommandHandler"></custom-forms-tab>
 
         <form-page-templates-tab
-            v-if="record.voucher_type==='form'"
-          title="Form Page Templates"
-          :templates="allTemplates"
-          @onCommand="onCommandHandler"></form-page-templates-tab>
+            v-if="record.voucher_type==='form' && false"
+            title="Form Page Templates"
+            :templates="allTemplates"
+            @onCommand="onCommandHandler"></form-page-templates-tab>
 
         <!--
         *****************
@@ -492,6 +503,9 @@
         scope="tinymce"
         v-model="showingImageSelectDialog"
         @onCommand="onCommandHandler"></image-select-dialog>
+
+    <single-field-dialog ref="singleFieldDialog" @onCommand="onCommandHandler">
+    </single-field-dialog>
   </div>
 </template>
 
@@ -517,10 +531,11 @@
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
   import imageSelectDialog from './dialogs/ImageSelectDialog'
   import imageCropperDialog from './dialogs/ImageCropperDialog'
+  import singleFieldDialog from './dialogs/SingleFieldDialog'
 
   import formFillingTab from './comps/FormFillingTab'
   import formPageTemplatesTab from './comps/FormPageTemplatesTab'
-  import questionFormTab from './comps/QuestionFormTab'
+  import customFormsTab from './comps/CustomFormsTab'
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
 
   import $ from 'jquery'
@@ -541,9 +556,11 @@
       vueRangeSlider,
       voucherSelectDialog,
       imageSelectDialog,
+      singleFieldDialog,
+
       formPageTemplatesTab,
       formFillingTab,
-      questionFormTab
+      customFormsTab
       // ,
       // yoovEditor
       // ,
@@ -833,7 +850,7 @@
       sharingTitleCharCount () {
         const vm = this
         let result = 0
-        if (vm.record ) {
+        if (vm.record) {
           result = vm.record.sharing_title.length
         }
         return result
@@ -841,7 +858,7 @@
       sharingDescriptionCharCount () {
         const vm = this
         let result = 0
-        if (vm.record ) {
+        if (vm.record) {
           result = vm.record.sharing_description.length
         }
         return result
@@ -874,7 +891,8 @@
           result = vm.allVouchers.filter(voucher => {
             return voucher.id !== vm.record.id
           })
-        }d
+        }
+        d
         return result
       },
       templateKeyGroups () {
@@ -936,7 +954,7 @@
       },
       copySharingLink () {
         const vm = this
-        vm.$copyText( vm.testLink )
+        vm.$copyText(vm.testLink)
         vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
       },
       removeSharingImage () {
@@ -997,11 +1015,48 @@
       onRefreshed () {
         const vm = this
 
+        // init voucher sharing title/description
         if (!vm.record.sharing_title) {
           vm.record.sharing_title = ''
         }
         if (!vm.record.sharing_description) {
           vm.record.sharing_description = ''
+        }
+
+        // init question form sharing title/description
+        if (!vm.record.form_sharing_title) {
+          vm.record.form_sharing_title = ''
+        }
+        if (!vm.record.form_sharing_description) {
+          vm.record.form_sharing_description = ''
+        }
+
+        // init form configs
+        if (vm.record.form_configs === null) {
+          vm.record.form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
+        }
+
+        if (vm.record.custom_forms.length === 0) {
+          vm.record.custom_forms.push({
+            id: 0,
+            form_key: vm.newFormKey(),
+            name: 'Thank you',
+            type: 'general',
+            form_configs: JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
+          })
+          vm.record.custom_forms.push({
+            id: 0,
+            form_key: vm.newFormKey(),
+            name: 'Sorry',
+            type: 'general',
+            form_configs: JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
+          })
+        }
+        if (vm.record.thankyou_configs === null) {
+          vm.record.thankyou_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
+        }
+        if (vm.record.sorry_configs === null) {
+          vm.record.sorry_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
         }
 
         // *****************
@@ -1320,11 +1375,67 @@
         const url = vm.$store.getters.appHost + '/coupons/' + key
         window.open(url, '_blank');
       },
+      getCustomFormByKey (key) {
+        const vm = this
+        var result = null
+        for (var i = 0 ; i < vm.record.custom_forms.length; i++) {
+          var customForm = vm.record.custom_forms[i]
+          if (customForm.form_key === key) {
+            result = customForm
+            break
+          }
+        }
+        return result
+      },
       onCommandHandler (payload) {
         const vm = this
+        var customForm = null
         console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
         // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'selectCustomForm':
+            switch (payload.tag) {
+              case 'actionTypeBeforeGoal':
+                console.log('voucherRecord > onCommandHandler > selectCustomForm > actionTypeBeforeGoal formKey = ' + payload.formKey)
+                vm.record.custom_form_key_before_goal = payload.formKey
+                break
+              case 'actionTypeAfterGoal':
+                console.log('voucherRecord > onCommandHandler > selectCustomForm > actionTypeAfterGoal formKey = ' + payload.formKey)
+                vm.record.custom_form_key_after_goal = payload.formKey
+                break
+            }
+            break
+          case 'selectActionType':
+            switch (payload.tag) {
+              case 'actionTypeBeforeGoal':
+                vm.record.action_type_before_goal = payload.actionType
+                break
+              case 'actionTypeAfterGoal':
+                vm.record.action_type_after_goal = payload.actionType
+                break
+            }
+            break
+          case 'removeFormType':
+            for (var i = 0; i < vm.record.custom_forms.length; i++) {
+              customForm = vm.record.custom_forms[i]
+              if (customForm.form_key === payload.formKey) {
+                vm.record.custom_forms.splice(i, 1)
+              }
+            }
+            break
+          case 'renameFormType':
+            customForm = vm.getCustomFormByKey(payload.formKey)
+            vm.$refs.singleFieldDialog.init(
+              'Rename',
+              'onRenameFormName',
+              {formKey: payload.formKey},
+              customForm.name)
+            break
+          case 'onRenameFormName':
+            var formKey = payload.idParams['formKey']
+            customForm = vm.getCustomFormByKey(formKey)
+            customForm.name = payload.fieldValue
+            break
           case 'selectImage':
             const editor = tinyMCE.get('yoovEditor')
             const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
@@ -1427,6 +1538,11 @@
         const vm = this
         const data = {
           urlCommand: '/vouchers/' + vm.record.id + '/export',
+          options: {
+            data: {
+              description: vm.record.description
+            }
+          }
         }
         vm.$store.dispatch('AUTH_POST', data).then(
           response => {
@@ -1641,7 +1757,7 @@
 </script>
 
 <style lang="scss">
-@import 'vue-range-slider/dist/vue-range-slider.scss';
+  @import 'vue-range-slider/dist/vue-range-slider.scss';
 </style>
 
 <style>
@@ -1790,9 +1906,11 @@
   #sharingTab .btn-toolbar .btn {
     margin: 0 1px !important;
   }
+
   #sharingTab .image-wrapper {
     border: 2px solid darkgray;
   }
+
   #sharingTab .image-wrapper .image-bkgd {
     width: 200px;
     height: 200px;
@@ -1800,6 +1918,7 @@
     flex-direction: column;
     background-color: lightgray;
   }
+
   #sharingTab .image-wrapper .image-bkgd img {
     margin-top: auto;
     align-self: center;
@@ -1808,6 +1927,7 @@
     height: auto;
     object-fit: contain;
   }
+
   #sharingTab .copy-link {
     cursor: pointer;
   }
@@ -1817,45 +1937,53 @@
     /*background-color: #28a745;*/
     cursor: pointer;
   }
+
   .custom-link:hover {
     background-color: #d00c3d;
   }
+
   .voucher-type-icon {
-    height:48px;
-    width:auto;
-    object-fit:contain;
+    height: 48px;
+    width: auto;
+    object-fit: contain;
   }
+
   .btn-voucher-type {
     color: #555;
     background-color: lightgray;
     border-color: #ccc;
     box-shadow: none;
   }
+
   .btn-voucher-type.active {
     color: #ffffff;
     background-color: #007bff;
     border-color: #007bff;
     box-shadow: none;
   }
+
   .btn-voucher-type.active:hover {
     color: #ffffff;
     background-color: #0069d9;
     border-color: #0062cc;
   }
+
   .btn-voucher-type img.white-icon {
     display: none;
   }
+
   .btn-voucher-type.active img.white-icon {
     display: inline-block;
   }
+
   .btn-voucher-type.active img {
     display: none;
   }
 
-  
   .voucher-type-selection .btn-light img.white-icon {
     display: none;
   }
+
   .voucher-type-selection .btn-light img:not(.white-icon) {
     display: inline-block;
   }
@@ -1864,6 +1992,7 @@
   .voucher-type-selection .btn-primary img.white-icon {
     display: inline-block;
   }
+
   .voucher-type-selection .btn-success img:not(.white-icon),
   .voucher-type-selection .btn-primary img:not(.white-icon) {
     display: none;

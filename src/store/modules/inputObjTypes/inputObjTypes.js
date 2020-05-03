@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 const state = {
   inputObjTypes: [
+    {icon: 'fas fa-home', newIcon: 'home', text: '', label: 'Page', type: 'system-page', isInput: true, fixed: true},
     {icon: 'fas fa-i-cursor', newIcon: 'i-cursor', text: '', label: '1-line Text', type: 'simple-text', isInput: true},
     {icon: '', newIcon: '', text: '123', label: 'Number', type: 'number', isInput: true},
     {icon: 'fas fa-envelope', newIcon: 'envelope', text: '', label: 'Email', type: 'email', isInput: true},
@@ -16,6 +17,8 @@ const state = {
   ],
   attributeInfos: {
     width: {caption:'Width', styleName:'width', optionGroup:'option1'},
+    bgColor: {caption: 'Background Color', styleName:'background-color', optionGroup: 'option1'},
+    maxWidth: {caption:'Max. Width', styleName:'max-width', optionGroup:'option1'},
     height: {caption: 'Height', styleName:'height', optionGroup: 'option1'},
     alignment: {caption: 'Alignment', styleName: 'text-align', optionGroup: 'option2'},
     fontSize: {caption: 'Font Size', styleName: 'font-size', optionGroup: 'option2'},
@@ -25,6 +28,8 @@ const state = {
     paddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'option1'},
     paddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'option1'},
     color: {caption: 'Color', styleName: 'background-color', optionGroup: 'option1'},
+    selectedChoiceColor: {caption: 'Selected Choice Color', styleName: 'selected-choice-color', optionGroup: 'option1'},
+    selectedChoiceTextColor: {caption: 'Selected Choice Text Color', styleName: 'selected-choice-text-color', optionGroup: 'option1'},
 
     containerPaddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'option2'},
     containerPaddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'option2'},
@@ -33,6 +38,20 @@ const state = {
     containerBackgroundColor: {caption: 'Background Color', styleName: 'background-color', optionGroup: 'option2'}
   },
   userAttributes: {
+    'system-page': [
+      {
+        caption: '',
+        attributeKeys: [
+          'maxWidth',
+          'bgColor',
+          'fontSize',
+          'textColor',
+          'paddingTop',
+          'selectedChoiceColor',
+          'selectedChoiceTextColor'
+        ]
+      }
+    ],
     'output-image': [
       {
         caption: 'Attributes',
@@ -106,6 +125,25 @@ const state = {
 }
 
 const getters = {
+  DEFAULT_FORM_CONFIGS: () => {
+    return {
+      'inputObjs': [
+        {
+          'name': '',
+          'inputType': 'system-page',
+          'question': '',
+          'required': true,
+          'options': [
+            'background-color:white;' +
+            'color:black;' +
+            'font-size:14px;' +
+            'max-width:640px;' +
+            'padding-top:60px;'
+          ]
+        }
+      ]
+    }
+  },
   inputObjTypes: (state) => {
     return state.inputObjTypes
   },
