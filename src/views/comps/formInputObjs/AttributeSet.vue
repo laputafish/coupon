@@ -1,14 +1,21 @@
 <template>
   <div>
-    <div v-for="(attributeGroup,index) in userAttributes"
+    <div v-for="(attributeGroup,index) in objAttributeInfo"
          class="mb-3"
          :key="attributeGroup.caption">
       <u v-if="attributeGroup.caption !== ''">{{ attributeGroup.caption }}</u>
       <attribute-table
           :optionIndex="index"
-          :inputStyle="options[index]"
+          :keyValues="keyValueLists[index]"
+          :userStyle="userStyles[index]"
           @onCommand="onCommandHandler"
           :attributeKeys="attributeGroup.attributeKeys"></attribute-table>
+      <!--<attribute-table-->
+          <!--:optionIndex="index"-->
+          <!--:inputStyle="options[index]"-->
+          <!--:userStyle="userStyles[index]"-->
+          <!--@onCommand="onCommandHandler"-->
+          <!--:attributeKeys="attributeGroup.attributeKeys"></attribute-table>-->
     </div>
   </div>
 </template>
@@ -24,15 +31,20 @@ export default {
     // attributeInfos () {
     //   return this.$store.getters.attributeInfos
     // },
-    userAttributes () {
+    objAttributeInfo () {
       const vm = this
-      const result = this.$store.getters.userAttributes[vm.attributeSet]
+      const result = this.$store.getters.objAttributeGroups[vm.attributeSet]
       return result ? result : []
+    },
+    attributeInfos () {
+      return this.$store.getters.attributeInfos
     }
   },
   data () {
     return {
-      options: []
+      // options: [],
+      keyValueLists: [],
+      userStyles: [],
       // ,
       // specificAttributes: [],
       // [
@@ -48,7 +60,7 @@ export default {
         return ''
       }
     },
-    value: {
+    options: {
       type: Array,
       default () {
         return []
@@ -56,7 +68,7 @@ export default {
     }
   },
   watch: {
-    value: function() {
+    options: function() {
       this.refresh()
     }
   },
@@ -67,30 +79,74 @@ export default {
   methods: {
     refresh () {
       const vm = this
-      vm.options = []
+      var clones = JSON.parse(JSON.stringify(vm.options))
+      var userStyles = ['', '']
+      var userStyleKeyValues = [{}, {}]
+      var keyValueLists = [{}, {}]
 
-      // console.log('AttributeSet :: mounted :: vm.userAttributes: ', vm.userAttributes)
-      // console.log('AttributeSet :: mounted :: vm.value: ', vm.value)
+      for (var i = 0; i < clones.length; i++) {
+        userStyles[i] = clones[i]
+      }
+      userStyleKeyValues[0] = vm.strToKeyValues(userStyles[0])
+      userStyleKeyValues[1] = vm.strToKeyValues(userStyles[1])
 
-      for (var i = 0; i < vm.userAttributes.length; i++) {
-        vm.options.push('')
-        // console.log('options.length = ' + vm.options.length)
-        // console.log('vm.options[' + i + '] = ' + vm.options[i])
+      // userStyles contains [elementStyleStr, containerStyleStr]
+
+      for (var i = 0; i < vm.objAttributeInfo.length; i++) {
+        var objAttributeSection = vm.objAttributeInfo[i]
+        var sectionAttributeKeys = objAttributeSection['attributeKeys']
+
+        for (var j = 0; j < sectionAttributeKeys.length; j++) {
+          var attributeKey = sectionAttributeKeys[j]
+          var attributeInfo = vm.attributeInfos[attributeKey]
+          var styleName = attributeInfo['styleName']
+          switch (attributeInfo['optionGroup']) {
+            case 'elementGroup':
+              keyValueLists[0][attributeKey] = userStyleKeyValues[0][styleName]
+              delete userStyleKeyValues[0][styleName]
+              break
+            case 'containerGroup':
+              keyValueLists[1][attributeKey] = userStyleKeyValues[1][styleName]
+              delete userStyleKeyValues[1][styleName]
+              break
+          }
+        }
       }
-      // console.log('vm.value.length = ' + vm.value.length)
-      for (var j = 0; j < vm.value.length; j++) {
-        // console.log('vm.value[' + j + '] = ' + vm.value[j])
-        vm.options[j] = vm.value[j]
-      }
-      //
-      // for (var i = 0; i < vm.userAttributes.length; i++) {
-      //   var attributes = vm.userAttributes[i].attributes
-      // }
+
+      vm.userStyles = [
+        vm.keyValuesToStr(userStyleKeyValues[0]),
+        vm.keyValuesToStr(userStyleKeyValues[1])
+      ]
+
+      vm.keyValueLists = [
+        keyValueLists[0],
+        keyValueLists[1]
+      ]
     },
+    // refresh () {
+    //   const vm = this
+    //   vm.options = []
+    //
+    //   // console.log('AttributeSet :: mounted :: vm.userAttributes: ', vm.userAttributes)
+    //   // console.log('AttributeSet :: mounted :: vm.value: ', vm.value)
+    //
+    //
+    //   // for (var i = 0; i < vm.userAttributes.length; i++) {
+    //   //   vm.options.push('')
+    //   // }
+    //   // for (var j = 0; j < vm.value.length; j++) {
+    //   //   vm.options[j] = vm.value[j]
+    //   // }
+    //   //
+    //   // for (var i = 0; i < vm.userAttributes.length; i++) {
+    //   //   var attributes = vm.userAttributes[i].attributes
+    //   // }
+    // },
     strToKeyValues (str) {
+      var result = {}
+
       str = str.trim()
       console.log('strToKeyValues: str: ', str)
-      var result = {}
       if (str !== '') {
         var keyValueStrs = str.split(';')
         for (var i = 0; i < keyValueStrs.length; i++) {
@@ -182,7 +238,6 @@ export default {
             options: vm.options
           })
           break
-          break
         case 'updateStyle':
           // payload = {
           //    command,
@@ -190,34 +245,48 @@ export default {
           //    styleName,
           //    value
           // }
+          console.log('AttributeSet :: onCommand :: updateStyle : payload: ', payload)
           switch (payload.optionGroup) {
-            case 'option1':
-              console.log('AttributeSet :: updateStyle :: vm.options[0]: ', vm.options[0])
-
-              keyValues = vm.strToKeyValues(vm.options[0])
-              keyValues[payload.styleName] = payload.value
-              vm.options[0] = vm.keyValuesToStr(keyValues)
-
-              console.log('AttributeSet :: updateStyle :: keyValues: ', keyValues)
-              console.log('AttributeSet :: updateStyle :: vm.options[0]: ', vm.options[0])
-
-              vm.$emit('onCommand', {
-                command: 'updateOptions',
-                options: vm.options
-              })
+            case 'elementGroup':
+              vm.updateStyleValue(0 /* optionIndex */, payload.styleName, payload.value)
               break
-            case 'option2':
-              keyValues = vm.strToKeyValues(vm.options[1])
-              keyValues[payload.styleName] = payload.value
-              vm.options[1] = vm.keyValuesToStr(keyValues)
-              vm.$emit('onCommand', {
-                command: 'updateOptions',
-                options: vm.options
-              })
+            case 'containerGroup':
+              vm.updateStyleValue(1 /* optionIndex */, payload.styleName, payload.value)
+              // keyValues = {}
+              // if (vm.options.length > 1) {
+              //   keyValues = vm.strToKeyValues(vm.options[1])
+              // }
+              // keyValues[payload.styleName] = payload.value
+              // vm.options[1] = vm.keyValuesToStr(keyValues)
+              // vm.$emit('onCommand', {
+              //   command: 'updateOptions',
+              //   options: vm.options
+              // })
               break
           }
           break
       }
+    },
+    updateStyleValue (optionIndex, styleName, value) {
+      const vm = this
+      var options = ['', '']
+
+      if (vm.options.length > 0) {
+        for (var i = 0; i < vm.options.length; i++) {
+          options[i] = JSON.parse(JSON.stringify(vm.options[i]))
+        }
+      }
+      var keyValues = vm.strToKeyValues(options[optionIndex])
+      keyValues[styleName] = value
+      options[optionIndex] = vm.keyValuesToStr(keyValues)
+      console.log('Attribute :: updateStyleValue :: optionIndex = ' + optionIndex)
+      console.log('Attribute :: updateStyleValue :: ' + styleName + ' => ' + value)
+
+      vm.$emit('onCommand', {
+        command: 'updateOptions',
+        options: options
+      })
+
     }
   }
 }

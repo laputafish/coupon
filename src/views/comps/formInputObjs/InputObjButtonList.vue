@@ -22,7 +22,15 @@ export default {
     inputObjTypes () {
       const vm = this
       return this.$store.getters.inputObjTypes.filter(item => {
-        return !item.fixed && (!item.isInput || vm.includeInputObjs)
+        // // no need to show [page config]
+        // var shown = !item.fixed
+        //
+        // if (!vm.includeInputObjs && item.isInput) {
+        //   shown = false
+        // } {
+        //
+        // }
+        return !item.fixed && ((!item.isInput && item.type!=='output-submit') || vm.includeInputObjs)
       })
     }
   },

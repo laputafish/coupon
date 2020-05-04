@@ -7,7 +7,7 @@
       <div class="p-2">
         <attribute-set
             attributeSet="system-page"
-            :value="inputObj.options"
+            :options="inputObj.options"
             @onCommand="onCommandHandler"></attribute-set>
       </div>
     </div>
@@ -108,7 +108,7 @@
         </table>
         <attribute-set
           :attributeSet="inputObj.inputType"
-          :value="inputObj.options"
+          :options="inputObj.options"
           @onCommand="onCommandHandler"></attribute-set>
       </div>
     </div>
@@ -129,7 +129,7 @@
         </table>
         <attribute-set
             :attributeSet="inputObj.inputType"
-            :value="inputObj.options"
+            :options="inputObj.options"
             @onCommand="onCommandHandler"></attribute-set>
       </div>
     </div>
@@ -144,7 +144,7 @@
         </table>
         <attribute-set
             :attributeSet="inputObj.inputType"
-            :value="inputObj.options"
+            :options="inputObj.options"
             @onCommand="onCommandHandler"></attribute-set>
       </div>
     </div>

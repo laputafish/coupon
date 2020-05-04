@@ -16,28 +16,29 @@ const state = {
     {icon: 'fas fa-bolt', newIcon: 'bolt', text: '', label: 'Submit Btn', type: 'output-submit', isInput: false}
   ],
   attributeInfos: {
-    width: {caption:'Width', styleName:'width', optionGroup:'option1'},
-    bgColor: {caption: 'Background Color', styleName:'background-color', optionGroup: 'option1'},
-    maxWidth: {caption:'Max. Width', styleName:'max-width', optionGroup:'option1'},
-    height: {caption: 'Height', styleName:'height', optionGroup: 'option1'},
-    alignment: {caption: 'Alignment', styleName: 'text-align', optionGroup: 'option2'},
-    fontSize: {caption: 'Font Size', styleName: 'font-size', optionGroup: 'option2'},
-    textColor: {caption: 'Text Color', styleName: 'color', optionGroup: 'option1'},
-    paddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'option1'},
-    paddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'option1'},
-    paddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'option1'},
-    paddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'option1'},
-    color: {caption: 'Color', styleName: 'background-color', optionGroup: 'option1'},
-    selectedChoiceColor: {caption: 'Selected Choice Color', styleName: 'selected-choice-color', optionGroup: 'option1'},
-    selectedChoiceTextColor: {caption: 'Selected Choice Text Color', styleName: 'selected-choice-text-color', optionGroup: 'option1'},
+    width: {caption:'Width', styleName:'width', optionGroup:'elementGroup'},
+    bgColor: {caption: 'Background Color', styleName:'background-color', optionGroup: 'elementGroup'},
+    maxWidth: {caption:'Max. Width', styleName:'max-width', optionGroup:'elementGroup'},
+    height: {caption: 'Height', styleName:'height', optionGroup: 'elementGroup'},
+    alignment: {caption: 'Alignment', styleName: 'text-align', optionGroup: 'containerGroup'},
+    pageFontSize: {caption: 'Font Size', styleName: 'font-size', optionGroup: 'elementGroup'},
+    fontSize: {caption: 'Font Size', styleName: 'font-size', optionGroup: 'containerGroup'},
+    textColor: {caption: 'Text Color', styleName: 'color', optionGroup: 'elementGroup'},
+    paddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'elementGroup'},
+    paddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'elementGroup'},
+    paddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'elementGroup'},
+    paddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'elementGroup'},
+    color: {caption: 'Color', styleName: 'background-color', optionGroup: 'elementGroup'},
+    selectedChoiceColor: {caption: 'Selected Choice Color', styleName: 'selected-choice-color', optionGroup: 'elementGroup'},
+    selectedChoiceTextColor: {caption: 'Selected Choice Text Color', styleName: 'selected-choice-text-color', optionGroup: 'elementGroup'},
 
-    containerPaddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'option2'},
-    containerPaddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'option2'},
-    containerPaddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'option2'},
-    containerPaddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'option2'},
-    containerBackgroundColor: {caption: 'Background Color', styleName: 'background-color', optionGroup: 'option2'}
+    containerPaddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'containerGroup'},
+    containerPaddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'containerGroup'},
+    containerPaddingLeft: {caption: 'Padding (Left)', styleName: 'padding-left', optionGroup: 'containerGroup'},
+    containerPaddingRight: {caption: 'Padding (Right)', styleName: 'padding-right', optionGroup: 'containerGroup'},
+    containerBackgroundColor: {caption: 'Background Color', styleName: 'background-color', optionGroup: 'containerGroup'}
   },
-  userAttributes: {
+  objAttributeGroups: {
     'system-page': [
       {
         caption: '',
@@ -150,8 +151,8 @@ const getters = {
   attributeInfos: (state) => {
     return state.attributeInfos
   },
-  userAttributes: (state) => {
-    return state.userAttributes
+  objAttributeGroups: (state) => {
+    return state.objAttributeGroups
   },
   iconList: (state) => {
     var result = []

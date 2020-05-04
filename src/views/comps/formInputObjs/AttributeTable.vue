@@ -1,12 +1,13 @@
 <template>
   <table class="w-100">
-    <tr v-for="keyPair in keyPairs"
+    <tr v-for="(keyPair,index) in keyPairs"
         :key="keyPair.key">
       <td class="label-cell">
         {{ attributeInfos[keyPair.key].caption }}
       </td>
       <td class="value-cell">
         <input class="form-control" :value="keyPair.value"
+               :name="'ctrl' + optionIndex +'_' + index"
           @input="$event=>updateKeyPair(keyPair.key, $event.target.value)"/>
       </td>
     </tr>
@@ -27,8 +28,9 @@
 export default {
   data () {
     return {
-      keyPairs: [],
-      userStyle: ''
+      keyPairs: []
+      // ,
+      // userStyle: ''
     }
   },
   computed: {
@@ -37,10 +39,20 @@ export default {
     }
   },
   props: {
-    inputStyle: {
+    keyValues: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    userStyle: {
       type: String,
       default: ''
     },
+    // inputStyle: {
+    //   type: String,
+    //   default: ''
+    // },
     attributeKeys: {
       type: Array,
       default () {
@@ -71,6 +83,8 @@ export default {
       })
     },
     updateKeyPair (key, value) {
+      console.log('AttributeTable :: key = ' + key)
+      console.log('AttributeTable :: value = ' + value)
       const vm = this
       vm.$emit('onCommand', {
         command: 'updateStyle',
@@ -134,12 +148,12 @@ export default {
       }
 
       // evaluate remaining styles
-      vm.userStyle = ''
-      for (var attributeName in optionStyleKeyPairs) {
-        if (usedStyleAttributeNames.indexOf(attributeName) == -1) {
-          vm.userStyle += attributeName + ':' + optionStyleKeyPairs[attributeName] + ';'
-        }
-      }
+      // vm.userStyle = ''
+      // for (var attributeName in optionStyleKeyPairs) {
+      //   if (usedStyleAttributeNames.indexOf(attributeName) == -1) {
+      //     vm.userStyle += attributeName + ':' + optionStyleKeyPairs[attributeName] + ';'
+      //   }
+      // }
     }
   },
   mounted () {
