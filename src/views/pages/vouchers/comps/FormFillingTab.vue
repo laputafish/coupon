@@ -23,7 +23,7 @@
                   <input type="number"
                          class="form-control w-50"
                          :value="record.goal_count"
-                         @input="updateGoalCount"/>
+                         @input="$event=>updateGoalCount($event.target.value)"/>
                 </td>
               </tr>
               <tr v-if="record.goal_type==='codes'">
@@ -140,14 +140,8 @@
         const vm = this
         var result = []
         result.push({name: 'Fixed', value: 'fixed'})
-        result.push({
-          name: 'No. of Coupon Codes',
-          value: 'codes'
-        })
-        result.push({
-          name: 'Unlimited',
-          value: 'none'
-        })
+        result.push({name: 'No. of Coupon Codes', value: 'codes'})
+        result.push({name: 'Unlimited', value: 'none'})
         return result
       },
       customFormOptions () {

@@ -79,12 +79,13 @@ export default {
   methods: {
     refresh () {
       const vm = this
+      var i = 0
       var clones = JSON.parse(JSON.stringify(vm.options))
       var userStyles = ['', '']
       var userStyleKeyValues = [{}, {}]
-      var keyValueLists = [{}, {}]
+      var keyValueLists = [[], []]
 
-      for (var i = 0; i < clones.length; i++) {
+      for (i = 0; i < clones.length; i++) {
         userStyles[i] = clones[i]
       }
       userStyleKeyValues[0] = vm.strToKeyValues(userStyles[0])
@@ -92,24 +93,47 @@ export default {
 
       // userStyles contains [elementStyleStr, containerStyleStr]
 
-      for (var i = 0; i < vm.objAttributeInfo.length; i++) {
+      console.log('clones : ', clones)
+      console.log('userStyles : ', userStyles)
+      console.log('userStyleKeyValues[0] : ', userStyleKeyValues[0])
+      console.log('userStyleKeyValues[1] : ', userStyleKeyValues[1])
+
+      console.log('*** vm.objAttributeInfo: ', vm.objAttributeInfo)
+      for (i = 0; i < vm.objAttributeInfo.length; i++) {
         var objAttributeSection = vm.objAttributeInfo[i]
         var sectionAttributeKeys = objAttributeSection['attributeKeys']
+        console.log('  i=' + i + ' objAttributeSection : ', objAttributeSection)
+        console.log('  i=' + i + ' sectionAttributeKeys : ', sectionAttributeKeys)
 
         for (var j = 0; j < sectionAttributeKeys.length; j++) {
           var attributeKey = sectionAttributeKeys[j]
           var attributeInfo = vm.attributeInfos[attributeKey]
           var styleName = attributeInfo['styleName']
+
+          console.log('    j=' + j + ' attributeKey = ' + attributeKey)
+          console.log('    j=' + j + ' attributeInfo : ', attributeInfo)
+          console.log('    j=' + j + ' styleName = ' + styleName)
+
           switch (attributeInfo['optionGroup']) {
             case 'elementGroup':
-              keyValueLists[0][attributeKey] = userStyleKeyValues[0][styleName]
+              keyValueLists[0].push({
+                attributeKey: attributeKey,
+                value: userStyleKeyValues[0][styleName]
+              })
               delete userStyleKeyValues[0][styleName]
               break
             case 'containerGroup':
-              keyValueLists[1][attributeKey] = userStyleKeyValues[1][styleName]
+              keyValueLists[1].push({
+                attributeKey: attributeKey,
+                value: userStyleKeyValues[1][styleName]
+              })
               delete userStyleKeyValues[1][styleName]
               break
           }
+
+          console.log('    j=' + j + ' : keyValueLists: ', keyValueLists)
+          console.log('    j=' + j + ' : userStyleKeyValues[0]: ', userStyleKeyValues[0])
+          console.log('    j=' + j + ' : userStyleKeyValues[1]: ', userStyleKeyValues[1])
         }
       }
 
@@ -149,16 +173,20 @@ export default {
       console.log('strToKeyValues: str: ', str)
       if (str !== '') {
         var keyValueStrs = str.split(';')
+        console.log('strToKeyValues: keyValueStrs: ', keyValueStrs)
         for (var i = 0; i < keyValueStrs.length; i++) {
           var s = keyValueStrs[i].trim()
+          console.log('strToKeyValues i=' + i + ': s =' + s)
           if (s !== '') {
             var segs = s.split(':')
+            console.log('strToKeyValues i=' + i + ': segs: ', segs)
             if (segs.length > 1) {
               result[segs[0]] = segs[1]
             }
           }
         }
       }
+      console.log('strToKeyValues :; result: ', result)
       return result
     },
     keyValuesToStr (keyValues) {

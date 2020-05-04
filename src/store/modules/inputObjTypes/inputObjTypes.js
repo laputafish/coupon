@@ -45,7 +45,7 @@ const state = {
         attributeKeys: [
           'maxWidth',
           'bgColor',
-          'fontSize',
+          'pageFontSize',
           'textColor',
           'paddingTop',
           'selectedChoiceColor',

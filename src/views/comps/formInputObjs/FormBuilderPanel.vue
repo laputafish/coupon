@@ -4,7 +4,7 @@
       :options="formTypes"
       :value="selectedFormType"
       @onCommand="onCommandHandler"
-      @input="value=>selectedFormType=value"></form-type-selection>
+      @input="value=>selectFormType(value)"></form-type-selection>
   <form-builder-panel-content v-if="selectedFormType"
                               :formType="selectedFormType"
                               @onCommand="onCommandHandler"></form-builder-panel-content>
@@ -26,6 +26,16 @@ export default {
     }
   },
   methods: {
+    selectFormType (formType) {
+      const vm = this
+      if (formType.key === 'ADD') {
+        vm.$emit('onCommand', {
+          command: 'newFormType'
+        })
+      } else {
+        vm.selectedFormType = formType
+      }
+    },
     onCommandHandler (payload) {
       const vm = this
       const command = payload.command

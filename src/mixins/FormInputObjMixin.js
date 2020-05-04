@@ -112,15 +112,17 @@ const FormInputObjMixin = {
 
     clearForm (key) {
       const vm = this
+      console.log('FormInputObjMixin :: clearForm :: key = ' + key)
       switch (key) {
         case 'question':
-          vm.record.form_configs = vm.DEFAULT_FORM_CONFIGS
+          vm.record.form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
           break
         default:
           for (var i = 0; i < vm.record.custom_forms.length; i++) {
             var customForm = vm.record.custom_forms[i]
             if (customForm.form_key === key) {
-              vm.record.custom_forms[i].form_configs = vm.DEFAULT_FORM_CONFIGS
+              console.log('FormInputObjMixin :: clearForm :: found key = ' + key)
+              vm.record.custom_forms[i].form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
               break
             }
           }

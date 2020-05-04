@@ -1,14 +1,14 @@
 <template>
   <table class="w-100">
-    <tr v-for="(keyPair,index) in keyPairs"
-        :key="keyPair.key">
+    <tr v-for="(keyValue, index) in keyValues"
+        :key="keyValue.attributeKey">
       <td class="label-cell">
-        {{ attributeInfos[keyPair.key].caption }}
+        {{ attributeInfos[keyValue.attributeKey].caption }}
       </td>
       <td class="value-cell">
-        <input class="form-control" :value="keyPair.value"
+        <input class="form-control" :value="keyValue.value"
                :name="'ctrl' + optionIndex +'_' + index"
-          @input="$event=>updateKeyPair(keyPair.key, $event.target.value)"/>
+          @input="$event=>updateKeyPair(keyValue.attributeKey, $event.target.value)"/>
       </td>
     </tr>
     <tr>
@@ -28,9 +28,9 @@
 export default {
   data () {
     return {
-      keyPairs: []
-      // ,
-      // userStyle: ''
+      // keyPairs: []
+      // // ,
+      // // userStyle: ''
     }
   },
   computed: {
@@ -64,14 +64,14 @@ export default {
       default: 0
     }
   },
-  watch: {
-    inputStyle: function () {
-      this.refresh()
-    },
-    attributeKeys: function () {
-      this.refresh()
-    }
-  },
+  // watch: {
+  //   // inputStyle: function () {
+  //   //   this.refresh()
+  //   // },
+  //   attributeKeys: function () {
+  //     this.refresh()
+  //   }
+  // },
   methods: {
     updateOtherStyle (value) {
       const vm = this
@@ -93,7 +93,7 @@ export default {
         value: value
       })
     },
-    refresh () {
+    refreshx () {
       const vm = this
 
       // init keyPairs
@@ -157,7 +157,7 @@ export default {
     }
   },
   mounted () {
-    this.refresh()
+    // this.refresh()
   }
 }
 </script>

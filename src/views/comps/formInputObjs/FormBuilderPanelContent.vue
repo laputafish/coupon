@@ -216,7 +216,7 @@
           this.$emit('onCommand', {
             command: 'clearForm'
           })
-          this.selectedInputObj = null
+          this.selectedInputObj = this.pageInputObj
         })
       },
       exportForm () {

@@ -1,27 +1,10 @@
 <template>
 <div style="background-color:#e5f8ff" class="py-2 px-3 agent-code-table">
   <div class="toolbar d-flex justify-content-between mb-1">
-    <div class="d-flex flex-row justify-content-end align-items-center">
-      <h4 class="d-inline-block mr-2 my-0">
-         <font-awesome-icon icon="search" />
-      </h4>
-      <form @submit.prevent="search()">
-        <div class="form-group m-0 d-inline-block" style="">
-          <div class="input-group">
-            <input class="form-control" v-model="searchValue">
-            <div class="input-group-append">
-              <button type="button" @click="setSearchValue('')">
-                <i class="fas fa-fw fa-times"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
-      <h3 v-if="appLoading" class="d-inline-block ml-3 my-0 mr-auto">
-         <font-awesome-icon icon="spinner" class="fa-spin"/>
-      </h3>
-      <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
-    </div>
+    <search-field
+        :searchValue="searchValue"
+        :appLoading="appLoading"
+      @onCommand="onCommandHandler"></search-field>
     <div class="">
       <button type="button"
               :disabled="data.length===0"
@@ -90,6 +73,7 @@ import Vue from 'vue'
 import dtCommon from '@/views/comps/datatable'
 import dtComps from './dtComps'
 import xlsFileUpload from '@/views/comps/XlsFileUpload'
+import searchField from './comps/SearchField'
 
 // import helpers from '@/helpers'
 
@@ -97,7 +81,8 @@ export default {
   components: {
     ...dtCommon,
     ...dtComps,
-    xlsFileUpload
+    xlsFileUpload,
+    searchField
     // ,
     // helpers
   },
@@ -245,6 +230,15 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    onCommandHandler (payload) {
+      const vm = this
+      const command = payload.command
+      switch (command) {
+        case 'search':
+          vm.searchValue = payload.searchValue
+          break
+      }
+    },
     saveCodeInfo (row) {
       console.log('saveCodeInfo : row: ', row)
       const vm = this

@@ -425,6 +425,12 @@
             :record="record"
             @onCommand="onCommandHandler"></custom-forms-tab>
 
+        <form-participants
+            v-if="record.voucher_type==='form'"
+            title="Form Participants"
+            :record="record"
+            @onCommand="onCommandHandler"></form-participants>
+
         <form-page-templates-tab
             v-if="record.voucher_type==='form' && false"
             title="Form Page Templates"
@@ -1091,6 +1097,7 @@
         const barcodes = vm.record.code_configs.filter(config => {
           return config.code_group === 'barcode'
         })
+
         if (barcodes && barcodes.length > 0) {
           vm.barcodeConfig = barcodes[0]
         }
@@ -1423,6 +1430,28 @@
               }
             }
             break
+          case 'newFormType':
+            customForm = vm.getCustomFormByKey(payload.formKey)
+            vm.$refs.singleFieldDialog.init(
+              'New',
+              'onNewFormType',
+              {formKey: 'ADD'},
+              '')
+            break
+          case 'onNewFormType':
+            if (payload.fieldValue === '') {
+              vm.$toaster.warn('No name specified!')
+            } else {
+              vm.record.custom_forms.push({
+                'form_key': vm.newFormKey(),
+                'form_configs': JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS)),
+                id: 0,
+                name: payload.fieldValue,
+                type: 'general',
+                voucher_id: vm.record.id
+              })
+            }
+            break
           case 'renameFormType':
             customForm = vm.getCustomFormByKey(payload.formKey)
             vm.$refs.singleFieldDialog.init(
@@ -1430,6 +1459,8 @@
               'onRenameFormName',
               {formKey: payload.formKey},
               customForm.name)
+            break
+          case 'onNewFormType':
             break
           case 'onRenameFormName':
             var formKey = payload.idParams['formKey']
