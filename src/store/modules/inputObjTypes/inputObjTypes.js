@@ -1,6 +1,21 @@
 import Vue from 'vue'
 
 const state = {
+  DEFAULT_PAGE_CONFIGS: {
+    'name': '',
+    'inputType': 'system-page',
+    'question': '',
+    'required': true,
+    'note1': '',
+    'note2': '',
+    'options': [
+      'background-color:white;' +
+      'color:black;' +
+      'font-size:14px;' +
+      'max-width:640px;' +
+      'padding-top:60px;'
+    ]
+  },
   inputObjTypes: [
     {icon: 'fas fa-home', newIcon: 'home', text: '', label: 'Page', type: 'system-page', isInput: true, fixed: true},
     {icon: 'fas fa-i-cursor', newIcon: 'i-cursor', text: '', label: '1-line Text', type: 'simple-text', isInput: true},
@@ -126,24 +141,11 @@ const state = {
 }
 
 const getters = {
-  DEFAULT_FORM_CONFIGS: () => {
+  DEFAULT_PAGE_CONFIGS: (state) => state.DEFAULT_PAGE_CONFIGS,
+  DEFAULT_FORM_CONFIGS: (state) => {
     return {
       'inputObjs': [
-        {
-          'name': '',
-          'inputType': 'system-page',
-          'question': '',
-          'required': true,
-          'note1': '',
-          'note2': '',
-          'options': [
-            'background-color:white;' +
-            'color:black;' +
-            'font-size:14px;' +
-            'max-width:640px;' +
-            'padding-top:60px;'
-          ]
-        }
+        state.DEFAULT_PAGE_CONFIGS
       ]
     }
   },

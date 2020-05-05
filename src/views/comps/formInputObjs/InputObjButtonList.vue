@@ -43,7 +43,7 @@ export default {
   methods: {
     onButtonClicked (inputObjType) {
       const vm = this
-      console.log('InputObjButtonList :: onButtonClicked : inputObjType: ', inputObjType)
+      // console.log('InputObjButtonList :: onButtonClicked : inputObjType: ', inputObjType)
       vm.$emit('onCommand', {
         command: 'newInputObj',
         value: inputObjType

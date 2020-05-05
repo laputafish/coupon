@@ -6,10 +6,7 @@
 
 <script>
 export default {
-  props: [
-    'title',
-    'field'
-  ]
+  props: ['title', 'field']
 }
 </script>
 

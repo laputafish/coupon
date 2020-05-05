@@ -5,7 +5,7 @@
        <!--:class="activeInputObjType.icon"></i>-->
     <font-awesome-icon v-if="isIcon" :icon="['fas', activeInputObjType.newIcon]"/>
     <small v-else>
-      {{ activeInputObjType.text }}
+      {{ activeInputObjType ? activeInputObjType.text : '' }}
     </small>
   </div>
 </template>
@@ -32,11 +32,18 @@ export default {
           break
         }
       }
+      if (!result) {
+        alert('The input type "' + vm.inputObjType +'" not exist.')
+      }
       return result
     },
     isIcon () {
       const vm = this
-      return vm.activeInputObjType.icon !== ''
+      var result = false
+      if (vm.activeInputObjType) {
+        result = vm.activeInputObjType.icon !== ''
+      }
+      return result
     }
 
   }

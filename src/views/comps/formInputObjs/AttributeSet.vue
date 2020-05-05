@@ -93,26 +93,14 @@ export default {
 
       // userStyles contains [elementStyleStr, containerStyleStr]
 
-      console.log('clones : ', clones)
-      console.log('userStyles : ', userStyles)
-      console.log('userStyleKeyValues[0] : ', userStyleKeyValues[0])
-      console.log('userStyleKeyValues[1] : ', userStyleKeyValues[1])
-
-      console.log('*** vm.objAttributeInfo: ', vm.objAttributeInfo)
       for (i = 0; i < vm.objAttributeInfo.length; i++) {
         var objAttributeSection = vm.objAttributeInfo[i]
         var sectionAttributeKeys = objAttributeSection['attributeKeys']
-        console.log('  i=' + i + ' objAttributeSection : ', objAttributeSection)
-        console.log('  i=' + i + ' sectionAttributeKeys : ', sectionAttributeKeys)
 
         for (var j = 0; j < sectionAttributeKeys.length; j++) {
           var attributeKey = sectionAttributeKeys[j]
           var attributeInfo = vm.attributeInfos[attributeKey]
           var styleName = attributeInfo['styleName']
-
-          console.log('    j=' + j + ' attributeKey = ' + attributeKey)
-          console.log('    j=' + j + ' attributeInfo : ', attributeInfo)
-          console.log('    j=' + j + ' styleName = ' + styleName)
 
           switch (attributeInfo['optionGroup']) {
             case 'elementGroup':
@@ -130,10 +118,6 @@ export default {
               delete userStyleKeyValues[1][styleName]
               break
           }
-
-          console.log('    j=' + j + ' : keyValueLists: ', keyValueLists)
-          console.log('    j=' + j + ' : userStyleKeyValues[0]: ', userStyleKeyValues[0])
-          console.log('    j=' + j + ' : userStyleKeyValues[1]: ', userStyleKeyValues[1])
         }
       }
 
@@ -170,27 +154,21 @@ export default {
       var result = {}
 
       str = str.trim()
-      console.log('strToKeyValues: str: ', str)
       if (str !== '') {
         var keyValueStrs = str.split(';')
-        console.log('strToKeyValues: keyValueStrs: ', keyValueStrs)
         for (var i = 0; i < keyValueStrs.length; i++) {
           var s = keyValueStrs[i].trim()
-          console.log('strToKeyValues i=' + i + ': s =' + s)
           if (s !== '') {
             var segs = s.split(':')
-            console.log('strToKeyValues i=' + i + ': segs: ', segs)
             if (segs.length > 1) {
               result[segs[0]] = segs[1]
             }
           }
         }
       }
-      console.log('strToKeyValues :; result: ', result)
       return result
     },
     keyValuesToStr (keyValues) {
-      console.log('keyValuesToStr: keyValues: ', keyValues)
       var result = ''
       if (Object.keys(keyValues).length >0) {
         for (var key in keyValues) {
@@ -229,18 +207,13 @@ export default {
           updatedKeyValues = {}
           keyValues = vm.strToKeyValues(vm.options[optionIndex])
           for (var key in keyValues) {
-            console.log('> key = ' + key)
             if (originalUserKeys.indexOf(key) >= 0) {
-              console.log('> in originaluserKeys')
               // if not in original and new, that's specific attributes
               if (newUserKeys.indexOf(key) >= 0) {
-                console.log('> in newUserKeys ==> add')
                 updatedKeyValues[key] = newUserKeyValues[key]
               } else {
-                console.log('> not in newUserKeys ==> add')
               }
             } else {
-              console.log('> not in originaluserKeys')
               // add new
               if (newUserKeys.indexOf(key) >= 0) {
                 updatedKeyValues[key] = newUserKeyValues[key]
@@ -249,16 +222,16 @@ export default {
               }
             }
           }
-
-          console.log('AttributeSet :: onCommandHandler :: optionIndex = ' + optionIndex)
-          console.log('AttributeSet :: onCommandHandler :: originalUserKeyValues: ', originalUserKeyValues)
-          console.log('AttributeSet :: onCommandHandler :: originalUserKeys: ', originalUserKeys)
-          console.log('AttributeSet :: onCommandHandler :: newUserKeyValues: ', newUserKeyValues)
-          console.log('AttributeSet :: onCommandHandler :: newUserKeys: ', newUserKeys)
-
-          console.log('AttributeSet :: onCommandHandler :: keyValues: ', keyValues)
-          console.log('AttributeSet :: onCommandHandler :: userKeyValues: ', userKeyValues)
-          console.log('AttributeSet :: onCommandHandler :: updatedKeyValues: ', updatedKeyValues)
+          //
+          // console.log('AttributeSet :: onCommandHandler :: optionIndex = ' + optionIndex)
+          // console.log('AttributeSet :: onCommandHandler :: originalUserKeyValues: ', originalUserKeyValues)
+          // console.log('AttributeSet :: onCommandHandler :: originalUserKeys: ', originalUserKeys)
+          // console.log('AttributeSet :: onCommandHandler :: newUserKeyValues: ', newUserKeyValues)
+          // console.log('AttributeSet :: onCommandHandler :: newUserKeys: ', newUserKeys)
+          //
+          // console.log('AttributeSet :: onCommandHandler :: keyValues: ', keyValues)
+          // console.log('AttributeSet :: onCommandHandler :: userKeyValues: ', userKeyValues)
+          // console.log('AttributeSet :: onCommandHandler :: updatedKeyValues: ', updatedKeyValues)
 
           vm.options[optionIndex] = vm.keyValuesToStr(updatedKeyValues)
           vm.$emit('onCommand', {
@@ -273,7 +246,7 @@ export default {
           //    styleName,
           //    value
           // }
-          console.log('AttributeSet :: onCommand :: updateStyle : payload: ', payload)
+          // console.log('AttributeSet :: onCommand :: updateStyle : payload: ', payload)
           switch (payload.optionGroup) {
             case 'elementGroup':
               vm.updateStyleValue(0 /* optionIndex */, payload.styleName, payload.value)
@@ -307,8 +280,8 @@ export default {
       var keyValues = vm.strToKeyValues(options[optionIndex])
       keyValues[styleName] = value
       options[optionIndex] = vm.keyValuesToStr(keyValues)
-      console.log('Attribute :: updateStyleValue :: optionIndex = ' + optionIndex)
-      console.log('Attribute :: updateStyleValue :: ' + styleName + ' => ' + value)
+      // console.log('Attribute :: updateStyleValue :: optionIndex = ' + optionIndex)
+      // console.log('Attribute :: updateStyleValue :: ' + styleName + ' => ' + value)
 
       vm.$emit('onCommand', {
         command: 'updateOptions',

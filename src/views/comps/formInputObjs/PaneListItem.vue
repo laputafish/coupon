@@ -57,7 +57,7 @@ export default {
     },
     selectInputObj () {
       const vm = this
-      console.log('FormInputObj :: selectInputObj')
+      // console.log('FormInputObj :: selectInputObj')
       vm.$emit('onCommand', {
         command: 'selectInputObj',
         value: vm.inputObj

@@ -362,25 +362,23 @@ export default {
 
     reloadCodeList (query) {
       const vm = this
-      if (vm.voucherId !== 0) {
-        if (typeof query === 'undefined') {
-          query = vm.query
-        }
-        if (vm.voucherId === 0) {
-          alert('vm.voucherId = 0')
-          return;
-        }
-        const data = {
-          urlCommand: '/vouchers/' + vm.voucherId + '/codes',
-          query: query
-        }
-        vm.$store.dispatch('AUTH_GET', data).then(response => {
-          console.log('AUTH_GET :: response: ', response)
-          vm.total = response.total
-          vm.data = vm.parseCodeInfoData(response.data)
-          vm.$forceUpdate()
-        })
+      if (typeof query === 'undefined') {
+        query = vm.query
       }
+      if (vm.voucherId === 0) {
+        alert('vm.voucherId = 0')
+        return
+      }
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucherId + '/codes',
+        query: query
+      }
+      vm.$store.dispatch('AUTH_GET', data).then(response => {
+        console.log('AUTH_GET :: response: ', response)
+        vm.total = response.total
+        vm.data = vm.parseCodeInfoData(response.data)
+        vm.$forceUpdate()
+      })
     },
 
     // refreshList2 () {

@@ -15,6 +15,7 @@ import TdCommonOpt from './TdCommonOpt.vue'
 import TdCommonStatus from './TdCommonStatus.vue'
 import TdCommonTranslated from './TdCommonTranslated.vue'
 import TdCommonYesNo from './TdCommonYesNo.vue'
+import ThSimpleHeader from './ThSimpleHeader.vue'
 import ThCommonHeader from './ThCommonHeader.vue'
 
 export default {
@@ -35,5 +36,6 @@ export default {
   TdCommonStatus,
   TdCommonTranslated,
   TdCommonYesNo,
+  ThSimpleHeader,
   ThCommonHeader
 }

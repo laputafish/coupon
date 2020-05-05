@@ -203,7 +203,7 @@
       //
       // },
       updatePageConfigField (fieldName, fieldValue) {
-        console.log('FormBuilderPanel :: updatePageConfigField')
+        // console.log('FormBuilderPanel :: updatePageConfigField')
         this.$emit('onCommand', {
           command: 'updatePageConfigField',
           fieldName: fieldName,
@@ -230,7 +230,7 @@
         })
       },
       onCommandHandler (payload) {
-        console.log('FormBuilderPanelContent :: onCommandHandler : payload: ', payload)
+        // console.log('FormBuilderPanelContent :: onCommandHandler : payload: ', payload)
         const vm = this
         const command = payload.command
         switch (command) {
@@ -249,7 +249,7 @@
                 newPayload['objIndex'] = objIndex
                 break
               case 'updateField':
-                console.log('FormBuilderPanel :: onCommandHandler :: updateFIeld: newPayload: ', newPayload)
+                // console.log('FormBuilderPanel :: onCommandHandler :: updateFIeld: newPayload: ', newPayload)
                 newPayload['command'] = newPayload['scope'] === 'pageConfig' ?
                   'updatePageConfigField' :
                   'updateInputObjField'
@@ -297,7 +297,7 @@
 
       selectInputObj (inputObj) {
         const vm = this
-        console.log('selectInputObj :: inputObj: ', inputObj)
+        // console.log('selectInputObj :: inputObj: ', inputObj)
         vm.selectedInputObj = inputObj
       },
       onMove ({relatedContext, draggedContext}) {
@@ -309,7 +309,7 @@
       },
 
       onUploadingHandler () {
-        console.log('FormBuilderPanel :: onUploadingHandler')
+        // console.log('FormBuilderPanel :: onUploadingHandler')
         this.uploading = true
       },
 
@@ -319,7 +319,7 @@
           command: 'update'
         })
         vm.selectedInputObj = null
-        console.log('onUploadedHandler :: result: ', result)
+        // console.log('onUploadedHandler :: result: ', result)
         vm.uploading = false
         vm.$emit('onCommand', {
           command: 'replaceInputObjs',

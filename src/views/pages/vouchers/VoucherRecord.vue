@@ -194,7 +194,7 @@
          Leaflet Template Editor
         **************************
         -->
-        <b-tab title="Leaflet Template" class="bg-white py-2">
+        <b-tab title="Leaflet" class="bg-white py-2">
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">
@@ -291,7 +291,7 @@
                     :headers="authHeaders"
                     v-model="files"
                     @input-filter="inputFilter"
-                    @input-file="inputFile"
+                    @input-file="inputImageFile"
                     ref="uploadSharingImage">
                   <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
                   <font-awesome-icon icon="upload"></font-awesome-icon>
@@ -406,7 +406,7 @@
 
         <form-participants-tab
             v-if="record.voucher_type==='form'"
-            title="Form Participants"
+            title="Participants"
             :record="record"
             @onCommand="onCommandHandler"></form-participants-tab>
 
@@ -504,7 +504,6 @@
   import DataRecordMixin from '@/mixins/DataRecordMixin'
 
   // import agentCodeTable from './comps/AgentCodeTable'
-  import agentCodeTab from './comps/AgentCodeTab'
 
   // import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
@@ -519,10 +518,12 @@
   import imageCropperDialog from './dialogs/ImageCropperDialog'
   import singleFieldDialog from './dialogs/SingleFieldDialog'
 
-  import formFillingTab from './comps/FormFillingTab'
-  import formPageTemplatesTab from './comps/FormPageTemplatesTab'
-  import customFormsTab from './comps/CustomFormsTab'
-  import formParticipantsTab from './comps/FormParticipantsTab'
+  import agentCodeTab from './comps/tabs/AgentCodeTab'
+  import formFillingTab from './comps/tabs/FormFillingTab'
+  import formPageTemplatesTab from './comps/tabs/FormPageTemplatesTab'
+  import customFormsTab from './comps/tabs/CustomFormsTab'
+  import formParticipantsTab from './comps/tabs/FormParticipantsTab'
+
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
 
   import $ from 'jquery'
@@ -972,9 +973,9 @@
         }
       },
 
-      inputFile (newFile, oldFile) {
+      inputImageFile (newFile, oldFile) {
         const vm = this
-        console.log('inputFile')
+        console.log('inputImageFile')
         if (newFile && !oldFile) {
           this.$nextTick(function () {
             this.editingUploadFile = true
@@ -1775,8 +1776,13 @@
 </style>
 
 <style>
+  #participant-table div[name=Datatable] table {
+    border: 1px solid #dee2e6;
+  }
+
   #email-table div[name=Datatable] table tbody tr td,
-  #code-table div[name=Datatable] table tbody tr td {
+  #code-table div[name=Datatable] table tbody tr td,
+  #participant-table div[name=Datatable] table tbody tr td {
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
   }

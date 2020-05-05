@@ -83,8 +83,8 @@ export default {
       })
     },
     updateKeyPair (key, value) {
-      console.log('AttributeTable :: key = ' + key)
-      console.log('AttributeTable :: value = ' + value)
+      // console.log('AttributeTable :: key = ' + key)
+      // console.log('AttributeTable :: value = ' + value)
       const vm = this
       vm.$emit('onCommand', {
         command: 'updateStyle',

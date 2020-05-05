@@ -5,6 +5,9 @@ const FormInputObjMixin = {
     },
     DEFAULT_FORM_CONFIGS () {
       return this.$store.getters.DEFAULT_FORM_CONFIGS
+    },
+    DEFAULT_PAGE_CONFIGS () {
+      return this.$store.getters.DEFAULT_PAGE_CONFIGS
     }
   },
   methods: {
@@ -290,14 +293,32 @@ const FormInputObjMixin = {
       }
     },
 
+    getSystemPageConfigs (inputObjs) {
+      const vm = this
+      var result = null
+      for (var i = 0; i < inputObjs.length; i++) {
+        var inputObj = inputObjs[i]
+        if (inputObj.inputType === 'system-page') {
+          result = inputObj
+          break
+        }
+      }
+      return result
+    },
+
     replaceInputObjs (payload, formConfigs) {
       const vm = this
-      formConfigs.inputObjs = payload.value
+      const inputObjs = payload.value
+      var systemPageConfigs = vm.getSystemPageConfigs(inputObjs)
+
+      if (!systemPageConfigs) {
+        inputObjs.push(vm.DEFAULT_PAGE_CONFIGS)
+      }
+      formConfigs.inputObjs = JSON.parse(JSON.stringify(inputObjs))
     },
 
     updatePageConfigField (payload, formConfigs) {
       console.log('FormInputObjMixin :: updatePageConfigField')
-      const vm = this
       formConfigs.pageConfig[payload.fieldName] = payload.fieldValue
     }
 
