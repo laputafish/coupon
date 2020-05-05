@@ -101,9 +101,9 @@ Vue.component('validationProvider', ValidationProvider)
 Vue.config.productionTip = false
 
 store.dispatch('FETCH_CONSTANTS')
-store.dispatch('FETCH_TOKEN').then(
-    () => store.dispatch('FETCH_AGENTS')
-)
+// store.dispatch('FETCH_TOKEN').then(
+//     () => store.dispatch('FETCH_AGENTS')
+// )
 // store.dispatch('FETCH_SYSTEM_CONFIG')
 
 new Vue({

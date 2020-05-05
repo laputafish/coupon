@@ -1,5 +1,5 @@
 <template>
-<div style="background-color:#e5f8ff" class="py-2 px-3 agent-code-table">
+<div class="py-2 px-3 agent-code-table">
   <div class="toolbar d-flex justify-content-between mb-1">
     <search-field
         :searchValue="searchValue"
@@ -17,7 +17,7 @@
               :disabled="data.length===0"
               class="btn btn-warning min-width-100 mr-1"
               @click="exportExcel()">
-        <i class="fas fa-times"></i>
+        <i class="fas fa-download"></i>
         <span class="ml-2">{{ $t('buttons.export') }}</span>
       </button>
       <xls-file-upload
@@ -26,24 +26,6 @@
           :postData="{id: voucherId}"
           @onUploading="onUploadingHandler"
           @onUploaded="onUploadedHandler"></xls-file-upload>
-      <!--<file-upload-->
-          <!--extensions="xlsx"-->
-          <!--accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"-->
-          <!--name="file"-->
-          <!--class="btn btn-primary"-->
-          <!--:post-action="postAction"-->
-          <!--:drop="!edit"-->
-          <!--:data="{id: voucherId}"-->
-          <!--:headers="authHeaders"-->
-          <!--v-model="files"-->
-          <!--@click="checkCodeExists"-->
-          <!--@input-filter="inputFilter"-->
-          <!--@input-file="inputFile"-->
-          <!--ref="upload">-->
-        <!--&lt;!&ndash;<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />&ndash;&gt;-->
-        <!--<font-awesome-icon icon="file-import"></font-awesome-icon>-->
-        <!--Upload File-->
-      <!--</file-upload>-->
     </div>
   </div>
   <div v-if="data.length>0" id="code-table">
@@ -627,11 +609,11 @@ export default {
       return result
     },
 
-    setTableData (tableData) {
-      const vm = this
-      vm.allData = vm.parseCodeInfoData(tableData)
-      vm.total = vm.allData.length
-    },
+    // setTableData (tableData) {
+    //   const vm = this
+    //   vm.allData = vm.parseCodeInfoData(tableData)
+    //   vm.total = vm.allData.length
+    // },
 
     onUploadingHandler () {
       console.log('AgentCodeTable :: onUploadingHandler')
@@ -804,6 +786,7 @@ export default {
 
 <style>
 .agent-code-table #code-table .mx-input[name=date] {
+  background-color: #e5f8ff;
   width: 120px;
 }
 </style>

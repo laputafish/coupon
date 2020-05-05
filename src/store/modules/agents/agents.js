@@ -2,7 +2,8 @@ import Vue from 'vue'
 import * as types from './agents_types'
 
 const state = {
-  agents: []
+  agents: [],
+  agentsLoaded: false
 }
 
 const getters = {
@@ -16,6 +17,7 @@ const mutations = {
   setAgents (state, payload) {
     console.log('setAgents :: payload: ', payload)
     state.agents = payload
+    state.agentsLoaded = true
   }
 }
 

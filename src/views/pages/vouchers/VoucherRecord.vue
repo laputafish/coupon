@@ -166,31 +166,10 @@
           Agent Code Table
          ******************
         -->
-        <b-tab class="bg-white py-2">
-          <template v-slot:title>
-            {{ $t('vouchers.codeTabLabel') }}
-            <div v-if="record && record.code_count>0"
-                 class="badge badge-warning">
-              {{ record.code_count }}
-            </div>
-          </template>
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-12">
-                <agent-code-table
-                    ref="agentCodeTable"
-                    @onCommand="onCommandHandler"
-                    :voucherId="record.id"
-                    :codeFieldsStr="record.code_fields"></agent-code-table>
-                <!--<agent-code-table-->
-                <!--ref="agentCodeTable"-->
-                <!--@onCommand="onCommandHandler"-->
-                <!--:codeInfos="record.code_infos"-->
-                <!--:codeFieldsStr="record.code_fields"></agent-code-table>-->
-              </div>
-            </div>
-          </div>
-        </b-tab>
+        <agent-code-tab
+          :title="$t('vouchers.codeTabLabel')"
+          :record="record"
+          @onCommand="onCommandHandler"></agent-code-tab>
 
         <!--
         *****************
@@ -425,11 +404,11 @@
             :record="record"
             @onCommand="onCommandHandler"></custom-forms-tab>
 
-        <form-participants
+        <form-participants-tab
             v-if="record.voucher_type==='form'"
             title="Form Participants"
             :record="record"
-            @onCommand="onCommandHandler"></form-participants>
+            @onCommand="onCommandHandler"></form-participants-tab>
 
         <form-page-templates-tab
             v-if="record.voucher_type==='form' && false"
@@ -524,7 +503,8 @@
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
 
-  import agentCodeTable from './comps/AgentCodeTable'
+  // import agentCodeTable from './comps/AgentCodeTable'
+  import agentCodeTab from './comps/AgentCodeTab'
 
   // import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
@@ -542,6 +522,7 @@
   import formFillingTab from './comps/FormFillingTab'
   import formPageTemplatesTab from './comps/FormPageTemplatesTab'
   import customFormsTab from './comps/CustomFormsTab'
+  import formParticipantsTab from './comps/FormParticipantsTab'
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
 
   import $ from 'jquery'
@@ -551,7 +532,8 @@
     components: {
       templateEditor,
       imageCropperDialog,
-      agentCodeTable,
+      // agentCodeTable,
+      agentCodeTab,
       fileUpload,
       // emailTable,
       // datePicker,
@@ -566,7 +548,8 @@
 
       formPageTemplatesTab,
       formFillingTab,
-      customFormsTab
+      customFormsTab,
+      formParticipantsTab,
       // ,
       // yoovEditor
       // ,

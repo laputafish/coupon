@@ -13,6 +13,7 @@ import Charts from '@/views/pages/Charts.vue'
 import UIElements from '@/views/pages/UIElements.vue'
 import Forms from '@/views/pages/Forms.vue'
 import Tables from '@/views/pages/Tables.vue'
+import ErrorForm from '@/views/pages/ErrorForm.vue'
 
 // Guest or user
 import Profile from '@/views/pages/profile/Profile.vue'
@@ -88,14 +89,25 @@ const checkIfMember = (to, from, next) => {
 }
 
 const ifAuthenticated = (to, from, next) => {
-  const token = store.getters.accessToken;
-  if (token === '' || token === null) {
-    next('/login')
-  }
+  // const token = store.getters.accessToken;
+  // if (token === '' || token === null) {
+  //   next('/error/403')
+  // }
 
   const user = store.getters.user;
   if (user === null) {
     store.dispatch('FETCH_USER')
+    store.dispatch('FETCH_TOKEN').then(
+      (token) => {
+        if (token === '' || token === null) {
+          next('/error/403')
+        } else {
+          if (!store.getters.agentsLoaded) {
+            store.dispatch('FETCH_AGENTS')
+          }
+        }
+      }
+    )
   }
 
   next()
@@ -201,6 +213,11 @@ const allRoutes = [
         meta: {auth: true}
       }
     ]
+  },
+  {
+    path: '/error/:code',
+    name: '/Error',
+    component: ErrorForm
   },
   {
     path: '/app',

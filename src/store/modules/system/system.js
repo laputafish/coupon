@@ -43,14 +43,17 @@ const mutations = {
 
 const actions = {
   async [types.FETCH_TOKEN] ({commit}) {
-    // new Promise((resolve) => {
+    return new Promise(resolve => {
+      // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
-    /*const promise = */
-    // console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
-    // console.log('localStorage(accessToken) = ' + accessToken)
+      /*const promise = */
+      // console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
+      // console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
-    //   resolve(accessToken)
-    // })
+      //   resolve(accessToken)
+      // })
+      resolve(accessToken);
+    })
   },
 
   [types.SET_TOKEN] ({commit, getters}, payload) {

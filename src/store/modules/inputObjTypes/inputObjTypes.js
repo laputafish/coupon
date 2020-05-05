@@ -134,6 +134,8 @@ const getters = {
           'inputType': 'system-page',
           'question': '',
           'required': true,
+          'note1': '',
+          'note2': '',
           'options': [
             'background-color:white;' +
             'color:black;' +
