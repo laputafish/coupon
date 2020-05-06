@@ -143,7 +143,7 @@ export default {
     exportExcel () {
       const vm = this
       vm.$emit('onCommand', {
-        command: 'export'
+        command: 'exportParticipants'
       })
     },
     deleteAll () {

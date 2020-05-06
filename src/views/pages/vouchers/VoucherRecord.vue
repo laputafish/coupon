@@ -1460,6 +1460,9 @@
           case 'copyTemplate':
             vm.copyTemplate(payload.voucher)
             break
+          case 'exportParticipants':
+            vm.exportParticipants()
+            break
           case 'export':
             vm.exportCodes()
             break
@@ -1549,10 +1552,29 @@
             vm.onInputObjCommandHandler(payload)
         }
       },
+      exportParticipants () {
+        const vm = this
+        const data = {
+          urlCommand: '/vouchers/' + vm.record.id + '/participants/export',
+          options: {
+            data: {
+              description: vm.record.description
+            }
+          }
+        }
+        vm.$store.dispatch('AUTH_POST', data).then(
+          response => {
+            window.open(vm.$store.getters.apiUrl + '/files/' + response.key)
+          },
+          () => {
+            vm.$toaster.warning(vm.$t('message.some_errors_occurred_during_export'))
+          }
+        )
+      },
       exportCodes () {
         const vm = this
         const data = {
-          urlCommand: '/vouchers/' + vm.record.id + '/export',
+          urlCommand: '/vouchers/' + vm.record.id + '/codes/export',
           options: {
             data: {
               description: vm.record.description
