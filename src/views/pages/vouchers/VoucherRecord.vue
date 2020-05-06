@@ -810,7 +810,7 @@
     computed: {
       customLink () {
         const vm = this
-        return vm.$store.getters.apiUrl + '/q/' + vm.record.custom_link_key
+        return vm.$store.getters.appHost + '/q/' + vm.record.custom_link_key
       },
       allTemplates () {
         const vm = this

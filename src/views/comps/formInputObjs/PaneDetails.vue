@@ -212,6 +212,7 @@ export default {
     },
     onCommandHandler (payload) {
       const vm = this
+      console.log('PanelDetails :: onCommandHandler :; payload: ', payload)
       vm.$emit('onCommand', payload)
     }
   }

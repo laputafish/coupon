@@ -28,7 +28,7 @@
 <script>
 import Vue from 'vue'
 import dtCommon from '@/views/comps/datatable'
-import dtComps from '../dtComps'
+import dtComps from './dtComps'
 import searchField from './comps/SearchField'
 
 export default {
@@ -53,13 +53,34 @@ export default {
       xprops: {
         buttons: ['delete', 'update'],
         eventbus: new Vue(),
-        actionButtonSize: 'xs'
+        actionButtonSize: 'xs',
+        optionalChoices: []
       },
       HeaderSettings: false,
       selectedRow: null,
       searchValue: '',
       searchInputTimer: 3000,
       filterFields: '*'
+    }
+  },
+  computed: {
+    userInputObjs () {
+      const vm = this
+      var result = []
+      for (var i = 0; i < vm.inputObjs.length; i++) {
+        var inputObj = vm.inputObjs[i]
+        var inputType = inputObj['inputType']
+        switch (inputType) {
+          case 'output-image':
+          case 'output-remark':
+          case 'output-submit':
+          case 'system-page':
+            continue;
+          default:
+            result.push(inputObj)
+        }
+      }
+      return result
     }
   },
   props: {
@@ -75,7 +96,7 @@ export default {
     },
   },
   watch: {
-    inputObjs: {
+    userInputObjs: {
       handler: function(newVal) {
         const vm = this
         console.log('watch(inputObjs)')
@@ -119,7 +140,7 @@ export default {
   },
   mounted () {
     const vm = this
-    vm.setColumns(vm.inputObjs)
+    vm.setColumns(vm.userInputObjs)
     vm.query.page = 1
   },
   created () {
@@ -285,8 +306,138 @@ export default {
           break
       }
     },
-    setColumns (inputObjs) {
+    setColumns (userInputObjs) {
       const vm = this
+      vm.xprops['optionalChoices'] = {}
+      console.log('setColumns :: userInputObjs: ', userInputObjs)
+      vm.columns = [{
+        title: vm.$t('general.number'),
+        thComp: 'ThSimpleHeader',
+        tdComp: 'TdCommonIndex',
+        tdClass: 'text-center',
+        thClass: 'text-center',
+        field: 'id'
+      }];
+
+      for (var i = 0; i < userInputObjs.length; i++) {
+        var userInputObj = userInputObjs[i]
+        var inputType = userInputObj['inputType'];
+        var fieldName = 'field' + i;
+        console.log('i = ' + i + ': userInputObj: ', userInputObj)
+        switch (inputType) {
+          case 'simple-text':
+            vm.columns.push({
+              title: userInputObj.name,
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName
+            });
+            break
+          case 'number':
+            vm.columns.push({
+              title: userInputObj.name,
+              tdClass: 'text-center',
+              thClass: 'text-center',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName
+            })
+            break
+          case 'email':
+            vm.columns.push({
+              title: userInputObj.name,
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName
+            });
+            break
+          case 'text':
+            vm.columns.push({
+              title: userInputObj.name,
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName
+            });
+            break
+          case 'name':
+            vm.columns.push({
+              title: 'First Name',
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName + '_0'
+            })
+            vm.columns.push({
+              title: 'Last Name',
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName + '_1'
+            })
+            break
+          case 'phone':
+            vm.columns.push({
+              title: 'Region Code',
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName + '_0'
+            });
+            vm.columns.push({
+              title: 'Phone No.',
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName + '_1'
+            });
+            break
+          case 'single-choice':
+            vm.columns.push({
+              title: userInputObj.name,
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdSingleChoice',
+              field: fieldName
+            });
+            console.log('setColumns :: fieldName = ' + fieldName)
+            console.log('setColumns :: userInputObjs: ', userInputObj.options)
+
+            vm.xprops['optionalChoices'][fieldName] = userInputObj.options
+
+            console.log('setColumns :: xprops: ', vm.xprops)
+
+            break
+          case 'multiple-choice':
+            vm.columns.push({
+              title: userInputObj.name,
+              tdClass: 'text-left',
+              thClass: 'text-left',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdMultipleChoice',
+              field: fieldName
+            });
+            vm.xprops['optionalChoices'][fieldName] = userInputObj.options
+            break
+        }
+      }
+      // vm.columns = JSON.parse(JSON.stringify(vm.columns))
+      // console.log('setColumns finished :: vm.columns.length = ' + vm.columns.length)
+      // console.log('setColumns finished :: vm.columns: ', vm.columns)
+    },
+    setColumnsxxx (inputObjs) {
+      const vm = this
+      vm.xprops['inputObjs'] = inputObjs;
       console.log('setColumns :: inputObjs: ', inputObjs)
       vm.columns = [{
         title: vm.$t('general.number'),
@@ -297,10 +448,16 @@ export default {
         field: 'id'
       }];
 
+      var index = 0;
       for (var i = 0; i < inputObjs.length; i++) {
-        var fieldName = 'field' + i
         var inputObj = inputObjs[i]
-        console.log('i=' + i + ': inputObj: ', inputObj)
+        var inputType = inputObj['inputType'];
+        if (inputType==='output-remark' || inputType==='output-image' || inputType==='output-submit' || inputType==='system-page') {
+          continue;
+        }
+
+        var fieldName = 'field' + index;
+        console.log('index = ' + index + ': inputObj: ', inputObj)
         switch (inputObj.inputType) {
           case 'simple-text':
             vm.columns.push({
@@ -384,7 +541,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdSingleChoice',
               field: fieldName
             });
             break
@@ -394,11 +551,12 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdMultipleChoice',
               field: fieldName
             });
             break
         }
+        index++
       }
       // vm.columns = JSON.parse(JSON.stringify(vm.columns))
       // console.log('setColumns finished :: vm.columns.length = ' + vm.columns.length)

@@ -41,7 +41,8 @@
           Page Attributes
         </button>
         <draggable class="input-object-list list-group" tag="ul"
-                   v-model="inputObjs"
+                   :value="inputObjs"
+                   @input="value=>updateInputObjOrder(value)"
                    v-bind="dragOptions"
                    :move="onMove"
                    @start="isDragging=true"
@@ -193,6 +194,14 @@
       vm.selectedInputObj = vm.pageInputObj
     },
     methods: {
+      updateInputObjOrder (reorderedInputObjs) {
+        const vm = this
+        console.log('updateInputObjOrder  :: reorderedInputObjs: ', reorderedInputObjs)
+        vm.$emit('onCommand', {
+          command: 'replaceInputObjs',
+          value: reorderedInputObjs
+        })
+      },
       // selectFormType (value) {
       //   const vm = this
       //   vm.selectedFormType = value
@@ -230,7 +239,7 @@
         })
       },
       onCommandHandler (payload) {
-        // console.log('FormBuilderPanelContent :: onCommandHandler : payload: ', payload)
+        console.log('FormBuilderPanelContent :: onCommandHandler : payload: ', payload)
         const vm = this
         const command = payload.command
         switch (command) {

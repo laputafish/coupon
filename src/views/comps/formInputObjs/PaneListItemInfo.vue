@@ -10,7 +10,7 @@
         <div v-if="inputObj.question && inputObj.question!==''"
              class="input-obj-question badge badge-info"
              v-html="questionContext"></div>
-        <div v-if="inputObj.required && isInput" class="badge badge-danger ml-1">
+        <div v-if="inputObj.required==='1' && isInput" class="badge badge-danger ml-1">
           <i class="fas fa-bahai"></i>
         </div>
       </div>
