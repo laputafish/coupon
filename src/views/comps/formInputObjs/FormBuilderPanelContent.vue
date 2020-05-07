@@ -98,6 +98,10 @@
         type: Object,
         default: null
       },
+      participantCount: {
+        type: Number,
+        default: 0
+      }
       // formConfigs: {
       //   type: Object,
       //   default: null
@@ -196,11 +200,15 @@
     methods: {
       updateInputObjOrder (reorderedInputObjs) {
         const vm = this
-        console.log('updateInputObjOrder  :: reorderedInputObjs: ', reorderedInputObjs)
-        vm.$emit('onCommand', {
-          command: 'replaceInputObjs',
-          value: reorderedInputObjs
-        })
+        if (vm.participantCount > 0) {
+          vm.$dialog.alert('Participant exists. Form layout canont be changed!')
+        } else {
+          console.log('updateInputObjOrder  :: reorderedInputObjs: ', reorderedInputObjs)
+          vm.$emit('onCommand', {
+            command: 'replaceInputObjs',
+            value: reorderedInputObjs
+          })
+        }
       },
       // selectFormType (value) {
       //   const vm = this

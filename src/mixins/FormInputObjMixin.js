@@ -47,7 +47,7 @@ const FormInputObjMixin = {
         fixed: false,
         inputType: type,
         question: '',
-        required: true,
+        required: '1',
         options: [],
         notes: ''
       }
@@ -210,8 +210,8 @@ const FormInputObjMixin = {
 
     newInputObj (payload, formConfigs) {
       const vm = this
-      console.log('FormInputObjMixin :: newInputObj: payload: ', payload)
-      console.log('FormInputObjMixin :: newInputObj: formConfigs: ', formConfigs)
+      // console.log('FormInputObjMixin :: newInputObj: payload: ', payload)
+      // console.log('FormInputObjMixin :: newInputObj: formConfigs: ', formConfigs)
 
       var inputObjType = payload.value
       var newObj = vm.getNewInputObj(inputObjType)

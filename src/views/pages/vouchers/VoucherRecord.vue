@@ -270,93 +270,27 @@
         *****************
         -->
         <b-tab id="sharingTab" title="Sharing Context" class="bg-white py-2">
-          <div class="p-2 d-flex flex-row justify-content-start">
-            <div class="mx-1 d-inline-block">
-              <div class="image-wrapper m-2">
-                <div class="image-bkgd">
-                  <img :src="sharingImageSrc"/>
-                </div>
-              </div>
-              <div class="btn-toolbar mt-1 justify-content-center">
-                <!-- upload sharing image -->
-                <file-upload
-                    extensions="jpg,jpeg,gif,png"
-                    accept="image/png,image/gif,image/jpeg,image/webp"
-                    input-id="imageFile"
-                    name="file"
-                    class="btn btn-primary"
-                    :post-action="sharingImagePostAction"
-                    :drop="!editingUploadFile"
-                    :data="{id: record.id}"
-                    :headers="authHeaders"
-                    v-model="files"
-                    @input-filter="inputFilter"
-                    @input-file="inputImageFile"
-                    ref="uploadSharingImage">
-                  <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
-                  <font-awesome-icon icon="upload"></font-awesome-icon>
-                  Upload
-                </file-upload>
-                <button type="button"
-                        @click="removeSharingImage"
-                        class="btn btn-danger m-x-1">
-                  <i class="fas fa-times"></i>&nbsp;Remove
-                </button>
-              </div>
-              <div class="mx-2">
-                <small>* Safe resolution: 256x256</small>
-              </div>
-            </div>
-            <div class="mx-2 flex-grow-1">
-              <div class="row">
-                <div class="col-sm-12">
-                  <div class="form-group mb-1">
-                    <div class="float-right">
-                      <small>* max. 35 chars for safety.</small>
-                    </div>
-                    <label for="sharingTitle">{{ $t('general.title') }}
-                      <div class="badge badge-primary">{{ sharingTitleCharCount }}</div>
-                    </label>
-                    <input class="form-control"
-                           id="sharingTitle"
-                           name="sharingTitle"
-                           type="text"
-                           v-model="record.sharing_title"/>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-sm-12">
-                  <div class="form-group mb-1">
-                    <div class="float-right">
-                      <small>* max. 65 chars for safety.</small>
-                    </div>
-                    <label for="sharingDescription">{{ $t('general.description') }}
-                      <div class="badge badge-primary">{{ sharingDescriptionCharCount }}</div>
-                    </label>
-                    <textarea rows="6"
-                              class="form-control"
-                              id="sharingDescription"
-                              name="sharingDescription"
-                              type="text"
-                              v-model="record.sharing_description"/>
-                  </div>
-                </div>
-              </div>
-              <div class="row" v-if="record">
-                <div class="col-sm-12">
-                  <div class="d-flex flex-row justify-content-start align-items-center"
-                       @click="copySharingLink()">
-                    <div class="badge badge-info">
-                      {{ testLink }}
-                    </div>
-                    <div class="px-1 d-inline-block copy-link" @click="copySharingLink()">
-                      <font-awesome-icon icon="copy"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="row">
+            <sharing-context-box
+              class="col-sm-6"
+              title="Voucher Sharing Link"
+              :record="record"
+              sharingType="coupons"
+              sharingTitleField="sharing_title"
+              sharingDescriptionField="sharing_description"
+              sharingImageIdField="sharing_image_id"
+              @onCommand="onCommandHandler">
+              </sharing-context-box>
+            <sharing-context-box
+              class="col-sm-6"
+              title="Form Sharing Link"
+              :record="record"
+              sharingType="forms"
+              sharingTitleField="form_sharing_title"
+              sharingDescriptionField="form_sharing_description"
+              sharingImageIdField="form_sharing_image_id"
+              @onCommand="onCommandHandler">
+              </sharing-context-box>
           </div>
         </b-tab>
 
@@ -475,6 +409,7 @@
         id="imageCropperDialog"
         ref="imageCropperDialog"
         :mediaId="selectedTempMediaId"
+        :mediaIdField="selectedTempMediaIdField"
         :voucherId="recordId"
         v-model="showingImageCropperDialog"
         @onCommand="onCommandHandler"></image-cropper-dialog>
@@ -528,6 +463,8 @@
 
   import $ from 'jquery'
 
+  import sharingContextBox from './comps/SharingContextBox'
+
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
@@ -551,6 +488,7 @@
       formFillingTab,
       customFormsTab,
       formParticipantsTab,
+      sharingContextBox
       // ,
       // yoovEditor
       // ,
@@ -564,8 +502,8 @@
         record: null,
 
         // Upload Sharing Image
-        editingUploadFile: false,
-        files: [],
+        // editingUploadFile: false,
+        // files: [],
 
         loading: false,
         // content: '<table class="border bg-gray"><tr><td>sdfdsfdsfs<br/>sdlfksdlfjds</td></tr></table>sdlkfjsdklfjds',
@@ -584,6 +522,8 @@
 
         // sharing Image properties
         selectedTempMediaId: 0,
+        selectedTempMediaIdField: '',
+
         showingImageCropperDialog: false,
 
         processingButtons: [],
@@ -837,40 +777,40 @@
       //   const vm = this
       //   return window.location.origin + '/coupons/test/' + vm.record.id + '/' + new Date().getTime()
       // },
-      sharingTitleCharCount () {
-        const vm = this
-        let result = 0
-        if (vm.record) {
-          result = vm.record.sharing_title.length
-        }
-        return result
-      },
-      sharingDescriptionCharCount () {
-        const vm = this
-        let result = 0
-        if (vm.record) {
-          result = vm.record.sharing_description.length
-        }
-        return result
-      },
-      sharingImageSrc () {
-        const vm = this
-        let result = ''
-        if (vm.record) {
-          result = vm.$store.getters.appHost + '/media/image/' + vm.record.sharing_media_id
-        }
-        return result
-      },
-      authHeaders () {
-        const vm = this
-        return {
-          Authorization: 'bearer ' + vm.$store.getters.accessToken
-        }
-      },
-      sharingImagePostAction () {
-        const vm = this
-        return vm.$store.getters.apiUrl + '/media/upload'
-      },
+      // sharingTitleCharCount () {
+      //   const vm = this
+      //   let result = 0
+      //   if (vm.record) {
+      //     result = vm.record.sharing_title.length
+      //   }
+      //   return result
+      // },
+      // sharingDescriptionCharCount () {
+      //   const vm = this
+      //   let result = 0
+      //   if (vm.record) {
+      //     result = vm.record.sharing_description.length
+      //   }
+      //   return result
+      // },
+      // sharingImageSrc () {
+      //   const vm = this
+      //   let result = ''
+      //   if (vm.record) {
+      //     result = vm.$store.getters.appHost + '/media/image/' + vm.record.sharing_media_id
+      //   }
+      //   return result
+      // },
+      // authHeaders () {
+      //   const vm = this
+      //   return {
+      //     Authorization: 'bearer ' + vm.$store.getters.accessToken
+      //   }
+      // },
+      // sharingImagePostAction () {
+      //   const vm = this
+      //   return vm.$store.getters.apiUrl + '/media/upload'
+      // },
       agents () {
         return this.$store.getters.agents
       },
@@ -942,55 +882,50 @@
         vm.$copyText(vm.customLink)
         vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
       },
-      copySharingLink () {
-        const vm = this
-        vm.$copyText(vm.testLink)
-        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
-      },
-      removeSharingImage () {
-        const vm = this
-        const data = {
-          urlCommand: '/medias/' + vm.record.sharing_media_id,
-          data: {
-            type: 'temp'
-          }
-        }
-        vm.$store.dispatch('AUTH_PUT', data).then(
-          () => {
-            vm.$toaster.success(vm.$t('messages.deleteSuccessfully'))
-            vm.record.sharing_media_id = 0
-          }
-        )
-      },
-      inputFilter (newFile, oldFile, prevent) {
-        const vm = this
-        if (newFile && !oldFile) {
-          // Filter non-image file
-          if (!/\.(jpg|jpeg|png|gif)$/i.test(newFile.name)) {
-            vm.$toaster.warning('Invalid Image File Format!')
-            return prevent()
-          }
-        }
-      },
-
-      inputImageFile (newFile, oldFile) {
-        const vm = this
-        console.log('inputImageFile')
-        if (newFile && !oldFile) {
-          this.$nextTick(function () {
-            this.editingUploadFile = true
-            this.uploading = true
-            this.$refs.uploadSharingImage.active = true
-          })
-        }
-        if (!newFile && oldFile) {
-          this.edit = false
-        }
-        if (newFile && newFile.success) {
-          vm.onUploaded(newFile.response.result)
-        }
-      },
-
+      // removeSharingImage () {
+      //   const vm = this
+      //   const data = {
+      //     urlCommand: '/medias/' + vm.record.sharing_media_id,
+      //     data: {
+      //       type: 'temp'
+      //     }
+      //   }
+      //   vm.$store.dispatch('AUTH_PUT', data).then(
+      //     () => {
+      //       vm.$toaster.success(vm.$t('messages.deleteSuccessfully'))
+      //       vm.record.sharing_media_id = 0
+      //     }
+      //   )
+      // },
+      // inputFilter (newFile, oldFile, prevent) {
+      //   const vm = this
+      //   if (newFile && !oldFile) {
+      //     // Filter non-image file
+      //     if (!/\.(jpg|jpeg|png|gif)$/i.test(newFile.name)) {
+      //       vm.$toaster.warning('Invalid Image File Format!')
+      //       return prevent()
+      //     }
+      //   }
+      // },
+      //
+      // inputImageFile (newFile, oldFile) {
+      //   const vm = this
+      //   console.log('inputImageFile')
+      //   if (newFile && !oldFile) {
+      //     this.$nextTick(function () {
+      //       this.editingUploadFile = true
+      //       this.uploading = true
+      //       this.$refs.uploadSharingImage.active = true
+      //     })
+      //   }
+      //   if (!newFile && oldFile) {
+      //     this.edit = false
+      //   }
+      //   if (newFile && newFile.success) {
+      //     vm.onUploaded(newFile.response.result)
+      //   }
+      // },
+      //
       onUploaded (result) {
         const vm = this
         console.log('onUploaded :: result: ', result)
@@ -1384,6 +1319,17 @@
         console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
         // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'cropImage':
+            vm.selectedTempMediaId = payload.imageId
+            vm.selectedTempMediaIdField = payload.imageIdField
+            // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
+            vm.$bvModal.show('imageCropperDialog')
+            // vm.showingImageCropperDialog = true
+            vm.$nextTick(() => {
+              vm.$refs.imageCropperDialog.startCrop()
+            })
+
+            break
           case 'selectCustomForm':
             switch (payload.tag) {
               case 'actionTypeBeforeGoal':
@@ -1488,6 +1434,9 @@
           //   if (typeof payload.callback === 'function') {
           //     payload.callback()
           //   }
+          //   break
+          // case 'delete_participant':
+          //
           //   break
           case 'delete_code_info':
             vm.record.code_infos.splice(payload.index, 1)
@@ -1727,6 +1676,30 @@
       //   })
       // },
 
+      certifyFormConfigs () {
+        const vm = this
+        var formConfigs = vm.record.form_configs;
+        if (formConfigs['inputObjs']) {
+          var inputObjs = formConfigs['inputObjs']
+          for (var i = 0; i < inputObjs.length; i++) {
+            var inputObj = inputObjs[i]
+            switch (inputObj['inputType']) {
+              case 'single-choice':
+              case 'multiple-choice':
+                const options = JSON.parse(JSON.stringify(inputObj['options']))
+                var result = []
+                for (var j = 0; j < options.length; j++) {
+                  if (options[j].trim() !== '') {
+                    result.push(options[j]);
+                  }
+                }
+                formConfigs['inputObjs'][i]['options'] = result
+                break
+            }
+          }
+        }
+      },
+
       save (callback) {
         const vm = this
         console.log('VoucherRecord :: save')
@@ -1735,6 +1708,9 @@
           vm.barcodeConfig
         ]
         vm.record.code_configs = codeConfigs
+
+        // Check form configs validity
+        vm.certifyFormConfigs()
 
         const data = {
           urlCommand: vm.apiPath + (vm.record.id === 0 ? '' : '/' + vm.record.id),
@@ -1945,34 +1921,7 @@
   /*flex-direction: row;*/
   /*}*/
 
-  #sharingTab .btn-toolbar .btn {
-    margin: 0 1px !important;
-  }
 
-  #sharingTab .image-wrapper {
-    border: 2px solid darkgray;
-  }
-
-  #sharingTab .image-wrapper .image-bkgd {
-    width: 200px;
-    height: 200px;
-    display: flex;
-    flex-direction: column;
-    background-color: lightgray;
-  }
-
-  #sharingTab .image-wrapper .image-bkgd img {
-    margin-top: auto;
-    align-self: center;
-    margin-bottom: auto;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
-
-  #sharingTab .copy-link {
-    cursor: pointer;
-  }
 
   .custom-link {
     background-color: #a60930;

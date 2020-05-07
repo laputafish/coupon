@@ -5,7 +5,7 @@
         :searchValue="searchValue"
         :appLoading="appLoading"
       @onCommand="onCommandHandler"></search-field>
-    <div class="">
+    <div>
       <button type="button"
               :disabled="data.length===0"
               class="btn btn-danger min-width-100 mr-1"
@@ -275,13 +275,6 @@ export default {
             fieldName: 'code_count',
             fieldValue: 0
           })
-
-          // vm.$emit('onCommand', {
-          //   command: 'clear_all_code_info',
-          //   callback: () => {
-          //     vm.$toaster.success('All codes are deleted.')
-          //   }
-          // })
         })
     },
     doDeleteAll () {

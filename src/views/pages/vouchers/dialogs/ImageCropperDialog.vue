@@ -88,6 +88,10 @@
       value: {
         type: Boolean,
         default: false
+      },
+      mediaIdField: {
+        type: String,
+        default: ''
       }
     },
     // watch: {
@@ -199,7 +203,7 @@
                   console.log('post :: response: ', response)
                   vm.$emit('onCommand', {
                     command: 'setRecordField',
-                    fieldName: 'sharing_media_id',
+                    fieldName: vm.mediaIdField,
                     fieldValue: response.data.result.imageId
                   })
                   vm.deleteMedia(vm.mediaId)

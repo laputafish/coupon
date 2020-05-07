@@ -6,6 +6,13 @@
         :appLoading="appLoading"></search-field>
     <div>
       <button type="button"
+                    :disabled="data.length===0"
+                    class="btn btn-danger min-width-100 mr-1"
+                    @click="deleteAll()">
+        <i class="fas fa-times"></i>
+        <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
+      </button>
+      <button type="button"
               :disabled="data.length===0"
               class="btn btn-warning min-width-100 mr-1"
               @click="exportExcel()">
@@ -51,7 +58,7 @@ export default {
         page: 0
       },
       xprops: {
-        buttons: ['delete', 'update'],
+        buttons: ['delete'],
         eventbus: new Vue(),
         actionButtonSize: 'xs',
         optionalChoices: []
@@ -152,6 +159,21 @@ export default {
     vm.xprops.eventbus.$off('onRowCommand')
   },
   methods: {
+    deleteParticipant (participantId) {
+      const vm = this
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucherId + '/participants/' + participantId
+      }
+      vm.$store.dispatch('AUTH_DELETE', data).then(
+        response => {
+          console.log('deleteParticipant :: AUTH_DELETE.then : response: ', response)
+          vm.onQueryChangedHandler(vm.query)
+        },
+        error => {
+          console.log('deleteParticipant :: AUTH_DELETE.then : error: ', error)
+        }
+      )
+    },
     onCommandHandler (payload) {
       const vm = this
       const command = payload.command
@@ -174,22 +196,15 @@ export default {
           vm.doDeleteAll()
           vm.$emit('onCommand', {
             command: 'setRecordField',
-            fieldName: 'code_count',
+            fieldName: 'participant_count',
             fieldValue: 0
           })
-
-          // vm.$emit('onCommand', {
-          //   command: 'clear_all_code_info',
-          //   callback: () => {
-          //     vm.$toaster.success('All codes are deleted.')
-          //   }
-          // })
         })
     },
     doDeleteAll () {
       const vm = this
       const data = {
-        urlCommand: '/vouchers/' + vm.voucherId + '/codes'
+        urlCommand: '/vouchers/' + vm.voucherId + '/participants'
       }
       vm.$store.dispatch('AUTH_DELETE', data).then(() => {
         vm.$toaster.success(vm.$t('messages.all_codes_are_removed'))
@@ -265,24 +280,22 @@ export default {
     },
     onRowCommandHandler (payload) {
       const vm = this
-      console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+      console.log('FormParticipantsTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
-        case 'edit':
-          alert('onRowCommandHandler :; edit')
-          break
-        case 'view':
-          vm.$emit('onCommand', {
-            command: 'view_leaflet',
-            row: payload.row
-          })
-          break
+        // case 'edit':
+        //   alert('onRowCommandHandler :; edit')
+        //   break
+        // case 'view':
+        //   vm.$emit('onCommand', {
+        //     command: 'view_leaflet',
+        //     row: payload.row
+        //   })
+        //   break
         case 'delete':
           vm.$dialog.confirm(vm.$t('messages.areYouSure'))
             .then( () => {
-              vm.$emit('onCommand', {
-                command: 'delete_code_info',
-                index: payload.index
-              })
+              var participantId = payload.row.id
+              vm.deleteParticipant(participantId)
             })
           break
         case 'update': // = save
@@ -431,6 +444,13 @@ export default {
             break
         }
       }
+      vm.columns.push({
+        title: 'general.action',
+        thComp: 'ThCommonHeader',
+        tdClass: 'align-middle',
+        tdComp: 'TdCommonOpt',
+        field: 'id',sortable: true
+      })
       // vm.columns = JSON.parse(JSON.stringify(vm.columns))
       // console.log('setColumns finished :: vm.columns.length = ' + vm.columns.length)
       // console.log('setColumns finished :: vm.columns: ', vm.columns)

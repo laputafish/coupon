@@ -7,6 +7,7 @@
       @input="value=>selectFormType(value)"></form-type-selection>
   <form-builder-panel-content v-if="selectedFormType"
                               :formType="selectedFormType"
+                              :participantCount="record.participant_count"
                               @onCommand="onCommandHandler"></form-builder-panel-content>
 </div>
 </template>
@@ -57,7 +58,13 @@ export default {
   computed: {
     formTypes () {
       const vm = this
-      var result = [{name: 'Question', key: 'question', formConfigs: vm.record.form_configs}]
+
+      var result = [{
+        name: 'Question',
+        key: 'question',
+        formConfigs: vm.record.form_configs
+      }]
+
       for (var i = 0; i < vm.record.custom_forms.length; i++) {
         var customForm = vm.record.custom_forms[i]
         result.push({
