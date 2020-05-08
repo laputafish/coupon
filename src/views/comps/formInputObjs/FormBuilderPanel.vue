@@ -75,7 +75,6 @@ export default {
           vm.$emit('onCommand', payload)
           break
         default:
-          // console.log('onCommandHandler :: payload: ', payload)
           payload = {
             ...payload,
             key: vm.selectedFormType.key

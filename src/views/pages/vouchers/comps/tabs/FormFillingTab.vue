@@ -12,6 +12,7 @@
                 <td class="pr-2">Target Type</td>
                 <td>
                   <data-radio-toggle
+                      class="mb-2"
                       :value="record.goal_type"
                       @input="updateGoalType"
                       :options="goalOptions"></data-radio-toggle>

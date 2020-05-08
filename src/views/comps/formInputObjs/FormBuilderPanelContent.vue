@@ -297,6 +297,10 @@
                   'updateInputObjField'
                 newPayload['objIndex'] = objIndex
                 break
+              case 'selectImage':
+                newPayload['command'] = 'selectInputObjImage'
+                newPayload['objIndex'] = objIndex
+                break
               case 'appendBlankOption':
                 newPayload['command'] = 'appendInputObjOption'
                 newPayload['objIndex'] = objIndex

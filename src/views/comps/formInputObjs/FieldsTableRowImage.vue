@@ -64,7 +64,11 @@ export default {
       })
     },
     selectImage () {
-
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'selectImage',
+        fieldName: 'question'
+      })
     },
     uploadImage () {
       const vm = this

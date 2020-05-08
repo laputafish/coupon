@@ -72,6 +72,9 @@ const FormInputObjMixin = {
           case 'newInputObj':
             vm.newInputObj(payload, formConfigs)
             break
+          case 'selectInputObjImage':
+            vm.selectInputObjImage(payload, formConfigs)
+            break
           case 'deleteInputObj':
             vm.deleteInputObj(payload, formConfigs)
             break
@@ -224,6 +227,15 @@ const FormInputObjMixin = {
         inputObjs.splice(currentIndex + 1, 0, newObj)
       }
       formConfigs.inputObjs = inputObjs
+    },
+
+    selectInputObjImage (payload, formConfigs) {
+      const vm = this
+      var currentIndex = payload.objIndex
+      if (currentIndex !== -1) {
+        formConfigs.inputObjs.splice(currentIndex, 1)
+        vm.showingImageSelectDialog = true
+      }
     },
 
     deleteInputObj (payload, formConfigs) {
