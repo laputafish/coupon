@@ -68,6 +68,7 @@
           <workflow-radio-button
               tag="actionTypeBeforeGoal"
             :selectedActionType="record.action_type_before_goal"
+            :selectedCustomFormKey="record.custom_form_key_before_goal"
             :customForms="record.custom_forms"
             :options="['form_voucher','form_custom','custom']"
             @onCommand="onCommandHandler"></workflow-radio-button>
@@ -75,6 +76,7 @@
           <workflow-radio-button
               tag="actionTypeAfterGoal"
               :selectedActionType="record.action_type_after_goal"
+              :selectedCustomFormKey="record.custom_form_key_after_goal"
               :customForms="record.custom_forms"
               :options="['form_custom', 'custom', 'none']"
               @onCommand="onCommandHandler"></workflow-radio-button>

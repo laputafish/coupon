@@ -19,9 +19,10 @@
 
 <script>
 export default {
-  model: {
-    prop: 'value',
-    event: 'input'
+  data () {
+    return {
+      value: ''
+    }
   },
   methods: {
     updateSelectedCustomForm (formKey) {
@@ -43,10 +44,14 @@ export default {
         return []
       }
     },
-    value: {
+    selectedCustomFormKey: {
       type: String,
       default: ''
     }
+  },
+  mounted () {
+    const vm = this
+    vm.value = vm.selectedCustomFormKey
   }
 }
 </script>

@@ -200,7 +200,7 @@
     methods: {
       updateInputObjOrder (reorderedInputObjs) {
         const vm = this
-        if (vm.participantCount > 0) {
+        if (vm.participantCount > 0 && vm.formType.key === 'question') {
           vm.$dialog.alert('Participant exists. Form layout canont be changed!')
         } else {
           console.log('updateInputObjOrder  :: reorderedInputObjs: ', reorderedInputObjs)

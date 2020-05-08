@@ -22,12 +22,14 @@
           </div>
           <workflow-radio-button-custom
               :selected="selectedActionType===option"
-            :customForms="customForms"
+              :selectedCustomFormKey="selectedCustomFormKey"
+              :customForms="customForms"
             @onCommand="onCommandHandler"></workflow-radio-button-custom>
         </template>
         <template v-else-if="option==='custom'">
           <workflow-radio-button-custom
               :selected="selectedActionType===option"
+              :selectedCustomFormKey="selectedCustomFormKey"
               :customForms="customForms"
               @onCommand="onCommandHandler"></workflow-radio-button-custom>
         </template>
@@ -88,6 +90,10 @@ export default {
       }
     },
     selectedActionType: {
+      type: String,
+      default: ''
+    },
+    selectedCustomFormKey: {
       type: String,
       default: ''
     }
