@@ -198,6 +198,31 @@
       vm.selectedInputObj = vm.pageInputObj
     },
     methods: {
+      updateSelectedInputObj (formType) {
+        const vm = this
+        var result = null
+        if (formType && formType['formConfigs'] && formType['formConfigs']['inputObjs']) {
+          var inputObjs = formType['formConfigs']['inputObjs']
+          for (var i = 0; i < inputObjs.length; i++) {
+            var inputObj = inputObjs[i]
+
+            console.log('updateSelectedInputObj :: inputObj.inputtype = ' +
+              inputObj.inputType +
+              ', name=' + inputObj.name)
+
+            console.log('updateSelectedInputObj :: selectedInputObj.inputtype = ' +
+              vm.selectedInputObj.inputType +
+              ', name=' + vm.selectedInputObj.name)
+
+            if (vm.selectedInputObj.inputType == inputObj.inputType &&
+              vm.selectedInputObj.name === inputObj.name) {
+              result = inputObj
+              break
+            }
+          }
+        }
+        vm.selectedInputObj = result
+      },
       updateInputObjOrder (reorderedInputObjs) {
         const vm = this
         if (vm.participantCount > 0 && vm.formType.key === 'question') {

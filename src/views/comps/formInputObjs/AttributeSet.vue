@@ -168,11 +168,16 @@ export default {
       }
       return result
     },
-    keyValuesToStr (keyValues) {
+    keyValuesToStr (keyValues, keepBlank) {
+      if (typeof keepBlank === 'undefined') {
+        keepBlank = false
+      }
       var result = ''
       if (Object.keys(keyValues).length >0) {
         for (var key in keyValues) {
-          result += key + ':' + keyValues[key] + ';'
+          if (keyValues[key]!=='' || keepBlank) {
+            result += key + ':' + keyValues[key] + ';'
+          }
         }
       }
       return result
@@ -279,9 +284,16 @@ export default {
       }
       var keyValues = vm.strToKeyValues(options[optionIndex])
       keyValues[styleName] = value
-      options[optionIndex] = vm.keyValuesToStr(keyValues)
-      // console.log('Attribute :: updateStyleValue :: optionIndex = ' + optionIndex)
-      // console.log('Attribute :: updateStyleValue :: ' + styleName + ' => ' + value)
+
+      console.log('updateStyleValue :: styleName = ' + styleName)
+      console.log('updateStyleValue :: value = ' + value)
+
+      options[optionIndex] = vm.keyValuesToStr(keyValues, false) // false = don't keep if blank
+
+      console.log('Attribute :: updateStyleValue :: optionIndex = ' + optionIndex)
+      console.log('Attribute :: updateStyleValue :: ' + styleName + ' => ' + value)
+      console.log('Attribute :: options: ', options)
+
 
       vm.$emit('onCommand', {
         command: 'updateOptions',

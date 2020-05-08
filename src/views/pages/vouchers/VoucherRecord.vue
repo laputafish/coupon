@@ -957,7 +957,7 @@
         }
 
         // init form configs
-        if (vm.record.form_configs === null) {
+        if (vm.record.form_configs === null || vm.record.form_configs.length===0) {
           vm.record.form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
         }
 
@@ -987,39 +987,69 @@
         // *****************
         // qrcode
         // *****************
-        vm.qrcodeConfig = {
+        vm.qrcodeConfig = vm.getCodeConfig('qrcode', {
           id: 0,
           composition: '',
           'code_group': 'qrcode',
           'code_type': 'QRCODE',
           width: 160,
           height: 160
-        }
-        const qrcodes = vm.record.code_configs.filter(config => {
-          return config.code_group === 'qrcode'
         })
-        if (qrcodes && qrcodes.length > 0) {
-          vm.qrcodeConfig = qrcodes[0]
-        }
 
-        // *****************
-        // barcode
-        // *****************
-        vm.barcodeConfig = {
+        vm.barcodeConfig = vm.getCodeConfig('barcode', {
           id: 0,
           composition: '',
           'code_group': 'barcode',
           'code_type': 'C128',
           width: 3,
           height: 12
-        }
-        const barcodes = vm.record.code_configs.filter(config => {
-          return config.code_group === 'barcode'
         })
 
-        if (barcodes && barcodes.length > 0) {
-          vm.barcodeConfig = barcodes[0]
+        // vm.qrcodeConfig = {
+        //   id: 0,
+        //   composition: '',
+        //   'code_group': 'qrcode',
+        //   'code_type': 'QRCODE',
+        //   width: 160,
+        //   height: 160
+        // }
+        // const qrcodes = vm.record.code_configs.filter(config => {
+        //   return config.code_group === 'qrcode'
+        // })
+        // if (qrcodes && qrcodes.length > 0) {
+        //   vm.qrcodeConfig = qrcodes[0]
+        // }
+        //
+        // // *****************
+        // // barcode
+        // // *****************
+        // vm.barcodeConfig = {
+        //   id: 0,
+        //   composition: '',
+        //   'code_group': 'barcode',
+        //   'code_type': 'C128',
+        //   width: 3,
+        //   height: 12
+        // }
+        // const barcodes = vm.record.code_configs.filter(config => {
+        //   return config.code_group === 'barcode'
+        // })
+        //
+        // if (barcodes && barcodes.length > 0) {
+        //   vm.barcodeConfig = barcodes[0]
+        // }
+      },
+
+      getCodeConfig (codeGroup, defaultConfig) {
+        const vm = this
+        var result = defaultConfig
+        const codes = vm.record.code_configs.filter(config => {
+          return config.code_group === codeGroup
+        })
+        if (codes && codes.length > 0) {
+          result = codes[0]
         }
+        return result
       },
       // onFullscreenStateChanged (full) {
       //   alert('onFull')

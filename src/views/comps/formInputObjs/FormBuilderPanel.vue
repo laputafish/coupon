@@ -5,7 +5,7 @@
       :value="selectedFormType"
       @onCommand="onCommandHandler"
       @input="value=>selectFormType(value)"></form-type-selection>
-  <form-builder-panel-content v-if="selectedFormType"
+  <form-builder-panel-content ref="formBuilderPanelContent" v-if="selectedFormType"
                               :formType="selectedFormType"
                               :participantCount="record.participant_count"
                               @onCommand="onCommandHandler"></form-builder-panel-content>
@@ -21,10 +21,39 @@ export default {
     formBuilderPanelContent,
     formTypeSelection
   },
+  props: {
+    record: {
+      type: Object,
+      default () {
+        return null
+      }
+    }
+  },
   data () {
     return {
       selectedFormType: null,
     }
+  },
+  watch: {
+   formTypes: {
+     handler: function(newValue) {
+       const vm = this
+       if (vm.selectedFormType) {
+         var key = vm.selectedFormType.key
+         for (var i = 0; i < vm.formTypes.length; i++) {
+           if (vm.formTypes[i].key === key) {
+             vm.selectedFormType = vm.formTypes[i]
+             vm.$refs.formBuilderPanelContent.updateSelectedInputObj(vm.selectedFormType)
+             break
+           }
+         }
+       } else {
+         vm.selectedFormType = vm.formTypes[0]
+         vm.$refs.formBuilderPanelContent.updateSelectedInputObj(vm.selectedFormType)
+       }
+     },
+     deep: true
+   }
   },
   methods: {
     selectFormType (formType) {
@@ -79,14 +108,6 @@ export default {
   mounted () {
     const vm = this
     vm.selectedFormType = vm.formTypes[0]
-  },
-  props: {
-    record: {
-      type: Object,
-      default () {
-        return null
-      }
-    }
   }
 }
 </script>

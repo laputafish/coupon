@@ -10,7 +10,7 @@
         <div v-if="inputObj.question && inputObj.question!==''"
              class="input-obj-question badge badge-info"
              v-html="questionContext"></div>
-        <div v-if="inputObj.required==='1' && isInput" class="badge badge-danger ml-1">
+        <div v-if="inputObj.required && isInput" class="badge badge-danger ml-1">
           <i class="fas fa-bahai"></i>
         </div>
       </div>
@@ -29,6 +29,11 @@
             <div class="input-obj-option m-0 badge badge-secondary">{{ option }}</div>
           </div>
         </div>
+      </div>
+      <div v-if="inputObj.inputType.substr(0,6)==='output'">
+        <small class="line-height-1 mt-1 px-1 d-block note-font-size-10" v-for="(option, index) in inputObj.options">
+          {{ option }}
+        </small>
       </div>
       <slot>
       </slot>
