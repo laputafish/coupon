@@ -333,6 +333,7 @@
             @onCommand="onCommandHandler"></form-filling-tab>
 
         <custom-forms-tab
+            ref="customFormsTab"
             v-if="record.voucher_type==='form'"
             title="Custom Forms"
             :record="record"
@@ -349,54 +350,6 @@
             title="Form Page Templates"
             :templates="allTemplates"
             @onCommand="onCommandHandler"></form-page-templates-tab>
-
-        <!--
-        *****************
-         Questionnaire
-        *****************
-        -->
-        <b-tab class="bg-white py-2" v-if="false">
-          <template v-slot:title>
-            {{ $t('vouchers.questionnaire_template') }}
-            <div v-if="record"
-                 @click.prevent.stop="record.has_questionnaire=!record.has_questionnaire"
-                 class="badge">
-              <div v-show="record.has_questionnaire">
-                <i class="fas fa-lg fa-check-square"></i>
-              </div>
-              <div v-show="!record.has_questionnaire">
-                <i class="fas fa-lg fa-square"></i>
-              </div>
-            </div>
-          </template>
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-12">
-                <div class="mb-1 d-flex flex-row align-items-center">
-                  <div class="mr-1">LINK:</div>
-                  <div v-if="!record.has_questionnaire">
-                    Questionnaire is not used.
-                  </div>
-                  <div v-else-if="!record.questionnaire_key || !record.questionnaire" class="badge badge-muted">
-                    Link is available after saving.
-                  </div>
-                  <div v-else class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"
-                       @click="copyQuestionnaireLink()">
-                    {{ questionnaireLink }}
-                    <font-awesome-icon class="ml-1" icon="copy"/>
-                  </div>
-                </div>
-                <template-editor
-                    @onCommand="onCommandHandler"
-                    v-model="record.questionnaire">
-                  <template v-slot:sidePanel>
-                    <h1>Side Panel</h1>
-                  </template>
-                </template-editor>
-              </div>
-            </div>
-          </div>
-        </b-tab>
 
       </b-tabs>
     </div>
@@ -420,7 +373,8 @@
         @onCommand="onCommandHandler"></voucher-select-dialog>
     <image-select-dialog
         :title="$t('vouchers.images')"
-        scope="tinymce"
+        :voucher="record"
+        :imageScope="imageScope"
         v-model="showingImageSelectDialog"
         @onCommand="onCommandHandler"></image-select-dialog>
 
@@ -521,6 +475,7 @@
         showingImageSelectDialog: false,
 
         // sharing Image properties
+        imageScope: '',
         selectedTempMediaId: 0,
         selectedTempMediaIdField: '',
 
@@ -613,131 +568,9 @@
           height: 0
         },
         testLink: '',
-        inputObjs: [
-          {
-            id: 1,
-            name: 'Simple Text',
-            order: 1,
-            fixed: false,
-            inputType: 'simple-text',
-            question: '簡單輸入',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          },
-          {
-            id: 2,
-            name: 'Name',
-            order: 2,
-            fixed: false,
-            inputType: 'name',
-            question: '名字',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          },
-          {
-            id: 3,
-            name: 'Phone',
-            order: 3,
-            fixed: false,
-            inputType: 'phone',
-            question: '電話號碼',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          },
-          {
-            id: 4,
-            name: 'Email',
-            order: 4,
-            fixed: false,
-            inputType: 'email',
-            question: 'Email',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          },
-          {
-            id: 5,
-            name: 'Address',
-            order: 5,
-            fixed: false,
-            inputType: 'text',
-            question: '地址 (我哋會安排以郵寄方式將3天試用裝寄比你)',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          },
-          {
-            id: 6,
-            name: 'Remark',
-            order: 6,
-            fixed: false,
-            inputType: 'label',
-            question: '* 試用裝將會於登記後一星期內以郵遞寄出',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          },
-          {
-            id: 7,
-            name: 'Do you know it?',
-            order: 7,
-            fixed: false,
-            inputType: 'single-choice',
-            question: '你認唔認識UL·OS呢個品牌？ *',
-            required: true,
-            options: ['認識', '不認識'],
-            notes: 'simple text'
-          },
-          {
-            id: 8,
-            name: 'Ever buy or use it?',
-            order: 8,
-            fixed: false,
-            inputType: 'single-choice',
-            question: '你有無曾經用過或買過UL·OS嘅產品？',
-            required: true,
-            options: ['曾經使用', '曾經購買', '未曾使用', '未曾購買'],
-            notes: 'simple text'
-          },
-          {
-            id: 9,
-            name: 'Seen in shops?',
-            order: 9,
-            fixed: false,
-            inputType: 'multiple-choice',
-            question: '你有無喺以下店舖見過UL·OS嘅產品？（可多選） *',
-            required: true,
-            options: [
-              '屈臣氏',
-              '百佳',
-              '惠康',
-              '7-11',
-              'Donki',
-              'YATA',
-              'AEON',
-              'APITA',
-              'HKTVmall',
-              '完全無見過認識',
-              '不認識'
-            ]
-          },
-          {
-            id: 10,
-            name: 'Remark',
-            order: 10,
-            fixed: false,
-            inputType: 'label',
-            question: '* 每人只限登記乙次及換領乙份，換完即止。\n' +
-            '\n' +
-            '* 換領日期為2020年5月5日至5月11日，逾期無效。',
-            required: true,
-            options: [],
-            notes: 'simple text'
-          }
-        ]
+        inputObjs: [],
+        selectedFormConfigs: null,
+        selectedInputObjIndex: -1
       }
     },
     props: {
@@ -1096,6 +929,11 @@
         tinyMCE.get('yoovEditor').on('fullscreenStateChanged', function (e) {
           vm.tinyMCEInFullScreen = e.state
         })
+        const editor = tinyMCE.get('yoovEditor')
+        editor.on('blur', function(e) {
+          editor.selection.collapse(false);
+          // console.log('yooveditor.on(blur) e: ', e)
+        })
         // tinymce.get('yoovEditor').setContent('<p>hello world</p>')
         // console.log('tinymce: ', tinymce)
         // vm.$refs.yoovEditor.setContent('<p>hello world</p>')
@@ -1120,6 +958,7 @@
         console.log('VoucherRecord :: btnSelectImage :: ', btnSelectImage)
 
         $(btnSelectImage).off('click').on('click', function () {
+          vm.imageScope = 'tinymce'
           vm.showingImageSelectDialog = true
         })
 
@@ -1420,18 +1259,29 @@
               {formKey: payload.formKey},
               customForm.name)
             break
-          case 'onNewFormType':
-            break
+          // case 'onNewFormType':
+          //   break
           case 'onRenameFormName':
             var formKey = payload.idParams['formKey']
             customForm = vm.getCustomFormByKey(formKey)
             customForm.name = payload.fieldValue
             break
-          case 'selectImage':
-            const editor = tinyMCE.get('yoovEditor')
-            const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
-            editor.insertContent('<img class="content-img" src="' + url + '"/>');
-            vm.$toaster.success('Image Added')
+          case 'onImageSelected':
+            switch (payload.imageScope) {
+              case 'tinymce':
+                const editor = tinyMCE.get('yoovEditor')
+                const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
+                editor.insertContent('<img class="content-img" src="' + url + '"/>');
+                vm.$toaster.success('Image Added')
+                break
+              case 'inputObj':
+                if (vm.selectedFormConfigs && vm.selectedInputObjIndex >= 0) {
+                  vm.selectedFormConfigs.inputObjs[vm.selectedInputObjIndex]['question'] =
+                    vm.$store.getters.appHost + '/media/image/' + payload.imageId
+                }
+                vm.showingImageSelectDialog = false
+                break
+            }
             break
           case 'copyTemplate':
             vm.copyTemplate(payload.voucher)
@@ -1512,18 +1362,18 @@
           case 'updateField':
             var fieldName = payload.fieldName
             var fieldValue = payload.fieldValue
-            console.log('onCommandHandler :: updateField :; fieldName = ' + fieldName)
-            console.log('onCommandHandler :: updateField :; fieldValue = ' + fieldValue)
+            // console.log('onCommandHandler :: updateField :; fieldName = ' + fieldName)
+            // console.log('onCommandHandler :: updateField :; fieldValue = ' + fieldValue)
             vm.record[fieldName] = fieldValue
             break
           case 'setQrCodeComposition':
-            console.log('setQrCodeComposition :: payload.data: ', payload.data)
+            // console.log('setQrCodeComposition :: payload.data: ', payload.data)
             if (vm.qrcodeConfig.composition === '' || payload.data === '') {
-              console.log('setQrCodeComposition: vm.qrcodeConfig.composition === "" || payload.data === ""')
+              // console.log('setQrCodeComposition: vm.qrcodeConfig.composition === "" || payload.data === ""')
               vm.qrcodeConfig.composition = payload.data
             }
             if (vm.barcodeConfig.composition === '' || payload.data === '') {
-              console.log('setQrCodeComposition: vm.barcodeConfig.composition === "" || payload.data === ""')
+              // console.log('setQrCodeComposition: vm.barcodeConfig.composition === "" || payload.data === ""')
               vm.barcodeConfig.composition = payload.data
             }
             break
@@ -1613,7 +1463,7 @@
         //    ['value1', 'value2',setCodeFields 'value3', 'value4'],
         //    ['value1', 'value2', 'value3', 'value4']
         // ]setCodeFields
-        console.log('updateCodeInfos :: newCodeDataList: ', newCodeDataList)
+        // console.log('updateCodeInfos :: newCodeDataList: ', newCodeDataList)
         const vm = this
         let existingCodes = []
         if (vm.record.code_infos) {

@@ -49,7 +49,8 @@ const FormInputObjMixin = {
         question: '',
         required: '1',
         options: [],
-        notes: ''
+        note1: '',
+        note2: ''
       }
       return result
     },
@@ -233,7 +234,9 @@ const FormInputObjMixin = {
       const vm = this
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        formConfigs.inputObjs.splice(currentIndex, 1)
+        vm.selectedFormConfigs = formConfigs
+        vm.selectedInputObjIndex = currentIndex
+        vm.imageScope = 'inputObj'
         vm.showingImageSelectDialog = true
       }
     },

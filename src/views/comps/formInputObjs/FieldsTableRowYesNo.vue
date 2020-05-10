@@ -8,12 +8,12 @@
       <div class="btn-group">
         <button type="button"
                 class="btn"
-                @click="updateField(true)"
-                :class="{'btn-primary':value,'btn-light':!value}">Yes</button>
+                @click="updateField('1')"
+                :class="{'btn-primary':value==='1','btn-light':value==='0'}">Yes</button>
         <button type="button"
                 class="btn"
                 @click="updateField('0')"
-                :class="{'btn-primary':!value,'btn-light':value}">No</button>
+                :class="{'btn-primary':value==='0','btn-light':value==='1'}">No</button>
       </div>
     </td>
   </tr>
@@ -35,8 +35,8 @@ export default {
       value: ''
     },
     value: {
-      type: Boolean,
-      value: true
+      type: String,
+      value: '1'
     },
     type: {
       type: String,

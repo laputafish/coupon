@@ -35,23 +35,27 @@ export default {
   props: {
     label: {
       type: String,
-      value: ''
+      default: ''
     },
     notes: {
       type: String,
-      value: ''
+      default: ''
     },
     value: {
       type: String,
-      value: ''
+      default: ''
     },
     type: {
       type: String,
-      value: 'text'
+      default: 'text'
     },
     fieldName: {
       type: String,
-      value: ''
+      default: ''
+    },
+    voucher: {
+      type: Object,
+      default: null
     }
   },
   methods: {
@@ -79,7 +83,8 @@ export default {
       var input = obj
       var data = new FormData()
       data.append('file', input.files[0])
-      data.append('scope', 'general')
+      data.append('scope', 'local')
+      data.append('voucherId', vm.voucher.id)
 
       vm.$store.dispatch('AUTH_UPLOAD_IMAGE', data).then(response => {
         var imageUrl = response.result.imageUrl

@@ -56,8 +56,8 @@
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
           <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
-          <fields-table-row label="Notes" :value="inputObj.note1" notes="* first name" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
-          <fields-table-row label="Notes" :value="inputObj.note2" notes="* last name" fieldName="note2" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note1" notes="* Region Code" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note2" notes="* Phone No." fieldName="note2" @onCommand="onCommandHandler"></fields-table-row>
         </table>
       </div>
     </div>
@@ -103,6 +103,7 @@
         <table class="table table-hover details-field-table">
           <fields-table-row-image label="Image Link"
                                   :value="inputObj.question"
+                                  :voucher="voucher"
                                   fieldName="question"
                                   @onCommand="onCommandHandler"></fields-table-row-image>
         </table>
@@ -183,6 +184,10 @@ export default {
     inputObj: {
       type: Object,
       default:  null
+    },
+    voucher: {
+      type: Object,
+      default: null
     }
   },
   computed: {

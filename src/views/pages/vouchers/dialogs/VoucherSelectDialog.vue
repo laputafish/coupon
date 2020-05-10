@@ -126,7 +126,7 @@
     methods: {
       onCommandHandler (payload) {
         const vm = this
-        console.log('VoucherSelectDialog :; onCommandHandler :: payload: ', payload)
+        // console.log('VoucherSelectDialog :; onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
           case 'ok':
@@ -141,8 +141,8 @@
       },
       setInitialAgent () {
         const vm = this
-        console.log('setInitialAgent :: initialAGentId = ' + vm.initialAgentId)
-        console.log('setInitialAgent :: agents.length = ' + vm.agents.length)
+        // console.log('setInitialAgent :: initialAGentId = ' + vm.initialAgentId)
+        // console.log('setInitialAgent :: agents.length = ' + vm.agents.length)
         if (vm.initialAgentId === 0) {
           vm.selectedAgent = null
         } else {
@@ -153,7 +153,7 @@
             }
           }
         }
-        console.log('selectedAgent: ', vm.selectedAgent)
+        // console.log('selectedAgent: ', vm.selectedAgent)
       },
       fetchAgentVouchers () {
         const vm = this
@@ -172,7 +172,7 @@
             response => {
               vm.loading = false
               vm.vouchers = response
-              console.log('GET vouchers')
+              // console.log('GET vouchers')
             },
             () => {
               vm.loading = false

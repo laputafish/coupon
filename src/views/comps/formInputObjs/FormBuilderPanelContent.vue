@@ -59,6 +59,7 @@
       <div class="col-sm-5">
         <pane-details
             v-if="selectedInputObj"
+            :voucher="voucher"
             :inputObj="selectedInputObj"
             @onCommand="onCommandHandler"></pane-details>
       </div>
@@ -94,6 +95,10 @@
     mixins: [dialogMixin],
     name: "FormBuilderPanel",
     props: {
+      voucher: {
+        type: Object,
+        default: null
+      },
       formType: {
         type: Object,
         default: null

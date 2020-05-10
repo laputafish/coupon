@@ -469,25 +469,25 @@ export default {
       }
     },
     setCodeFieldValue (row, fieldName, fieldValue) {
-      console.log('setCodeFieldValue :: row: ', row)
-      console.log('setCodeFieldValue :: fieldName: ', fieldName)
-      console.log('setCodeFieldValue :: fieldValue: ', fieldValue)
+      // console.log('setCodeFieldValue :: row: ', row)
+      // console.log('setCodeFieldValue :: fieldName: ', fieldName)
+      // console.log('setCodeFieldValue :: fieldValue: ', fieldValue)
       const vm = this
       for (let i = 0; i < vm.data.length; i++) {
         if (vm.data[i] == row) {
-          console.log('vm.data[' + i + '] == row')
+          // console.log('vm.data[' + i + '] == row')
           vm.data[i][fieldName] = fieldValue
           break
         } else {
-          console.log('vm.data[' + i + '] not equals to row')
+          // console.log('vm.data[' + i + '] not equals to row')
         }
       }
     },
     setCodeFieldValue2 (row, fieldName, fieldValue) {
       const vm = this
       // const result = null
-      console.log('setCodeFieldValue: row[code] = ' + row['code'])
-      console.log('setCodeFieldValue: row[extra_fields] = ' + row['extra_fields'])
+      // console.log('setCodeFieldValue: row[code] = ' + row['code'])
+      // console.log('setCodeFieldValue: row[extra_fields] = ' + row['extra_fields'])
       for (let i = 0; i < vm.data.length; i++) {
         const codeInfo = vm.data[i]
         // console.log('record.codeInfo[code] = ' + codeInfo['code'])
@@ -505,7 +505,7 @@ export default {
     },
     getCodeFieldsFromStr (fieldStr) {
       const result = []
-      console.log('getCodeFieldsFromStr: fieldStr = ' + fieldStr)
+      // console.log('getCodeFieldsFromStr: fieldStr = ' + fieldStr)
       if (fieldStr !== null && fieldStr !== '') {
         const arTitleType = fieldStr.split('|')
         for (let i = 0; i < arTitleType.length; i++) {
@@ -527,7 +527,7 @@ export default {
       // Code:string|Serial No:string|activate_date:date
       //
       const vm = this
-      console.log('setColumns: fieldsStr = ' + fieldsStr)
+      // console.log('setColumns: fieldsStr = ' + fieldsStr)
       const codeFields = vm.getCodeFieldsFromStr(fieldsStr);
       // codeFields = [
       //    {
@@ -607,13 +607,13 @@ export default {
     // },
 
     onUploadingHandler () {
-      console.log('AgentCodeTable :: onUploadingHandler')
+      // console.log('AgentCodeTable :: onUploadingHandler')
       this.uploading = true
     },
 
     onUploadedHandler (result) {
       const vm = this
-      console.log('onUploaded');
+      // console.log('onUploaded');
       // result = {
       //    codeFields: "barcode:string|serialno:string|actdate:date|exdate:date"
       //    new: 9
@@ -622,11 +622,11 @@ export default {
       //
       vm.uploading = false
       if (result.codeFields) {
-        console.log('onUploaded :: result.codeFields: ', result.codeFields)
+        // console.log('onUploaded :: result.codeFields: ', result.codeFields)
         const newCodeFieldsStr = result.codeFields
-        console.log('onUploaded :: newCodefieldsStr = ' + newCodeFieldsStr)
+        // console.log('onUploaded :: newCodefieldsStr = ' + newCodeFieldsStr)
         if (vm.codeFieldsStr == newCodeFieldsStr) {
-          console.log('onUploaded :: vm.codeFieldsStr == newCodefieldsStr')
+          // console.log('onUploaded :: vm.codeFieldsStr == newCodefieldsStr')
           // vm.reloadCodeList(vm.query)
         } else {
           // if (newCodeFieldsStr !== vm.codeFieldsStr && vm.codeFieldsStr !== null) {

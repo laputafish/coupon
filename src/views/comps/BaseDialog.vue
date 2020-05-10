@@ -9,21 +9,23 @@
       <div class="w-100 text-right">
         <div class="btn-toolbar justify-content-end">
           <template v-if="modalType==='confirmation'">
-            <b-button
-                :disabled="!okButtonState"
-                variant="primary"
-                size="sm"
-                class="min-width-80"
-                @click="$emit('onCommand', {command: 'ok'})">
-              {{ $t('buttons.ok') }}
-            </b-button>
-            <b-button
-                variant="secondary"
-                size="sm"
-                class="min-width-80"
-                @click="closeDialog()">
-              {{ $t('buttons.cancel') }}
-            </b-button>
+            <slot name="buttonBar">
+              <b-button
+                  :disabled="!okButtonState"
+                  variant="primary"
+                  size="sm"
+                  class="min-width-80"
+                  @click="$emit('onCommand', {command: 'ok'})">
+                {{ $t('buttons.ok') }}
+              </b-button>
+              <b-button
+                  variant="secondary"
+                  size="sm"
+                  class="min-width-80"
+                  @click="closeDialog()">
+                {{ $t('buttons.cancel') }}
+              </b-button>
+            </slot>
           </template>
           <template v-else>
             <b-button

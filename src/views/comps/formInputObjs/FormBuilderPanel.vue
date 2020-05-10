@@ -7,6 +7,7 @@
       @input="value=>selectFormType(value)"></form-type-selection>
   <form-builder-panel-content ref="formBuilderPanelContent" v-if="selectedFormType"
                               :formType="selectedFormType"
+                              :voucher="record"
                               :participantCount="record.participant_count"
                               @onCommand="onCommandHandler"></form-builder-panel-content>
 </div>

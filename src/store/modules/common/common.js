@@ -106,7 +106,7 @@ const actions = {
   // },
   [types.REFRESH_AUTH_GET] ({dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      console.log('AUTH_GET :: payload: ', payload)
+      // console.log('AUTH_GET :: payload: ', payload)
       dispatch('AUTH_REFRESH').then(
         () => {
           // console.log('AUTH_GET :: payload: ', payload)
@@ -140,7 +140,7 @@ const actions = {
 
   [types.AUTH_GET] ({dispatch, rootGetters}, payload) {
     return new Promise((resolve, reject) => {
-      console.log('AUTH_GET :: payload: ', payload)
+      // console.log('AUTH_GET :: payload: ', payload)
       const token = rootGetters.accessToken
       // console.log('AUTH_GET :: AUTH_REFRESH :: token = ' + token)
       if (typeof payload !== 'object') {
@@ -154,12 +154,12 @@ const actions = {
       payload.options.headers = {Authorization: 'bearer ' + token}
       dispatch('COMMON_GET', payload).then(
         response => {
-          console.log('AUTH_GET > COMMON_GET.then: response: ', response)
+          // console.log('AUTH_GET > COMMON_GET.then: response: ', response)
           resolve(response)
         }
       ).catch(
         error => {
-          console.log('AUTH_GET > COMMON_GET.catch: error: ', error)
+          // console.log('AUTH_GET > COMMON_GET.catch: error: ', error)
           reject(error)
         }
       )
@@ -201,7 +201,7 @@ const actions = {
       } else {
         urlCommand = payload
       }
-      console.log('COMMON_GET :: getPayload: ', getPayload)
+      // console.log('COMMON_GET :: getPayload: ', getPayload)
       const url = rootGetters.apiUrl + urlCommand
       // console.log('COMMON_GET url=' + url)
       // console.log('COMMON_GET config: ', getPayload)
@@ -220,7 +220,7 @@ const actions = {
 
   [types.AUTH_REFRESH] ({rootGetters, commit, dispatch}, payload) {
     return new Promise((resolve, reject) => {
-      console.log('AUTH_REFRESH')
+      // console.log('AUTH_REFRESH')
       let url = rootGetters.constants.apiUrl + '/auth/refresh'
       let options = {
         headers: {
@@ -288,7 +288,7 @@ const actions = {
       if (!payload.options) {
         payload.options = {}
       }
-      console.log('AUTH_POST :: payload: ', payload)
+      // console.log('AUTH_POST :: payload: ', payload)
       payload.options.headers = {Authorization: 'bearer ' + rootGetters.accessToken}
       dispatch('COMMON_POST', payload)
         .then(response => {

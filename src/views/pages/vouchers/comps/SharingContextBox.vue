@@ -290,7 +290,7 @@ export default {
 }
 
 .sharing-context-box .image-wrapper {
-  border: 2px solid darkgray;
+  border: 1px solid darkgray;
 }
 
 .sharing-context-box .image-wrapper .image-bkgd {

@@ -5,7 +5,7 @@
             v-for="option in options"
             :key="option.name"
             @click="selectOption(option.value)"
-            :class="{'btn-success': option.value === value, 'btn-light': option.value !== value}">
+            :class="getButtonClasses(option)">
       {{ option.name }}
     </button>
   </div>
@@ -18,6 +18,10 @@ export default {
     event: 'input'
   },
   props: {
+    btnClass: {
+      type: String,
+      default: ''
+    },
     value: {
       type: [String, Number],
       default: ''
@@ -30,6 +34,19 @@ export default {
     }
   },
   methods: {
+    getButtonClasses (option) {
+      const vm = this
+      var result = []
+      if  (vm.btnClass !== '') {
+        result.push(vm.btnClass)
+      }
+      if (option.value === vm.value) {
+        result.push('btn-success')
+      } else {
+        result.push('btn-light')
+      }
+      return result.join(' ')
+    },
     selectOption (value) {
       const vm = this
       console.log('DataRadioToggle :: selectOption :: value: ', value)

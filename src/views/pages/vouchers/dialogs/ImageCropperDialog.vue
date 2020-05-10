@@ -127,7 +127,7 @@
           autoCropHeight: 256,
           maxImgSize: 256,
           original: false,
-          mode: 'cover',
+          mode: 'contain', // cover',
           centerBox: true,
           high: true
         },
@@ -284,7 +284,7 @@
   }
 
   #imageCropperDialog .left-pane-scroll {
-    overflow-x: hidden;
+    /*overflow-x: hidden;*/
     height: 0;
     min-height: 100%;
   }

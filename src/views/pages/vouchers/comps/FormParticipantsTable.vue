@@ -280,7 +280,7 @@ export default {
     },
     onRowCommandHandler (payload) {
       const vm = this
-      console.log('FormParticipantsTable :: onRowCommandHandler :: payload: ', payload)
+      // console.log('FormParticipantsTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
         // case 'edit':
         //   alert('onRowCommandHandler :; edit')
@@ -302,7 +302,7 @@ export default {
           vm.saveCodeInfo(payload.row);
           break
         case 'updateField':
-          console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
+          // console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
           // vm.$emit('onCommand', {
           vm.setCodeFieldValue(
             payload.row,
@@ -322,7 +322,7 @@ export default {
     setColumns (userInputObjs) {
       const vm = this
       vm.xprops['optionalChoices'] = {}
-      console.log('setColumns :: userInputObjs: ', userInputObjs)
+      // console.log('setColumns :: userInputObjs: ', userInputObjs)
       vm.columns = [{
         title: vm.$t('general.number'),
         thComp: 'ThSimpleHeader',
@@ -336,7 +336,7 @@ export default {
         var userInputObj = userInputObjs[i]
         var inputType = userInputObj['inputType'];
         var fieldName = 'field' + i;
-        console.log('i = ' + i + ': userInputObj: ', userInputObj)
+        // console.log('i = ' + i + ': userInputObj: ', userInputObj)
         switch (inputType) {
           case 'simple-text':
             vm.columns.push({
@@ -423,12 +423,11 @@ export default {
               tdComp: 'TdSingleChoice',
               field: fieldName
             });
-            console.log('setColumns :: fieldName = ' + fieldName)
-            console.log('setColumns :: userInputObjs: ', userInputObj.options)
-
+            // console.log('setColumns :: fieldName = ' + fieldName)
+            // console.log('setColumns :: userInputObjs: ', userInputObj.options)
             vm.xprops['optionalChoices'][fieldName] = userInputObj.options
 
-            console.log('setColumns :: xprops: ', vm.xprops)
+            // console.log('setColumns :: xprops: ', vm.xprops)
 
             break
           case 'multiple-choice':
@@ -458,7 +457,7 @@ export default {
     setColumnsxxx (inputObjs) {
       const vm = this
       vm.xprops['inputObjs'] = inputObjs;
-      console.log('setColumns :: inputObjs: ', inputObjs)
+      // console.log('setColumns :: inputObjs: ', inputObjs)
       vm.columns = [{
         title: vm.$t('general.number'),
         thComp: 'ThSimpleHeader',
@@ -477,7 +476,7 @@ export default {
         }
 
         var fieldName = 'field' + index;
-        console.log('index = ' + index + ': inputObj: ', inputObj)
+        // console.log('index = ' + index + ': inputObj: ', inputObj)
         switch (inputObj.inputType) {
           case 'simple-text':
             vm.columns.push({

@@ -1,10 +1,14 @@
 <template>
-  <div class="image-item mr-1 mb-1"
+  <div class="image-item ml-1 m-0"
        @click="selectImage"
-      :class="{'active':(activeImage && (activeImage.id===imageItem.id))}">
+      :class="{'active':activeImage===imageItem}">
     <img :src="imageSrc"/>
     <div class="image-border">
-
+      <button class="btn btn-circle btn-danger"
+              @click.prevent.stop="deleteImage"
+        style="position:absolute;top:5px; right:5px;">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
   </div>
 </template>
@@ -32,6 +36,13 @@ export default {
     }
   },
   methods: {
+    deleteImage () {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'onDeleteImage',
+        image: vm.imageItem
+      })
+    },
     selectImage () {
       const vm = this
       console.log('ImageItem :: selectImage')
@@ -55,6 +66,12 @@ export default {
   padding: 0;
   border: none;
   cursor: pointer;
+}
+.image-item:hover .image-border .btn-danger {
+  display: block;
+}
+.image-item .image-border .btn-danger {
+  display: none;
 }
 .image-item:hover .image-border {
   border-color: #f6f6f6;
