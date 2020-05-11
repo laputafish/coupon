@@ -7,8 +7,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-      <sidebar-user-panel avatarUrl="/img/user.png"
-        name="Admin"></sidebar-user-panel>
+
+      <sidebar-user-panel></sidebar-user-panel>
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -17,9 +17,9 @@
         </h4>
         <sidebar-menu v-else :menu="mainMenu"></sidebar-menu>
       </nav>
-      <div class="text-center mt-3">
-        <a :href="sampleUrl" type="button" class="btn btn-danger">Download XLS Samples</a>
-      </div>
+      <!--<div class="text-center mt-3">-->
+        <!--<a :href="sampleUrl" type="button" class="btn btn-danger">Download XLS Samples</a>-->
+      <!--</div>-->
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
@@ -42,6 +42,10 @@
       }
     },
     computed: {
+      user () {
+        const vm = this
+        return vm.$store.getters.user
+      },
       sampleUrl () {
         const vm = this
         return vm.$store.getters.apiUrl + '/samples/download'

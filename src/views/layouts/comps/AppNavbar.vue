@@ -1,6 +1,7 @@
 <template>
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light"
+    :class="{'is-demo':isDemo}">
     <!-- Left navbar links -->
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -45,6 +46,11 @@
     components: {
       appNavbarSearchForm,
       appNavbarDropdownMenu
+    },
+    computed: {
+      isDemo() {
+        return location.hostname !== 'ticket.yoov.com'
+      }
     },
     data () {
       return {
@@ -162,3 +168,13 @@
     }
   }
 </script>
+
+<style>
+  .main-header.navbar.is-demo {
+    background-color: #dc3545;
+    color: white;
+  }
+  .main-header.navbar.is-demo a {
+    color: white;
+  }
+</style>

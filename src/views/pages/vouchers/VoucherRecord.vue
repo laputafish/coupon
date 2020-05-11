@@ -1190,7 +1190,7 @@
         switch (payload.command) {
           case 'cropImage':
             vm.selectedTempMediaId = payload.imageId
-            vm.selectedTempMediaIdField = payload.imageIdField
+            vm.selectedTempMediaIdField = payload.imageIdField /* sharing_image_id or form_sharing_image_id */
             // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
             vm.$bvModal.show('imageCropperDialog')
             // vm.showingImageCropperDialog = true

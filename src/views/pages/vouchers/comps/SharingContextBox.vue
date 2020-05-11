@@ -18,7 +18,7 @@
           <file-upload
               extensions="jpg,jpeg,gif,png"
               accept="image/png,image/gif,image/jpeg,image/webp"
-              input-id="imageFile"
+              :input-id="sharingImageIdField"
               name="file"
               class="btn btn-primary"
               :post-action="sharingImagePostAction"
@@ -28,7 +28,7 @@
               v-model="files"
               @input-filter="inputFilter"
               @input-file="inputImageFile"
-              ref="uploadSharingImage">
+              :ref="sharingImageIdField">
             <!--<font-awesome-icon v-if="uploading" icon="spinner" class="fa-spin" />-->
             <font-awesome-icon icon="upload"></font-awesome-icon>
             Upload
@@ -90,7 +90,7 @@
               <div class="badge badge-info test-link-url">
                 {{ testLink }}
               </div>
-              <div class="px-1 d-inline-block copy-link" @click="copySharingLink()">
+              <div class="px-1 d-inline-block copy-link" @click.prevent.stop="copySharingLink()">
                 <font-awesome-icon icon="copy"/>
               </div>
             </div>
@@ -116,6 +116,10 @@ export default {
     }
   },
   props: {
+    imageKey: {
+      type: String,
+      default: 'imageFile'
+    },
     title: {
       type: String,
       default: ''
@@ -181,12 +185,17 @@ export default {
 
   mounted () {
     const vm = this
-    vm.testLink = window.location.origin + '/' + vm.sharingType + '/' + vm.record.id + '/' + new Date().getTime()
+    vm.updateTestLink()
   },
 
   methods: {
+    updateTestLink () {
+      const vm = this
+      vm.testLink = vm.$store.getters.appHost + '/' + vm.sharingType + '/' + vm.record.id + '/' + new Date().getTime()
+    },
     copySharingLink () {
       const vm = this
+      vm.updateTestLink()
       vm.$copyText(vm.testLink)
       vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
     },
@@ -233,12 +242,14 @@ export default {
 
     inputImageFile (newFile, oldFile) {
       const vm = this
+
+      console.log('SharingContextBox :: inputImageFile :: vm.sharingImageIdField = ' + vm.sharingImageIdField)
       console.log('inputImageFile')
       if (newFile && !oldFile) {
         this.$nextTick(function () {
           this.editingUploadFile = true
           this.uploading = true
-          this.$refs.uploadSharingImage.active = true
+          this.$refs[vm.sharingImageIdField].active = true
         })
       }
       if (!newFile && oldFile) {
@@ -258,13 +269,6 @@ export default {
         'imageId': result.imageId,
         'imageIdField': vm.sharingImageIdField
       })
-      // vm.selectedTempMediaId = result.imageId
-      // // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
-      // vm.$bvModal.show('imageCropperDialog')
-      // // vm.showingImageCropperDialog = true
-      // vm.$nextTick(() => {
-      //   vm.$refs.imageCropperDialog.startCrop()
-      // })
     }
   }
 }
@@ -280,6 +284,9 @@ export default {
   object-fit: contain;
 }
 
+.sharing-context-box label {
+  font-weight: normal !important;
+}
 .sharing-context-box .copy-link,
 .sharing-context-box .test-link-url {
   cursor: pointer;

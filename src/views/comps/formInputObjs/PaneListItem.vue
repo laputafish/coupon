@@ -82,3 +82,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .list-group-item.bg-muted {
+    background-color: white;
+  }
+</style>
