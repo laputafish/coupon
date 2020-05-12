@@ -215,6 +215,9 @@ export default {
   components: {
     homeCarousel
     // helloWorld
+  },
+  mounted () {
+    alert('Home :: mounted')
   }
 }
 </script>

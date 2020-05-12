@@ -78,6 +78,11 @@
         // console.log('  not logout route')
       }
     },
+    computed: {
+      agents () {
+        return this.$store.getters.agents
+      }
+    },
     methods: {
       logout () {
         const vm = this
@@ -90,22 +95,42 @@
           () => {
             // console.log('Logout :: AUTH_POST .then')
             vm.loading = false
-            vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-              vm.$router.replace({name: 'login'})
-            }).catch(() => {
-              vm.loading = false
-            })
+            vm.resetAll()
           },
           () => {
             console.log('Logout :: AUTH_POST .catch')
             vm.loading = false
-            vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-              vm.$router.replace({name: 'Login'})
-            }).catch(() => {
-              vm.loading = false
-            })
+            vm.resetAll()
           }
+            // vm.$store.dispatch('SET_TOKEN', '').then(()=> {
+            //   vm.$router.replace({name: 'Login'})
+            // }).catch(() => {
+            //   vm.loading = false
+            // })
+            // vm.$store.dispatch('CLEAR_AGENTS').then(()=>{
+            //   console.log('logout => AFTER AGENTS CLEAR_AGENTS')
+            //   console.log('logout, agents: ', vm.agents)
+            // }
         )
+        vm.$router.replace('/login')
+
+      },
+      resetAll () {
+        const vm = this
+        console.log('resetAll')
+        vm.$store.dispatch('SET_TOKEN', '').then(()=> {
+          console.log('resetAll :: SET_TOKEN.then')
+        }).catch(() => {
+          vm.loading = false
+          console.log('resetAll :: SET_TOKEN.catch')
+        })
+        vm.$store.dispatch('CLEAR_AGENTS').then(()=>{
+          console.log('logout => AFTER AGENTS CLEAR_AGENTS')
+          console.log('logout, agents: ', vm.agents)
+          console.log('resetAll :: CLEAR_AGENTS.then')
+        }).catch(() => {
+          console.log('resetAll :: CLEAR_AGENTS.catch')
+        })
       },
       login () {
         const vm = this

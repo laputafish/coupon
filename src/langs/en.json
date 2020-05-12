@@ -27,7 +27,8 @@
     "remark": "Remark",
     "created_at": "Created at",
     "title": "Title",
-    "description": "Description"
+    "description": "Description",
+    "type": "Type"
   },
   "status": {
     "pending": "Pending",

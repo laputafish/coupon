@@ -2,6 +2,7 @@
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light"
     :class="{'is-demo':isDemo}">
+    <h1 class="m-0 p-0 text-center text-white position-absolute left-0 top-0 w-100">DEMO</h1>
     <!-- Left navbar links -->
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">

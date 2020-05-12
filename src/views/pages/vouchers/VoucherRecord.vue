@@ -58,9 +58,13 @@
       <!--v-model="record.created_at"></data-input-readonly>-->
 
       <div class="col-sm-2">
-        <label>QR Code
-          <div class="badge badge-info">{qrcode}</div>
-        </label>
+        <div class="d-flex flex-row justify-content-between">
+          <label>QR Code
+            <div class="badge badge-info">{qrcode}</div>
+          </label>
+          <!--<toggle-black-white-->
+            <!--v-model="qrcodeConfig.code_color"></toggle-black-white>-->
+        </div>
         <input class="form-control" v-model="qrcodeConfig.composition">
         <div class="d-flex flex-row align-items-center">
           <small class="line-height-1 d-inline mr-1">Size</small>
@@ -77,6 +81,8 @@
           <label>Barcode
             <div class="badge badge-info">{barcode}</div>
           </label>
+          <!--<toggle-black-white-->
+            <!--v-model="barcodeConfig.code_color"></toggle-black-white>-->
           <!--<select v-model="record.barcodeType">-->
           <!--<option value="C39">Code 39</option>-->
           <!--<option value="C128">Code 128</option>-->
@@ -388,7 +394,7 @@
   import formInputs from '@/views/comps/forms'
   import fileUpload from 'vue-upload-component'
   import templateEditor from './comps/TemplateEditor'
-
+  import toggleBlackWhite from './comps/ToggleBlackWhite'
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
 
@@ -422,6 +428,7 @@
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
+      toggleBlackWhite,
       templateEditor,
       imageCropperDialog,
       // agentCodeTable,

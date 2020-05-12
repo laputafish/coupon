@@ -18,10 +18,21 @@ const mutations = {
     // console.log('setAgents :: payload: ', payload)
     state.agents = payload
     state.agentsLoaded = true
+  },
+  clearAgents (state, payload) {
+    state.agents = []
+    state.agentsLoaded = false
   }
 }
 
 const actions = {
+  [types.CLEAR_AGENTS] ({commit, rootGetters, dispatch}) {
+    return new Promise((resolve, reject) => {
+      commit('clearAgents')
+      resolve([])
+    })
+  },
+
   [types.FETCH_AGENTS] ({commit, rootGetters, dispatch}) {
     return new Promise((resolve, reject) => {
       // console.log('FETCH_AGENTS')

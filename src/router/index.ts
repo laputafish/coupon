@@ -77,8 +77,10 @@ import QuestionForm from '@/views/pages/questionForms/QuestionForm.vue'
 Vue.use(VueRouter)
 
 const checkIfMember = (to, from, next) => {
+  console.log('checkIfMember')
   const token = store.getters.accessToken;
   if (token === '' || token === null) {
+    next('/login')
   } else {
     const user = store.getters.user;
     if (user === null) {
@@ -93,23 +95,32 @@ const ifAuthenticated = (to, from, next) => {
   // if (token === '' || token === null) {
   //   next('/error/403')
   // }
-
+  console.log('ifAuthenticated')
   const user = store.getters.user;
   if (user === null) {
-    store.dispatch('FETCH_USER')
+    console.log('ifAuthenticated => FETCH_TOKEN')
     store.dispatch('FETCH_TOKEN').then(
       (token) => {
+        console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
         if (token === '' || token === null) {
-          next('/error/403')
+          console.log('ifAuthenticated :: token is blank')
+          next('/login')
         } else {
+          console.log('ifAuthenticated => FETCH_user')
+          store.dispatch('FETCH_USER')
           if (!store.getters.agentsLoaded) {
+            console.log('ifAuthenticated => FETCH_AGENTS')
             store.dispatch('FETCH_AGENTS')
           }
         }
       }
     )
+  } else {
+    if (!store.getters.agentsLoaded) {
+      console.log('ifAuthenticated => FETCH_AGENTS')
+      store.dispatch('FETCH_AGENTS')
+    }
   }
-
   next()
 
   // // store.dispatch('REFRESH_TOKEN').then(accessToken => {

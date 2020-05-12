@@ -34,8 +34,13 @@
   .td-common-link:hover {
     cursor: pointer;
   }
-  .voucher-notes {
-    color: rgba(0,0,127,.6);
+
+  .td-common-link .voucher-notes {
+    background-color: rgba(128,128,128,.2);
+    padding: 0 3px;
+  }
+  .td-common-link .voucher-notes {
+    color: rgba(0, 0, 127, .6);
   }
   .td-common-link:hover .voucher-notes {
     color: rgba(0,0,127,.8);

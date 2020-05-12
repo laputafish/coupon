@@ -195,21 +195,26 @@ const FormInputObjMixin = {
 
     previewQuestionForm (payload, formConfigs) {
       const vm = this
-      const postData = {
-        urlCommand: '/form_questions/temp/create',
-        data: {
-          formConfigs: formConfigs
+      vm.$store.commit('addState', 'preview')
+      vm.save(() => {
+        const postData = {
+          urlCommand: '/form_questions/temp/create',
+          data: {
+            formConfigs: formConfigs
+          }
         }
-      }
-      vm.$store.dispatch('AUTH_POST', postData).then(
-        response => {
-          const url = vm.$store.getters.appHost + '/q/_' + response.key
-          window.open(url, '_blank')
-        },
-        error => {
-          vm.$toaster.error(error.message)
-        }
-      )
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          response => {
+            const url = vm.$store.getters.appHost + '/q/_' + response.key
+            window.open(url, '_blank')
+            vm.$store.commit('removeState', 'preview')
+          },
+          error => {
+            vm.$toaster.error(error.message)
+            vm.$store.commit('removeState', 'preview')
+          }
+        )
+      })
     },
 
     newInputObj (payload, formConfigs) {

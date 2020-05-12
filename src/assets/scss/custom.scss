@@ -117,3 +117,12 @@ i.mce-i-[FONT-AWESOME-CLASSNAME]:before {   // FONT-AWESOME-CLASSNAME e.g. "icon
 .btn-circle {
   border-radius: 50% !important;
 }
+
+div[name=Datatable] .table > thead {
+ background-color: #707579;
+ color: white;
+}
+
+div[name=Datatable] .table > thead > th {
+  vertical-align: middle;
+}
