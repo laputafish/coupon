@@ -257,7 +257,12 @@ const FormInputObjMixin = {
     updateInputObjField (payload, formConfigs) {
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
-        var newValue = payload.fieldValue.replace(/[\n\r]/g, '|')
+        var newValue = ''
+        if (Array.isArray(payload.fieldValue)) {
+          newValue = payload.fieldValue
+        } else {
+          newValue = payload.fieldValue.replace(/[\n\r]/g, '|')
+        }
         formConfigs.inputObjs[currentIndex][payload.fieldName] = newValue
       }
     },
