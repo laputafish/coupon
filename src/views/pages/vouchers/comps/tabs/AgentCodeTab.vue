@@ -45,6 +45,9 @@ export default {
   methods: {
     onCommandHandler (payload) {
       this.$emit('onCommand', payload)
+    },
+    refresh () {
+      this.$refs.agentCodeTable.reloadCodeList()
     }
   }
 }

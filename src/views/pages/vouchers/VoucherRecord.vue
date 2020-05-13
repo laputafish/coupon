@@ -6,7 +6,7 @@
                :processingButtons="processingButtons"
                :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
-    <div class="w-100 d-flex flex-row justify-content-between" style="margin-top:-20px;">
+    <div v-if="record" class="w-100 d-flex flex-row justify-content-between" style="margin-top:-20px;">
       <div style="color:rgba(0,0,0,.6);">{{ record ? '#' + record.id : '' }}</div>
       <div>
         <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
@@ -156,11 +156,12 @@
              class="position-absolute d-flex flex-row justify-content-center align-items-center"
              style="left:0;right:0;">
           <small class="mr-1">Form Link</small>
-          <div class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"
-               @click="copyCustomLink()">
-            {{ customLink }}
-            <font-awesome-icon class="ml-1" icon="copy"/>
-          </div>
+          <copy-link :link="customLink" variant="danger"></copy-link>
+          <!--<div class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"-->
+               <!--@click="copyCustomLink()">-->
+            <!--{{ customLink }}-->
+            <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
+          <!--</div>-->
         </div>
       </div>
     </div>
@@ -173,6 +174,7 @@
          ******************
         -->
         <agent-code-tab
+            ref="agentCodeTab""
           :title="$t('vouchers.codeTabLabel')"
           :record="record"
           @onCommand="onCommandHandler"></agent-code-tab>
@@ -397,6 +399,7 @@
   import toggleBlackWhite from './comps/ToggleBlackWhite'
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
+  import copyLink from '@/views/comps/CopyLink'
 
   // import agentCodeTable from './comps/AgentCodeTable'
 
@@ -428,6 +431,7 @@
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
+      copyLink,
       toggleBlackWhite,
       templateEditor,
       imageCropperDialog,
@@ -494,6 +498,8 @@
           twoWay: true
         },
         tinymceOtherOptions: {
+          'relative_urls': false,
+          'remove_script_host': false,
           icons: 'small',
           setup: function (editor) {
             // *********************
@@ -951,19 +957,20 @@
       addTinyMCEButtonEvents (editor) {
         const vm = this
 
+        //*****************
         // Upload Image
+        //*****************
         var editorObj = $('#yoovEditor')
         var inpUpload = $(editorObj).parent().find('input#tinymce-uploader')
         $(inpUpload).off('change').on('change', function () {
           vm.uploadImage(inpUpload, editor)
         })
-
         const objTinymce = $('#yoovEditor').prev('.mce-tinymce')
-        console.log('VoucherRecord :: objTinymce :: ', objTinymce)
-
         const btnSelectImage = $(objTinymce).find('.mce-select-image button')
-        console.log('VoucherRecord :: btnSelectImage :: ', btnSelectImage)
 
+        //*****************
+        // Select Image
+        //*****************
         $(btnSelectImage).off('click').on('click', function () {
           vm.imageScope = 'tinymce'
           vm.showingImageSelectDialog = true
@@ -1277,7 +1284,9 @@
             switch (payload.imageScope) {
               case 'tinymce':
                 const editor = tinyMCE.get('yoovEditor')
+                console.log('onImageSelected :: tinymce :: vm.$store.getters.appHost = ' + vm.$store.getters.appHost)
                 const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
+                console.log('onImageSelected :: url = ' + url)
                 editor.insertContent('<img class="content-img" src="' + url + '"/>');
                 vm.$toaster.success('Image Added')
                 break
@@ -1298,6 +1307,9 @@
             break
           case 'export':
             vm.exportCodes()
+            break
+          case 'refreshCouponCodes':
+            vm.$refs.agentCodeTab.refresh()
             break
           case 'select_voucher':
             alert('voucher selected')

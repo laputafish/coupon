@@ -7,6 +7,12 @@
       @onCommand="onCommandHandler"></search-field>
     <div>
       <button type="button"
+            class="btn btn-outline-primary min-width-100 mr-1"
+              @click="reloadCodeList()">
+        <i class="fas fa-recycle"></i>
+        <span class="ml-2">Refresh</span>
+      </button>
+      <button type="button"
               :disabled="data.length===0"
               class="btn btn-danger min-width-100 mr-1"
               @click="deleteAll()">
@@ -47,6 +53,11 @@
   <vue-loading
       :active.sync="uploading"
       :can-cancel="true"></vue-loading>
+  <div v-if="loading" id="loadingMask" class="text-center">
+    <h3 class="d-inline-block mr-auto">
+       <font-awesome-icon icon="spinner" class="fa-spin"/>
+    </h3>
+  </div>
 </div>
 </template>
 
@@ -73,6 +84,7 @@ export default {
       uploadRoute: '/agent_codes/upload',
       appLoading: false,
       uploading: false,
+      loading: false,
 
       columns: [],
       allData: [],
@@ -355,6 +367,7 @@ export default {
 
     reloadCodeList (query) {
       const vm = this
+      vm.loading = true
       if (typeof query === 'undefined') {
         query = vm.query
       }
@@ -371,6 +384,7 @@ export default {
         vm.total = response.total
         vm.data = vm.parseCodeInfoData(response.data)
         vm.$forceUpdate()
+        vm.loading = false
       })
     },
 
@@ -591,6 +605,9 @@ export default {
           obj['status'] = codeRecord['status']
           obj['key'] = codeRecord['key']
           obj['remark'] = codeRecord['remark']
+          obj['participant_name'] = codeRecord['participant'] ? codeRecord['participant']['name'] : null
+          obj['participant_email'] = codeRecord['participant'] ? codeRecord['participant']['email'] : null
+          obj['participant_phone'] = codeRecord['participant'] ? codeRecord['participant']['phone'] : null
           obj['sent_on'] = codeRecord['sent_on']
           result.push(obj)
         }
@@ -779,5 +796,17 @@ export default {
 .agent-code-table #code-table .mx-input[name=date] {
   background-color: #e5f8ff;
   width: 120px;
+}
+
+#loadingMask {
+  background-color: rgba(128,128,128,.5);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  padding-top:150px;
+  font-size: 24px;
 }
 </style>

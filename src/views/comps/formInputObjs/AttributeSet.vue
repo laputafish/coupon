@@ -184,6 +184,8 @@ export default {
     },
     onCommandHandler (payload) {
       const vm = this
+
+      console.log('AttributeSet :: onCommandHandler :: payload: ', payload)
       const command = payload.command
 
       var optionIndex
@@ -209,8 +211,20 @@ export default {
           newUserKeyValues = vm.strToKeyValues(payload.value)
           newUserKeys = Object.keys(newUserKeyValues)
 
+          console.log('AttributeSet :: onCommandHandler :: originalUserKeyValues: ', originalUserKeyValues)
+          console.log('AttributeSet :: onCommandHandler :: originalUserKeys: ', originalUserKeys)
+          console.log('AttributeSet :: onCommandHandler :: newUserKeyValues: ', newUserKeyValues)
+          console.log('AttributeSet :: onCommandHandler :: newUserKeys: ', newUserKeys)
+          
           updatedKeyValues = {}
+          console.log('AttributeSet :: onCommandHandler :: vm.options[optionIndex]: ', vm.options[optionIndex])
+
           keyValues = vm.strToKeyValues(vm.options[optionIndex])
+
+          console.log('AttributeSet :: onCommandHandler :: options keyValues: ', keyValues)
+          keyValues = {...keyValues, ...newUserKeyValues}
+          console.log('AttributeSet :: onCommandHandler :: options keyValues + newUserKeyValues: ', keyValues)
+
           for (var key in keyValues) {
             if (originalUserKeys.indexOf(key) >= 0) {
               // if not in original and new, that's specific attributes
@@ -227,6 +241,9 @@ export default {
               }
             }
           }
+
+          console.log('AttributeSet :: onCommandHandler :: updatedKeyValues: ', updatedKeyValues)
+          
           //
           // console.log('AttributeSet :: onCommandHandler :: optionIndex = ' + optionIndex)
           // console.log('AttributeSet :: onCommandHandler :: originalUserKeyValues: ', originalUserKeyValues)

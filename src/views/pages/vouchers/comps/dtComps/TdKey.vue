@@ -1,32 +1,65 @@
 <template>
-  <div class="w-100 d-flex flex-row justify-content-between align-items-center" style="height:34px;">
+  <div class="w-100 d-flex flex-column justify-content-center align-items-start" style="height:34px;">
     <div v-if="value===''" class="d-inline badge badge-secondary">
       {{ $t('vouchers.available_after_saving') }}
     </div>
     <template v-else>
-      <div class="badge badge-primary flex-grow-1 mr-1 key-value"
-        @click="copyLink()">
-        {{ value }}
-      </div>
-      <div class="d-inline-block copy-link"
-          @click="copyLink()">
-        <font-awesome-icon icon="copy"/>
+      <copy-link :link="link"
+                 :label="codeKey"
+        :variant="variant"></copy-link>
+      <div class="participant-name line-height-1" style="margin-top:-4px;">
+        {{ participantName }}
+        <div v-if="participantEmail!==''"
+             class="ml-1 badge badge-warning bg-gray font-weight-normal"
+             style="padding:1px 3px;">{{ participantEmail }}</div>
       </div>
     </template>
   </div>
 </template>
 
 <script>
-  export default {
-    props: ['row', 'value', 'xprops'],
-    methods: {
-      copyLink () {
-        const vm = this
-        vm.$copyText( vm.$store.getters.appHost + '/coupons/' + vm.value)
-        vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+import copyLink from '@/views/comps/CopyLink.vue'
+
+export default {
+  components: {
+    copyLink
+  },
+  props: ['row', 'value', 'xprops', 'field'],
+  computed: {
+    codeKey () {
+      const vm = this
+      return vm.value
+    },
+    link () {
+      const vm = this
+      return vm.$store.getters.appHost + '/coupons/' + vm.value
+    },
+    variant () {
+      const vm = this
+      var result = 'primary'
+      if (vm.participantName !== '') {
+        result = 'success'
       }
+      return result
+    },
+    participantName () {
+      const vm = this
+      var result = ''
+      if (vm.row['participant_name']) {
+        result = vm.row['participant_name']
+      }
+      return result;
+    },
+    participantEmail () {
+      const vm = this
+      var result = ''
+      if (vm.row['participant_email']) {
+        result = vm.row['participant_email']
+      }
+      return result;
     }
   }
+}
 </script>
 
 <style>

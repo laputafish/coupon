@@ -6,9 +6,15 @@
         :appLoading="appLoading"></search-field>
     <div>
       <button type="button"
-                    :disabled="data.length===0"
-                    class="btn btn-danger min-width-100 mr-1"
-                    @click="deleteAll()">
+              class="btn btn-outline-primary min-width-100 mr-1"
+              @click="reloadData()">
+        <i class="fas fa-recycle"></i>
+        <span class="ml-2">Refresh</span>
+      </button>
+      <button type="button"
+              :disabled="data.length===0"
+              class="btn btn-danger min-width-100 mr-1"
+              @click="deleteAll()">
         <i class="fas fa-times"></i>
         <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
       </button>
@@ -29,6 +35,11 @@
   <!--<datatable v-cloak v-bind="$data"-->
   <!--:columns="columns"></datatable>-->
   <!--</div>-->
+  <div v-if="loading" id="loadingMask" class="text-center">
+    <h3 class="d-inline-block mr-auto">
+       <font-awesome-icon icon="spinner" class="fa-spin"/>
+    </h3>
+  </div>
 </div>
 </template>
 
@@ -46,6 +57,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       appLoading: false,
       columns: [],
       allData: [],
@@ -61,7 +73,8 @@ export default {
         buttons: ['delete'],
         eventbus: new Vue(),
         actionButtonSize: 'xs',
-        optionalChoices: []
+        optionalChoices: [],
+        firstField: ''
       },
       HeaderSettings: false,
       selectedRow: null,
@@ -104,7 +117,7 @@ export default {
   },
   watch: {
     userInputObjs: {
-      handler: function(newVal) {
+      handler: function (newVal) {
         const vm = this
         console.log('watch(inputObjs)')
         // alert('FormParticipantsTab :: watch(inputObjs): inputOBjs.length = ' + vm.inputObjs.length)
@@ -167,7 +180,15 @@ export default {
       vm.$store.dispatch('AUTH_DELETE', data).then(
         response => {
           console.log('deleteParticipant :: AUTH_DELETE.then : response: ', response)
-          vm.onQueryChangedHandler(vm.query)
+          vm.reloadData(vm.query)
+          vm.$emit('onCommand', {
+            command: 'refreshCouponCodes'
+          })
+          vm.$emit('onCommand', {
+            command: 'updateField',
+            fieldName: 'participant_count',
+            fieldValue: response.participant_count
+          })
         },
         error => {
           console.log('deleteParticipant :: AUTH_DELETE.then : error: ', error)
@@ -245,6 +266,7 @@ export default {
     },
     reloadData (query) {
       const vm = this
+      vm.loading = true
       if (typeof query === 'undefined') {
         query = vm.query
       }
@@ -259,7 +281,9 @@ export default {
         vm.total = response.total
         vm.data = response.data
         vm.$forceUpdate()
+        vm.loading = false
       })
+
       // console.log('reloadData :: query: ', query)
       // this.data = [
       //   {
@@ -293,7 +317,7 @@ export default {
         //   break
         case 'delete':
           vm.$dialog.confirm(vm.$t('messages.areYouSure'))
-            .then( () => {
+            .then(() => {
               var participantId = payload.row.id
               vm.deleteParticipant(participantId)
             })
@@ -336,6 +360,15 @@ export default {
         var userInputObj = userInputObjs[i]
         var inputType = userInputObj['inputType'];
         var fieldName = 'field' + i;
+
+        if (i === 0) {
+          if (inputType === 'phone' || inputType === 'name') {
+            vm.xprops.firstField = fieldName + '_0'
+          } else {
+            vm.xprops.firstField = fieldName
+          }
+        }
+
         // console.log('i = ' + i + ': userInputObj: ', userInputObj)
         switch (inputType) {
           case 'simple-text':
@@ -344,7 +377,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName
             });
             break
@@ -354,7 +387,7 @@ export default {
               tdClass: 'text-center',
               thClass: 'text-center',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName
             })
             break
@@ -364,7 +397,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName
             });
             break
@@ -374,7 +407,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName
             });
             break
@@ -384,7 +417,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName + '_0'
             })
             vm.columns.push({
@@ -392,7 +425,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName + '_1'
             })
             break
@@ -402,7 +435,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName + '_0'
             });
             vm.columns.push({
@@ -410,7 +443,7 @@ export default {
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantField',
               field: fieldName + '_1'
             });
             break
@@ -448,7 +481,7 @@ export default {
         thComp: 'ThCommonHeader',
         tdClass: 'align-middle',
         tdComp: 'TdCommonOpt',
-        field: 'id',sortable: true
+        field: 'id', sortable: true
       })
       // vm.columns = JSON.parse(JSON.stringify(vm.columns))
       // console.log('setColumns finished :: vm.columns.length = ' + vm.columns.length)
@@ -471,7 +504,7 @@ export default {
       for (var i = 0; i < inputObjs.length; i++) {
         var inputObj = inputObjs[i]
         var inputType = inputObj['inputType'];
-        if (inputType==='output-remark' || inputType==='output-image' || inputType==='output-submit' || inputType==='system-page') {
+        if (inputType === 'output-remark' || inputType === 'output-image' || inputType === 'output-submit' || inputType === 'system-page') {
           continue;
         }
 
@@ -585,3 +618,17 @@ export default {
   }
 }
 </script>
+
+<style>
+#loadingMask {
+  background-color: rgba(128, 128, 128, .5);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  padding-top: 150px;
+  font-size: 24px;
+}
+</style>

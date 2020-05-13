@@ -17,7 +17,7 @@
       </div>
     </div>
   </form>
-  <h3 v-if="appLoading" class="d-inline-block ml-3 my-0 mr-auto">
+  <h3 v-if="appLoading" class="d-inline-block ml-3 pt-2 my-0 mr-auto">
      <font-awesome-icon icon="spinner" class="fa-spin"/>
   </h3>
   <!--<div v-if="codeInfos.length>0" class="badge badge-warning">{{ codeInfos.length }}</div>-->
