@@ -28,5 +28,4 @@ export default {
 
 <style>
   @import '/css/adminlte.css';
-  
 </style>

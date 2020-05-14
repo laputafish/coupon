@@ -18,17 +18,19 @@ const state = {
   },
   inputObjTypes: [
     {icon: 'fas fa-home', newIcon: 'home', text: '', label: 'Page', type: 'system-page', isInput: true, fixed: true},
-    {icon: 'fas fa-i-cursor', newIcon: 'i-cursor', text: '', label: '1-line Text', type: 'simple-text', isInput: true},
-    {icon: '', newIcon: '', text: '123', label: 'Number', type: 'number', isInput: true},
-    {icon: 'fas fa-envelope', newIcon: 'envelope', text: '', label: 'Email', type: 'email', isInput: true},
-    {icon: 'fas fa-align-justify', newIcon: 'align-justify', text: '', label: 'n-line Text', type: 'text', isInput: true},
-    {icon: 'fas fa-user', newIcon: 'user', text: '', label: 'Name', type: 'name', isInput: true},
-    {icon: 'fas fa-phone', newIcon: 'phone', text: '', label: 'Phone', type: 'phone', isInput: true},
-    {icon: 'fas fa-check-square', newIcon: 'check-square', text: '', label: 'Choice', type: 'single-choice', isInput: true},
-    {icon: 'fas fa-tasks', newIcon: 'tasks', text: '', label: 'Multi-Choice', type: 'multiple-choice', isInput: true},
     {icon: 'fas fa-image', newIcon: 'image', text: '', label: 'Image', type: 'output-image', isInput: false},
     {icon: '', newIcon: '', text: 'ABC', label: 'Remark', type: 'output-remark', isInput: false},
-    {icon: 'fas fa-bolt', newIcon: 'bolt', text: '', label: 'Submit Btn', type: 'output-submit', isInput: false}
+    {icon: 'fas fa-bolt', newIcon: 'bolt', text: '', label: 'Submit Btn', type: 'output-submit', isInput: false},
+
+    {icon: 'fas fa-i-cursor', newIcon: 'i-cursor', text: '', label: '1-line Text', type: 'simple-text', isInput: true, default: {caption: '備註', question: '備註'}},
+    {icon: '', newIcon: '', text: '123', label: 'Number', type: 'number', isInput: true},
+    {icon: 'fas fa-envelope', newIcon: 'envelope', text: '', label: 'Email', type: 'email', isInput: true, default: {caption: '電郵', question: '電郵地址'}},
+    {icon: 'fas fa-align-justify', newIcon: 'align-justify', text: '', label: 'n-line Text', type: 'text', isInput: true, default: {caption: '備註多行', question: '備註 (多行)'}},
+    {icon: 'fas fa-user', newIcon: 'user', text: '', label: 'Name', type: 'name', isInput: true, default: {caption: '名字,姓氏', question: '姓名', note1: '名字', note2: '姓氏'}},
+    {icon: 'fas fa-venus-mars', newIcon: 'venus-mars', text: '', label: 'Gender', type: 'gender', isInput: true, default: {caption: '性別', question: '性別', options: ['男', '女']}},
+    {icon: 'fas fa-phone', newIcon: 'phone', text: '', label: 'Phone', type: 'phone', isInput: true, default: {caption: '手機號碼', question: '手機號碼'}},
+    {icon: 'fas fa-check-square', newIcon: 'check-square', text: '', label: 'Choice', type: 'single-choice', isInput: true, default: {caption: '選擇項目', question: '選擇項目'}},
+    {icon: 'fas fa-tasks', newIcon: 'tasks', text: '', label: 'Multi-Choice', type: 'multiple-choice', isInput: true, default: {caption: '多選項目', question: '多選項目'}}
   ],
   attributeInfos: {
     width: {caption:'Width', styleName:'width', optionGroup:'elementGroup'},
@@ -46,6 +48,7 @@ const state = {
     color: {caption: 'Color', styleName: 'background-color', optionGroup: 'elementGroup'},
     selectedChoiceColor: {caption: 'Selected Choice Color', styleName: 'selected-choice-color', optionGroup: 'elementGroup'},
     selectedChoiceTextColor: {caption: 'Selected Choice Text Color', styleName: 'selected-choice-text-color', optionGroup: 'elementGroup'},
+    inputRegionMaxWidth: {caption: 'Input Region Max Width', styleName: 'input-region-max-width', optionGroup: 'elementGroup'},
 
     containerPaddingTop: {caption: 'Padding (Top)', styleName: 'padding-top', optionGroup: 'containerGroup'},
     containerPaddingBottom: {caption: 'Padding (Bottom)', styleName: 'padding-bottom', optionGroup: 'containerGroup'},
@@ -64,7 +67,8 @@ const state = {
           'textColor',
           'paddingTop',
           'selectedChoiceColor',
-          'selectedChoiceTextColor'
+          'selectedChoiceTextColor',
+          'inputRegionMaxWidth'
         ]
       }
     ],

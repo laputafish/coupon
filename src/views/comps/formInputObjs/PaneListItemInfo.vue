@@ -24,7 +24,7 @@
         <small class="pr-1">Options</small>
         <div class="input-obj-options line-height-1">
           <div v-for="(option, index) in inputObj.options"
-               class="p-0 m-0"
+               class="p-0 m-0" style="margin-bottom:1px!important;"
                :key="index">
             <div class="input-obj-option m-0 badge badge-secondary">{{ option }}</div>
           </div>

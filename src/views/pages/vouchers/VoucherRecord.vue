@@ -1398,7 +1398,9 @@
             break
           default:
             vm.onInputObjCommandHandler(payload)
+
         }
+        console.log('VoucherRecord :: onCommandHandler :: ends')
       },
       exportParticipants () {
         const vm = this

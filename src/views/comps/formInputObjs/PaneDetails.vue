@@ -56,7 +56,7 @@
           <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
           <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
-          <fields-table-row label="Notes" :value="inputObj.note1" notes="* Region Code" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
+          <!--<fields-table-row label="Notes" :value="inputObj.note1" notes="* Region Code" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>-->
           <fields-table-row label="Notes" :value="inputObj.note2" notes="* Phone No." fieldName="note2" @onCommand="onCommandHandler"></fields-table-row>
         </table>
       </div>
@@ -66,7 +66,23 @@
     <div v-else-if="inputObj.inputType==='single-choice'" class="d-flex flex-column border">
       <pane-details-title :inputObj="inputObj"></pane-details-title>
       <!--<div class="p-2 border bg-primary">-->
-        <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
+      <!--</div>-->
+      <div class="p-2">
+        <table class="table table-hover details-field-table">
+          <fields-table-row-caption :value="inputObj.name" @onCommand="onCommandHandler"></fields-table-row-caption>
+          <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
+          <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
+          <fields-table-row-options label="Options" :value="inputObj.options" fieldName="options" @onCommand="onCommandHandler"></fields-table-row-options>
+        </table>
+      </div>
+    </div>
+
+    <!-- single-choice -->
+    <div v-else-if="inputObj.inputType==='gender'" class="d-flex flex-column border">
+      <pane-details-title :inputObj="inputObj"></pane-details-title>
+      <!--<div class="p-2 border bg-primary">-->
+      <!--<input-obj-title :inputObj="inputObj"></input-obj-title>-->
       <!--</div>-->
       <div class="p-2">
         <table class="table table-hover details-field-table">

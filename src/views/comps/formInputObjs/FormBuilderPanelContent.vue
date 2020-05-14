@@ -220,7 +220,8 @@
               ', name=' + vm.selectedInputObj.name)
 
             if (vm.selectedInputObj.inputType == inputObj.inputType &&
-              vm.selectedInputObj.name === inputObj.name) {
+              vm.selectedInputObj.name === inputObj.name &&
+              vm.selectedInputObj.question === inputObj.question) {
               result = inputObj
               break
             }
@@ -290,6 +291,9 @@
             switch (command) {
               case 'newInputObj':
                 newPayload['objIndex'] = objIndex
+                newPayload['callback'] = (inputObj, index) => {
+                  vm.selectedInputObj = vm.formConfigs.inputObjs[index]
+                }
                 break
               case 'deleteInputObj':
                 objIndex = vm.getInputObjIndex(payload.inputObj)
@@ -330,8 +334,10 @@
       getInputObjIndex (inputObj) {
         const vm = this
         var result = -1
+        console.log('getInputObjIndex : inputObj.question = ' + inputObj.question)
         if (inputObj) {
           for (var i = 0; i < vm.formConfigs.inputObjs.length; i++) {
+            console.log('getInputObjIndex : i=' + i + ': vm.formConfigs.inputObjs[i].question = ' + vm.formConfigs.inputObjs[i].question)
             if (vm.formConfigs.inputObjs[i] === inputObj) {
               result = i
               break

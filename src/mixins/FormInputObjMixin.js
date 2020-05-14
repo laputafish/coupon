@@ -52,17 +52,22 @@ const FormInputObjMixin = {
         note1: '',
         note2: ''
       }
+      if (inputObjType.default) {
+        result['name'] = inputObjType.default.caption
+        result['question'] = inputObjType.default.question
+        if (inputObjType.default.note1) {
+          result['note1'] = inputObjType.default.note1
+        }
+        if (inputObjType.default.note2) {
+          result['note2'] = inputObjType.default.note2
+        }
+        if (inputObjType.default.options) {
+          result['options'] = inputObjType.default.options
+        }
+      }
       return result
     },
 
-    // resetOptionIds () {
-    //   const vm = this
-    //   console.log('resetOptionIds :: vm.record.form_configs.inputObjs: ', vm.record.form_configs.inputObjs)
-    //   for (var i = 0; i < vm.record.form_configs.inputObjs.length; i++) {
-    //     vm.record.form_configs.inputObjs[i].id = i + 1
-    //   }
-    // },
-// ?????? ?<-- merge onCommandHandler with VoucherRecord.vue
     onInputObjCommandHandler (payload) {
       const vm = this
       const command = payload.command
@@ -226,13 +231,19 @@ const FormInputObjMixin = {
       var newObj = vm.getNewInputObj(inputObjType)
       var currentIndex = payload.objIndex
       var inputObjs = JSON.parse(JSON.stringify(formConfigs.inputObjs))
+      var index = -1
 
       if (currentIndex === -1) {
         inputObjs.push(newObj)
+        index = inputObj.length - 1
       } else {
         inputObjs.splice(currentIndex + 1, 0, newObj)
+        index = currentIndex + 1
       }
       formConfigs.inputObjs = inputObjs
+      if (typeof payload.callback ==='function') {
+        payload.callback(newObj, index)
+      }
     },
 
     selectInputObjImage (payload, formConfigs) {
@@ -286,6 +297,8 @@ const FormInputObjMixin = {
 
     updateInputObjOptions (payload, formConfigs) {
       const vm = this
+      console.log('updateInputObjOptions :: payload: ', payload)
+      console.log('updateInputObjOptions :: formConfigs: ', formConfigs)
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
         formConfigs.inputObjs[currentIndex].options = payload.options

@@ -351,7 +351,7 @@ export default {
         title: vm.$t('general.number'),
         thComp: 'ThSimpleHeader',
         tdComp: 'TdCommonIndex',
-        tdClass: 'text-center',
+        tdClass: 'text-center align-middle',
         thClass: 'text-center',
         field: 'id'
       }];
@@ -362,7 +362,8 @@ export default {
         var fieldName = 'field' + i;
 
         if (i === 0) {
-          if (inputType === 'phone' || inputType === 'name') {
+          if (inputType === 'name') {
+          // if (inputType === 'phone' || inputType === 'name') {
             vm.xprops.firstField = fieldName + '_0'
           } else {
             vm.xprops.firstField = fieldName
@@ -374,7 +375,7 @@ export default {
           case 'simple-text':
             vm.columns.push({
               title: userInputObj.name,
-              tdClass: 'text-left',
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
@@ -384,7 +385,7 @@ export default {
           case 'number':
             vm.columns.push({
               title: userInputObj.name,
-              tdClass: 'text-center',
+              tdClass: 'text-center align-middle',
               thClass: 'text-center',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
@@ -394,7 +395,7 @@ export default {
           case 'email':
             vm.columns.push({
               title: userInputObj.name,
-              tdClass: 'text-left',
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
@@ -404,7 +405,7 @@ export default {
           case 'text':
             vm.columns.push({
               title: userInputObj.name,
-              tdClass: 'text-left',
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
@@ -412,17 +413,30 @@ export default {
             });
             break
           case 'name':
+            var defaultName = 'Name';
+            var name0 = '';
+            var name1 = '';
+            if (userInputObj.name.trim() !== '') {
+              const nameSegs = userInputObj.name.split(',');
+              if (nameSegs.length > 0) name0 = nameSegs[0]
+              if (nameSegs.length > 1) {
+                name1 = nameSegs[1]
+              } else {
+                name1 = name0 + ' [2]';
+                name0 = name0 + ' [1]';
+              }
+            }
             vm.columns.push({
-              title: 'First Name',
-              tdClass: 'text-left',
+              title: name0,
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
               field: fieldName + '_0'
             })
             vm.columns.push({
-              title: 'Last Name',
-              tdClass: 'text-left',
+              title: name1,
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
@@ -432,41 +446,48 @@ export default {
           case 'phone':
             vm.columns.push({
               title: 'Region Code',
-              tdClass: 'text-left',
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdParticipantField',
-              field: fieldName + '_0'
-            });
+              field: fieldName
+              // + '_0'
+            })
+            // vm.columns.push({
+            //   title: 'Phone No.',
+            //   tdClass: 'text-left',
+            //   thClass: 'text-left',
+            //   thComp: 'ThSimpleHeader',
+            //   tdComp: 'TdParticipantField',
+            //   field: fieldName + '_1'
+            // });
+            break
+          case 'gender':
             vm.columns.push({
-              title: 'Phone No.',
-              tdClass: 'text-left',
-              thClass: 'text-left',
+              title: userInputObj.name,
+              tdClass: 'text-center align-middle',
+              thClass: 'text-center',
               thComp: 'ThSimpleHeader',
-              tdComp: 'TdParticipantField',
-              field: fieldName + '_1'
+              tdComp: 'TdSingleChoice',
+              field: fieldName
             });
+            vm.xprops['optionalChoices'][fieldName] = userInputObj.options
             break
           case 'single-choice':
             vm.columns.push({
               title: userInputObj.name,
-              tdClass: 'text-left',
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdSingleChoice',
               field: fieldName
             });
-            // console.log('setColumns :: fieldName = ' + fieldName)
-            // console.log('setColumns :: userInputObjs: ', userInputObj.options)
             vm.xprops['optionalChoices'][fieldName] = userInputObj.options
-
-            // console.log('setColumns :: xprops: ', vm.xprops)
-
             break
           case 'multiple-choice':
             vm.columns.push({
               title: userInputObj.name,
-              tdClass: 'text-left',
+              tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdMultipleChoice',
@@ -504,13 +525,27 @@ export default {
       for (var i = 0; i < inputObjs.length; i++) {
         var inputObj = inputObjs[i]
         var inputType = inputObj['inputType'];
-        if (inputType === 'output-remark' || inputType === 'output-image' || inputType === 'output-submit' || inputType === 'system-page') {
+
+        if (inputType === 'output-remark' ||
+          inputType === 'output-image' ||
+          inputType === 'output-submit' ||
+          inputType === 'system-page') {
           continue;
         }
 
         var fieldName = 'field' + index;
         // console.log('index = ' + index + ': inputObj: ', inputObj)
         switch (inputObj.inputType) {
+          case 'gender':
+            vm.columns.push({
+              title: inputObj.name,
+              tdClass: 'text-center',
+              thClass: 'text-center',
+              thComp: 'ThSimpleHeader',
+              tdComp: 'TdCommon',
+              field: fieldName
+            });
+            break
           case 'simple-text':
             vm.columns.push({
               title: inputObj.name,
@@ -552,8 +587,21 @@ export default {
             });
             break
           case 'name':
+            var defaultName = 'Name';
+            var name0 = '';
+            var name1 = '';
+            if (trim(inputObj.name) !== '') {
+              const nameSegs = inputObj.name.split(',');
+              if (nameSegs.length > 0) name0 = nameSegs[0]
+              if (nameSegs.length > 1) {
+                name1 = nameSegs[1]
+              } else {
+                name1 = name0 + ' [2]';
+                name0 = name0 + ' [1]';
+              }
+            }
             vm.columns.push({
-              title: 'First Name',
+              title: name0,
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
@@ -561,7 +609,7 @@ export default {
               field: fieldName + '_0'
             })
             vm.columns.push({
-              title: 'Last Name',
+              title: name1,
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
@@ -571,21 +619,21 @@ export default {
             break
           case 'phone':
             vm.columns.push({
-              title: 'Region Code',
+              title: inputObj.name,
               tdClass: 'text-left',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
               tdComp: 'TdCommon',
-              field: fieldName + '_0'
+              field: fieldName
             });
-            vm.columns.push({
-              title: 'Phone No.',
-              tdClass: 'text-left',
-              thClass: 'text-left',
-              thComp: 'ThSimpleHeader',
-              tdComp: 'TdCommon',
-              field: fieldName + '_1'
-            });
+            // vm.columns.push({
+            //   title: 'Phone No.',
+            //   tdClass: 'text-left',
+            //   thClass: 'text-left',
+            //   thComp: 'ThSimpleHeader',
+            //   tdComp: 'TdCommon',
+            //   field: fieldName + '_1'
+            // });
             break
           case 'single-choice':
             vm.columns.push({
