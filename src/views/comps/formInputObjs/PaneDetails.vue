@@ -57,7 +57,7 @@
           <fields-table-row-question :value="inputObj.question" @onCommand="onCommandHandler"></fields-table-row-question>
           <fields-table-row-yes-no label="Required" :value="inputObj.required" fieldName="required" @onCommand="onCommandHandler"></fields-table-row-yes-no>
           <!--<fields-table-row label="Notes" :value="inputObj.note1" notes="* Region Code" fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>-->
-          <fields-table-row label="Notes" :value="inputObj.note2" notes="* Phone No." fieldName="note2" @onCommand="onCommandHandler"></fields-table-row>
+          <fields-table-row label="Notes" :value="inputObj.note2" notes="* Phone No." fieldName="note1" @onCommand="onCommandHandler"></fields-table-row>
         </table>
       </div>
     </div>
