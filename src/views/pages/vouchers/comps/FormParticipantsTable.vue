@@ -279,6 +279,11 @@ export default {
       }
       vm.$store.dispatch('AUTH_GET', data).then(response => {
         vm.total = response.total
+        vm.$emit('onCommand', {
+          command: 'updateField',
+          fieldName: 'participant_count',
+          fieldValue: vm.total
+        })
         vm.data = response.data
         vm.$forceUpdate()
         vm.loading = false
@@ -445,7 +450,7 @@ export default {
             break
           case 'phone':
             vm.columns.push({
-              title: 'Region Code',
+              title: userInputObj.name,
               tdClass: 'text-left align-middle',
               thClass: 'text-left',
               thComp: 'ThSimpleHeader',
