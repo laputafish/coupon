@@ -223,7 +223,7 @@ export default {
         })
     },
     doDeleteAll () {
-      const vm = this
+        const vm = this
       const data = {
         urlCommand: '/vouchers/' + vm.voucherId + '/participants'
       }

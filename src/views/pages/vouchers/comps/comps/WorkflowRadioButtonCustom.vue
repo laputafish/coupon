@@ -49,6 +49,12 @@ export default {
       default: ''
     }
   },
+  watch: {
+    selectedCustomFormKey (newValue) {
+      const vm = this
+      vm.value = newValue
+    }
+  },
   mounted () {
     const vm = this
     vm.value = vm.selectedCustomFormKey
