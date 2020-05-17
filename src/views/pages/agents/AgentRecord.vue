@@ -5,16 +5,27 @@
                :loading="loading"
                :buttons="['back','save']"
                @onCommand="onCommandHandler"></title-row>
-    <div class="row" v-if="record">
-      <data-input width="6" id="name" labelTag="general.name" v-model="record.name"></data-input>
-      <data-input width="3" id="alias" labelTag="general.alias" v-model="record.alias"></data-input>
-      <data-input width="3" id="contact" labelTag="general.contact" v-model="record.contact"></data-input>
-      <data-input width="2" id="tel_no" labelTag="general.telNo" v-model="record.tel_no"></data-input>
-      <data-input width="2" id="fax_no" labelTag="general.faxNo" v-model="record.fax_no"></data-input>
-      <data-input width="4" id="web_url" labelTag="general.webUrl" v-model="record.web_url"></data-input>
-      <data-input width="4" id="email" labelTag="general.email" v-model="record.email"></data-input>
-      <!--<data-textarea></data-textarea>-->
-    </div>
+    <template v-if="record">
+      <div class="row mb-2">
+        <data-input width="6" id="name" labelTag="general.name" v-model="record.name"></data-input>
+        <data-input width="3" id="alias" labelTag="general.alias" v-model="record.alias"></data-input>
+        <data-input width="3" id="contact" labelTag="general.contact" v-model="record.contact"></data-input>
+        <data-input width="2" id="tel_no" labelTag="general.telNo" v-model="record.tel_no"></data-input>
+        <data-input width="2" id="fax_no" labelTag="general.faxNo" v-model="record.fax_no"></data-input>
+        <data-input width="4" id="web_url" labelTag="general.webUrl" v-model="record.web_url"></data-input>
+        <data-input width="4" id="email" labelTag="general.email" v-model="record.email"></data-input>
+        <!--<data-textarea></data-textarea>-->
+      </div>
+      <div class="p-2 bg-tab">
+        <b-tabs content-class="py-0" class="bg-tab">
+          <smtp-server-tab
+            ref="smtpServerTab"
+            title="SMTP Servers"
+            :record="record"
+            @onCommand="onCommandHandler"></smtp-server-tab>
+        </b-tabs>
+      </div>
+    </template>
 
     <b-modal id="errorDialog"
              v-model="showErrorDialog"
@@ -55,6 +66,7 @@
   import appMixin from '@/mixins/AppMixin'
   import titleRow from '@/views/comps/TitleRow'
   import formInputs from '@/views/comps/forms'
+  import smtpServerTab from './tabs/SmtpServerTab'
 
   import DataRecordMixin from '@/mixins/DataRecordMixin'
   // import helpers from '@/helpers'
@@ -63,6 +75,7 @@
     mixins: [DataRecordMixin, appMixin],
     components: {
       titleRow,
+      smtpServerTab,
       ...formInputs
     },
     data () {
@@ -73,7 +86,19 @@
         record: null,
         loading: false,
         content: '',
-        errorGroups: []
+        errorGroups: [],
+        blankSmtpServer: {
+          id: 0,
+          description: '',
+          mail_driver: 'smtp',
+          mail_host: '',
+          mail_port: 587,
+          mail_username: '',
+          mail_password: '',
+          mail_encryption: 'tls',
+          mail_from_address: '',
+          mail_from_name: ''
+        }
       }
     },
     props: {
@@ -141,10 +166,42 @@
         }
         vm.showErrorDialog = true
       },
+      newSmtpServerDescription () {
+        const vm = this
+        const NEW_DESCRIPTION = 'SMTP Server'
+        var result = NEW_DESCRIPTION
+
+        var found = vm.record.smtp_servers.find(item => {
+          return item.description = NEW_DESCRIPTION
+        })
+        if (found) {
+          var count = 2
+          found = vm.record.smtp_servers.find(item => {
+            return item.description = NEW_DESCRIPTION + ' #' + count
+          })
+          while (found) {
+            count++
+            found = vm.record.smtp_servers.find(item => {
+              return item.description = NEW_DESCRIPTION + ' #' + count
+            })
+          }
+          result = NEW_DESCRIPTION + ' #' + count
+        }
+
+        return result
+      },
       onCommandHandler (payload) {
         const vm = this
         // console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
         switch (payload.command) {
+          case 'newSmtpServer':
+            var newSmtpServer = JSON.parse(JSON.stringify(vm.blankSmtpServer))
+            newSmtpServer.description = vm.newSmtpServerDescription()
+            vm.record.smtp_servers.push(newSmtpServer)
+            if (typeof payload.callback === 'function') {
+              payload.callback(vm.record.smtp_servers[vm.record.smtp_servers.length-1])
+            }
+            break
           case 'save':
             vm.save()
             break
