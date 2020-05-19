@@ -122,6 +122,12 @@
                                   :voucher="voucher"
                                   fieldName="question"
                                   @onCommand="onCommandHandler"></fields-table-row-image>
+          <fields-table-row
+              label="Link"
+              notes="e.g. http://www.google.com"
+              :value="inputObj.note1"
+              fieldName="note1"
+              @onCommand="onCommandHandler"></fields-table-row>
         </table>
         <attribute-set
           :attributeSet="inputObj.inputType"
@@ -143,6 +149,13 @@
                                      :value="inputObj.question.replace('|', '\n')"
                                      fieldName="question"
                                      @onCommand="onCommandHandler"></fields-table-row-textarea>
+          <fields-table-row
+              label="Link"
+              notes="e.g. http://www.google.com"
+              :value="inputObj.note1"
+              fieldName="note1"
+              @onCommand="onCommandHandler"></fields-table-row>
+
         </table>
         <attribute-set
             :attributeSet="inputObj.inputType"

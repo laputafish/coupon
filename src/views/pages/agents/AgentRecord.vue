@@ -168,31 +168,44 @@
       },
       newSmtpServerDescription () {
         const vm = this
+        console.log('AgentRecord :: newSmtpServerDescription')
         const NEW_DESCRIPTION = 'SMTP Server'
         var result = NEW_DESCRIPTION
+        var newDescription = NEW_DESCRIPTION
 
         var found = vm.record.smtp_servers.find(item => {
-          return item.description = NEW_DESCRIPTION
+          return item.description == newDescription
         })
         if (found) {
           var count = 2
-          found = vm.record.smtp_servers.find(item => {
-            return item.description = NEW_DESCRIPTION + ' #' + count
-          })
-          while (found) {
-            count++
+
+          do {
+            newDescription = NEW_DESCRIPTION + ' #' + count
             found = vm.record.smtp_servers.find(item => {
-              return item.description = NEW_DESCRIPTION + ' #' + count
+              return item.description == newDescription
             })
-          }
-          result = NEW_DESCRIPTION + ' #' + count
+            console.log('newSmtpServerDescription :: found: ', found)
+            count++
+          } while(found)
+          // found = vm.record.smtp_servers.find(item => {
+          //   return item.description = newDescription
+          // })
+          //
+          // while (found) {
+          //   count++
+          //
+          //   found = vm.record.smtp_servers.find(item => {
+          //     return item.description = NEW_DESCRIPTION + ' #' + count
+          //   })
+          // }
+          result = newDescription
         }
 
         return result
       },
       onCommandHandler (payload) {
         const vm = this
-        // console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
+        console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
         switch (payload.command) {
           case 'newSmtpServer':
             var newSmtpServer = JSON.parse(JSON.stringify(vm.blankSmtpServer))

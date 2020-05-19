@@ -7,7 +7,8 @@
       <copy-link :link="link"
                  :label="codeKey"
         :variant="variant"></copy-link>
-      <div class="participant-name line-height-1" style="margin-top:-4px;">
+      <div v-if="goalType==='codes'"
+           class="participant-name line-height-1" style="margin-top:-4px;">
         {{ participantName }}
         <div v-if="participantEmail!==''"
              class="ml-1 badge badge-warning bg-gray font-weight-normal"
@@ -26,6 +27,14 @@ export default {
   },
   props: ['row', 'value', 'xprops', 'field'],
   computed: {
+    goalType () {
+      const vm = this
+      var result = 'none'
+      if (vm.xprops.record) {
+        result = vm.xprops.record.goal_type
+      }
+      return result
+    },
     codeKey () {
       const vm = this
       return vm.value
@@ -37,7 +46,7 @@ export default {
     variant () {
       const vm = this
       var result = 'primary'
-      if (vm.participantName !== '') {
+      if (vm.goalType==='codes' && vm.participantName !== '') {
         result = 'success'
       }
       return result

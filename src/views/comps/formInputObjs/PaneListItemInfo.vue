@@ -34,6 +34,9 @@
         <small class="line-height-1 mt-1 px-1 d-block note-font-size-10" v-for="(option, index) in inputObj.options">
           {{ option }}
         </small>
+        <div v-if="inputObj.note1.trim()!==''" class="d-flex flex-row justify-content-start">
+          <copy-link :link="inputObj.note1" variant="danger">{{ inputObj.note1 }}</copy-link>
+        </div>
       </div>
       <slot>
       </slot>
@@ -44,11 +47,13 @@
 <script>
 import inputObjIcon from './InputObjIcon'
 import inputObjTitle from './InputObjTitle'
+import copyLink from '@/views/comps/CopyLink'
 
 export default {
   components: {
     inputObjIcon,
-    inputObjTitle
+    inputObjTitle,
+    copyLink
   },
   props: {
     inputObj: {

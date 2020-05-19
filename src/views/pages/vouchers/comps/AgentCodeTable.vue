@@ -129,15 +129,29 @@ export default {
       // }
     }
   },
+  computed: {
+    voucherId () {
+      const vm = this
+      var result = 0
+      if (vm.record) {
+        result = vm.record.id
+      }
+      return result
+    }
+  },
   props: {
-    voucherId: {
-      type: Number,
-      default: 0
-    },
+    // voucherId: {
+    //   type: Number,
+    //   default: 0
+    // },
     codeFieldsStr: {
       type: String,
       default: ''
     },
+    record: {
+      type: Object,
+      default: null
+    }
   },
   watch: {
     files: {
@@ -214,6 +228,7 @@ export default {
     vm.setColumns(vm.codeFieldsStr)
     // vm.setTableData(vm.codeInfos)
     vm.query.page = 1
+    vm.xprops.record = vm.record
   },
   created () {
     const vm = this

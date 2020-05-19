@@ -13,7 +13,7 @@
           <agent-code-table
               ref="agentCodeTable"
               @onCommand="onCommandHandler"
-              :voucherId="record.id"
+              :record="record"
               :codeFieldsStr="record.code_fields"></agent-code-table>
           <!--<agent-code-table-->
           <!--ref="agentCodeTable"-->

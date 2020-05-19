@@ -29,6 +29,11 @@
                 <div class="smtp-server-title">
                   {{ server.description }}
                 </div>
+                <div class="voucher-count text-center">
+                  <span v-if="server.voucher_count && server.voucher_count >0">
+                    {{ server.voucher_count }}&nbsp;x&nbsp;<i class="fas fa-file-alt"></i>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -36,22 +41,24 @@
         <div v-if="selectedServer" class="col-sm-6 border p-2 mb-3" style="background-color:#fdf3ba;">
           <div class="row mb-3">
             <div class="col-sm-12">
-              <div>
-                <h4 v-if="selectedServer.description && selectedServer.description!==''" class="m-0 p-2 line-height-1 bg-gray">
+              <div class="d-flex flex-row bg-gray align-items-center pr-1 pl-2">
+                <h4 v-if="selectedServer.description && selectedServer.description!==''" class="m-0 py-2 line-height-1 flex-grow-1">
                   {{ selectedServer.description }}
                 </h4>
-                <h4 v-else class="m-0 p-2 line-height-1 bg-gray">
+                <h4 v-else class="m-0 p-2 line-height-1 bg-gray flex-grow-1">
                   (New)
                 </h4>
+                <button class="btn btn-danger btn-sm"
+                        @click="removeSmtpServer">Delete</button>
               </div>
             </div>
           </div>
           <div class="row">
-            <data-input width="6" label="Description" v-model="selectedServer.description"></data-input>
-            <data-input width="4" label="Host" v-model="selectedServer.mail_host"></data-input>
-            <data-input width="2" label="Port" type="Number" v-model="selectedServer.mail_port"></data-input>
-            <data-input width="4" id="username" label="Username" v-model="selectedServer.mail_username"></data-input>
-            <data-input width="4" id="password" type="password" label="Password" v-model="selectedServer.mail_password"></data-input>
+            <data-input id="description" width="6" label="Description" v-model="selectedServer.description"></data-input>
+            <data-input id="mailHost" width="4" label="Host" v-model="selectedServer.mail_host"></data-input>
+            <data-input id="mailPort" width="2" label="Port" type="Number" v-model="selectedServer.mail_port"></data-input>
+            <data-input id="mailUsername" width="4" label="Username" v-model="selectedServer.mail_username"></data-input>
+            <data-input id="mailPassword" width="4" type="password" label="Password" v-model="selectedServer.mail_password"></data-input>
             <div class="col-sm-4">
               <div class="form-group">
                 <label>Encryption</label>
@@ -62,12 +69,12 @@
                 </data-radio-toggle>
               </div>
             </div>
-            <data-input width="4" label="From Address" v-model="selectedServer.mail_from_address"></data-input>
-            <data-input width="4" label="From Name" v-model="selectedServer.mail_from_name"></data-input>
+            <data-input id="mailFromAddress" width="4" label="From Address" v-model="selectedServer.mail_from_address"></data-input>
+            <data-input id="mailFromName" width="4" label="From Name" v-model="selectedServer.mail_from_name"></data-input>
             <div class="col-sm-12 d-flex flex-row">
               <div class="p-2 d-flex flex-row align-items-center" style="background-color:#7fc9fd;">
                 <div class="pr-2 font-weight-bold">Test</div>
-                <input type="text"
+                <input id="receiverEmailAddress" type="text"
                        class="form-control"
                        style="width:320px;"
                        v-model="receiverEmailAddress">
@@ -203,13 +210,19 @@ export default {
     },
     addSmtpServer () {
       const vm = this
+      console.log('SmtpServerTab :: addSmtpServer')
       vm.$emit('onCommand', {
         command: 'newSmtpServer',
         callback: (newServer) => {
           vm.selectedServer = newServer
         }
       });
+    },
+
+    removeSmtpServer () {
+      alert('removeSmtpServer not implemented!')
     }
+
   }
 }
 </script>
@@ -225,7 +238,8 @@ export default {
     margin-bottom: 5px;
     display: inline-block;
     width: 180px;
-    height: 120px;
+    height: 130px;
+    border-radius: 0.5rem;
   }
 
   .smtp-server-icon-container {
