@@ -192,7 +192,7 @@ export default {
     sendTestEmail () {
       const vm = this
       if (vm.receiverEmailAddress.trim() === '') {
-        vm.$dialog.warning('Receiver email address not specified!')
+        vm.$dialog.alert('Receiver email address not specified!')
         return
       }
       const data = {

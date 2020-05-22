@@ -1200,7 +1200,7 @@
       onCommandHandler (payload) {
         const vm = this
         var customForm = null
-        console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
+        // console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
         // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
           case 'cropImage':
@@ -1217,7 +1217,7 @@
           case 'selectCustomForm':
             switch (payload.tag) {
               case 'actionTypeBeforeGoal':
-                console.log('voucherRecord > onCommandHandler > selectCustomForm > actionTypeBeforeGoal formKey = ' + payload.formKey)
+                // console.log('voucherRecord > onCommandHandler > selectCustomForm > actionTypeBeforeGoal formKey = ' + payload.formKey)
                 vm.record.custom_form_key_before_goal = payload.formKey
                 break
               case 'actionTypeAfterGoal':
@@ -1285,9 +1285,9 @@
             switch (payload.imageScope) {
               case 'tinymce':
                 const editor = tinyMCE.get('yoovEditor')
-                console.log('onImageSelected :: tinymce :: vm.$store.getters.appHost = ' + vm.$store.getters.appHost)
+                // console.log('onImageSelected :: tinymce :: vm.$store.getters.appHost = ' + vm.$store.getters.appHost)
                 const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
-                console.log('onImageSelected :: url = ' + url)
+                // console.log('onImageSelected :: url = ' + url)
                 editor.insertContent('<img class="content-img" src="' + url + '"/>');
                 vm.$toaster.success('Image Added')
                 break
@@ -1366,8 +1366,8 @@
           //   vm.saveTemp()
           //   break
           case 'setRecordField':
-            console.log('onCommandHandler :; setRecordField :: fieldName = ' + payload.fieldName)
-            console.log('onCommandHandler :; setRecordField :: fieldValue = ' + payload.fieldValue)
+            // console.log('onCommandHandler :; setRecordField :: fieldName = ' + payload.fieldName)
+            // console.log('onCommandHandler :; setRecordField :: fieldValue = ' + payload.fieldValue)
             vm.record[payload.fieldName] = payload.fieldValue
             break
           case 'setCodeFields':
@@ -1401,7 +1401,7 @@
             vm.onInputObjCommandHandler(payload)
 
         }
-        console.log('VoucherRecord :: onCommandHandler :: ends')
+        // console.log('VoucherRecord :: onCommandHandler :: ends')
       },
       exportParticipants () {
         const vm = this
@@ -1604,7 +1604,7 @@
 
       save (callback) {
         const vm = this
-        console.log('VoucherRecord :: save')
+        // console.log('VoucherRecord :: save')
         const codeConfigs = [
           vm.qrcodeConfig,
           vm.barcodeConfig
@@ -1633,7 +1633,7 @@
             vm.$toaster.success(successMessage)
             // console.log('save: response: ', response)
             vm.loading = false
-            console.log('after save: response: ', response)
+            // console.log('after save: response: ', response)
             vm.record.id = response.id
             vm.refresh(vm.record.id)
             if (typeof callback === 'function') {

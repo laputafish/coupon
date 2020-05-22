@@ -71,7 +71,7 @@ const FormInputObjMixin = {
     onInputObjCommandHandler (payload) {
       const vm = this
       const command = payload.command
-      console.log('onInputObjCommandHandler: payload: ', payload)
+      // console.log('onInputObjCommandHandler: payload: ', payload)
       var formConfigs = vm.getFormConfigsByKey(payload.key)
       if (formConfigs) {
         switch (command) {
@@ -85,7 +85,7 @@ const FormInputObjMixin = {
             vm.deleteInputObj(payload, formConfigs)
             break
           case 'updateInputObjField':
-            console.log('FormInputObjMixin :: onInputObjCommandHandler :: updateInputObjField: payload: ', payload)
+            // console.log('FormInputObjMixin :: onInputObjCommandHandler :: updateInputObjField: payload: ', payload)
             vm.updateInputObjField(payload, formConfigs)
             break
           case 'removeInputObjOption':
@@ -124,7 +124,7 @@ const FormInputObjMixin = {
 
     clearForm (key) {
       const vm = this
-      console.log('FormInputObjMixin :: clearForm :: key = ' + key)
+      // console.log('FormInputObjMixin :: clearForm :: key = ' + key)
       switch (key) {
         case 'question':
           vm.record.form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
@@ -133,7 +133,7 @@ const FormInputObjMixin = {
           for (var i = 0; i < vm.record.custom_forms.length; i++) {
             var customForm = vm.record.custom_forms[i]
             if (customForm.form_key === key) {
-              console.log('FormInputObjMixin :: clearForm :: found key = ' + key)
+              // console.log('FormInputObjMixin :: clearForm :: found key = ' + key)
               vm.record.custom_forms[i].form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
               break
             }
@@ -297,8 +297,8 @@ const FormInputObjMixin = {
 
     updateInputObjOptions (payload, formConfigs) {
       const vm = this
-      console.log('updateInputObjOptions :: payload: ', payload)
-      console.log('updateInputObjOptions :: formConfigs: ', formConfigs)
+      // console.log('updateInputObjOptions :: payload: ', payload)
+      // console.log('updateInputObjOptions :: formConfigs: ', formConfigs)
       var currentIndex = payload.objIndex
       if (currentIndex !== -1) {
         formConfigs.inputObjs[currentIndex].options = payload.options
@@ -306,7 +306,7 @@ const FormInputObjMixin = {
     },
 
     removeInputObjOptionByIndex (payload, formConfigs) {
-      console.log('removeInputObjOptionByIndex :: payload: ', payload)
+      // console.log('removeInputObjOptionByIndex :: payload: ', payload)
       const vm = this
       var optionIndex = payload.index
       var currentIndex = payload.objIndex
@@ -355,7 +355,7 @@ const FormInputObjMixin = {
     },
 
     updatePageConfigField (payload, formConfigs) {
-      console.log('FormInputObjMixin :: updatePageConfigField')
+      // console.log('FormInputObjMixin :: updatePageConfigField')
       formConfigs.pageConfig[payload.fieldName] = payload.fieldValue
     }
 

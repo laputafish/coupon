@@ -194,7 +194,7 @@ export default {
       //
       // Code:string|Serial No:string|activate_date:date
       //
-      console.log('watch(codeFieldsStr) : newValue: ' + newValue)
+      // console.log('watch(codeFieldsStr) : newValue: ' + newValue)
       const vm = this
       // console.log('watch(codeFieldsStr) :: newValue: ', newValue)
       vm.setColumns(newValue)
@@ -203,7 +203,7 @@ export default {
       handler: function (newValue) {
         const vm = this
         if (vm.voucherId !== 0) {
-          console.log('watch(voucherId) :: voucherId = ' + newValue)
+          // console.log('watch(voucherId) :: voucherId = ' + newValue)
           vm.onQueryChangedHandler(newValue)
         }
       }
@@ -212,7 +212,7 @@ export default {
       handler: function (newValue) {
         const vm = this
         if (vm.voucherId !== 0) {
-          console.log('watch(query) && voucherId !== 0: ', vm.voucherId)
+          // console.log('watch(query) && voucherId !== 0: ', vm.voucherId)
           vm.onQueryChangedHandler(newValue)
         }
         // console.log('AGentCodeTable :: watch(query): ', newValue)
@@ -252,7 +252,7 @@ export default {
   methods: {
     onCommandHandler (payload) {
       const vm = this
-      console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
+      // console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
       const command = payload.command
       switch (command) {
         case 'search':
@@ -264,7 +264,7 @@ export default {
       }
     },
     saveCodeInfo (row) {
-      console.log('saveCodeInfo : row: ', row)
+      // console.log('saveCodeInfo : row: ', row)
       const vm = this
       const codeInfo = vm.row2CodeInfo(row)
       const data = {
@@ -410,7 +410,7 @@ export default {
         query: query
       }
       vm.$store.dispatch('AUTH_GET', data).then(response => {
-        console.log('AUTH_GET :: response: ', response)
+        // console.log('AUTH_GET :: response: ', response)
         vm.total = response.total
         vm.data = vm.parseCodeInfoData(response.data)
         vm.$forceUpdate()
@@ -471,7 +471,7 @@ export default {
     },
     onRowCommandHandler (payload) {
       const vm = this
-      console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+      // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
         case 'edit':
           alert('onRowCommandHandler :; edit')
@@ -495,7 +495,7 @@ export default {
           vm.saveCodeInfo(payload.row);
           break
         case 'updateField':
-          console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
+          // console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
           // vm.$emit('onCommand', {
           vm.setCodeFieldValue(
             payload.row,
@@ -561,7 +561,7 @@ export default {
           })
         }
       }
-      console.log('getCodeFieldsFromStr: result: ', result)
+      // console.log('getCodeFieldsFromStr: result: ', result)
       return result
     },
 

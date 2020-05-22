@@ -113,7 +113,7 @@ export default {
     },
     processCommand (command, needConfirm) {
       const vm = this
-      console.log('tdCommonOpt :: processCommand')
+      // console.log('tdCommonOpt :: processCommand')
       if (typeof needConfirm === 'undefined') {
         needConfirm = false
       }
@@ -134,7 +134,7 @@ export default {
 
     doProcessCommand (command) {
       const vm = this
-      console.log('TdCommonOpt :: doProcessCommand :: command: ', command)
+      // console.log('TdCommonOpt :: doProcessCommand :: command: ', command)
       vm.xprops.eventbus.$emit('onRowCommand', {
         command: command,
         row: vm.row

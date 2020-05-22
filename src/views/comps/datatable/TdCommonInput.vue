@@ -28,7 +28,7 @@ export default {
   methods: {
     updateFieldValue (newValue) {
       const vm = this
-      console.log('TdCommonInput :: updateFieldValue : newValue: ', newValue)
+      // console.log('TdCommonInput :: updateFieldValue : newValue: ', newValue)
       vm.xprops.eventbus.$emit('onRowCommand', {
         command: 'updateField',
         row: vm.row,
@@ -38,7 +38,7 @@ export default {
     },
     processCommand (command, needConfirm) {
       const vm = this
-      console.log('tdCommonOpt :: processCommand')
+      // console.log('tdCommonOpt :: processCommand')
       if (typeof needConfirm === 'undefined') {
         needConfirm = false
       }
@@ -46,7 +46,7 @@ export default {
         // alert('tdCommonOpt :: processCommand => call showConfirmDialog')
         helpers.showConfirmDialog(vm, () => {
           // alert('tdCommonOpt :: processCommand :: helpers.showConfirmDialog :: callback')
-          console.log('tdCommonOpt :: processCommand showConfirmDialog.callback')
+          // console.log('tdCommonOpt :: processCommand showConfirmDialog.callback')
           vm.doProcessCommand(command)
         })
         // alert('tdCommonOpt :: processCommand => after call showConfirmDialog')

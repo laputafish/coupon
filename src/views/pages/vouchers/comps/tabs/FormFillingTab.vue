@@ -139,7 +139,7 @@
       //   }
       // },
       goalOptions () {
-        console.log('goalOptions')
+        // console.log('goalOptions')
         const vm = this
         var result = []
         result.push({name: 'Fixed', value: 'fixed'})

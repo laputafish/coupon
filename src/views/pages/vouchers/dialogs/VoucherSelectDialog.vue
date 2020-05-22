@@ -108,12 +108,12 @@
     },
     watch: {
       initialAgentId: function () {
-        console.log('watch(initialAgentId)')
+        // console.log('watch(initialAgentId)')
         this.setInitialAgent()
       },
       'selectedAgent.id': function (newValue) {
         const vm = this
-        console.log('watch(selectedAgent) :: selectedAgent.id = ' + newValue)
+        // console.log('watch(selectedAgent) :: selectedAgent.id = ' + newValue)
         vm.selectedVoucher = null
         vm.fetchAgentVouchers()
       }

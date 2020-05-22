@@ -95,21 +95,21 @@ const ifAuthenticated = (to, from, next) => {
   // if (token === '' || token === null) {
   //   next('/error/403')
   // }
-  console.log('ifAuthenticated')
+  // console.log('ifAuthenticated')
   const user = store.getters.user;
   if (user === null) {
-    console.log('ifAuthenticated => FETCH_TOKEN')
+    // console.log('ifAuthenticated => FETCH_TOKEN')
     store.dispatch('FETCH_TOKEN').then(
       (token) => {
-        console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
+        // console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
         if (token === '' || token === null) {
-          console.log('ifAuthenticated :: token is blank')
+          // console.log('ifAuthenticated :: token is blank')
           next('/login')
         } else {
-          console.log('ifAuthenticated => FETCH_user')
+          // console.log('ifAuthenticated => FETCH_user')
           store.dispatch('FETCH_USER')
           if (!store.getters.agentsLoaded) {
-            console.log('ifAuthenticated => FETCH_AGENTS')
+            // console.log('ifAuthenticated => FETCH_AGENTS')
             store.dispatch('FETCH_AGENTS')
           }
         }
@@ -117,7 +117,7 @@ const ifAuthenticated = (to, from, next) => {
     )
   } else {
     if (!store.getters.agentsLoaded) {
-      console.log('ifAuthenticated => FETCH_AGENTS')
+      // console.log('ifAuthenticated => FETCH_AGENTS')
       store.dispatch('FETCH_AGENTS')
     }
   }

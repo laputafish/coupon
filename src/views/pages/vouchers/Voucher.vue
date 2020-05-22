@@ -129,19 +129,19 @@
       onRecordCreated (responseData) {
         const vm = this
         const record = responseData.data
-        console.log('VoucherRecord :: onRecordCreated :: record: ', record)
+        // console.log('VoucherRecord :: onRecordCreated :: record: ', record)
         if (vm.selectedFilter !== 0) {
           record['agent_id'] = vm.selectedFilter
         }
-        console.log('VoucherRecord :: onRecordCreated :: record: ', record)
+        // console.log('VoucherRecord :: onRecordCreated :: record: ', record)
         vm.saveRecord(record, (record) => {
-          console.log('Voucher.vue :: onRecordCreated :: saveRecord record: ', record)
+          // console.log('Voucher.vue :: onRecordCreated :: saveRecord record: ', record)
           vm.$router.push({name: vm.routeName, params: {id: record.id}})
         })
       },
       saveRecord (record, callback) {
         const vm = this
-        console.log('Voucher :: saveRecord: ', record)
+        // console.log('Voucher :: saveRecord: ', record)
         const data = {
           urlCommand: vm.apiPath + (record.id === 0 ? '' : '/' + record.id),
           data: record
@@ -152,7 +152,7 @@
         vm.$store.dispatch(action, data).then(
           response => {
             vm.loading = false
-            console.log('after save: response: ', response)
+            // console.log('after save: response: ', response)
             record.id = response.id
             if (typeof callback === 'function') {
               callback(record)

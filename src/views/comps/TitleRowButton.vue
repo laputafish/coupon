@@ -57,7 +57,7 @@
     methods: {
       onButtonClicked () {
         const vm = this
-        console.log('onButtonClicked :: command = ' + vm.buttonInfo.command)
+        // console.log('onButtonClicked :: command = ' + vm.buttonInfo.command)
         vm.$emit('onCommand', {
           command: vm.buttonInfo.command
         })

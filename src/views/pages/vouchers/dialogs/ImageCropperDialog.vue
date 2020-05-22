@@ -140,16 +140,16 @@
     },
     methods: {
       change ({coordinates, canvas}) {
-        console.log(coordinates, canvas)
+        // console.log(coordinates, canvas)
       },
       startCrop () {
         const vm = this
-        console.log('ImageCropperDialog::startCrop() $refs: ', vm.$refs)
+        // console.log('ImageCropperDialog::startCrop() $refs: ', vm.$refs)
         if (vm.$refs.cropper) {
-          console.log('ImageCropperDialog::startCrop() $refs.cropper is defined.')
+          // console.log('ImageCropperDialog::startCrop() $refs.cropper is defined.')
           vm.$refs.cropper.startCrop()
         } else {
-          console.log('ImageCropperDialog::startCrop() $refs.cropper not defined.')
+          // console.log('ImageCropperDialog::startCrop() $refs.cropper not defined.')
         }
       },
       reset () {
@@ -159,16 +159,16 @@
       },
       realTime (data) {
         this.previews = data
-        console.log('realTime() :: data: ', data)
+        // console.log('realTime() :: data: ', data)
       },
       imgLoad () {
         // const vm = this
-        console.log('imgLoad()')
+        // console.log('imgLoad()')
       },
 
       onCommandHandler (payload) {
         const vm = this
-        console.log('imageCropperDialog :; onCommandHandler :: payload: ', payload)
+        // console.log('imageCropperDialog :; onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
           case 'onClosing':
@@ -177,13 +177,13 @@
           case 'ok':
             this.$refs.cropper.getCropBlob( blob => {
               let formData = new FormData()
-              console.log('ImageCropperDialog :: onCommandHandler ::  blob: ', blob)
+              // console.log('ImageCropperDialog :: onCommandHandler ::  blob: ', blob)
               const filename = 'image-name-' + (new Date()).getTime() + '.jpg'
               formData.append('name', filename)
               formData.append('file', blob, filename)
               formData.append('width', 256)
 
-              console.log('ImageCropperDialog :: onCommandHandler ::  formData: ', formData)
+              // console.log('ImageCropperDialog :: onCommandHandler ::  formData: ', formData)
               // const data = {
               //   urlCommand: '/media/upload',
               //   data: formData
@@ -200,7 +200,7 @@
                 }
               ).then(
                 response => {
-                  console.log('post :: response: ', response)
+                  // console.log('post :: response: ', response)
                   vm.$emit('onCommand', {
                     command: 'setRecordField',
                     fieldName: vm.mediaIdField,
