@@ -2,14 +2,20 @@
   <div class="th-field">
     <div class="text-center">
       {{ title }}<br/>
-      <div class="badge badge-info">{{ '{' + token + '}' }}</div>
+      <copy-token
+        :token="token"></copy-token>
     </div>
   </div>
 </template>
 
 <script>
 import helpers from '@/helpers'
+import copyToken from '@/views/comps/CopyToken'
+
 export default {
+  components: {
+    copyToken
+  },
   computed: {
     token () {
       const vm = this

@@ -58,6 +58,12 @@
        <font-awesome-icon icon="spinner" class="fa-spin"/>
     </h3>
   </div>
+
+  <code-import-dialog
+      ref="codeImportDialog"
+      v-model="showingCodeImportDialog"
+      callbackCommand="confirmCodeImport"
+      @onCommand="onCommandHandler"></code-import-dialog>
 </div>
 </template>
 
@@ -67,6 +73,7 @@ import dtCommon from '@/views/comps/datatable'
 import dtComps from './dtComps'
 import xlsFileUpload from '@/views/comps/XlsFileUpload'
 import searchField from './comps/SearchField'
+import codeImportDialog from '../dialogs/CodeImportDialog'
 
 // import helpers from '@/helpers'
 
@@ -75,12 +82,16 @@ export default {
     ...dtCommon,
     ...dtComps,
     xlsFileUpload,
-    searchField
+    searchField,
+    codeImportDialog
     // ,
     // helpers
   },
   data () {
     return {
+      showingCodeImportDialog: false,
+      importedFileKey: '',
+      importedFieldInfos: [],
       uploadRoute: '/agent_codes/upload',
       appLoading: false,
       uploading: false,
@@ -241,10 +252,14 @@ export default {
   methods: {
     onCommandHandler (payload) {
       const vm = this
+      console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
       const command = payload.command
       switch (command) {
         case 'search':
           vm.searchValue = payload.searchValue
+          break
+        case 'confirmCodeImport':
+          vm.onParsingCodes(payload)
           break
       }
     },
@@ -639,8 +654,9 @@ export default {
     // },
 
     onUploadingHandler () {
-      // console.log('AgentCodeTable :: onUploadingHandler')
-      this.uploading = true
+      const vm = this
+      vm.uploading = true
+      vm.showingCodeImportDialog = false
     },
 
     onUploadedHandler (result) {
@@ -653,58 +669,67 @@ export default {
       // }
       //
       vm.uploading = false
-      if (result.codeFields) {
-        // console.log('onUploaded :: result.codeFields: ', result.codeFields)
-        const newCodeFieldsStr = result.codeFields
-        // console.log('onUploaded :: newCodefieldsStr = ' + newCodeFieldsStr)
-        if (vm.codeFieldsStr == newCodeFieldsStr) {
-          // console.log('onUploaded :: vm.codeFieldsStr == newCodefieldsStr')
-          // vm.reloadCodeList(vm.query)
-        } else {
-          // if (newCodeFieldsStr !== vm.codeFieldsStr && vm.codeFieldsStr !== null) {
-          //   const options = {
-          //     cancelText: vm.$t('buttons.close')
-          //   }
-          //   vm.$dialog.alert(vm.$t('messages.fields_not_matched_please_delete_all_first'), options)
-          // } else {
-          vm.$emit('onCommand', {
-            command: 'setCodeFields',
-            value: newCodeFieldsStr
-          })
-          vm.$emit('onCommand', {
-            command: 'setRecordField',
-            fieldName: 'code_count',
-            fieldValue: result.codeCount
-          })
-          if (result.code_composition) {
-            vm.$emit('onCommand', {
-              command: 'setQrCodeComposition',
-              data: result.code_composition
-            })
-          }
-        }
-        let msgs = []
-        if (result.existing > 0) {
-          msgs.push(result.existing + ' code(s) are duplicated')
-        } else {
-          msgs.push('No code(s) is duplicated')
-        }
-        if (result.new > 0) {
-          msgs.push(result.new + ' code(s) are added')
-        } else {
-          msgs.push('no code(s) are added')
-        }
-        vm.$toaster.success(msgs.join(' and ') + '.')
-        // }
-        vm.onQueryChangedHandler(vm.query)
-        // else {
-        //   vm.onQueryChangedHandler(vm.query)
-        // }
-      } else {
-        vm.$dialog.alert(vm.$t('messages.error_occurred_maybe_invalid_format'))
-      }
+      vm.showingCodeImportDialog = true
+      vm.$refs.codeImportDialog.preInit(result.fields, result.key)
     },
 
+    onParsingCodes (payload) {
+      const vm = this
+      const postData = {
+        urlCommand: '/agent_codes/parse/' + payload.key,
+        data: {
+          fieldInfos: payload.fieldInfos
+        }
+      }
+
+      vm.uploading = true
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        result => {
+          vm.uploading = false
+
+          if (result.codeFields) {
+            const newCodeFieldsStr = result.codeFields
+            if (vm.codeFieldsStr == newCodeFieldsStr) {
+            } else {
+              vm.$emit('onCommand', {
+                command: 'setCodeFields',
+                value: newCodeFieldsStr
+              })
+              vm.$emit('onCommand', {
+                command: 'setRecordField',
+                fieldName: 'code_count',
+                fieldValue: result.codeCount
+              })
+              if (result.code_composition) {
+                vm.$emit('onCommand', {
+                  command: 'setQrCodeComposition',
+                  data: result.code_composition
+                })
+              }
+            }
+            let msgs = []
+            if (result.existing > 0) {
+              msgs.push(result.existing + ' code(s) are duplicated')
+            } else {
+              msgs.push('No code(s) is duplicated')
+            }
+            if (result.new > 0) {
+              msgs.push(result.new + ' code(s) are added')
+            } else {
+              msgs.push('no code(s) are added')
+            }
+            vm.$toaster.success(msgs.join(' and ') + '.')
+            vm.onQueryChangedHandler(vm.query)
+          } else {
+            vm.$dialog.alert(vm.$t('messages.error_occurred_maybe_invalid_format'))
+          }
+        },
+        error => {
+          vm.uploading = false
+          console.log('error: ', error)
+        }
+      )
+    },
     // onUploaded2 (result) {
     //   const vm = this
     //   // result = {

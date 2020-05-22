@@ -67,6 +67,7 @@
     "temporary_key_expired": "Tempoarary Key Expired!",
     "fields_not_matched_please_delete_all_first": "Fields not matched. All exisiting codes will be removed. Are you sure?",
     "link_copied_to_clipboard": "The link is copied to clipboard.",
+    "token_copied_to_clipboard": "The token is copied to clipboard.",
     "not_specified": "Not Specified",
     "some_errors_occurred_during_export": "Some errors occurred during export!",
     "goto_login_page": "Goto login page",

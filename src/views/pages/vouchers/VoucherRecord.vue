@@ -60,7 +60,7 @@
       <div class="col-sm-2">
         <div class="d-flex flex-row justify-content-between">
           <label>QR Code
-            <div class="badge badge-info">{qrcode}</div>
+            <copy-token token="qrcode"></copy-token>
           </label>
           <!--<toggle-black-white-->
             <!--v-model="qrcodeConfig.code_color"></toggle-black-white>-->
@@ -79,7 +79,7 @@
       <div class="col-sm-2">
         <div class="d-flex flex-row justify-content-between">
           <label>Barcode
-            <div class="badge badge-info">{barcode}</div>
+            <copy-token token="barcode"></copy-token>
           </label>
           <!--<toggle-black-white-->
             <!--v-model="barcodeConfig.code_color"></toggle-black-white>-->
@@ -234,7 +234,7 @@
                         <li v-for="templateKey in keyGroup.keys"
                             :key="templateKey">
                           <div @click="insertKey(templateKey)"
-                               class="badge badge-info">{{ '{'+templateKey+'}' }}
+                               class="badge badge-warning"><i class="fas fa-plus"></i>&nbsp;{{ '{'+templateKey+'}' }}
                           </div>
                         </li>
                       </ul>
@@ -259,7 +259,7 @@
                           <li v-for="templateKey in keyGroup.keys"
                               :key="templateKey">
                             <div @click="insertKey(templateKey)"
-                                 class="badge badge-info">{{ '{'+templateKey+'}' }}
+                                 class="badge badge-warning"><i class="fas fa-plus"></i>&nbsp;{{ '{'+templateKey+'}' }}
                             </div>
                           </li>
                         </ul>
@@ -348,7 +348,6 @@
             @onCommand="onCommandHandler"></custom-forms-tab>
 
         <form-participants-tab
-            v-if="record.voucher_type==='form'"
             title="Participants"
             :record="record"
             @onCommand="onCommandHandler"></form-participants-tab>
@@ -392,6 +391,7 @@
 </template>
 
 <script>
+  import copyToken from '@/views/comps/CopyToken'
   import titleRow from '@/views/comps/TitleRow'
   import formInputs from '@/views/comps/forms'
   import fileUpload from 'vue-upload-component'
@@ -431,6 +431,7 @@
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
+      copyToken,
       copyLink,
       toggleBlackWhite,
       templateEditor,
