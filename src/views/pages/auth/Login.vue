@@ -66,15 +66,16 @@
     },
     mounted () {
       const vm = this
-      // console.log('Login.vue :: mounted')
+      console.log('Login.vue :: mounted')
       if (vm.mode === 'development') {
-        vm.credentials.email = 'yoovcoupon@gmail.com'
+        vm.credentials.email = 'yoovtest@gmail.com'
         vm.credentials.password = 'yoovYoov'
       }
       if (vm.$route.name === 'Logout') {
         // console.log('  is logout route')
         vm.logout()
       } else {
+        vm.resetAll()
         // console.log('  not logout route')
       }
     },
@@ -124,6 +125,12 @@
           vm.loading = false
           console.log('resetAll :: SET_TOKEN.catch')
         })
+        vm.$store.dispatch('SET_USER', null).then(()=> {
+          console.log('resetAll :: SET_USER.then')
+        }).catch(() => {
+          vm.loading = false
+          console.log('resetAll :: SET_USER.catch')
+        })
         vm.$store.dispatch('CLEAR_AGENTS').then(()=>{
           console.log('logout => AFTER AGENTS CLEAR_AGENTS')
           console.log('logout, agents: ', vm.agents)
@@ -144,7 +151,9 @@
             // console.log('login :: response: ', response)
             vm.loading = false
             vm.$store.dispatch('SET_TOKEN', response.access_token).then(()=> {
-              vm.gotoNextUrl('/dashboard')
+              vm.$store.dispatch('FETCH_USER').then(() => {
+                vm.gotoNextUrl('/dashboard')
+              })
             }, () => {console.log('#3 setToken fails')}).catch(() => {
               // console.log('#3 caught')
             })

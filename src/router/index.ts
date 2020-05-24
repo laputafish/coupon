@@ -109,17 +109,39 @@ const ifAuthenticated = (to, from, next) => {
           // console.log('ifAuthenticated => FETCH_user')
           store.dispatch('FETCH_USER')
           if (!store.getters.agentsLoaded) {
-            // console.log('ifAuthenticated => FETCH_AGENTS')
+            console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
             store.dispatch('FETCH_AGENTS')
+          } else {
+            console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
           }
+	        if (!store.getters.inputObjsInfoLoaded) {
+		        console.log('ifAuthenticated => inputObjsInfoLoaded==false ==> FETCH_INPUT_OBJS_INFO')
+		        store.dispatch('FETCH_INPUT_OBJS_INFO').then(
+			        ()=>{},
+			        ()=>{}
+		        )
+	        } else {
+		        console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
+	        }
         }
       }
     )
   } else {
     if (!store.getters.agentsLoaded) {
-      // console.log('ifAuthenticated => FETCH_AGENTS')
-      store.dispatch('FETCH_AGENTS')
+	    console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
+	    store.dispatch('FETCH_AGENTS')
+    } else {
+	    console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
     }
+	  if (!store.getters.inputObjsInfoLoaded) {
+		  console.log('ifAuthenticated => inputObjsInfoLoaded==false ==> FETCH_INPUT_OBJS_INFO')
+		  store.dispatch('FETCH_INPUT_OBJS_INFO').then(
+			  ()=>{},
+			  ()=>{}
+		  )
+	  } else {
+		  console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
+	  }
   }
   next()
 

@@ -10,6 +10,9 @@ const getters = {
   agents: (state) => {
     // console.log('getters :: agents: ', state.agents)
     return state.agents
+  },
+  agentsLoaded: (state) => {
+    return state.agentsLoaded
   }
 }
 

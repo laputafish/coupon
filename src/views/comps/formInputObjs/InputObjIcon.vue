@@ -33,7 +33,7 @@ export default {
         }
       }
       if (!result) {
-        alert('The input type "' + vm.inputObjType +'" not exist.')
+        console.log('The input type "' + vm.inputObjType +'" not exist.')
       }
       return result
     },

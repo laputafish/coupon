@@ -31,6 +31,8 @@ const mutations = {
   },
   setAccessToken (state, payload) {
     state.accessToken = payload
+    console.log('setAccessToken payload = ' + payload)
+    console.log('setAccessToken state.accessToken = (' + state.accessToken + ')')
     const localToken = localStorage.getItem('accessToken')
     if (payload !== localToken) {
       localStorage.setItem('accessToken', payload)
@@ -58,10 +60,25 @@ const actions = {
 
   [types.SET_TOKEN] ({commit, getters}, payload) {
     return new Promise((resolve) => {
+      console.log('SET_TOKEN :: payload: ', payload)
+      console.log('SET_TOKEN :: getters.accessToken = ' + getters.accessToken)
       if (getters.accessToken !== payload) {
         localStorage.setItem('accessToken', payload)
         commit('setAccessToken', payload)
         // console.log('SET_TOKEN :: token = ' + payload)
+        resolve(payload)
+      } else {
+        resolve(payload)
+      }
+    })
+  },
+
+  [types.SET_USER] ({commit, getters}, payload) {
+    return new Promise((resolve) => {
+      console.log('SET_USER :: payload: ', payload)
+      console.log('SET_USER :: getters.user = ' + getters.user)
+      if (getters.user !== payload) {
+        commit('setUser', payload)
         resolve(payload)
       } else {
         resolve(payload)
