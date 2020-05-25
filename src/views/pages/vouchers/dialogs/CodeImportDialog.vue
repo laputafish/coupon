@@ -148,6 +148,7 @@ export default {
           }
         }
       }
+      vm.fieldInfos = JSON.parse(JSON.stringify(vm.fieldInfos))
     },
     preInit (fieldInfos, tempFileKey) {
       const vm = this
