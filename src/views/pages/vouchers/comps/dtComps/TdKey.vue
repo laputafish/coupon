@@ -7,12 +7,18 @@
       <copy-link :link="link"
                  :label="codeKey"
         :variant="variant"></copy-link>
-      <div v-if="goalType==='codes'"
-           class="participant-name line-height-1" style="margin-top:-4px;">
-        {{ participantName }}
-        <div v-if="participantEmail!==''"
-             class="ml-1 badge badge-warning bg-gray font-weight-normal"
-             style="padding:1px 3px;">{{ participantEmail }}</div>
+      <div v-if="row.participant_name && row.participant_email">
+        <div class="participant-name line-height-1" style="margin-top:-4px;">
+          {{ participantName }}
+          <div v-if="participantEmail!==''"
+               class="ml-1 badge badge-warning bg-gray font-weight-normal"
+               style="padding:1px 3px;">{{ participantEmail }}</div>
+        </div>
+      </div>
+      <div v-else-if="row.participant_email">
+        <div class="participant-email line-height-1" style="margin-top:-4px;">
+          {{ participantEmail }}
+        </div>
       </div>
     </template>
   </div>
