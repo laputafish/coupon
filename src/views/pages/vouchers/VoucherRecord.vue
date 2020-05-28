@@ -358,6 +358,7 @@
             :templates="allTemplates"
             @onCommand="onCommandHandler"></form-page-templates-tab>
 
+        <mailing-manager-tab></mailing-manager-tab>
       </b-tabs>
     </div>
     <div v-else class="text-center">
@@ -421,6 +422,7 @@
   import formPageTemplatesTab from './comps/tabs/FormPageTemplatesTab'
   import customFormsTab from './comps/tabs/CustomFormsTab'
   import formParticipantsTab from './comps/tabs/FormParticipantsTab'
+  import mailingManagerTab from './comps/tabs/MailingManagerTab'
 
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
 
@@ -438,6 +440,7 @@
       imageCropperDialog,
       // agentCodeTable,
       agentCodeTab,
+      mailingManagerTab,
       fileUpload,
       // emailTable,
       // datePicker,
