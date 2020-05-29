@@ -39,6 +39,9 @@ div[name=Datatable] div.row:last-child {
 .btn.min-width-100 {
   min-width: 100px;
 }
+.btn.min-width-200 {
+  min-width: 200px;
+}
 .w-400 {
   width: 400px;
 }
@@ -125,4 +128,9 @@ div[name=Datatable] .table > thead {
 
 div[name=Datatable] .table > thead > th {
   vertical-align: middle;
+}
+
+.app-heading {
+  background-color: #0263A9;
+  color: white;
 }
