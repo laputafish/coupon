@@ -1,172 +1,87 @@
 <template>
   <div class="container-fluid">
     <title-row :record="record"
-               :titleField="titleField"
+               titleField="description"
+               subTitleField="notes"
                :loading="loading"
                :processingButtons="processingButtons"
                :buttons="['back', 'save']"
                @onCommand="onCommandHandler"></title-row>
+
+    <!-- Record # and creation date/time -->
     <div v-if="record" class="w-100 d-flex flex-row justify-content-between" style="margin-top:-20px;">
       <div style="color:rgba(0,0,0,.6);">{{ record ? '#' + record.id : '' }}</div>
       <div>
-        <div class="p-0 m-0 d-inline mr-2" style="color:darkgray">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
+        <div class="p-0 m-0 mr-2 d-inline field-label">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
         <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record ? record.created_at : '' }}</div>
       </div>
     </div>
 
+    <!-- Brief Details heading line -->
     <div class="row mb-2" v-if="record">
-      <!-- ********* -->
-      <!-- Row #0 -->
-      <!-- ********* -->
-      <!--<data-input width="3" id="description" labelTag="vouchers.title"-->
-      <!--v-model="record.description"></data-input>-->
-      <!--<data-input width="3" id="notes" labelTag="vouchers.sub_title"-->
-      <!--v-model="record.notes"></data-input>-->
-      <div class="col-sm-6">
-        <div class="form-group mb-1">
-          <label for="description">{{ $t('vouchers.title') }}</label>
-          <input class="form-control"
-                 id="description"
-                 name="description"
-                 type="text"
-                 v-model="record.description"/>
-          <input class="form-control mt-1"
-                 :placeholder="$t('vouchers.sub_title')"
-                 id="notes"
-                 name="notes"
-                 type="text"
-                 style="padding: 0.25rem 0.75rem;line-height: 1.2;height:1.4rem;"
-                 v-model="record.notes"/>
+      <div class="col-sm-12 line-height-1">
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label">Agent</div>
+          <div class="d-inline-block mr-3 field-content">{{agentName}}</div>
         </div>
-      </div>
 
-      <!--<data-input width="4" id="description" labelTag="general.description" v-model="record.description"></data-input>-->
-      <data-input-date width="2" id="activate_date" labelTag="vouchers.activation_date"
-                       v-model="record.activation_date"></data-input-date>
-      <data-input-date width="2" id="expiry_date" labelTag="vouchers.expiry_date"
-                       v-model="record.expiry_date"></data-input-date>
-      <data-input-readonly width="2" id="status" labelTag="general.status"
-                           :value="$t('status.'+record.status)"></data-input-readonly>
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label">Activation Date</div>
+          <div class="d-inline-block mr-3 field-content">{{record.activation_date}}</div>
+        </div>
 
-      <!-- ********* -->
-      <!-- Row #1 -->
-      <!-- ********* -->
-      <data-input-select width="2" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
-                         :options="agents"
-                         optionLabelField="name"></data-input-select>
-      <!--<data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"-->
-      <!--v-model="record.created_at"></data-input-readonly>-->
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label">{{$t('vouchers.expiry_date')}}</div>
+          <div class="d-inline-block mr-3 field-content">{{record.expiry_date}}</div>
+        </div>
 
-      <div class="col-sm-2">
-        <div class="d-flex flex-row justify-content-between">
-          <label>QR Code
-            <copy-token token="qrcode"></copy-token>
-          </label>
-          <!--<toggle-black-white-->
-            <!--v-model="qrcodeConfig.code_color"></toggle-black-white>-->
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label">{{$t('general.status')}}</div>
+          <div class="d-inline-block mr-3 field-content">{{record.status}}</div>
         </div>
-        <input class="form-control" v-model="qrcodeConfig.composition">
-        <div class="d-flex flex-row align-items-center">
-          <small class="line-height-1 d-inline mr-1">Size</small>
-          <vue-range-slider :min="5" :max="20" ref="slider" style="width:100%;" v-model="qrcodeConfig.width">
-            <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
-              {{ value }}
-            </div>
-          </vue-range-slider>
-          <div class="line-height-1 text-nowrap">{{ qrcodeConfig.width }} px</div>
-        </div>
-      </div>
-      <div class="col-sm-2">
-        <div class="d-flex flex-row justify-content-between">
-          <label>Barcode
-            <copy-token token="barcode"></copy-token>
-          </label>
-          <!--<toggle-black-white-->
-            <!--v-model="barcodeConfig.code_color"></toggle-black-white>-->
-          <!--<select v-model="record.barcodeType">-->
-          <!--<option value="C39">Code 39</option>-->
-          <!--<option value="C128">Code 128</option>-->
-          <!--</select>-->
-        </div>
-        <input class="form-control" v-model="barcodeConfig.composition">
-        <div class="d-flex flex-row align-items-center">
-          <small class="text-nowrap line-height-1 d-inline mr-1">Width/bar</small>
-          <vue-range-slider :min="1" :max="5" ref="slider" style="width:100%;" v-model="barcodeConfig.width">
-            <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
-              {{ value }}
-            </div>
-          </vue-range-slider>
-          <div class="line-height-1 text-nowrap">{{ barcodeConfig.width }}</div>
-        </div>
-        <div class="d-flex flex-row align-items-center">
-          <small class="text-nowrap line-height-1 d-inline mr-1">Height</small>
-          <vue-range-slider :min="30" :max="99" ref="slider" style="width:100%;" v-model="barcodeConfig.height">
-            <div class="diy-tooltip" slot="tooltip" slot-scope="{ value }">
-              {{ value }}
-            </div>
-          </vue-range-slider>
-          <div class="line-height-1 text-nowrap">{{ barcodeConfig.height }}</div>
-        </div>
-      </div>
 
-      <div class="col-sm-6">
-        <div class="d-flex flex-row">
-          <label>Voucher Type</label>
-        </div>
-        <div class="d-flex flex-row justify-content-between align-items-start voucher-type-selection">
-          <div class="flex-grow-1">
-            <!--:class="{'active':record.voucher_type=='voucher'}"-->
-            <button type="button"
-                    :class="{'btn-primary':record.voucher_type==='voucher','btn-light':record.voucher_type!=='voucher'}"
-                    @click="record.voucher_type='voucher'"
-                    class="btn w-100 mr-1">
-              <img class="voucher-type-icon" data-toggle="tooltip" title="Voucher" src="/img/voucher.png"/>
-              <img class="voucher-type-icon white-icon" data-toggle="tooltip" title="Voucher" src="/img/voucher-w.png"/>
-            </button>
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label" style="padding-top:3px;"><i class="fas fa-qrcode"></i></div>
+          <div v-if="qrcodeConfig.composition && qrcodeConfig.composition.trim() !==''"
+               class="d-inline-block mr-3 field-content">{{qrcodeConfig.composition}}
           </div>
-          <div class="flex-grow-1 p-l-1">
-            <!--:class="{'active':record.voucher_type==='form'}"-->
-            <button type="button"
-                    :class="{'btn-success':record.voucher_type==='form','btn-light':record.voucher_type!=='form'}"
-                    @click="record.voucher_type='form'"
-                    class="btn w-100 ml-1">
-              <div class="d-flex flex-row justify-content-center align-items-center">
-                <img class="voucher-type-icon flex-grow-1"
-                     data-toggle="tooltip"
-                     title="Form Filling"
-                     src="/img/form.png"/>
-                <img class="voucher-type-icon flex-grow-1 white-icon"
-                     data-toggle="tooltip"
-                     title="Form Filling"
-                     src="/img/form-w.png"/>
-                <i class="fa fa-play"></i>
-                <img class="voucher-type-icon flex-grow-1"
-                     data-toggle="tooltip"
-                     title="Voucher"
-                     src="/img/voucher.png"/>
-                <img class="voucher-type-icon flex-grow-1 white-icon"
-                     data-toggle="tooltip"
-                     title="Voucher"
-                     src="/img/voucher-w.png"/>
-              </div>
-            </button>
+          <div v-else class="d-inline-block mr-3 field-content min-width-50 text-center">&nbsp;</div>
+        </div>
+
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label" style="padding-top:3px;"><i class="fas fa-barcode"></i></div>
+          <div v-if="barcodeConfig.composition && barcodeConfig.composition.trim()!==''"
+               class="d-inline-block mr-3 field-content">{{barcodeConfig.composition}}
           </div>
+          <div v-else class="d-inline-block mr-3 field-content min-width-50 text-center">&nbsp;</div>
         </div>
-        <div v-if="record.voucher_type==='form'"
-             class="position-absolute d-flex flex-row justify-content-center align-items-center"
-             style="left:0;right:0;">
-          <small class="mr-1">Form Link</small>
-          <copy-link :link="customLink" variant="danger"></copy-link>
-          <!--<div class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"-->
-               <!--@click="copyCustomLink()">-->
-            <!--{{ customLink }}-->
-            <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
-          <!--</div>-->
-        </div>
+
+      </div>
+      <div class="col-sm-4">
+        {{ activeTabButton ? activeTabButton.tab : 'not selected'}}
       </div>
     </div>
 
-    <div v-if="record" class="p-2 bg-tab">
+    <voucher-toolbar
+        :buttons="tabButtons"
+        :activeButton="activeTabButton"
+        @click="selectTab"></voucher-toolbar>
+
+    <info-page
+        v-if="record && activeTabButton && activeTabButton.tab==='info'"
+        :record="record"
+        @onCommand="onCommandHandler"
+        :qrcodeConfig="qrcodeConfig"
+        :barcodeConfig="barcodeConfig"></info-page>
+
+    <agent-code-page
+        v-if="record && activeTabButton && activeTabButton.tab==='codes'"
+        ref="agentCodeTab"
+        :title="$t('vouchers.codeTabLabel')"
+        :record="record"
+        @onCommand="onCommandHandler"></agent-code-page>
+
+    <div v-if="record && false" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
         <!--
          ******************
@@ -174,10 +89,10 @@
          ******************
         -->
         <agent-code-tab
-            ref="agentCodeTab""
-          :title="$t('vouchers.codeTabLabel')"
-          :record="record"
-          @onCommand="onCommandHandler"></agent-code-tab>
+            ref="agentCodeTab"
+            :title="$t('vouchers.codeTabLabel')"
+            :record="record"
+            @onCommand="onCommandHandler"></agent-code-tab>
 
         <!--
         *****************
@@ -280,25 +195,25 @@
         <b-tab id="sharingTab" title="Sharing Context" class="bg-white py-2">
           <div class="row">
             <sharing-context-box
-              class="col-sm-6"
-              title="Voucher Sharing Link"
-              :record="record"
-              sharingType="coupons"
-              sharingTitleField="sharing_title"
-              sharingDescriptionField="sharing_description"
-              sharingImageIdField="sharing_image_id"
-              @onCommand="onCommandHandler">
-              </sharing-context-box>
+                class="col-sm-6"
+                title="Voucher Sharing Link"
+                :record="record"
+                sharingType="coupons"
+                sharingTitleField="sharing_title"
+                sharingDescriptionField="sharing_description"
+                sharingImageIdField="sharing_image_id"
+                @onCommand="onCommandHandler">
+            </sharing-context-box>
             <sharing-context-box
-              class="col-sm-6"
-              title="Form Sharing Link"
-              :record="record"
-              sharingType="forms"
-              sharingTitleField="form_sharing_title"
-              sharingDescriptionField="form_sharing_description"
-              sharingImageIdField="form_sharing_image_id"
-              @onCommand="onCommandHandler">
-              </sharing-context-box>
+                class="col-sm-6"
+                title="Form Sharing Link"
+                :record="record"
+                sharingType="forms"
+                sharingTitleField="form_sharing_title"
+                sharingDescriptionField="form_sharing_description"
+                sharingImageIdField="form_sharing_image_id"
+                @onCommand="onCommandHandler">
+            </sharing-context-box>
           </div>
         </b-tab>
 
@@ -358,7 +273,7 @@
             :templates="allTemplates"
             @onCommand="onCommandHandler"></form-page-templates-tab>
 
-        <mailing-manager-tab></mailing-manager-tab>
+        <mailing-manager-tab :voucher="record"></mailing-manager-tab>
       </b-tabs>
     </div>
     <div v-else class="text-center">
@@ -394,7 +309,7 @@
 <script>
   import copyToken from '@/views/comps/CopyToken'
   import titleRow from '@/views/comps/TitleRow'
-  import formInputs from '@/views/comps/forms'
+
   import fileUpload from 'vue-upload-component'
   import templateEditor from './comps/TemplateEditor'
   import toggleBlackWhite from './comps/ToggleBlackWhite'
@@ -409,7 +324,6 @@
   // import datePicker from 'vue2-datepicker'
   import 'vue2-datepicker/index.css'
   import helpers from '@/helpers'
-  import vueRangeSlider from 'vue-range-slider'
   // import vueRangeSlider from 'vue-range-slider'
 
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
@@ -417,6 +331,7 @@
   import imageCropperDialog from './dialogs/ImageCropperDialog'
   import singleFieldDialog from './dialogs/SingleFieldDialog'
 
+  // Tabs
   import agentCodeTab from './comps/tabs/AgentCodeTab'
   import formFillingTab from './comps/tabs/FormFillingTab'
   import formPageTemplatesTab from './comps/tabs/FormPageTemplatesTab'
@@ -424,7 +339,11 @@
   import formParticipantsTab from './comps/tabs/FormParticipantsTab'
   import mailingManagerTab from './comps/tabs/MailingManagerTab'
 
+  import infoPage from './comps/pages/InfoPage'
+  import agentCodePage from './comps/pages/AgentCodePage'
+
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
+  import voucherToolbar from './comps/VoucherToolbar'
 
   import $ from 'jquery'
 
@@ -441,14 +360,18 @@
       // agentCodeTable,
       agentCodeTab,
       mailingManagerTab,
+
+      infoPage,
+      agentCodePage,
+
       fileUpload,
       // emailTable,
       // datePicker,
       tinymce,
       titleRow,
-      ...formInputs,
+      // ...formInputs,
       // ,
-      vueRangeSlider,
+      // vueRangeSlider,
       voucherSelectDialog,
       imageSelectDialog,
       singleFieldDialog,
@@ -457,7 +380,8 @@
       formFillingTab,
       customFormsTab,
       formParticipantsTab,
-      sharingContextBox
+      sharingContextBox,
+      voucherToolbar
       // ,
       // yoovEditor
       // ,
@@ -587,7 +511,51 @@
         testLink: '',
         inputObjs: [],
         selectedFormConfigs: null,
-        selectedInputObjIndex: -1
+        selectedInputObjIndex: -1,
+        activeTabButton: null,
+        tabButtons: [
+          {
+            caption: 'Info',
+            // imgSrc: '/img/96x96/file-info-icon.png',
+            imgSrc: '/img/64x64/info.png',
+            tab: 'info'
+          },
+          {
+            caption: 'Codes',
+            imgSrc: '/img/64x64/codes.png',
+            tab: 'codes'
+          },
+          {
+            caption: 'Tickets',
+            imgSrc: '/img/64x64/tickets.png',
+            tab: 'tickets'
+          },
+          {
+            caption: 'Sharing',
+            imgSrc: '/img/64x64/sharing.png',
+            tab: 'sharing'
+          },
+          {
+            caption: 'Form Filling',
+            imgSrc: '/img/64x64/form_filling.png',
+            tab: 'form_filling'
+          },
+          {
+            caption: 'Custom Forms',
+            imgSrc: '/img/64x64/form_builder.png',
+            tab: 'custom_forms'
+          },
+          {
+            caption: 'Participants',
+            imgSrc: '/img/64x64/participants.png',
+            tab: 'participants'
+          },
+          {
+            caption: 'Participants',
+            imgSrc: '/img/64x64/email.png',
+            tab: 'participants'
+          }
+        ]
       }
     },
     props: {
@@ -598,6 +566,17 @@
     },
 
     computed: {
+      agentName () {
+        const vm = this
+        var result = ''
+        if (vm.record && vm.record.agent_id !== 0) {
+          var agent = vm.agents.find(agent => agent.id === vm.record.agent_id);
+          if (agent) {
+            result = agent.name
+          }
+        }
+        return result
+      },
       customLink () {
         const vm = this
         return vm.$store.getters.appHost + '/q/' + vm.record.custom_link_key
@@ -713,6 +692,10 @@
     mounted () {
       const vm = this
 
+      if (!vm.activeTabButton) {
+        vm.activeTabButton = vm.tabButtons[0]
+      }
+
       vm.showingCopyTemplateDialog = false
       vm.showingImageSelectDialog = false
       vm.showingImageCropperDialog = false
@@ -727,6 +710,11 @@
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
+      selectTab (tab) {
+        const vm = this
+        console.log('selectTab : tab: ', tab)
+        vm.activeTabButton = tab
+      },
       copyCustomLink () {
         const vm = this
         vm.$copyText(vm.customLink)
@@ -807,7 +795,7 @@
         }
 
         // init form configs
-        if (vm.record.form_configs === null || vm.record.form_configs.length===0) {
+        if (vm.record.form_configs === null || vm.record.form_configs.length === 0) {
           vm.record.form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
         }
 
@@ -947,7 +935,7 @@
           vm.tinyMCEInFullScreen = e.state
         })
         const editor = tinyMCE.get('yoovEditor')
-        editor.on('blur', function(e) {
+        editor.on('blur', function (e) {
           editor.selection.collapse(false);
           // console.log('yooveditor.on(blur) e: ', e)
         })
@@ -1191,7 +1179,7 @@
       getCustomFormByKey (key) {
         const vm = this
         var result = null
-        for (var i = 0 ; i < vm.record.custom_forms.length; i++) {
+        for (var i = 0; i < vm.record.custom_forms.length; i++) {
           var customForm = vm.record.custom_forms[i]
           if (customForm.form_key === key) {
             result = customForm
@@ -1208,7 +1196,8 @@
         switch (payload.command) {
           case 'cropImage':
             vm.selectedTempMediaId = payload.imageId
-            vm.selectedTempMediaIdField = payload.imageIdField /* sharing_image_id or form_sharing_image_id */
+            vm.selectedTempMediaIdField = payload.imageIdField
+            /* sharing_image_id or form_sharing_image_id */
             // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
             vm.$bvModal.show('imageCropperDialog')
             // vm.showingImageCropperDialog = true
@@ -1826,8 +1815,6 @@
   /*flex-direction: row;*/
   /*}*/
 
-
-
   .custom-link {
     background-color: #a60930;
     /*background-color: #28a745;*/
@@ -1892,5 +1879,28 @@
   .voucher-type-selection .btn-success img:not(.white-icon),
   .voucher-type-selection .btn-primary img:not(.white-icon) {
     display: none;
+  }
+
+  .field-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 2px;
+  }
+
+  .field-label {
+    color: darkgray;
+  }
+
+  .field-content {
+    background-color: rgba(127, 127, 127, .2);
+    padding: 2px 5px;
+    border-radius: 0.3rem;
+    vertical-align: top;
+    height: 20px;
+    /*min-height: 20px;*/
+  }
+
+  .field-content i {
+    margin-top: -50px;
   }
 </style>

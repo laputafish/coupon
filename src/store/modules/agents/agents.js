@@ -3,7 +3,8 @@ import * as types from './agents_types'
 
 const state = {
   agents: [],
-  agentsLoaded: false
+  agentsLoaded: false,
+  smtpServers: []
 }
 
 const getters = {
@@ -13,7 +14,11 @@ const getters = {
   },
   agentsLoaded: (state) => {
     return state.agentsLoaded
+  },
+  smtpServers: (state) => {
+    return state.smtpServers
   }
+
 }
 
 const mutations = {
@@ -25,6 +30,9 @@ const mutations = {
   clearAgents (state, payload) {
     state.agents = []
     state.agentsLoaded = false
+  },
+  setSmtpServers (state, payload) {
+    state.smtpServers = payload
   }
 }
 
@@ -33,6 +41,23 @@ const actions = {
     return new Promise((resolve, reject) => {
       commit('clearAgents')
       resolve([])
+    })
+  },
+
+  [types.FETCH_SMTP_SERVERS] ({commit, dispatch}, payload) {
+    return Promise((resolve, reject) => {
+      const data = {
+        urlCommand: '/agents/' + payload.agentId + '/smtp_servers'
+      }
+      dispatch('AUTH_GET', data).then(
+        response => {
+          commit('setSmtpServers', response)
+          resolve(response)
+        },
+        error => {
+          reject(error)
+        }
+      )
     })
   },
 

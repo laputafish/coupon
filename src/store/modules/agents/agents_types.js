@@ -1,2 +1,4 @@
 export const FETCH_AGENTS = 'FETCH_AGENTS'
 export const CLEAR_AGENTS = 'CLEAR_AGENTS'
+
+export const FETCH_SMTP_SERVERS = 'FETCH_SMTP_SERVERS'

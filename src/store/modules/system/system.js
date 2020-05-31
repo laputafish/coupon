@@ -7,7 +7,8 @@ const state = {
   team: {
     id: 1
   },
-  systemPromise: null
+  systemConfigs: [],
+  systemConfigsLoaded: false
 }
 
 const getters = {
@@ -20,8 +21,11 @@ const getters = {
   team: state => {
     return state.team
   },
-  systemPromise: state => {
-    return state.systemPromise
+  systemConfigs: state => {
+    return state.systemConfigs
+  },
+  systemConfigsLoaded: state => {
+    return state.systemConfigsLoaded
   }
 }
 
@@ -38,8 +42,9 @@ const mutations = {
       localStorage.setItem('accessToken', payload)
     }
   },
-  setSystemPromise (state, payload) {
-    state.systemPromise = payload
+  setSystemConfigs (state, payload) {
+    state.systemConfigs = payload
+    state.systemConfigsLoaded = true
   }
 }
 
@@ -102,14 +107,14 @@ const actions = {
     })
   },
 
-  [types.FETCH_SYSTEM_CONFIG] ({commit}) {
-      const promise = new Promise((rootGetters, resolve, reject) => {
-        const url = rootGetters.apiUrl + '/system/config'
-        Vue.axios.post(url).then(response => {
-          resolve(response)
-        })
-      })
-      commit('setSystemPromise', promise)
+  [types.FETCH_SYSTEM_CONFIGS] ({commit, rootGetters, dispatch}) {
+    const data = {
+      urlCommand: '/system/configs'
+    }
+    dispatch('AUTH_GET', data).then(response => {
+      console.log('FETCH_SYSTEM_CONFIGS :: AUTH_GET :: response: ', response)
+      commit('setSystemConfigs', response)
+    })
   },
 
   [types.REFRESH_TOKEN] ({commit, rootGetters, getters}) {

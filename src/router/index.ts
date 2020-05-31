@@ -123,6 +123,12 @@ const ifAuthenticated = (to, from, next) => {
 	        } else {
 		        console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
 	        }
+	        if (!store.getters.systemConfigsLoaded) {
+            store.dispatch('FETCH_SYSTEM_CONFIGS').then(
+              () => {},
+              () => {}
+            )
+          }
         }
       }
     )
@@ -130,6 +136,7 @@ const ifAuthenticated = (to, from, next) => {
     if (!store.getters.agentsLoaded) {
 	    console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
 	    store.dispatch('FETCH_AGENTS')
+
     } else {
 	    console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
     }
@@ -141,6 +148,13 @@ const ifAuthenticated = (to, from, next) => {
 		  )
 	  } else {
 		  console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
+	  }
+	  if (!store.getters.sytemConfigsLoaded) {
+		  console.log('ifAuthenticated => systemConfigsLoaded==false ==> FETCH_SYSTEM_CONFIGS')
+      store.dispatch('FETCH_SYSTEM_CONFIGS').then(
+        () => {},
+          () => {}
+      )
 	  }
   }
   next()

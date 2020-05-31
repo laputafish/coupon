@@ -1,6 +1,7 @@
 <template>
   <div class="btn-container" :class="'border-' + variant">
     <button type="button"
+            :disabled="disabled"
             class="btn btn-xlg min-width-200"
             :class="'btn-' + variant"
             @click="$emit('onCommand', {command: command})">
@@ -12,6 +13,10 @@
 <script>
 export default {
   props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     variant: {
       type: String,
       default: 'primary'

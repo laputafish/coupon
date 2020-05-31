@@ -19,22 +19,31 @@
             </div>
             <div class="flex-grow-1">
 
-              <div class="smtp-server-item"
-                   @click="selectedServer=server"
-                   :class="{'active':selectedServer===server}"
-                v-for="server in record.smtp_servers" :key="server.id">
-                <div class="smtp-server-icon-container">
-                  <img src="/img/smtp_server.png"/>
-                </div>
-                <div class="smtp-server-title">
-                  {{ server.description }}
-                </div>
-                <div class="voucher-count text-center">
-                  <span v-if="server.voucher_count && server.voucher_count >0">
-                    {{ server.voucher_count }}&nbsp;x&nbsp;<i class="fas fa-file-alt"></i>
-                  </span>
-                </div>
-              </div>
+              <icon-item
+                  iconKey="smtp-server"
+                  :selected="selectedServer===server"
+                  :item="server"
+                  v-for="server in record.smtp_servers"
+                  :description="server.description"
+                  @click="onServerClicked"
+                  :key="server.id"></icon-item>
+                  <!---->
+              <!--<div class="smtp-server-item"-->
+                   <!--@click="selectedServer=server"-->
+                   <!--:class="{'active':selectedServer===server}"-->
+                <!--v-for="server in record.smtp_servers" :key="server.id">-->
+                <!--<div class="smtp-server-icon-container">-->
+                  <!--<img src="/img/smtp_server.png"/>-->
+                <!--</div>-->
+                <!--<div class="smtp-server-title">-->
+                  <!--{{ server.description }}-->
+                <!--</div>-->
+                <!--<div class="voucher-count text-center">-->
+                  <!--<span v-if="server.voucher_count && server.voucher_count >0">-->
+                    <!--{{ server.voucher_count }}&nbsp;x&nbsp;<i class="fas fa-file-alt"></i>-->
+                  <!--</span>-->
+                <!--</div>-->
+              <!--</div>-->
             </div>
           </div>
         </div>
@@ -93,10 +102,12 @@
 
 <script>
 import formInputs from '@/views/comps/forms'
+import iconItem from '@/views/comps/IconItem'
 
 export default {
   components: {
-    ...formInputs
+    ...formInputs,
+    iconItem
   },
   data () {
     return {
@@ -189,6 +200,10 @@ export default {
     }
   },
   methods: {
+    onServerClicked (payload) {
+      const vm = this
+      vm.selectedServer = payload
+    },
     sendTestEmail () {
       const vm = this
       if (vm.receiverEmailAddress.trim() === '') {
@@ -228,38 +243,5 @@ export default {
 </script>
 
 <style>
-  .smtp-server-item.active {
-    background-color: lightgray;
-  }
 
-  .smtp-server-item {
-    text-align: center;
-    padding: 10px 20px;
-    margin-bottom: 5px;
-    display: inline-block;
-    width: 180px;
-    height: 130px;
-    border-radius: 0.5rem;
-  }
-
-  .smtp-server-icon-container {
-    padding: 5px 30px;
-  }
-
-  .smtp-server-icon-container img {
-    width: 100%;
-
-    height: auto;
-    object-fit: contain;
-  }
-
-  .smtp-server-title {
-    line-height: 1;
-    margin-bottom: 5px;
-    padding: 0;
-    margin:0;
-  }
-
-  .smtp-server-status {
-  }
 </style>

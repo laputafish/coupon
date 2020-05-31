@@ -32,7 +32,7 @@ import Toaster from 'v-toaster'
 import VueClipboard from 'vue-clipboard2'
 import VueCarousel from 'vue-carousel'
 import VueLoading from 'vue-loading-overlay'
-import VuejsProgressBar from 'vuejs-progress-bar'
+// import VuejsProgressBar from 'vuejs-progress-bar'
 // import VueCropper from 'vue-cropper'
 
 // include the default style
@@ -57,7 +57,7 @@ Vue.use(Toaster, {timeout: 3000})
 Vue.use(VueClipboard)
 Vue.use(VueCarousel)
 Vue.use(VueLoading)
-Vue.use(VuejsProgressBar)
+// Vue.use(VuejsProgressBar)
 
 // Vue.use(VueCropper)
 

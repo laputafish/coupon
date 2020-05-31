@@ -31,9 +31,15 @@
             <h3 v-if="selectedSection" class="m-0 py-1 px-2 app-heading">{{ selectedSection.caption }}</h3>
           </div>
           <div v-if="selectedSection">
-            <send-emails-section v-if="selectedSection.key=='send-emails'"></send-emails-section>
-            <email-servers-section v-if="selectedSection.key==='email-servers'"></email-servers-section>
-            <email-template-section v-if="selectedSection.key==='email-template'"></email-template-section>
+            <send-emails-section
+                :voucher="voucher"
+                v-if="selectedSection.key=='send-emails'"></send-emails-section>
+            <voucher-smtp-servers-section
+                :voucher="voucher"
+                v-if="selectedSection.key==='email-servers'"></voucher-smtp-servers-section>
+            <email-template-section
+                :voucher="voucher"
+                v-if="selectedSection.key==='email-template'"></email-template-section>
           </div>
         </div>
       </div>
@@ -43,14 +49,20 @@
 
 <script>
 import sendEmailsSection from './sections/SendEmailsSection'
-import emailServersSection from './sections/EmailServersSection'
+import voucherSmtpServersSection from './sections/VoucherSmtpServersSection'
 import emailTemplateSection from './sections/EmailTemplateSection'
 
 export default {
   components: {
     sendEmailsSection,
-    emailServersSection,
+    voucherSmtpServersSection,
     emailTemplateSection
+  },
+  props: {
+    voucher: {
+      type: Object,
+      default: null
+    }
   },
   data () {
     return {

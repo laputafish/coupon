@@ -2,9 +2,10 @@
   <div class="row">
     <div v-if="record" class="col-12 border-bottom border-2 mb-3">
       <div class="d-flex flex-row justify-content-between">
-        <div class="record-title flex-grow-1">
+        <div class="record-title flex-grow-1 line-height-1">
           <h3 v-if="record && record[titleField] && record[titleField].length>0" class="d-inline mr-2">{{ record[titleField] }}</h3>
-          <h3 class="d-inline">[{{ record.id===0 ? $t('general.new') : $t('general.edit') }}]</h3>
+          <h3 class="d-inline">[{{ record.id===0 ? $t('general.new') : $t('general.edit') }}]</h3><br/>
+          <div class="mb-1 record-notes text-muted">{{record[subTitleField]}}</div>
         </div>
         <div class="btn-toolbar mb-1 flex-grow-0 justify-content-end" role="toolbar" aria-label="Toolbar with buttons">
           <title-row-button v-for="buttonInfo in buttonInfos"
@@ -61,6 +62,10 @@
         default: null
       },
       titleField: {
+        type: String,
+        default: ''
+      },
+      subTitleField: {
         type: String,
         default: ''
       },
@@ -174,3 +179,9 @@
     }
   }
 </script>
+
+<style>
+.record-notes {
+  font-size: 80%;
+}
+</style>

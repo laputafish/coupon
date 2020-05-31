@@ -8,29 +8,22 @@
       </div>
     </template>
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <agent-code-table
-              ref="agentCodeTable"
-              @onCommand="onCommandHandler"
-              :record="record"
-              :codeFieldsStr="record.code_fields"></agent-code-table>
-          <!--<agent-code-table-->
-          <!--ref="agentCodeTable"-->
-          <!--@onCommand="onCommandHandler"-->
-          <!--:codeInfos="record.code_infos"-->
-          <!--:codeFieldsStr="record.code_fields"></agent-code-table>-->
-        </div>
-      </div>
+      <agent-code-page
+        :record="record"
+        @onCommand="onCommandHandler"></agent-code-page>
     </div>
   </b-tab>
 </template>
 
 <script>
-import agentCodeTable from '../AgentCodeTable'
+
+import agentCodePage from '../pages/AgentCodePage'
+// import agentCodeTable from '../AgentCodeTable'
+
 export default {
   components: {
-    agentCodeTable
+    // agentCodeTable
+    agentCodePage
   },
   props: {
     title: {
@@ -47,7 +40,7 @@ export default {
       this.$emit('onCommand', payload)
     },
     refresh () {
-      this.$refs.agentCodeTable.reloadCodeList()
+      this.$refs.agentCodePage.reloadCodeList()
     }
   }
 }

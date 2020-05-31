@@ -28,7 +28,8 @@
     "created_at": "Created at",
     "title": "Title",
     "description": "Description",
-    "type": "Type"
+    "type": "Type",
+    "unspecified": "Unspecified"
   },
   "status": {
     "pending": "Pending",
