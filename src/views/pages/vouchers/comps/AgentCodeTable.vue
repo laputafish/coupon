@@ -4,10 +4,10 @@
     <search-field
         :searchValue="searchValue"
         :appLoading="appLoading"
-      @onCommand="onCommandHandler"></search-field>
+        @onCommand="onCommandHandler"></search-field>
     <div>
       <button type="button"
-            class="btn btn-outline-primary min-width-100 mr-1"
+              class="btn btn-outline-primary min-width-100 mr-1"
               @click="reloadCodeList()">
         <i class="fas fa-recycle"></i>
         <span class="ml-2">Refresh</span>
@@ -116,8 +116,21 @@ export default {
       HeaderSettings: false,
       selectedRow: null,
       defaultColumns: [
-        {title: 'general.key', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdKey', field: 'key', sortable: true},
-        {title: 'general.remark', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonInput', field: 'remark'},
+        {
+          title: 'general.key',
+          thComp: 'ThCommonHeader',
+          tdClass: 'align-middle',
+          tdComp: 'TdKey',
+          field: 'key',
+          sortable: true
+        },
+        {
+          title: 'general.remark',
+          thComp: 'ThCommonHeader',
+          tdClass: 'align-middle',
+          tdComp: 'TdCommonInput',
+          field: 'remark'
+        },
         {
           title: 'vouchers.sent_on',
           thComp: 'ThCommonHeader',
@@ -126,8 +139,22 @@ export default {
           field: 'sent_on',
           sortable: true
         },
-        {title: 'general.status', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCodeStatus', field: 'status', sortable: true},
-        {title: 'general.action', thComp: 'ThCommonHeader', tdClass: 'align-middle', tdComp: 'TdCommonOpt', field: 'id', sortable: true}
+        {
+          title: 'general.status',
+          thComp: 'ThCommonHeader',
+          tdClass: 'align-middle',
+          tdComp: 'TdCodeStatus',
+          field: 'status',
+          sortable: true
+        },
+        {
+          title: 'general.action',
+          thComp: 'ThCommonHeader',
+          tdClass: 'align-middle',
+          tdComp: 'TdCommonOpt',
+          field: 'id',
+          sortable: true
+        }
       ],
       searchValue: '',
       searchInputTimer: 3000,
@@ -148,6 +175,10 @@ export default {
         result = vm.record.id
       }
       return result
+    },
+    codeFieldsStr () {
+      const vm = this
+      return vm.record.code_fields
     }
   },
   props: {
@@ -155,10 +186,10 @@ export default {
     //   type: Number,
     //   default: 0
     // },
-    codeFieldsStr: {
-      type: String,
-      default: ''
-    },
+    // codeFieldsStr: {
+    //   type: String,
+    //   default: ''
+    // },
     record: {
       type: Object,
       default: null
@@ -484,7 +515,7 @@ export default {
           break
         case 'delete':
           vm.$dialog.confirm(vm.$t('messages.areYouSure'))
-            .then( () => {
+            .then(() => {
               vm.$emit('onCommand', {
                 command: 'delete_code_info',
                 index: payload.index
@@ -839,14 +870,14 @@ export default {
 }
 
 #loadingMask {
-  background-color: rgba(128,128,128,.5);
+  background-color: rgba(128, 128, 128, .5);
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   min-height: 320px;
-  padding-top:150px;
+  padding-top: 150px;
   font-size: 24px;
 }
 </style>

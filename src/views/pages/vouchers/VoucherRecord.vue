@@ -55,14 +55,11 @@
           </div>
           <div v-else class="d-inline-block mr-3 field-content min-width-50 text-center">&nbsp;</div>
         </div>
-
-      </div>
-      <div class="col-sm-4">
-        {{ activeTabButton ? activeTabButton.tab : 'not selected'}}
       </div>
     </div>
 
     <voucher-toolbar
+        v-if="record"
         :buttons="tabButtons"
         :activeButton="activeTabButton"
         @click="selectTab"></voucher-toolbar>
@@ -76,10 +73,45 @@
 
     <agent-code-page
         v-if="record && activeTabButton && activeTabButton.tab==='codes'"
-        ref="agentCodeTab"
-        :title="$t('vouchers.codeTabLabel')"
+        ref="agentCodePage"
         :record="record"
         @onCommand="onCommandHandler"></agent-code-page>
+
+    <tickets-page
+      v-if="record && activeTabButton && activeTabButton.tab==='tickets'"
+      ref="ticketsPage"
+      :record="record"
+      @onCommand="onCommandHandler"></tickets-page>
+
+    <sharing-page
+      v-if="record && activeTabButton && activeTabButton.tab==='sharing'"
+      ref="sharingPage"
+      :record="record"
+      @onCommand="onCommandHandler"></sharing-page>
+
+    <form-filling-page
+      v-if="record && activeTabButton && activeTabButton.tab==='form_filling'"
+      ref="formFillingPage"
+      :record="record"
+      @onCommand="onCommandHandler"></form-filling-page>
+
+    <custom-forms-page
+      v-if="record && activeTabButton && activeTabButton.tab==='custom_forms'"
+      ref="customFormsPage"
+      :record="record"
+      @onCommand="onCommandHandler"></custom-forms-page>
+
+    <participants-page
+      v-if="record && activeTabButton && activeTabButton.tab==='participants'"
+      ref="participantsPage"
+      :record="record"
+      @onCommand="onCommandHandler"></participants-page>
+
+    <email-page
+      v-if="record && activeTabButton && activeTabButton.tab==='email'"
+      ref="emailPage"
+      :record="record"
+      @onCommand="onCommandHandler"></email-page>
 
     <div v-if="record && false" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
@@ -273,7 +305,7 @@
             :templates="allTemplates"
             @onCommand="onCommandHandler"></form-page-templates-tab>
 
-        <mailing-manager-tab :voucher="record"></mailing-manager-tab>
+        <!--<mailing-manager-tab :voucher="record"></mailing-manager-tab>-->
       </b-tabs>
     </div>
     <div v-else class="text-center">
@@ -337,17 +369,23 @@
   import formPageTemplatesTab from './comps/tabs/FormPageTemplatesTab'
   import customFormsTab from './comps/tabs/CustomFormsTab'
   import formParticipantsTab from './comps/tabs/FormParticipantsTab'
-  import mailingManagerTab from './comps/tabs/MailingManagerTab'
+  // import mailingManagerTab from './comps/tabs/MailingManagerTab'
 
   import infoPage from './comps/pages/InfoPage'
   import agentCodePage from './comps/pages/AgentCodePage'
+  import ticketsPage from './comps/pages/TicketsPage'
+  import sharingPage from './comps/pages/SharingPage'
+  import formFillingPage from './comps/pages/FormFillingPage'
+  import customFormsPage from './comps/pages/CustomFormsPage'
+  import participantsPage from './comps/pages/ParticipantsPage'
+  import emailPage from './comps/pages/EmailPage'
 
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
   import voucherToolbar from './comps/VoucherToolbar'
 
   import $ from 'jquery'
 
-  import sharingContextBox from './comps/SharingContextBox'
+  import sharingContextBox from './comps/pages/comps/SharingContextBox'
 
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
@@ -359,10 +397,16 @@
       imageCropperDialog,
       // agentCodeTable,
       agentCodeTab,
-      mailingManagerTab,
+      // mailingManagerTab,
 
       infoPage,
       agentCodePage,
+      ticketsPage,
+      sharingPage,
+      formFillingPage,
+      customFormsPage,
+      participantsPage,
+      emailPage,
 
       fileUpload,
       // emailTable,
@@ -422,82 +466,6 @@
 
         processingButtons: [],
 
-        tinymceOptions: {
-          twoWay: true
-        },
-        tinymceOtherOptions: {
-          'relative_urls': false,
-          'remove_script_host': false,
-          icons: 'small',
-          setup: function (editor) {
-            // *********************
-            // Embed Image
-            //**********************
-            var inpEmbed = $('<input id="tinymce-embedder" type="file" name="pic" accept="image/*" style="display:none">')
-            $(editor.getElement()).parent().append(inpEmbed)
-
-            editor.addButton('embedImage', {
-              tooltip: 'Embed Image',
-              icon: 'image',
-              onclick: function () {
-                inpEmbed.trigger('click')
-              }
-            })
-
-            inpEmbed.on("change", function () {
-              var input = inpEmbed.get(0)
-              var file = input.files[0]
-              var fr = new FileReader()
-              fr.onload = function () {
-                var img = new Image()
-                img.src = fr.result
-                editor.insertContent('<img src="' + img.src + '"/>')
-                inpEmbed.val('')
-              }
-              fr.readAsDataURL(file);
-            })
-
-            // *********************
-            // Upload Image
-            //**********************
-            var inpUpload = $('<input id="tinymce-uploader" type="file" name="pic" accept="image/*" style="display:none">')
-            $(editor.getElement()).parent().append(inpUpload)
-
-            editor.addButton('uploadImage', {
-              tooltip: 'Upload Image',
-              icon: 'upload',
-              onclick: function () {
-                inpUpload.trigger('click')
-              }
-            })
-
-            // *********************
-            // Select Image
-            //**********************
-            editor.addButton('selectImage', {
-              tooltip: 'Select Image',
-              icon: 'browse',
-              classes: 'select-image'
-            })
-
-            //
-            // inpUpload.on("change",function(){
-            //   this.uploadImage(inpUpload, editor)
-            // })
-            //
-
-          }
-        },
-        tinymceToolbar1: 'undo redo | ' +
-        'formatselect | ' +
-        'bold italic strikethrough forecolor backcolor | ' +
-        'link embedImage uploadImage selectImage | ' +
-        'alignleft aligncenter alignright alignjustify | ' +
-        'numlist bullist outdent indent | ' +
-        'removeformat | ' +
-        'fullscreen',
-
-        tinyMCEInFullScreen: false,
         qrcodeConfig: {
           composition: '',
           width: 0,
@@ -551,9 +519,9 @@
             tab: 'participants'
           },
           {
-            caption: 'Participants',
+            caption: 'Email',
             imgSrc: '/img/64x64/email.png',
-            tab: 'participants'
+            tab: 'email'
           }
         ]
       }
@@ -703,7 +671,7 @@
       vm.$store.dispatch('FETCH_AGENTS')
       // vm.fetchAgents();
       vm.fetchVouchers();
-      vm.fetchDefaultTemplateKeys()
+      // vm.fetchDefaultTemplateKeys()
 
       vm.refresh(vm.recordId)
 
@@ -1091,36 +1059,36 @@
         )
       },
 
-      fetchDefaultTemplateKeys () {
-        const vm = this
-        vm.defaultTemplateKeyGroups = []
-        vm.$store.dispatch('AUTH_GET', '/template_keys').then(
-          response => {
-            for (let i = 0; i < response.length; i++) {
-              const responseItem = response[i]
-              const category = responseItem.category
-              const key = responseItem.key
-              const keyGroup = vm.defaultTemplateKeyGroups.find(group => {
-                return group.name === category
-              })
-              if (keyGroup) {
-                // console.log('keyGroup is true: ', keyGroup)
-                keyGroup.keys.push(key)
-              } else {
-                // console.log('keyGroup is false: ', keyGroup)
-                vm.defaultTemplateKeyGroups.push({
-                  name: category,
-                  keys: [key]
-                })
-              }
-            }
-          },
-          () => {
-            vm.showSessionExpired('template keys')
-            // vm.$dialog.alert('Template Keys: ' + vm.$t('messages.error_during_loading'))
-          }
-        )
-      },
+      // fetchDefaultTemplateKeys () {
+      //   const vm = this
+      //   vm.defaultTemplateKeyGroups = []
+      //   vm.$store.dispatch('AUTH_GET', '/template_keys').then(
+      //     response => {
+      //       for (let i = 0; i < response.length; i++) {
+      //         const responseItem = response[i]
+      //         const category = responseItem.category
+      //         const key = responseItem.key
+      //         const keyGroup = vm.defaultTemplateKeyGroups.find(group => {
+      //           return group.name === category
+      //         })
+      //         if (keyGroup) {
+      //           // console.log('keyGroup is true: ', keyGroup)
+      //           keyGroup.keys.push(key)
+      //         } else {
+      //           // console.log('keyGroup is false: ', keyGroup)
+      //           vm.defaultTemplateKeyGroups.push({
+      //             name: category,
+      //             keys: [key]
+      //           })
+      //         }
+      //       }
+      //     },
+      //     () => {
+      //       vm.showSessionExpired('template keys')
+      //       // vm.$dialog.alert('Template Keys: ' + vm.$t('messages.error_during_loading'))
+      //     }
+      //   )
+      // },
       getCodeInfoFromRow (row) {
         // id: 0
         // field0: "0019999900100008000000g0rDtKv136"
@@ -1292,6 +1260,9 @@
                 break
             }
             break
+          case 'showCopyTemplateDialog':
+            vm.showingCopyTemplateDialog = true
+            break;
           case 'copyTemplate':
             vm.copyTemplate(payload.voucher)
             break
@@ -1302,7 +1273,7 @@
             vm.exportCodes()
             break
           case 'refreshCouponCodes':
-            vm.$refs.agentCodeTab.refresh()
+            vm.$refs.agentCodePage.refresh()
             break
           case 'select_voucher':
             alert('voucher selected')

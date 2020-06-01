@@ -4,8 +4,7 @@
       <agent-code-table
           ref="agentCodeTable"
           @onCommand="onCommandHandler"
-          :record="record"
-          :codeFieldsStr="record.code_fields"></agent-code-table>
+          :record="record"></agent-code-table>
       <!--<agent-code-table-->
       <!--ref="agentCodeTable"-->
       <!--@onCommand="onCommandHandler"-->

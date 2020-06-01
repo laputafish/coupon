@@ -124,10 +124,12 @@ export default {
     smtpServer () {
       const vm = this
       var result = null
-      if (vm.voucher.agent_smtp_id === 0) {
-        result = vm.systemSmtpServer
-      } else {
-        result = vm.smtpServers.find(server => server.id === vm.voucher.agent_smtp_id)
+      if (vm.voucher) {
+        if (vm.voucher.smtp_server_id === 0) {
+          result = vm.systemSmtpServer
+        } else {
+          result = vm.smtpServers.find(server => server.id === vm.voucher.smtp_server_id)
+        }
       }
       return null
     }
