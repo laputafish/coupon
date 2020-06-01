@@ -1,6 +1,6 @@
 <template>
-<div class="d-flex flex-row align-items-center">
-  <a :href="link" class="d-inline-block copy-link" target="_blank">
+<div class="d-flex flex-row align-items-center icon-link">
+  <a :href="link" class="d-inline-block copy-link-icon" target="_blank">
     <font-awesome-icon icon="location-arrow"/>
   </a>
 
@@ -10,7 +10,7 @@
     {{ linkLabel }}
   </div>
 
-  <div class="d-inline-block copy-link"
+  <div class="d-inline-block copy-link-icon"
        @click="copyLink()">
     <font-awesome-icon icon="copy"/>
   </div>
@@ -53,3 +53,18 @@ export default {
   }
 }
 </script>
+
+<style>
+
+.copy-link-icon {
+  color: darkgray;
+  cursor: pointer
+}
+
+.icon-link .badge {
+  max-width: 240px;
+}
+.copy-link .badge {
+  cursor: pointer;
+}
+</style>

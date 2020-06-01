@@ -4,7 +4,7 @@
        :class="{'active':selected, 'disabled':disabled}">
     <div class="icon-img-container">
       <img :src="imgSrc"/>
-      <div v-if="disabled" class="position-absolute question-mark text-danger d-flex flex-column justify-content-center">
+      <div v-if="hasFault" class="position-absolute question-mark text-danger d-flex flex-column justify-content-center">
         ?
       </div>
     </div>
@@ -24,6 +24,10 @@
 <script>
 export default {
   props: {
+    hasFault: {
+      type: Boolean,
+      default: false
+    },
     item: {
       type: Object,
       default: null
@@ -55,7 +59,7 @@ export default {
       var result = ''
       switch (vm.iconKey) {
         case 'smtp-server':
-          result = vm.selected ? '/img/smtp_server.png' : '/img/smtp_server_disabled.png'
+          result = vm.highlight ? '/img/smtp_server.png' : '/img/smtp_server_disabled.png'
           break
       }
       return result
@@ -69,7 +73,7 @@ export default {
   }
 
   .icon-wrapper.disabled img {
-    opacity: 0.5;
+    opacity: 0.2;
   }
 
   .icon-wrapper {
@@ -80,6 +84,7 @@ export default {
     width: 180px;
     height: 130px;
     border-radius: 0.5rem;
+    cursor: pointer;
   }
 
   .icon-img-container {

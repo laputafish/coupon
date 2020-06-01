@@ -1348,6 +1348,9 @@
             // console.log('onCommandHandler :: updateField :; fieldName = ' + fieldName)
             // console.log('onCommandHandler :: updateField :; fieldValue = ' + fieldValue)
             vm.record[fieldName] = fieldValue
+            if (fieldName === 'smtp_server_id') {
+              vm.save()
+            }
             break
           case 'setQrCodeComposition':
             // console.log('setQrCodeComposition :: payload.data: ', payload.data)

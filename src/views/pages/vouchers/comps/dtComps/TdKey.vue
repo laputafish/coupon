@@ -78,16 +78,8 @@ export default {
 </script>
 
 <style>
-.copy-link,
 .key-value {
   cursor: pointer;
 }
 
-.copy-link {
-  color: darkgray;
-}
-
-.copy-link:hover {
-  color: rgb(10,10,10);
-}
 </style>

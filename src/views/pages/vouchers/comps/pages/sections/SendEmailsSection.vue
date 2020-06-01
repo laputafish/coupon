@@ -3,13 +3,20 @@
     <div class="d-flex flex-row line-height-1 mt-3 px-3">
       <div class="d-flex flex-column flex-grow-1">
         <div class="d-flex flex-row align-items-end">
-          <div class="huge-font">{{ percentageValue }}%</div>
+          <div class="huge-font">{{ percentCompleted }}%</div>
           <div class="ml-4 flex-grow-1">
-            <div class="huge-font2 badge badge-warning">{{ completedCount }} / {{ totalCount }}</div>
+            <div class="huge-font2 badge badge-warning">{{ processedCount }} / {{ totalCount }}</div>
+          </div>
+          <div class="align-self-stretch px-2">
+            <button class="btn btn-outline-primary min-width-100"
+                    @click="refreshSummary">
+              <i class="fas fa-sync"></i>
+              <!--<font-awesome-icon icon="refresh"></font-awesome-icon>-->
+            </button>
           </div>
         </div>
-        <yoov-progress-bar :value="completedCount"
-                           class="px-2 py-3"
+        <yoov-progress-bar :value="processedCount"
+                           class="px-1 py-3"
                            :max="totalCount"
                            :progress="0"
                            :completed="false"
@@ -24,6 +31,7 @@
           v-else
           iconKey="smtp-server"
           :disabled="true"
+          :hasFault="true"
           description="No Smtp Server Specified!"></icon-item>
       <div class="">
         <big-border-button v-if="!processing && !pausing"
@@ -46,52 +54,59 @@
                            caption="Continue"></big-border-button>
       </div>
     </div>
-    <div class="mx-3 mt-3 mb-0">
-      <h4 class="mb-2 text-success">Success:</h4>
+    <div class="mx-3 mt-2 mb-0 d-flex flex-row">
+      <h4 class="mb-2 text-success">Success:</h4><h4 class="ml-3 text-black-50">{{ successCount }}</h4>
     </div>
-    <div class="mx-3 mt-3 mb-1">
-      <h4 class="mb-3 text-danger">Failed:</h4>
-      <table class="table striped">
-        <thead>
-          <tr>
-            <th class="text-center">#</th>
-            <th>Email</th>
-            <th>Date/Time</th>
-            <th>Error</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="text-center">1</td>
-            <td>abc@gmail.com</td>
-            <td>2020-05-31 02:05:05</td>
-            <td>xxxx</td>
-          </tr>
-          <tr>
-            <td class="text-center">1</td>
-            <td>abc@gmail.com</td>
-            <td>2020-05-31 02:05:05</td>
-            <td>xxxx</td>
-          </tr>
-          <tr>
-            <td class="text-center">1</td>
-            <td>abc@gmail.com</td>
-            <td>2020-05-31 02:05:05</td>
-            <td>xxxx</td>
-          </tr>
-          <tr>
-            <td class="text-center">1</td>
-            <td>abc@gmail.com</td>
-            <td>2020-05-31 02:05:05</td>
-            <td>xxxx</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="mx-3 mt-2 mb-1 d-flex flex-row">
+      <h4 class="mb-3 text-danger">Failed:</h4><h4 class="ml-3 text-black-50">{{ failCount }}</h4>
+    </div>
+    <div class="mx-3">
+      <div id="failMailingTable">
+        <datatable v-cloak v-bind="$data"
+                   :columns="columns"></datatable>
+        <!--<table class="table table-hover striped">-->
+        <!--<thead>-->
+        <!--<tr>-->
+        <!--<th class="text-center">#</th>-->
+        <!--<th>Email</th>-->
+        <!--<th>Date/Time</th>-->
+        <!--<th>Error</th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--<tr>-->
+        <!--<td class="text-center">1</td>-->
+        <!--<td>abc@gmail.com</td>-->
+        <!--<td>2020-05-31 02:05:05</td>-->
+        <!--<td>xxxx</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+        <!--<td class="text-center">1</td>-->
+        <!--<td>abc@gmail.com</td>-->
+        <!--<td>2020-05-31 02:05:05</td>-->
+        <!--<td>xxxx</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+        <!--<td class="text-center">1</td>-->
+        <!--<td>abc@gmail.com</td>-->
+        <!--<td>2020-05-31 02:05:05</td>-->
+        <!--<td>xxxx</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+        <!--<td class="text-center">1</td>-->
+        <!--<td>abc@gmail.com</td>-->
+        <!--<td>2020-05-31 02:05:05</td>-->
+        <!--<td>xxxx</td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+        <!--</table>-->
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import yoovProgressBar from '@/views/comps/YoovProgressBar'
 import bigBorderButton from './comps/BigBorderButton'
 import iconItem from '@/views/comps/IconItem'
@@ -103,12 +118,60 @@ export default {
     iconItem
   },
   computed: {
+    processing () {
+      const vm = this
+      var result = false
+      if (vm.voucher) {
+        result = vm.voucher.status === 'sending'
+      }
+      return result
+    },
+    notes () {
+      const vm = this
+      var result = ''
+      if (vm.mailingSummary && vm.mailingSummary.sendingTo) {
+        var values = []
+        if (vm.mailingSummary.sendingTo.email && vm.mailingSummary.sendingTo.email !== '') {
+          values.push(vm.mailingSummary.sendingTo.email)
+        }
+        if (vm.mailingSummary.sendingTo.name && vm.mailingSummary.sendingTo.name !== '') {
+          values.push('(' + vm.maillingSummary.sendingTo.name + ')')
+        }
+        result = 'Sending ... <div class="badge badge-info">' + values.join(' ') + '</div>'
+      }
+      return result
+    },
+    percentCompleted () {
+      const vm = this
+      var result = 0
+      if (vm.totalCount !== 0) {
+        result = vm.processedCount / vm.totalCount
+        result = Math.round(result * 100) / 100;
+      }
+      return result
+    },
+    successCount () {
+      const vm = this
+      return vm.getMailingSummaryByFilter('success')
+    },
+    failCount () {
+      const vm = this
+      return vm.getMailingSummaryByFilter('fails')
+    },
+    processedCount () {
+      return this.successCount + this.failCount
+    },
+    totalCount () {
+      const vm = this
+      var result = 0
+      if (vm.maillingSummary) {
+        result = vm.mailingSummary.status_list.length
+      }
+      return result
+    },
     ready () {
       const vm = this
       return vm.smtpServer
-    },
-    smtpServers () {
-      return this.$store.getters.smtpServers
     },
     systemConfigs () {
       return this.$store.getters.systemConfigs
@@ -120,27 +183,80 @@ export default {
         result = vm.systemConfigs.smtp_server
       }
       return result
-    },
-    smtpServer () {
-      const vm = this
-      var result = null
-      if (vm.voucher) {
-        if (vm.voucher.smtp_server_id === 0) {
-          result = vm.systemSmtpServer
-        } else {
-          result = vm.smtpServers.find(server => server.id === vm.voucher.smtp_server_id)
-        }
-      }
-      return null
     }
   },
   props: {
     voucher: {
       type: Object,
       default: null
+    },
+    smtpServer: {
+      type: Object,
+      default: null
+    }
+  },
+  // watch: {
+  //   'voucher.id': function (newVal) {
+  //     alert('id changed')
+  //   }
+  // },
+  mounted () {
+    const vm = this
+    // vm.loadMailingSummary()
+    // if (vm.voucher.status === 'sending') {
+    //   this.fetchMailingStatus()
+    //   this.timer = setInterval(this.fetchMailingStatus, 1000)
+    // }
+  },
+  beforeDestroy () {
+    if (this.timer) {
+      clearInterval(this.timer)
     }
   },
   methods: {
+    fetchMailingStatus () {
+      const vm = this
+      if (!vm.fetching) {
+        vm.fetching = true
+        const data = {
+          urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(
+          response => {
+            vm.mailingSummary = response.summary
+          }
+        )
+      }
+      vm.fetching = false
+    },
+    getMailingSummaryByFilter (filter) {
+      const vm = this
+      var result = 0
+      if (vm.mailingSummary && vm.mailingSummary.status_list) {
+        result = vm.mailingSummary.status_list.filter(item => item === filter).length
+      }
+      return result
+    },
+    refreshSummary () {
+      const vm = this
+      vm.loadMailingSummary()
+    },
+    loadMailingSummary () {
+      const vm = this
+      if (vm.voucher) {
+        const data = {
+          urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(
+          response => {
+            console.log('FETCH_MAILING_SUMMARY :: response: ', response)
+            vm.mailingSummary = response.status_list
+          },
+
+          error => console.log(error)
+        )
+      }
+    },
     pauseOperation () {
 
     },
@@ -164,14 +280,37 @@ export default {
   },
   data () {
     return {
-      processing: false,
+      fetching: false,
+      timer: null,
+      mailingSummary: [],
       pausing: false,
 
-      percentageValue: 20,
-      completedCount: 40,
-      totalCount: 200,
-
-      notes: 'Sending ... <div class="badge badge-info">#2 peter@gmail.com (Peter Chan)</div>',
+      // datatable
+      columns: (() => {
+        const cols = [
+          {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
+          {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'name'},
+          {title: 'general.email', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'email'},
+          {title: 'general.tel_no', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'tel_no'},
+          {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
+        ]
+        return cols
+      })(),
+      data: [],
+      total: 0,
+      query: {
+        filter: '',
+        sort: '',
+        order: '',
+        page: 0
+      },
+      xprops: {
+        buttons: ['delete'],
+        eventbus: new Vue(),
+        actionButtonSize: 'xs'
+      },
+      HeaderSettings: false,
+      // end of datatable
 
       progressBarOptions: {
         text: {
@@ -228,4 +367,8 @@ export default {
   font-size: 32px;
 }
 
+#failMailingTable th {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
 </style>

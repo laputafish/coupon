@@ -10,33 +10,38 @@
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
       <div class="container-fluid">
-      <div class="row bg-lightblue mb-1">
-        <div class="col-sm-3" style="overflow-x:hidden;white-space:nowrap;text-overflow:ellipsis;">Column Name</div>
-        <div class="col-sm-3">Code Table</div>
-        <div class="col-sm-6">Participant Table</div>
-      </div>
+      <!--<div>-->
+        <!--<div class="row bg-lightblue mb-1">-->
+          <!--<div class="col-sm-3" style="overflow-x:hidden;white-space:nowrap;text-overflow:ellipsis;">Column Name</div>-->
+          <!--<div class="col-sm-3">Code Table</div>-->
+          <!--<div class="col-sm-6">Participant Table</div>-->
+        <!--</div>-->
+      <!--</div>-->
       <div class="import-code-content" style="max-height:640px;overflow-y:scroll;overflow-x:hidden;">
-        <div>
-          <div class="row mb-1" v-for="fieldInfo in fieldInfos"
-               :key="fieldInfo.title">
-            <div class="col-sm-3">{{ fieldInfo.title }}</div>
-            <div class="col-sm-3">
-              <div class="btn-group">
-                <button type="button" class="btn btn-sm"
-                        :class="{'btn-primary':fieldInfo.fieldType===fieldType.value,'btn-light':fieldInfo.fieldType!==fieldType.value}"
-                        @click="selectFieldType(fieldInfo, 'code', fieldType.value)"
-                        v-for="fieldType in codeFieldTypes"
-                        :key="fieldType.value">{{ fieldType.label }}</button>
-              </div>
+        <div class="row bg-lightblue mb-1" style="position:sticky;top:0;">
+          <div class="col-sm-3 text-center" style="border-right:1px solid lightgray;overflow-x:hidden;white-space:nowrap;text-overflow:ellipsis;">Column</div>
+          <div class="col-sm-3 text-center" style="border-right:1px solid lightgray;">Code Table</div>
+          <div class="col-sm-6 text-center">Participant Table</div>
+        </div>
+        <div class="row mb-1" v-for="fieldInfo in fieldInfos"
+             :key="fieldInfo.title">
+          <div class="col-sm-3 line-height-1 align-self-center"><small>{{ fieldInfo.title }}</small></div>
+          <div class="col-sm-3">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm"
+                      :class="{'btn-primary':fieldInfo.fieldType===fieldType.value,'btn-light':fieldInfo.fieldType!==fieldType.value}"
+                      @click="selectFieldType(fieldInfo, 'code', fieldType.value)"
+                      v-for="fieldType in codeFieldTypes"
+                      :key="fieldType.value">{{ fieldType.label }}</button>
             </div>
-            <div class="col-sm-6">
-              <div class="btn-group">
-                <button type="button" class="btn btn-sm"
-                        :class="{'btn-success': fieldInfo.fieldType===fieldType.value,'btn-light':fieldInfo.fieldType!==fieldType.value}"
-                        @click="selectFieldType(fieldInfo, 'participant', fieldType.value)"
-                        v-for="fieldType in participantFieldTypes"
-                        :key="fieldType.value">{{ fieldType.label }}</button>
-              </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm"
+                      :class="{'btn-success': fieldInfo.fieldType===fieldType.value,'btn-light':fieldInfo.fieldType!==fieldType.value}"
+                      @click="selectFieldType(fieldInfo, 'participant', fieldType.value)"
+                      v-for="fieldType in participantFieldTypes"
+                      :key="fieldType.value">{{ fieldType.label }}</button>
             </div>
           </div>
         </div>

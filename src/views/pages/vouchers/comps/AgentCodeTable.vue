@@ -880,4 +880,8 @@ export default {
   padding-top: 150px;
   font-size: 24px;
 }
+.agent-code-table #code-table table th {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
 </style>

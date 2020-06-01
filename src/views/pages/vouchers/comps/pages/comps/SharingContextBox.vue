@@ -287,7 +287,6 @@ export default {
 .sharing-context-box label {
   font-weight: normal !important;
 }
-.sharing-context-box .copy-link,
 .sharing-context-box .test-link-url {
   cursor: pointer;
 }

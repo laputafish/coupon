@@ -24,13 +24,16 @@
     </div>
     <div v-if="selectedSection">
       <send-emails-section
-          :voucher="voucher"
+          :voucher="record",
+          :smtpServer="activeSmtpServer"
           v-if="selectedSection.key=='send-emails'"></send-emails-section>
       <voucher-smtp-servers-section
-          :voucher="voucher"
+          :voucher="record"
+          :smtpServers="smtpServers"
+          @onCommand="onCommandHandler"
           v-if="selectedSection.key==='email-servers'"></voucher-smtp-servers-section>
       <email-template-section
-          :voucher="voucher"
+          :voucher="record"
           v-if="selectedSection.key==='email-template'"></email-template-section>
     </div>
   </div>
@@ -49,13 +52,16 @@ export default {
     emailTemplateSection
   },
   props: {
-    voucher: {
+    record: {
       type: Object,
       default: null
     }
   },
   data () {
     return {
+      agentTag: '',
+      agentSmtpServer: [],
+
       sections: [
         {
           caption: 'Send Emails',
@@ -76,16 +82,69 @@ export default {
           key: 'email-template'
         }
       ],
-      selectedSection: null,
-      smtpServers: [{
-        description: 'SMTP #1',
-        voucher_count: 10
-      }]
+      selectedSection: null
+    }
+  },
+  computed: {
+    activeSmtpServer () {
+      const vm = this
+      var result = null
+      // if (vm.smtpServers) {
+      //   for (var i = 0; i < vm.smtpServers.length; i++) {
+      //     if (vm.smtpServers[i].id === vm.record.smtp_server_id) {
+      //       result = vm.smtpServers[i]
+      //       break
+      //     }
+      //   }
+      // }
+      return result
+    },
+    smtpServers () {
+      const vm = this
+      // var result = []
+      // if (vm.agentSmtpServers) {
+      //   for (var i = 0; i < vm.agentSmtpServers.length; i++) {
+      //     vm.agentSmtpServers[i]['tag'] = vm.agentTag
+      //   }
+      // }
+      return vm.agentSmtpServers
+    }
+  },
+  methods: {
+    onCommandHandler (payload) {
+      console.log('onCommandHandler :: payload: ', payload)
+      this.$emit('onCommand', payload)
+    },
+    loadAgentSmtpServers (callback) {
+      const vm = this
+      console.log('loadAgentSmtpServers :: record: ', vm.record)
+      if (vm.record && vm.record.agent_id !== 0) {
+        const data = {
+          urlCommand: '/agents/' + vm.record.agent_id + '/' + 'smtp_servers'
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(
+          response => {
+            console.log('AUTH_GET.then :: response: ', response)
+            vm.agentSmtpServers = response.smtpServers
+            vm.agentTag = response.tag
+            if (typeof callback === 'function') {
+              callback()
+            }
+
+          }
+        )
+      } else {
+        if (typeof callback === 'function') {
+          callback()
+        }
+      }
     }
   },
   mounted () {
     const vm = this
-    vm.selectedSection = vm.sections[0]
+    vm.loadAgentSmtpServers(() => {
+      vm.selectedSection = vm.sections[1]
+    })
   }
 
 }

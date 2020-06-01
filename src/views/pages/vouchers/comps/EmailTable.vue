@@ -51,7 +51,8 @@ export default {
           {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
         ]
         return cols
-      })(),      data: [],
+      })(),
+      data: [],
       total: 0,
       edit: false,
       query: {

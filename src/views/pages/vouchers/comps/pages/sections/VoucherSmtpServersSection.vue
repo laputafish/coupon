@@ -2,7 +2,8 @@
   <div class="container-fluid">
     <icon-item
         iconKey="smtp-server"
-        :selected="selectedServer===server"
+        :disabled="voucher.smtp_server_id!==server.id"
+        :tag="server.tag"
         :item="server"
         v-for="server in smtpServers"
         :description="server.description"
@@ -22,36 +23,25 @@ export default {
     voucher: {
       type: Object,
       default: null
-    }
-  },
-  data () {
-    return {
-      smtpServers: []
+    },
+    smtpServers: {
+      type: Array,
+      default () {
+        return []
+      }
     }
   },
   mounted () {
     const vm = this
-    vm.loadSmtpServers()
   },
   methods: {
     onServerClicked (server) {
-
-    },
-    loadSmtpServers () {
-      console.log('loadSmtpServers')
       const vm = this
-      if (vm.voucher && vm.voucher.agent_id !== 0) {
-        console.log('loadSmtpServers :: AUTH_GET')
-        const data = {
-          urlCommand: '/agents/' + vm.voucher.agent_id + '/' + 'smtp_servers'
-        }
-        vm.$store.dispatch('AUTH_GET', data).then(
-          response => {
-            console.log('AUTH_GET.then :: response: ', response)
-            vm.smtpServers = response
-          }
-        )
-      }
+      vm.$emit('onCommand', {
+        command: 'updateField',
+        fieldName: 'smtp_server_id',
+        fieldValue: server.id
+      })
     }
   }
 }
