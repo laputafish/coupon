@@ -64,6 +64,12 @@
       v-model="showingCodeImportDialog"
       callbackCommand="confirmCodeImport"
       @onCommand="onCommandHandler"></code-import-dialog>
+
+  <delete-all-codes-dialog
+    ref="deleteAllCodesDialog"
+    v-model="showingDeleteAllCodesDialog"
+    @onCommand="onCommandHandler"></delete-all-codes-dialog>
+
 </div>
 </template>
 
@@ -74,6 +80,7 @@ import dtComps from './dtComps'
 import xlsFileUpload from '@/views/comps/XlsFileUpload'
 import searchField from './comps/SearchField'
 import codeImportDialog from '../dialogs/CodeImportDialog'
+import deleteAllCodesDialog from '../dialogs/DeleteAllCodesDialog'
 
 // import helpers from '@/helpers'
 
@@ -83,12 +90,14 @@ export default {
     ...dtComps,
     xlsFileUpload,
     searchField,
-    codeImportDialog
+    codeImportDialog,
+    deleteAllCodesDialog
     // ,
     // helpers
   },
   data () {
     return {
+      showingDeleteAllCodesDialog: false,
       showingCodeImportDialog: false,
       importedFileKey: '',
       importedFieldInfos: [],
@@ -272,6 +281,8 @@ export default {
     // vm.setTableData(vm.codeInfos)
     vm.query.page = 1
     vm.xprops.record = vm.record
+    vm.showingCodeImportDialog = false
+    vm.showingDeleteAllCodesDialog = false
   },
   created () {
     const vm = this
@@ -293,6 +304,19 @@ export default {
         case 'confirmCodeImport':
           vm.onParsingCodes(payload)
           break
+        case 'deleteAllCodes':
+          vm.doDeleteAll()
+          if (typeof payload.callback === 'function') {
+            payload.callback()
+          }
+          break
+        case 'deleteAllCodesAndParticipants':
+          vm.doDeleteAll()
+          vm.doDeleteAllParticipants()
+
+          if (typeof payload.callback === 'function') {
+            payload.callback()
+          }
       }
     },
     saveCodeInfo (row) {
@@ -323,15 +347,37 @@ export default {
 
     deleteAll () {
       const vm = this
-      vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
-        () => {
-          vm.doDeleteAll()
-          vm.$emit('onCommand', {
-            command: 'setRecordField',
-            fieldName: 'code_count',
-            fieldValue: 0
-          })
+      if (vm.record.participant_count > 0) {
+        vm.showingDeleteAllCodesDialog = true
+      } else {
+        vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
+          () => {
+            vm.doDeleteAll()
+            vm.$emit('onCommand', {
+              command: 'setRecordField',
+              fieldName: 'code_count',
+              fieldValue: 0
+            })
+          }
+        )
+      }
+    },
+
+    doDeleteAllParticipants () {
+      const vm = this
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucherId + '/participants'
+      }
+      vm.$store.dispatch('AUTH_DELETE', data).then(() => {
+        vm.$toaster.success(vm.$t('messages.all_participants_are_removed'))
+        vm.onQueryChangedHandler(vm.query)
+        vm.$emit('onCommand', {
+          command: 'setRecordField',
+          fieldName: 'participant_count',
+          fieldValue: 0
         })
+
+      })
     },
 
     doDeleteAll () {
@@ -348,6 +394,11 @@ export default {
         vm.$emit('onCommand', {
           command: 'setCodeFields',
           value: ''
+        })
+        vm.$emit('onCommand', {
+          command: 'setRecordField',
+          fieldName: 'code_count',
+          fieldValue: 0
         })
         vm.onQueryChangedHandler(vm.query)
       })
@@ -666,6 +717,7 @@ export default {
           vm.uploading = false
 
           if (result.codeFields) {
+
             const newCodeFieldsStr = result.codeFields
             if (vm.codeFieldsStr == newCodeFieldsStr) {
             } else {
@@ -685,6 +737,31 @@ export default {
                 })
               }
             }
+
+            const newParticipantConfigs = result.participantConfigs
+            console.log('parse: vm.record.participant_configs: ', vm.record.participant_configs)
+            console.log('parse: newParticipantConfigs: ', newParticipantConfigs)
+            console.log('parse: result.participantCount: ', result.participantCount)
+
+            if (JSON.stringify(vm.record.participant_configs) === JSON.stringify(newParticipantConfigs)) {
+              console.log('participant configs no changed')
+            } else {
+
+              vm.$emit('onCommand', {
+                command: 'updateField',
+                fieldName: 'participant_configs',
+                fieldValue: newParticipantConfigs
+              })
+              vm.$emit('onCommand', {
+                command: 'updateField',
+                fieldName: 'participant_count',
+                fieldValue: result.participantCount
+              })
+            }
+
+            console.log('after')
+            console.log('parse: vm.record.participant_configs: ', vm.record.participant_configs)
+
             let msgs = []
             if (result.existing > 0) {
               msgs.push(result.existing + ' code(s) are duplicated')

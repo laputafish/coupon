@@ -80,16 +80,20 @@
             </div>
             <data-input id="mailFromAddress" width="4" label="From Address" v-model="selectedServer.mail_from_address"></data-input>
             <data-input id="mailFromName" width="4" label="From Name" v-model="selectedServer.mail_from_name"></data-input>
-            <div class="col-sm-12 d-flex flex-row">
+            <div class="col-sm-12 d-flex flex-row align-items-center">
               <div class="p-2 d-flex flex-row align-items-center" style="background-color:#7fc9fd;">
                 <div class="pr-2 font-weight-bold">Test</div>
                 <input id="receiverEmailAddress" type="text"
+                       @keydown="sendingResult=''"
                        class="form-control"
                        style="width:320px;"
                        v-model="receiverEmailAddress">
                 <button type="button"
                         @click="sendTestEmail"
                         class="ml-1 min-width-100 btn btn-primary">Send</button>
+              </div>
+              <div class="ml-3">
+                {{ sendingResult }}
               </div>
               <div class="flex-grow-1"></div>
             </div>
@@ -111,6 +115,7 @@ export default {
   },
   data () {
     return {
+      sendingResult: '',
       // example proper smtp server
       /*
       Array
@@ -132,44 +137,7 @@ export default {
       ],
       selectedServer: null,
       receiverEmailAddress: '',
-      smtpServers: [
-        {
-          id: 0,
-          description: 'SMTP Server #1',
-          mail_server: 'smtp',
-          mail_host: 'smtp.gmail.com',
-          mail_port: 587,
-          mail_username: 'yoovtest@gmail.com',
-          mail_password: 'yoovYoov',
-          mail_encryption: 'tls',
-          mail_from_address: 'yoovtest@gmail.com',
-          mail_from_name: 'YOOV Ticket'
-        },
-        {
-          id: 1,
-          description: 'SMTP Server #2',
-          mail_server: 'smtp',
-          mail_host: 'smtp.gmail.com',
-          mail_port: 587,
-          mail_username: 'yoovtest@gmail.com',
-          mail_password: 'yoovYoov',
-          mail_encryption: 'tls',
-          mail_from_address: 'yoovtest@gmail.com',
-          mail_from_name: 'YOOV Ticket'
-        },
-        {
-          id: 2,
-          description: 'SMTP Server #3',
-          mail_server: 'smtp',
-          mail_host: 'smtp.gmail.com',
-          mail_port: 587,
-          mail_username: 'yoovtest@gmail.com',
-          mail_password: 'yoovYoov',
-          mail_encryption: 'tls',
-          mail_from_address: 'yoovtest@gmail.com',
-          mail_from_name: 'YOOV Ticket'
-        }
-      ]
+      smtpServers: []
     }
   },
   mounted () {
@@ -219,7 +187,7 @@ export default {
       }
       vm.$store.dispatch('AUTH_POST', data).then(
         response => {
-          console.log('sendTestEmail :: response: ', response)
+          vm.sendingResult = 'Sent Successfully.'
         }
       )
     },

@@ -3,7 +3,7 @@
     {{ value }}<br/>
     <copy-link v-if="codeKey"
                :label="codeKey"
-               variant="success"
+               variant="primary"
                :link="link"></copy-link>
   </div>
 </template>

@@ -124,12 +124,7 @@ export default {
         (this.processedCount < this.totalCount)
     },
     processing () {
-      const vm = this
-      var result = false
-      if (vm.voucher) {
-        result = vm.voucher.status === 'sending'
-      }
-      return result
+      return this.voucher.status === 'sending'
     },
     notes () {
       const vm = this
@@ -214,6 +209,17 @@ export default {
     }
   },
   methods: {
+    startSendingEmails () {
+      const vm = this
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucher.id + '/send_emails'
+      }
+      vm.$store.dispatch('AUTH_POST', data).then(
+        () => {
+
+        }
+      )
+    },
     fetchMailingStatus () {
       const vm = this
       if (!vm.fetching) {
@@ -270,6 +276,7 @@ export default {
             fieldName: 'status',
             fieldValue: 'sending'
           })
+          vm.startSendingEmails()
           break
         case 'pause':
           vm.$emit('onCommand', {

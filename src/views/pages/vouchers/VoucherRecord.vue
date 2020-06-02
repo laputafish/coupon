@@ -1407,10 +1407,26 @@
           // case 'saveTemp':
           //   vm.saveTemp()
           //   break
+          case 'updateField':
+            console.log('updateField :: payload: ', payload)
+            var fieldName = payload.fieldName
+            var fieldValue = payload.fieldValue
+            vm.record[fieldName] = fieldValue
+            if (fieldName === 'smtp_server_id') {
+              vm.save()
+            }
+            break
+
           case 'setRecordField':
-            // console.log('onCommandHandler :; setRecordField :: fieldName = ' + payload.fieldName)
-            // console.log('onCommandHandler :; setRecordField :: fieldValue = ' + payload.fieldValue)
+            console.log('setRecordField :: payload: ', payload)
             vm.record[payload.fieldName] = payload.fieldValue
+            if (payload.fieldName === 'participant_count') {
+              if (vm.record.voucher_type === 'voucher') {
+                vm.record.participant_configs = {
+                  inputObjs: []
+                }
+              }
+            }
             break
           case 'setCodeFields':
             vm.record.code_fields = payload.value // vm.createCodeFieldStr(payload.value)
@@ -1420,16 +1436,6 @@
             // console.log('onCommandHandler :: setCodeData :: payload.value: ', payload.value)
             vm.updateCodeInfos(payload.value)
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
-            break
-          case 'updateField':
-            var fieldName = payload.fieldName
-            var fieldValue = payload.fieldValue
-            // console.log('onCommandHandler :: updateField :; fieldName = ' + fieldName)
-            // console.log('onCommandHandler :: updateField :; fieldValue = ' + fieldValue)
-            vm.record[fieldName] = fieldValue
-            if (fieldName === 'smtp_server_id') {
-              vm.save()
-            }
             break
           case 'setQrCodeComposition':
             // console.log('setQrCodeComposition :: payload.data: ', payload.data)

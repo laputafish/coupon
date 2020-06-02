@@ -136,6 +136,39 @@ const AppMixin = {
       if (bytes === 0) return '0 Byte'
       var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
       return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
+    },
+
+    strToKeyValues (str) {
+      var result = {}
+
+      str = str.trim()
+      if (str !== '') {
+        var keyValueStrs = str.split(';')
+        for (var i = 0; i < keyValueStrs.length; i++) {
+          var s = keyValueStrs[i].trim()
+          if (s !== '') {
+            var segs = s.split(':')
+            if (segs.length > 1) {
+              result[segs[0]] = segs[1]
+            }
+          }
+        }
+      }
+      return result
+    },
+    keyValuesToStr (keyValues, keepBlank) {
+      if (typeof keepBlank === 'undefined') {
+        keepBlank = false
+      }
+      var result = ''
+      if (Object.keys(keyValues).length >0) {
+        for (var key in keyValues) {
+          if (keyValues[key]!=='' || keepBlank) {
+            result += key + ':' + keyValues[key] + ';'
+          }
+        }
+      }
+      return result
     }
   }
 }

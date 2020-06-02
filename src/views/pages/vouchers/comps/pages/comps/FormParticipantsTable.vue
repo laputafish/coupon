@@ -46,10 +46,14 @@
 <script>
 import Vue from 'vue'
 import dtCommon from '@/views/comps/datatable'
-import dtComps from './dtComps'
-import searchField from './comps/SearchField'
+import dtComps from '../../dtComps/index'
+import searchField from '../../comps/SearchField'
+import appMixin from '@/mixins/AppMixin'
 
 export default {
+  mixins: [
+    appMixin
+  ],
   components: {
     ...dtCommon,
     ...dtComps,
@@ -227,14 +231,6 @@ export default {
       }
       vm.$store.dispatch('AUTH_DELETE', data).then(() => {
         vm.$toaster.success(vm.$t('messages.all_codes_are_removed'))
-        vm.$emit('onCommand', {
-          command: 'setQrCodeComposition',
-          data: ''
-        })
-        vm.$emit('onCommand', {
-          command: 'setCodeFields',
-          value: ''
-        })
         vm.onQueryChangedHandler(vm.query)
       })
     },
@@ -346,6 +342,16 @@ export default {
           break
       }
     },
+    getInputObjOption (inputObj, optionKey) {
+      var result = false
+      if (inputObj.options.length > 0) {
+        const keyValues = vm.strToKeyValues(inputObj.options[0])
+        if (Ohject.keys(keyValues).indexOf('twoFields') >= 0) {
+          result = keyValues['twoFields']
+        }
+      }
+      return result
+    },
     setColumns (userInputObjs) {
       const vm = this
       vm.xprops['optionalChoices'] = {}
@@ -366,14 +372,16 @@ export default {
 
         if (i === 0) {
           if (inputType === 'name') {
+            const hasTwoFields = vm.getInputObjOption(userInputObj, 'twoFields')
           // if (inputType === 'phone' || inputType === 'name') {
-            vm.xprops.firstField = fieldName + '_0'
+            vm.xprops.firstField = hasTwoFields ? fieldName + '_0' : fieldName
           } else {
             vm.xprops.firstField = fieldName
           }
         }
 
         // console.log('i = ' + i + ': userInputObj: ', userInputObj)
+
         switch (inputType) {
           case 'simple-text':
             vm.columns.push({
@@ -416,35 +424,48 @@ export default {
             });
             break
           case 'name':
-            var defaultName = 'Name';
-            var name0 = '';
-            var name1 = '';
-            if (userInputObj.name.trim() !== '') {
-              const nameSegs = userInputObj.name.split(',');
-              if (nameSegs.length > 0) name0 = nameSegs[0]
-              if (nameSegs.length > 1) {
-                name1 = nameSegs[1]
-              } else {
-                name1 = name0 + ' [2]';
-                name0 = name0 + ' [1]';
+            const options = userInputObj.options
+            const hasTwoFields = vm.getInputObjOption(userInputObj, 'twoFields')
+            if (hasTwoFields) {
+              var defaultName = 'Name';
+              var name0 = '';
+              var name1 = '';
+              if (userInputObj.name.trim() !== '') {
+                const nameSegs = userInputObj.name.split(',');
+                if (nameSegs.length > 0) name0 = nameSegs[0]
+                if (nameSegs.length > 1) {
+                  name1 = nameSegs[1]
+                } else {
+                  name1 = name0 + ' [2]';
+                  name0 = name0 + ' [1]';
+                }
               }
+              vm.columns.push({
+                title: name0,
+                tdClass: 'text-left align-middle',
+                thClass: 'text-left',
+                thComp: 'ThSimpleHeader',
+                tdComp: 'TdParticipantField',
+                field: fieldName + '_0'
+              })
+              vm.columns.push({
+                title: name1,
+                tdClass: 'text-left align-middle',
+                thClass: 'text-left',
+                thComp: 'ThSimpleHeader',
+                tdComp: 'TdParticipantField',
+                field: fieldName + '_1'
+              })
+            } else {
+              vm.columns.push({
+                title: userInputObj.name,
+                tdClass: 'text-left align-middle',
+                thClass: 'text-left',
+                thComp: 'ThSimpleHeader',
+                tdComp: 'TdParticipantField',
+                field: fieldName
+              });
             }
-            vm.columns.push({
-              title: name0,
-              tdClass: 'text-left align-middle',
-              thClass: 'text-left',
-              thComp: 'ThSimpleHeader',
-              tdComp: 'TdParticipantField',
-              field: fieldName + '_0'
-            })
-            vm.columns.push({
-              title: name1,
-              tdClass: 'text-left align-middle',
-              thClass: 'text-left',
-              thComp: 'ThSimpleHeader',
-              tdComp: 'TdParticipantField',
-              field: fieldName + '_1'
-            })
             break
           case 'phone':
             vm.columns.push({
