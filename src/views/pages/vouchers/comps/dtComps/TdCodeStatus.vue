@@ -1,11 +1,30 @@
 <template>
-  <div class="td-code-status input-group">
-    <select class="form-control" :value="value"
-      @input="$event=>updateStatus($event.target.value)">
-      <option v-for="(option, index) in options"
-              :value="option.value"
-        :key="index">{{ option.label }}</option>
-    </select>
+  <div class="td-code-status line-height-1">
+    <div class="badge min-width-80"
+         :class="'badge-' + activeStatus.variant">{{ activeStatus.label }}
+      <div v-if="value==='completed' || value==='fails'"
+           class="ml-1 d-inline reset-status"
+           data-toggle="tooltip"
+           title="Reset"
+            @click="resetStatus">
+        <font-awesome-icon size="sm" icon="redo"></font-awesome-icon>
+      </div>
+    </div>
+    <!--<button v-if="value==='completed'" class="btn btn-xs btn-danger line-height-1 rounded px-2">-->
+      <!---->
+    <!--</button>-->
+    <br/>
+    <div v-if="value==='fails'"
+         class="badge badge-muted bg-gray-light" >{{ row['error_message'] }}</div>
+    <div v-if="value==='completed'"
+         class="badge badge-muted bg-gray-light">{{ row['sent_on'] }}</div>
+
+    <!--<select class="form-control" :value="value"-->
+      <!--@input="$event=>updateStatus($event.target.value)">-->
+      <!--<option v-for="(option, index) in options"-->
+              <!--:value="option.value"-->
+        <!--:key="index">{{ option.label }}</option>-->
+    <!--</select>-->
   </div>
 </template>
 
@@ -13,31 +32,59 @@
   export default {
     data () {
       return {
-        options: [
-          {value: 'pending', label: 'Pending'},
-          {value: 'ready', label: 'Ready'},
-          {value: 'completed', label: 'Completed'}
+        statusOptions: [
+          {value: 'pending', label: 'Pending', variant: 'info'},
+          {value: 'processing', label: 'Processing', variant: 'warning'},
+          {value: 'ready', label: 'Ready', variant: 'info'},
+          {value: 'completed', label: 'Completed', variant: 'success'},
+          {value: 'fails', label: 'Fails', variant: 'danger'}
         ]
       }
     },
     props: ['value', 'row', 'xprops'],
+    // methods: {
+    //   updateStatus (status) {
+    //     console.log('TdCodeStatus :: updateStatus: status = ' + status)
+    //     const vm = this
+    //     vm.xprops.eventbus.$emit('onRowCommand', {
+    //       command: 'updateField',
+    //       row: vm.row,
+    //       fieldName: 'status',
+    //       fieldValue: status
+    //     })
+    //   }
+    // },
     methods: {
-      updateStatus (status) {
-        console.log('TdCodeStatus :: updateStatus: status = ' + status)
+      resetStatus () {
         const vm = this
-        vm.xprops.eventbus.$emit('onRowCommand', {
-          command: 'updateField',
-          row: vm.row,
-          fieldName: 'status',
-          fieldValue: status
-        })
+        vm.$dialog.confirm(vm.$t('messages.reset_status')).then(
+          () => {
+            vm.xprops.eventbus.$emit('onRowCommand', {
+              command: 'resetStatus',
+              row: vm.row,
+              status: 'pending'
+            })
+          }
+        )
       }
     },
     computed: {
+      activeStatus () {
+        const vm = this
+        var result = ''
+        for (let i = 0; i < vm.statusOptions.length; i++) {
+          const statusOption = vm.statusOptions[i]
+          if (statusOption.value === vm.value) {
+            result = statusOption
+            break
+          }
+        }
+        return result
+      },
       status () {
         const vm = this
         let label = vm.$t('status.' + vm.value)
-        if (vm.xprops.statusOptions) {
+        if (vm.options) {
           for (let i = 0; i < vm.xprops.statusOptions.length; i++) {
             const  option = vm.xprops.statusOptions[i]
             if (option.value === vm.value) {
@@ -55,5 +102,12 @@
 <style>
   .td-code-status select.form-control {
 
+  }
+
+  .td-code-status .reset-status:hover {
+    font-size: 14px;
+  }
+  .td-code-status .reset-status {
+    cursor: pointer;
   }
 </style>

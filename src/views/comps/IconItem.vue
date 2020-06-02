@@ -24,6 +24,8 @@
 <script>
 export default {
   props: {
+
+    // with question mark
     hasFault: {
       type: Boolean,
       default: false
@@ -44,10 +46,14 @@ export default {
       type: String,
       default: ''
     },
+
+    // with lightgray background
     selected: {
       type: Boolean,
       default: false
     },
+
+    // turn icons to disabled mode
     disabled: {
       type: Boolean,
       default: false
@@ -59,7 +65,7 @@ export default {
       var result = ''
       switch (vm.iconKey) {
         case 'smtp-server':
-          result = vm.highlight ? '/img/smtp_server.png' : '/img/smtp_server_disabled.png'
+          result = vm.disabled ? '/img/smtp_server_disabled.png' : '/img/smtp_server.png'
           break
       }
       return result

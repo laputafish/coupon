@@ -58,60 +58,113 @@
       </div>
     </div>
 
-    <voucher-toolbar
-        v-if="record"
-        :buttons="tabButtons"
-        :activeButton="activeTabButton"
-        @click="selectTab"></voucher-toolbar>
+    <div class="voucher-toolbar">
+      <!-- Info -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Info"
+                              @click="onPageSelected('info')"
+                              :selected="activePage=='info'"
+                              :imgSrc="IMAGE_PATH_INFO"></voucher-toolbar-button>
+      <!-- Codes -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Codes"
+                              @click="onPageSelected('codes')"
+                              :selected="activePage==='codes'"
+                              :imgSrc="IMAGE_PATH_CODES"
+                              :badge="record ? record.code_count : 0"></voucher-toolbar-button>
+      <!-- Ticket -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Ticket"
+                              @click="onPageSelected('tickets')"
+                              :selected="activePage==='tickets'"
+                              :imgSrc="IMAGE_PATH_TICKETS"></voucher-toolbar-button>
+      <!-- Sharing -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Sharing"
+                              @click="onPageSelected('sharing')"
+                              :selected="activePage==='sharing'"
+                              :imgSrc="IMAGE_PATH_SHARING"></voucher-toolbar-button>
+      <!-- Form Filling -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Form Filling"
+                              @click="onPageSelected('form_filling')"
+                              :selected="activePage==='form_filling'"
+                              :imgSrc="IMAGE_PATH_FORM_FILLING"></voucher-toolbar-button>
+      <!-- Custom Forms -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Custom Forms"
+                              @click="onPageSelected('custom_forms')"
+                              :selected="activePage==='custom_forms'"
+                              :imgSrc="IMAGE_PATH_CUSTOM_FORMS"></voucher-toolbar-button>
+      <!-- Participant -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Participants"
+                              @click="onPageSelected('participants')"
+                              :selected="activePage==='participants'"
+                              :badge="record ? record.participant_count : 0"
+                              :imgSrc="IMAGE_PATH_PARTICIPANTS"></voucher-toolbar-button>
+      <!-- Send Email -->
+      <voucher-toolbar-button class="toolbar-button-wrapper"
+                              caption="Email"
+                              @click="onPageSelected('email')"
+                              :selected="activePage==='email'"
+                              :imgSrc="IMAGE_PATH_EMAIL"></voucher-toolbar-button>
+    </div>
+
+    <!--<voucher-toolbar-->
+        <!--v-if="record"-->
+        <!--:buttons="tabButtons"-->
+        <!--:activeButton="activeTabButton"-->
+        <!--@click="selectTab"></voucher-toolbar>-->
 
     <info-page
-        v-if="record && activeTabButton && activeTabButton.tab==='info'"
+        v-if="record && activePage==='info'"
         :record="record"
         @onCommand="onCommandHandler"
         :qrcodeConfig="qrcodeConfig"
         :barcodeConfig="barcodeConfig"></info-page>
 
     <agent-code-page
-        v-if="record && activeTabButton && activeTabButton.tab==='codes'"
+        v-if="record && activePage==='codes'"
         ref="agentCodePage"
         :record="record"
         @onCommand="onCommandHandler"></agent-code-page>
 
     <tickets-page
-      v-if="record && activeTabButton && activeTabButton.tab==='tickets'"
-      ref="ticketsPage"
-      :record="record"
-      @onCommand="onCommandHandler"></tickets-page>
+        v-if="record && activePage==='tickets'"
+        ref="ticketsPage"
+        :record="record"
+        @onCommand="onCommandHandler"></tickets-page>
 
     <sharing-page
-      v-if="record && activeTabButton && activeTabButton.tab==='sharing'"
-      ref="sharingPage"
-      :record="record"
-      @onCommand="onCommandHandler"></sharing-page>
+        v-if="record && activePage==='sharing'"
+        ref="sharingPage"
+        :record="record"
+        @onCommand="onCommandHandler"></sharing-page>
 
     <form-filling-page
-      v-if="record && activeTabButton && activeTabButton.tab==='form_filling'"
-      ref="formFillingPage"
-      :record="record"
-      @onCommand="onCommandHandler"></form-filling-page>
+        v-if="record && activePage==='form_filling'"
+        ref="formFillingPage"
+        :record="record"
+        @onCommand="onCommandHandler"></form-filling-page>
 
     <custom-forms-page
-      v-if="record && activeTabButton && activeTabButton.tab==='custom_forms'"
-      ref="customFormsPage"
-      :record="record"
-      @onCommand="onCommandHandler"></custom-forms-page>
+        v-if="record && activePage==='custom_forms'"
+        ref="customFormsPage"
+        :record="record"
+        @onCommand="onCommandHandler"></custom-forms-page>
 
     <participants-page
-      v-if="record && activeTabButton && activeTabButton.tab==='participants'"
-      ref="participantsPage"
-      :record="record"
-      @onCommand="onCommandHandler"></participants-page>
+        v-if="record && activePage==='participants'"
+        ref="participantsPage"
+        :record="record"
+        @onCommand="onCommandHandler"></participants-page>
 
     <email-page
-      v-if="record && activeTabButton && activeTabButton.tab==='email'"
-      ref="emailPage"
-      :record="record"
-      @onCommand="onCommandHandler"></email-page>
+        v-if="record && activePage==='email'"
+        ref="emailPage"
+        :record="record"
+        @onCommand="onCommandHandler"></email-page>
 
     <div v-if="record && false" class="p-2 bg-tab">
       <b-tabs content-class="py-0" class="bg-tab">
@@ -379,9 +432,10 @@
   import customFormsPage from './comps/pages/CustomFormsPage'
   import participantsPage from './comps/pages/ParticipantsPage'
   import emailPage from './comps/pages/EmailPage'
+  import vouchertoolbarButton from './comps/VoucherToolbarButton'
 
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
-  import voucherToolbar from './comps/VoucherToolbar'
+  import voucherToolbarButton from './comps/VoucherToolbarButton'
 
   import $ from 'jquery'
 
@@ -408,6 +462,8 @@
       participantsPage,
       emailPage,
 
+      voucherToolbarButton,
+
       fileUpload,
       // emailTable,
       // datePicker,
@@ -424,8 +480,7 @@
       formFillingTab,
       customFormsTab,
       formParticipantsTab,
-      sharingContextBox,
-      voucherToolbar
+      sharingContextBox
       // ,
       // yoovEditor
       // ,
@@ -480,7 +535,18 @@
         inputObjs: [],
         selectedFormConfigs: null,
         selectedInputObjIndex: -1,
-        activeTabButton: null,
+        activePage: '',
+
+        FIRST_PAGE_TO_SHOW: 'info',
+        IMAGE_PATH_INFO: '/img/64x64/info.png',
+        IMAGE_PATH_CODES: '/img/64x64/codes.png',
+        IMAGE_PATH_TICKETS: '/img/64x64/tickets.png',
+        IMAGE_PATH_SHARING: '/img/64x64/sharing.png',
+        IMAGE_PATH_FORM_FILLING: '/img/64x64/form_filling.png',
+        IMAGE_PATH_CUSTOM_FORMS: '/img/64x64/form_builder.png',
+        IMAGE_PATH_PARTICIPANTS: '/img/64x64/participants.png',
+        IMAGE_PATH_EMAIL: '/img/64x64/email.png',
+
         tabButtons: [
           {
             caption: 'Info',
@@ -491,37 +557,44 @@
           {
             caption: 'Codes',
             imgSrc: '/img/64x64/codes.png',
-            tab: 'codes'
+            tab: 'codes',
+            badge: 0
           },
           {
             caption: 'Tickets',
             imgSrc: '/img/64x64/tickets.png',
-            tab: 'tickets'
+            tab: 'tickets',
+            badge: 0
           },
           {
             caption: 'Sharing',
             imgSrc: '/img/64x64/sharing.png',
-            tab: 'sharing'
+            tab: 'sharing',
+            badge: 0
           },
           {
             caption: 'Form Filling',
             imgSrc: '/img/64x64/form_filling.png',
-            tab: 'form_filling'
+            tab: 'form_filling',
+            badge: 0
           },
           {
             caption: 'Custom Forms',
             imgSrc: '/img/64x64/form_builder.png',
-            tab: 'custom_forms'
+            tab: 'custom_forms',
+            badge: 0
           },
           {
             caption: 'Participants',
             imgSrc: '/img/64x64/participants.png',
-            tab: 'participants'
+            tab: 'participants',
+            badge: 0
           },
           {
             caption: 'Email',
             imgSrc: '/img/64x64/email.png',
-            tab: 'email'
+            tab: 'email',
+            badge: 0
           }
         ]
       }
@@ -660,8 +733,8 @@
     mounted () {
       const vm = this
 
-      if (!vm.activeTabButton) {
-        vm.activeTabButton = vm.tabButtons[0]
+      if (!vm.activePage) {
+        vm.activePage = vm.FIRST_PAGE_TO_SHOW
       }
 
       vm.showingCopyTemplateDialog = false
@@ -678,6 +751,9 @@
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
     methods: {
+      onPageSelected (pageName) {
+        this.activePage = pageName
+      },
       selectTab (tab) {
         const vm = this
         console.log('selectTab : tab: ', tab)
@@ -1162,6 +1238,9 @@
         // console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
         // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          // case 'resetStatus':
+          //   vm.resetCodeStatus(payload.row)
+          //   break
           case 'cropImage':
             vm.selectedTempMediaId = payload.imageId
             vm.selectedTempMediaIdField = payload.imageIdField
@@ -1369,6 +1448,12 @@
         }
         // console.log('VoucherRecord :: onCommandHandler :: ends')
       },
+
+      // resetCodeStatus (row) {
+      //   const vm = this
+      //   vm.$store.dispatch('')
+      // },
+
       exportParticipants () {
         const vm = this
         const data = {
@@ -1877,4 +1962,13 @@
   .field-content i {
     margin-top: -50px;
   }
+
+  .voucher-toolbar {
+    border-top: 1px solid rgba(127,127,127,.2);
+    border-bottom: 4px solid #9fcdff;
+    border-left: none;
+    border-right: none;
+    padding: 10px 2px 0 2px;
+  }
+
 </style>

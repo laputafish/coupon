@@ -118,6 +118,11 @@ export default {
     iconItem
   },
   computed: {
+    pausing () {
+      return !this.processing &&
+        this.processedCount > 0 &&
+        (this.processedCount < this.totalCount)
+    },
     processing () {
       const vm = this
       var result = false
@@ -135,7 +140,7 @@ export default {
           values.push(vm.mailingSummary.sendingTo.email)
         }
         if (vm.mailingSummary.sendingTo.name && vm.mailingSummary.sendingTo.name !== '') {
-          values.push('(' + vm.maillingSummary.sendingTo.name + ')')
+          values.push('(' + vm.mailingSummary.sendingTo.name + ')')
         }
         result = 'Sending ... <div class="badge badge-info">' + values.join(' ') + '</div>'
       }
@@ -145,14 +150,14 @@ export default {
       const vm = this
       var result = 0
       if (vm.totalCount !== 0) {
-        result = vm.processedCount / vm.totalCount
-        result = Math.round(result * 100) / 100;
+        result = vm.processedCount*100 / vm.totalCount
+        result = Math.round(result);
       }
       return result
     },
     successCount () {
       const vm = this
-      return vm.getMailingSummaryByFilter('success')
+      return vm.getMailingSummaryByFilter('completed')
     },
     failCount () {
       const vm = this
@@ -162,16 +167,11 @@ export default {
       return this.successCount + this.failCount
     },
     totalCount () {
-      const vm = this
-      var result = 0
-      if (vm.maillingSummary) {
-        result = vm.mailingSummary.status_list.length
-      }
-      return result
+      return this.mailingSummary.statusList.length
     },
     ready () {
       const vm = this
-      return vm.smtpServer
+      return vm.smtpServer ? true : false
     },
     systemConfigs () {
       return this.$store.getters.systemConfigs
@@ -202,11 +202,11 @@ export default {
   // },
   mounted () {
     const vm = this
-    // vm.loadMailingSummary()
-    // if (vm.voucher.status === 'sending') {
-    //   this.fetchMailingStatus()
-    //   this.timer = setInterval(this.fetchMailingStatus, 1000)
-    // }
+    vm.loadMailingSummary()
+    if (vm.voucher.status === 'sending') {
+      this.fetchMailingStatus()
+      this.timer = setInterval(this.fetchMailingStatus, 1000)
+    }
   },
   beforeDestroy () {
     if (this.timer) {
@@ -230,12 +230,7 @@ export default {
       vm.fetching = false
     },
     getMailingSummaryByFilter (filter) {
-      const vm = this
-      var result = 0
-      if (vm.mailingSummary && vm.mailingSummary.status_list) {
-        result = vm.mailingSummary.status_list.filter(item => item === filter).length
-      }
-      return result
+      return this.mailingSummary.statusList.filter(item => item === filter).length
     },
     refreshSummary () {
       const vm = this
@@ -250,7 +245,12 @@ export default {
         vm.$store.dispatch('AUTH_GET', data).then(
           response => {
             console.log('FETCH_MAILING_SUMMARY :: response: ', response)
-            vm.mailingSummary = response.status_list
+            vm.$set(vm.mailingSummary, 'sendingTo', response.summary.sending_to)
+            vm.$set(vm.mailingSummary, 'statusList', response.summary.status_list)
+
+            // vm.mailingSummary.sendingTo = response.summary.sending_to
+            // vm.mailingSummary.statusList = response.summary.status_list
+            // vm.$set(vm.mailingSummary, response.summary.status_list)
           },
 
           error => console.log(error)
@@ -265,15 +265,26 @@ export default {
       const command = payload.command
       switch (command) {
         case 'start':
-          vm.processing = true
+          vm.$emit('onCommand', {
+            command: 'updateField',
+            fieldName: 'status',
+            fieldValue: 'sending'
+          })
           break
         case 'pause':
-          vm.processing = false
-          vm.pausing = true
+          vm.$emit('onCommand', {
+            command: 'updateField',
+            fieldName: 'status',
+            fieldValue: 'pending'
+          })
           break
         case 'continue':
-          vm.processing = true
-          vm.pausing = false
+          console.log('onCommand :: updatefield :: status => sending')
+          vm.$emit('onCommand', {
+            command: 'updateField',
+            fieldName: 'status',
+            fieldValue: 'sending'
+          })
           break
       }
     }
@@ -282,8 +293,11 @@ export default {
     return {
       fetching: false,
       timer: null,
-      mailingSummary: [],
-      pausing: false,
+
+      mailingSummary: {
+        statusList: [],
+        sendingTo: null
+      },
 
       // datatable
       columns: (() => {

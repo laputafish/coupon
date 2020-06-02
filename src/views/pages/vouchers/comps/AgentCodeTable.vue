@@ -55,7 +55,7 @@
       :can-cancel="true"></vue-loading>
   <div v-if="loading" id="loadingMask" class="text-center">
     <h3 class="d-inline-block mr-auto">
-       <font-awesome-icon icon="spinner" class="fa-spin"/>
+       <font-awesome-icon icon="spinner" class="fa-spin fa-3x"/>
     </h3>
   </div>
 
@@ -131,18 +131,19 @@ export default {
           tdComp: 'TdCommonInput',
           field: 'remark'
         },
-        {
-          title: 'vouchers.sent_on',
-          thComp: 'ThCommonHeader',
-          tdClass: 'align-middle',
-          tdComp: 'TdCommonInputDate',
-          field: 'sent_on',
-          sortable: true
-        },
+        // {
+        //   title: 'vouchers.sent_on',
+        //   thComp: 'ThCommonHeader',
+        //   tdClass: 'align-middle',
+        //   tdComp: 'TdCommonInputDate',
+        //   field: 'sent_on',
+        //   sortable: true
+        // },
         {
           title: 'general.status',
           thComp: 'ThCommonHeader',
-          tdClass: 'align-middle',
+          thClass: 'text-center',
+          tdClass: 'align-middle text-center',
           tdComp: 'TdCodeStatus',
           field: 'status',
           sortable: true
@@ -312,32 +313,14 @@ export default {
         }
       )
     },
-    // row2CodeInfo (row) {
-    //   const vm = this
-    //   const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
-    //   const codeFieldCount = codeFields.length
-    //
-    //   const code = row['field0']
-    //   const extraFieldsArray = []
-    //   for (let i = 1; i < codeFieldCount; i++) {
-    //     const fieldName = 'field' + i
-    //     extraFieldsArray.push(row[fieldName])
-    //   }
-    //
-    //   */
-    //
-    //   return {
-    //     id: row.id,
-    //     order: row.order,
-    //     code:
-    //   }
-    // },
+
     exportExcel () {
       const vm = this
       vm.$emit('onCommand', {
         command: 'export'
       })
     },
+
     deleteAll () {
       const vm = this
       vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
@@ -350,6 +333,7 @@ export default {
           })
         })
     },
+
     doDeleteAll () {
       const vm = this
       const data = {
@@ -404,23 +388,6 @@ export default {
       return result
     },
 
-    // getFilteredData (filterValue) {
-    //   const vm = this
-    //   const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
-    //   const filtered = vm.allData.filter(item => {
-    //     let valid = false
-    //     for (let i = 0; i < codeFields.length; i++) {
-    //       const fieldName = 'field' + i
-    //       if (item[fieldName].indexOf(filterValue) >= 0) {
-    //         valid = true
-    //         break
-    //       }
-    //     }
-    //     return valid
-    //   })
-    //   return filtered
-    // },
-
     onQueryChangedHandler (query) {
       const vm = this
       vm.reloadCodeList(query)
@@ -449,39 +416,10 @@ export default {
       })
     },
 
-    // refreshList2 () {
-    //   const vm = this
-    //   console.log('AgentCodeTable :: refreshList :: query: ', vm.query)
-    //   const filterValue = vm.getFilterValue(vm.query.filter)
-    //   let filtered = []
-    //
-    //   vm.appLoading = true
-    //
-    //   if (filterValue === '') {
-    //     filtered = vm.allData
-    //   } else {
-    //     filtered = vm.getFilteredData(filterValue)
-    //   }
-    //   vm.total = filtered.length
-    //   let end = vm.query.offset + vm.query.limit
-    //   if (end > vm.total) {
-    //     end = vm.total
-    //   }
-    //   // console.log('AgentCodeTable :: refreshList :: allDAta.length = ' + vm.allData.length)
-    //   // console.log('AgentCodeTable :: refreshList :: offset = ' + vm.query.offset)
-    //   // console.log('AgentCodeTable :: refreshList :: vm.total = ' + vm.total)
-    //   // console.log('AgentCodeTable :: refreshList :: vm.query.limit = ' + vm.query.limit)
-    //   // console.log('AgentCodeTable :: refreshList :: end = ' + end)
-    //
-    //   vm.data = filtered.slice(vm.query.offset, end)
-    //   vm.appLoading = false
-    //   // console.log('AgentCodeTable :: watch(query)')
-    // },
     row2CodeInfo (row) {
       const vm = this
       const codeFields = vm.getCodeFieldsFromStr(vm.codeFieldsStr);
       const codeFieldCount = codeFields.length
-
       const code = row['field0']
       const extraFieldsArray = []
       for (let i = 1; i < codeFieldCount; i++) {
@@ -525,6 +463,13 @@ export default {
         case 'update': // = save
           vm.saveCodeInfo(payload.row);
           break
+        case 'resetStatus':
+          vm.resetStatus(payload)
+          break
+          // vm.$emit('onCommand', {
+          //   command: 'resetStatus',
+          //   row: payload.row
+          // })
         case 'updateField':
           // console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
           // vm.$emit('onCommand', {
@@ -544,9 +489,6 @@ export default {
       }
     },
     setCodeFieldValue (row, fieldName, fieldValue) {
-      // console.log('setCodeFieldValue :: row: ', row)
-      // console.log('setCodeFieldValue :: fieldName: ', fieldName)
-      // console.log('setCodeFieldValue :: fieldValue: ', fieldValue)
       const vm = this
       for (let i = 0; i < vm.data.length; i++) {
         if (vm.data[i] == row) {
@@ -560,24 +502,28 @@ export default {
     },
     setCodeFieldValue2 (row, fieldName, fieldValue) {
       const vm = this
-      // const result = null
-      // console.log('setCodeFieldValue: row[code] = ' + row['code'])
-      // console.log('setCodeFieldValue: row[extra_fields] = ' + row['extra_fields'])
       for (let i = 0; i < vm.data.length; i++) {
         const codeInfo = vm.data[i]
-        // console.log('record.codeInfo[code] = ' + codeInfo['code'])
-        // console.log('record.codeInfo[extra_fields] = ' + codeInfo['extra_fields'])
-        //
-        // console.log('row.codeInfo[code] = ' + row['code'])
-        // console.log('row.codeInfo[extra_fields] = ' + row['extra_fields'])
         if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
-          // console.log('VoucherRecord :: setCodeFieldValue :: found => assign field: ' + fieldName + ' to ' + fieldValue)
           vm.data[i][fieldName] = fieldValue
-          // result = codeInfo
           break
         }
       }
     },
+
+    resetStatus (payload) {
+      const vm = this
+      const postData = {
+        urlCommand: '/agent_codes/' + payload.row.id + '/reset_status'
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        () => {
+          vm.$toaster.success(vm.$t('messages.code_status_has_been_reset'))
+          vm.reloadCodeList()
+        }
+      )
+    },
+
     getCodeFieldsFromStr (fieldStr) {
       const result = []
       // console.log('getCodeFieldsFromStr: fieldStr = ' + fieldStr)
@@ -666,6 +612,7 @@ export default {
           obj['status'] = codeRecord['status']
           obj['key'] = codeRecord['key']
           obj['remark'] = codeRecord['remark']
+          obj['error_message'] = codeRecord['error_message']
           obj['participant_name'] = codeRecord['participant'] ? codeRecord['participant']['name'] : null
           obj['participant_email'] = codeRecord['participant'] ? codeRecord['participant']['email'] : null
           obj['participant_phone'] = codeRecord['participant'] ? codeRecord['participant']['phone'] : null
@@ -876,9 +823,9 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  min-height: 320px;
+  min-height: 480px;
   padding-top: 150px;
-  font-size: 24px;
+  font-size: 48px;
 }
 .agent-code-table #code-table table th {
   padding-top: 0.3rem;

@@ -24,8 +24,9 @@
     </div>
     <div v-if="selectedSection">
       <send-emails-section
-          :voucher="record",
+          :voucher="record"
           :smtpServer="activeSmtpServer"
+          @onCommand="onCommandHandler"
           v-if="selectedSection.key=='send-emails'"></send-emails-section>
       <voucher-smtp-servers-section
           :voucher="record"
@@ -34,6 +35,7 @@
           v-if="selectedSection.key==='email-servers'"></voucher-smtp-servers-section>
       <email-template-section
           :voucher="record"
+          @onCommand="onCommandHandler"
           v-if="selectedSection.key==='email-template'"></email-template-section>
     </div>
   </div>
@@ -89,14 +91,14 @@ export default {
     activeSmtpServer () {
       const vm = this
       var result = null
-      // if (vm.smtpServers) {
-      //   for (var i = 0; i < vm.smtpServers.length; i++) {
-      //     if (vm.smtpServers[i].id === vm.record.smtp_server_id) {
-      //       result = vm.smtpServers[i]
-      //       break
-      //     }
-      //   }
-      // }
+      if (vm.smtpServers) {
+        for (var i = 0; i < vm.smtpServers.length; i++) {
+          if (vm.smtpServers[i].id === vm.record.smtp_server_id) {
+            result = vm.smtpServers[i]
+            break
+          }
+        }
+      }
       return result
     },
     smtpServers () {
@@ -143,7 +145,7 @@ export default {
   mounted () {
     const vm = this
     vm.loadAgentSmtpServers(() => {
-      vm.selectedSection = vm.sections[1]
+      vm.selectedSection = vm.sections[0]
     })
   }
 

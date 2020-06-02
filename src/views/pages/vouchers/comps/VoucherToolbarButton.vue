@@ -3,10 +3,11 @@
        :class="{'selected':selected}"
     @click="onClicked">
     <div class="toolbar-button-icon text-center">
-      <img :src="button.imgSrc">
+      <img :src="imgSrc">
     </div>
     <div class="toolbar-button-title text-center">
-      {{ button.caption }}
+      {{ caption }}
+      <div v-if="badge" class="badge badge-warning">{{ badge }}</div>
     </div>
   </div>
 </template>
@@ -14,9 +15,21 @@
 <script>
 export default {
   props: {
-    button: {
-      type: Object,
-      default: null
+    // button: {
+    //   type: Object,
+    //   default: null
+    // },
+    badge: {
+      type:  Number,
+      default: 0
+    },
+    caption: {
+      type:String,
+      default: '(Unspecified)'
+    },
+    imgSrc: {
+      type: String,
+      default: ''
     },
     selected: {
       type: Boolean,
