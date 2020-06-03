@@ -48,7 +48,9 @@
     "logout": "Logout",
     "deleteAll": "Delete All",
     "export": "Export",
-    "continue": "Continue"
+    "continue": "Continue",
+    "upload": "Upload",
+    "download": "Download"
   },
   "message": "hello i18n !!",
   "messages": {
@@ -73,11 +75,13 @@
     "some_errors_occurred_during_export": "Some errors occurred during export!",
     "goto_login_page": "Goto login page",
     "template_copied_successfully": "Template copied successfully.",
+    "email_template_copied_successfully": "Email template copied successfully.",
     "type_delete_to_force_deletion": "Type 'DELETE' to force deletion.",
     "this_agent_has_related_vouchers": "This agent has related voucher(s).",
     "all_codes_are_removed": "All codes are removed!",
     "all_participants_are_removed": "All participants are removed!",
     "template_missing": "Template Missing!",
+    "email_template_missing": "Email template Missing!",
     "error_occurred_maybe_invalid_format": "Error occurred. Maybe Invalid Format!",
     "deleted_successfully": "Deleted Successfully.",
     "code_exists_append_same_column_are_you_sure": "Code(s) exists. They may be removed completely if columns are different. Are you sure?",

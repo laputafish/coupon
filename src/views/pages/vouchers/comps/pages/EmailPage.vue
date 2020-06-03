@@ -2,12 +2,12 @@
 <div class="d-flex flex-row m-2">
   <div class="d-flex flex-column">
      <div class="section-icon-item"
-          @click="selectedSection=section"
+          @click="updateActiveSection(section)"
           v-for="section in sections"
           :key="section.key"
-          :class="{'active':selectedSection===section}">
+          :class="{'active':activeSection===section}">
         <div class="smtp-server-icon-container">
-          <img v-if="selectedSection===section"
+          <img v-if="activeSection===section"
                :src="section.iconSrc"/>
           <img v-else
                style="opacity:0.3;"
@@ -20,23 +20,23 @@
   </div>
   <div class="ml-3 rounded border flex-grow-1 d-flex flex-column justify-content-stretch overflow-hidden">
     <div class="p-0">
-      <h3 v-if="selectedSection" class="m-0 py-1 px-2 app-heading">{{ selectedSection.caption }}</h3>
+      <h3 v-if="activeSection" class="m-0 py-1 px-2 app-heading">{{ activeSection.caption }}</h3>
     </div>
-    <div v-if="selectedSection">
+    <div v-if="activeSection">
       <send-emails-section
           :voucher="record"
           :smtpServer="activeSmtpServer"
           @onCommand="onCommandHandler"
-          v-if="selectedSection.key=='send-emails'"></send-emails-section>
+          v-if="activeSection.key=='send-emails'"></send-emails-section>
       <voucher-smtp-servers-section
           :voucher="record"
           :smtpServers="smtpServers"
           @onCommand="onCommandHandler"
-          v-if="selectedSection.key==='email-servers'"></voucher-smtp-servers-section>
+          v-if="activeSection.key==='email-servers'"></voucher-smtp-servers-section>
       <email-template-section
           :voucher="record"
           @onCommand="onCommandHandler"
-          v-if="selectedSection.key==='email-template'"></email-template-section>
+          v-if="activeSection.key==='email-template'"></email-template-section>
     </div>
   </div>
 </div>
@@ -57,12 +57,16 @@ export default {
     record: {
       type: Object,
       default: null
+    },
+    activeSectionKey: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
       agentTag: '',
-      agentSmtpServer: [],
+      agentSmtpServers: [],
 
       sections: [
         {
@@ -83,11 +87,21 @@ export default {
           iconOffSrc: '/img/email_template_off.png',
           key: 'email-template'
         }
-      ],
-      selectedSection: null
+      ]
     }
   },
   computed: {
+    activeSection () {
+      const vm = this
+      var result = null
+      for (var i = 0; i < vm.sections.length; i++) {
+        if (vm.sections[i].key === vm.activeSectionKey) {
+          result = vm.sections[i]
+          break
+        }
+      }
+      return result
+    },
     activeSmtpServer () {
       const vm = this
       var result = null
@@ -113,6 +127,12 @@ export default {
     }
   },
   methods: {
+    updateActiveSection (section) {
+      this.$emit('onCommand', {
+        command: 'updateEmailPageSectionKey',
+        value: section.key
+      })
+    },
     onCommandHandler (payload) {
       console.log('onCommandHandler :: payload: ', payload)
       this.$emit('onCommand', payload)
@@ -129,10 +149,15 @@ export default {
             console.log('AUTH_GET.then :: response: ', response)
             vm.agentSmtpServers = response.smtpServers
             vm.agentTag = response.tag
+            console.log('AUTH_GET.then :: vm.agentSmtpServers: ', vm.agentSmtpServers)
             if (typeof callback === 'function') {
               callback()
             }
 
+          },
+          error => {
+            console.log('error: ')
+            console.log(error)
           }
         )
       } else {
@@ -145,7 +170,13 @@ export default {
   mounted () {
     const vm = this
     vm.loadAgentSmtpServers(() => {
-      vm.selectedSection = vm.sections[0]
+      console.log('mounted :: loadAgentSmtpServers.then => updateEmailPageSection')
+      if (vm.activeSectionKey==='') {
+        vm.$emit('onCommand', {
+          command: 'updateEmailPageSectionKey',
+          value: vm.sections[0].key
+        })
+      }
     })
   }
 

@@ -13,11 +13,11 @@
           <i class="fas fa-fw fa-times"></i>
           Clear Form
         </button>
-        <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start no-wrap"
+        <button class="btn btn-warning min-width-100 ml-1 align-self-start no-wrap"
                 style="white-space: nowrap;"
                 @click="exportForm">
           <i class="fas fa-fw fa-download"></i>
-          Export
+          Download
         </button>
         <xls-file-upload
             inputId="uploadQuestions"
@@ -25,7 +25,7 @@
             class="align-self-start ml-1"
             @onUploading="onUploadingHandler"
             @onUploaded="onUploadedHandler"></xls-file-upload>
-        <button class="btn btn-outline-primary min-width-100 ml-1 align-self-start no-wrap"
+        <button class="btn btn-success min-width-100 ml-1 align-self-start no-wrap"
                 style="white-space: nowrap;"
                 @click="previewForm">
           <i class="fas fa-fw fa-mask"></i>

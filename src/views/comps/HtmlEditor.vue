@@ -21,7 +21,7 @@
 
 <script>
 import tinymce from 'vue-tinymce-editor'
-import imageSelectDialog from '../dialogs/ImageSelectDialog'
+import imageSelectDialog from '../pages/vouchers/dialogs/ImageSelectDialog'
 
 export default {
   components: {
@@ -103,8 +103,6 @@ export default {
       'numlist bullist outdent indent | ' +
       'removeformat | ' +
       'fullscreen',
-
-      tinyMCEInFullScreen: false
     }
   },
   model: {
@@ -122,6 +120,23 @@ export default {
     }
   },
   methods: {
+    clearContent () {
+      const vm = this
+      console.log('HtmlEditor :: clearContent')
+      tinyMCE.get(vm.id).setContent('')
+    },
+    insertTag (tag) {
+      const vm = this
+      tinyMCE.get(vm.id).execCommand('mceInsertContent', false, '{' + tag + '}')
+    },
+
+    showCopyTemplateDialog () {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'showCopyTemplateDialog'
+      })
+    },
+
     onCommandHandler (payload) {
       alert('onCommandHandler')
     },
@@ -130,7 +145,10 @@ export default {
       tinyMCE.get(vm.id).setContent(vm.content ? vm.content : '')
       tinyMCE.get(vm.id).save()
       tinyMCE.get(vm.id).on('fullscreenStateChanged', function (e) {
-        vm.tinyMCEInFullScreen = e.state
+        vm.$emit('onCommand', {
+          command: 'changeEditorFullscreenState',
+          isFullScreen: e.state
+        })
       })
 
       console.log('onEditorInit => vm.addTinyMCEButtonEvents')

@@ -15,7 +15,7 @@
             <!--</li>-->
           <!--</ul>-->
         <!--</div>-->
-        <template-editor
+        <template-editor-panel
             id="customTemplateEditor"
             @onCommand="onCommandHandler"
             :customTemplate="templates[selectedIndex]"
@@ -44,7 +44,7 @@
           <template v-slot:sidePanel>
             <h1>Side Panel</h1>
           </template>
-        </template-editor>
+        </template-editor-panel>
         <!--<div class="flex-grow-0">-->
           <!--<h1>Side Panel</h1>-->
         <!--</div>-->
@@ -55,11 +55,11 @@
 </template>
 
 <script>
-import templateEditor from '../TemplateEditor'
+import templateEditorPanel from '@/views/comps/TemplateEditorPanel'
 
 export default {
   components: {
-    templateEditor
+    templateEditorPanel
   },
   data () {
     return {

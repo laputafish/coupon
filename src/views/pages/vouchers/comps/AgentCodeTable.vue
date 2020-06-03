@@ -24,7 +24,7 @@
               class="btn btn-warning min-width-100 mr-1"
               @click="exportExcel()">
         <i class="fas fa-download"></i>
-        <span class="ml-2">{{ $t('buttons.export') }}</span>
+        <span class="ml-2">{{ $t('buttons.download') }}</span>
       </button>
       <xls-file-upload
           inputId="uploadCodes"

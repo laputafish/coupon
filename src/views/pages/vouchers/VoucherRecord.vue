@@ -133,7 +133,7 @@
     <tickets-page
         v-if="record && activePage==='tickets'"
         ref="ticketsPage"
-        :record="record"
+        :voucher="record"
         @onCommand="onCommandHandler"></tickets-page>
 
     <sharing-page
@@ -163,6 +163,7 @@
     <email-page
         v-if="record && activePage==='email'"
         ref="emailPage"
+        :activeSectionKey="emailPageSectionKey"
         :record="record"
         @onCommand="onCommandHandler"></email-page>
 
@@ -378,6 +379,7 @@
         :title="$t('vouchers.copyTemplateFrom')"
         :initialAgentId="record ? record.agent_id : 0"
         v-model="showingCopyTemplateDialog"
+        okCommand="copySelectedTemplate"
         @onCommand="onCommandHandler"></voucher-select-dialog>
     <image-select-dialog
         :title="$t('vouchers.images')"
@@ -396,7 +398,7 @@
   import titleRow from '@/views/comps/TitleRow'
 
   import fileUpload from 'vue-upload-component'
-  import templateEditor from './comps/TemplateEditor'
+  import templateEditor from '../../comps/TemplateEditor'
   import toggleBlackWhite from './comps/ToggleBlackWhite'
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
@@ -489,6 +491,7 @@
     },
     data () {
       return {
+        emailPageSectionKey: '',
         apiPath: '/vouchers',
         titleField: 'description',
         record: null,
@@ -510,6 +513,7 @@
         agentVouchers: [],
 
         showingCopyTemplateDialog: false,
+        copyTemplateFor: 'template',
         showingImageSelectDialog: false,
 
         // sharing Image properties
@@ -940,16 +944,31 @@
         const vm = this
         // console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
         vm.showingCopyTemplateDialog = false
-        if (vm.record.template && vm.record.template.trim() !== '') {
-          vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
-            () => {
-              vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
-              vm.$toaster.success(vm.$t('messages.template_copied'))
-            }
-          )
+        if (vm.copyTemplateFor === 'template') {
+          if (vm.record.template && vm.record.template.trim() !== '') {
+            vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
+              () => {
+                vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
+                vm.$toaster.success(vm.$t('messages.template_copied'))
+              }
+            )
+          } else {
+            vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
+            vm.$toaster.success(vm.$t('messages.template_copied_successfully'))
+          }
         } else {
-          vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
-          vm.$toaster.success(vm.$t('messages.template_copied_successfully'))
+          if (vm.record.email_template && vm.record.email_template.trim() !== '') {
+            vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
+              () => {
+                vm.record.email_template = vm.getVoucherTemplate(selectedVoucher.id)
+                vm.$toaster.success(vm.$t('messages.email_template_copied'))
+              }
+            )
+          } else {
+            vm.record.email_template = vm.getVoucherTemplate(selectedVoucher.id)
+            vm.$toaster.success(vm.$t('messages.email_template_copied_successfully'))
+          }
+          
         }
       },
       getVoucherTemplate (voucherId) {
@@ -968,7 +987,7 @@
           }
         )
       },
-      insertKey (key) {
+      insertTag (key) {
         tinyMCE.get('yoovEditor').execCommand('mceInsertContent', false, '{' + key + '}');
       },
       onEditorInit () {
@@ -1235,9 +1254,15 @@
       onCommandHandler (payload) {
         const vm = this
         var customForm = null
-        // console.log('VoucherRecord :: onCommandHandler :; payload: ', payload)
-        // console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
+        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
+          case 'copyTemplate':
+            vm.showingCopyTemplateDialog = true
+            vm.copyTemplateFor = payload.contentType
+            break
+          case 'updateEmailPageSectionKey':
+            vm.emailPageSectionKey = payload.value
+            break
           // case 'resetStatus':
           //   vm.resetCodeStatus(payload.row)
           //   break
@@ -1320,15 +1345,14 @@
             customForm = vm.getCustomFormByKey(formKey)
             customForm.name = payload.fieldValue
             break
+          case 'showImageSelectDialog':
+            vm.imageScope = payload.imageScope
+            vm.showingImageSelectDialog = true
+            break
           case 'onImageSelected':
             switch (payload.imageScope) {
               case 'tinymce':
-                const editor = tinyMCE.get('yoovEditor')
-                // console.log('onImageSelected :: tinymce :: vm.$store.getters.appHost = ' + vm.$store.getters.appHost)
-                const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
-                // console.log('onImageSelected :: url = ' + url)
-                editor.insertContent('<img class="content-img" src="' + url + '"/>');
-                vm.$toaster.success('Image Added')
+                vm.$refs.ticketsPage.insertImage(payload.imageId)
                 break
               case 'inputObj':
                 if (vm.selectedFormConfigs && vm.selectedInputObjIndex >= 0) {
@@ -1342,7 +1366,7 @@
           case 'showCopyTemplateDialog':
             vm.showingCopyTemplateDialog = true
             break;
-          case 'copyTemplate':
+          case 'copySelectedTemplate':
             vm.copyTemplate(payload.voucher)
             break
           case 'exportParticipants':
@@ -1414,6 +1438,9 @@
             vm.record[fieldName] = fieldValue
             if (fieldName === 'smtp_server_id') {
               vm.save()
+            }
+            if (typeof payload.callback === 'function') {
+              payload.callback()
             }
             break
 

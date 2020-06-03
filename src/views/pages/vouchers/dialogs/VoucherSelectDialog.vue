@@ -87,6 +87,10 @@
       initialAgentId: {
         type: Number,
         default: 0
+      },
+      okCommand: {
+        type: String,
+        default: ''
       }
     },
     computed: {
@@ -132,7 +136,7 @@
           case 'ok':
             if (vm.selectedVoucher) {
               vm.$emit('onCommand', {
-                command: 'copyTemplate',
+                command: vm.okCommand,
                 voucher: vm.selectedVoucher
               })
             }

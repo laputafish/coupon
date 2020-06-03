@@ -1,10 +1,11 @@
 <template>
       <file-upload
           :input-id="inputId"
-          extensions="xlsx"
-          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          :extensions="extensions"
+          :accept="accept"
           name="file"
-          class="btn btn-primary min-width-100"
+          class="btn min-width-100"
+          :class="'btn-'+variant"
           :post-action="postAction"
           :drop="!edit"
           :data="postData"
@@ -38,7 +39,7 @@ export default {
     },
     title: {
       type: String,
-      default: 'Import'
+      default: 'Upload'
     },
     iconClass: {
       type: String,
@@ -53,15 +54,44 @@ export default {
     uploadUrl: {
       type: String,
       default: ''
+    },
+    fileType: {
+      type: String,
+      default: 'excel'
+    },
+    variant: {
+      type: String,
+      default: 'primary'
     }
   },
   data () {
     return {
       edit: false,
-      files: []
+      files: [],
+
     }
   },
   computed: {
+    filterInfo () {
+      const vm = this
+      switch (vm.fileType) {
+        case 'excel':
+          return {
+            extensions: 'xlsx',
+            accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          }
+        case 'zip':
+          return {
+            extensions: 'zip',
+            accept: 'application/zip'
+          }
+        case 'image':
+          return {
+            extensions: 'png',
+            accept: 'image/png'
+          }
+      }
+    },
     authHeaders () {
       const vm = this
       return {
@@ -75,12 +105,29 @@ export default {
   },
   methods: {
     inputFilter (newFile, oldFile, prevent) {
+      const vm = this
       // console.log('inputFilter')
       if (newFile && !oldFile) {
         // Filter non-image file
-        if (!/\.(xlsx)$/i.test(newFile.name)) {
-          alert('you file is not excel file.')
-          return prevent()
+        switch (vm.fileType) {
+          case 'excel':
+            if (!/\.(xlsx)$/i.test(newFile.name)) {
+              alert('you file is not ' + vm.fileType + ' file.')
+              return prevent()
+            }
+            break
+          case 'zip':
+            if (!/\.(zip)$/i.test(newFile.name)) {
+              alert('you file is not ' + vm.fileType + ' file.')
+              return prevent()
+            }
+            break
+          case 'image':
+            if (!/\.(png)$/i.test(newFile.name)) {
+              alert('you file is not ' + vm.fileType + ' file.')
+              return prevent()
+            }
+            break
         }
       }
     },
@@ -106,9 +153,7 @@ export default {
 
     uploadFile () {
       const vm = this
-      console.log('XlsFileUpload :: uploadFile')
       vm.$nextTick(function () {
-        console.log('XlsFileUpload :: nextTick')
         vm.$emit('onUploading')
         vm.$refs[vm.inputId].active = true
       })
