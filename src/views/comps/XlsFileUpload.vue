@@ -1,8 +1,8 @@
 <template>
       <file-upload
           :input-id="inputId"
-          :extensions="extensions"
-          :accept="accept"
+          :extensions="filterInfo.extensions"
+          :accept="filterInfo.accept"
           name="file"
           class="btn min-width-100"
           :class="'btn-'+variant"
@@ -67,8 +67,7 @@ export default {
   data () {
     return {
       edit: false,
-      files: [],
-
+      files: []
     }
   },
   computed: {

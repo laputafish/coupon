@@ -13,13 +13,13 @@
         <i class="fas fa-copy mr-1"></i>Copy From ...
       </button>
       <xls-file-upload
-          inputId="uploadCodes"
-          uploadUrl="/agent_codes/upload"
+          inputId="uploadTemplate"
+          uploadUrl="/html_file/upload_zip"
           fileType="zip"
-          :postData="{id: voucherId}"
+          :postData="{}"
           @onUploading="onUploadingHandler"
-          @onUploaded="onUploadedHandler"></xls-file-upload>
-      </button>
+          @onUploaded="onUploadedHandler">
+      </xls-file-upload>
       <button type="button"
               class="btn btn-success"
               @click="showPreview">
@@ -97,6 +97,14 @@ export default {
     }
   },
   methods: {
+    onUploadingHandler () {
+
+    },
+
+    onUploadedHandler () {
+
+    },
+
     copyFile () {
       const vm = this
       vm.$emit('onCommand', {
