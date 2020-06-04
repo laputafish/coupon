@@ -1,5 +1,41 @@
 <template>
   <div class="pl-2">
+    <div class="row form-inline">
+      <div class="col-sm-6">
+        <div class="form-group my-1">
+          <label for="subject" class="mr-2">Subject</label>
+          <input type="text" class="flex-grow-1 form-control" :value="voucher.email_subject"
+            @input="$event=>updateValue('email_subject', $event.target.value)"/>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group my-1">
+          <label for="cc" class="mr-2">cc</label>
+          <input type="text" class="flex-grow-1 form-control" :value="voucher.email_cc"
+                 @input="$event=>updateValue('email_cc', $event.target.value)"/>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group my-1">
+          <label for="bcc" class="mr-2">bcc</label>
+          <input type="text" class="flex-grow-1 form-control" :value="voucher.email_bcc"
+                 @input="$event=>updateValue('email_bcc', $event.target.value)"/>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group my-1">
+          <label for="testEmail" class="mr-2">Email Testing</label>
+          <div class="input-group">
+            <input type="mail" class="flex-grow-1 form-control" v-model="testEmail"/>
+            <button class="input-group-append"
+              @click="sendTestEmail">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="my-1"/>
     <template-editor
       ref="emailTemplateEditor"
       id="emailTemplateEditor"
@@ -18,8 +54,17 @@ export default {
   components: {
     templateEditor
   },
+  data () {
+    return {
+      testEmail: ''
+    }
+  },
   props: {
     voucher: {
+      type: Object,
+      default: null
+    },
+    smtpServer: {
       type: Object,
       default: null
     }
@@ -43,6 +88,32 @@ export default {
     }
   },
   methods: {
+    sendTestEmail () {
+      const vm = this
+      if (!vm.smtpServer) {
+        vm.$toaster.warning('SMTP server not defined')
+        return
+      }
+      if (!vm.testEmail) {
+        vm.$toaster.warning('Email not defined!')
+        return
+      }
+      const postData = {
+        urlCommand: '/email_templates/test',
+        data: {
+          template: vm.voucher.email_template,
+          email: vm.testEmail,
+          smtpServer: vm.smtpServer,
+          tagGroups: vm.templateTagGroups
+        }
+      }
+      vm.$store.dispatch('AUTH_POST', data).then(
+        response => {
+          console.log('sendTestEmail: response: ', response)
+        }
+      )
+    },
+
     onTemplateTagGroupsReady (tagGroups) {
       const vm = this
       console.log('EmailTemplateSection :: onTemplateTagGroupsReady :: tagGroup: ', tagGroups)
@@ -64,9 +135,21 @@ export default {
     //   })
     // },
 
+    updateValue (fieldName, fieldValue) {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'updateField',
+        fieldName: fieldName,
+        fieldValue: fieldValue
+      })
+    },
+
     onCommandHandler (payload) {
       const vm = this
       switch (payload.command) {
+        case 'previewTemplate':
+          vm.previewTemplate()
+          break
         case 'updateTemplateContent':
           vm.$emit('onCommand', {
             command: 'updateField',
@@ -92,6 +175,23 @@ export default {
         default:
           vm.$emit('onCommand', payload)
       }
+    },
+    previewTemplate () {
+      const vm = this
+      const postData = {
+        urlCommand: '/email_template/create_preview',
+        data: {
+          content: vm.voucher.email_template
+        }
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        (result) => {
+          const key = result.key
+          const url = vm.$store.getters.appHost+ '/m/preview/_' + key
+          window.open(url, '_blank')
+        }
+      )
+      voucher.email_template
     }
   }
 }

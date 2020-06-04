@@ -12,7 +12,14 @@
               @click="copyFile">
         <i class="fas fa-copy mr-1"></i>Copy From ...
       </button>
+      <button type="button"
+              class="btn btn-primary"
+              style="border-bottom-right-radius: 0;border-top-right-radius:0;border-right: 1px darkgray solid;"
+              @click="gotoBeeFreeIo">
+      <i class="fas fa-cubes mr-1"></i>Bee</button>
+
       <xls-file-upload
+          style="margin-left:0;border-top-left-radius:0;border-bottom-left-radius:0;"
           inputId="uploadTemplate"
           uploadUrl="/html_file/upload_zip"
           fileType="zip"
@@ -98,11 +105,27 @@ export default {
   },
   methods: {
     onUploadingHandler () {
-
     },
 
-    onUploadedHandler () {
+    onUploadedHandler (result) {
+      const vm = this
+      if (vm.content.trim()==='') {
+        vm.setContent(result.content)
+      } else {
+        vm.$dialog.confirm(vm.$t('messages.existingContentWillBeCleared')).then(
+          () => {
+            vm.setContent(result.content)
+          }
+        )
+      }
+    },
 
+    setContent (content) {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'updateTemplateContent',
+        fieldValue: content
+      })
     },
 
     copyFile () {
@@ -119,7 +142,30 @@ export default {
     },
 
     showPreview () {
+      const vm = this
+      // vm.$emit('onCommand', {
+      //   command: 'previewTemplate'
+      // })
+      vm.previewTemplate()
+    },
 
+    previewTemplate () {
+      const vm = this
+      const postData = {
+        urlCommand: '/templates/create_preview',
+        data: {
+          content: vm.content,
+          tagListGroups: vm.templateTagGroups
+        }
+      }
+
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        (result) => {
+          const key = result.key
+          const url = vm.$store.getters.appHost+ '/t/preview/_' + key
+          window.open(url, '_blank')
+        }
+      )
     },
 
     updateContent (content) {
@@ -175,6 +221,10 @@ export default {
         default:
           vm.$emit('onCommand', payload)
       }
+    },
+
+    gotoBeeFreeIo () {
+      window.open('https://beefree.io/templates/', '_blank');
     }
   }
 }

@@ -37,7 +37,7 @@
 
         <div class="field-item">
           <div class="d-inline-block mr-3 field-label">{{$t('general.status')}}</div>
-          <div class="d-inline-block mr-3 field-content">{{record.status}}</div>
+          <div class="d-inline-block mr-3 field-content min-width-50">{{record.status}}</div>
         </div>
 
         <div class="field-item">
@@ -55,10 +55,15 @@
           </div>
           <div v-else class="d-inline-block mr-3 field-content min-width-50 text-center">&nbsp;</div>
         </div>
+
+        <div class="field-item">
+          <div class="d-inline-block mr-3 field-label">{{ $t('general.type')}}</div>
+          <div class="d-inline-block mr-3 field-content min-width-50 text-center">{{ ucfirst(record.voucher_type) }}</div>
+        </div>
       </div>
     </div>
 
-    <div class="voucher-toolbar">
+    <div class="voucher-toolbar mb-2">
       <!-- Info -->
       <voucher-toolbar-button class="toolbar-button-wrapper"
                               caption="Info"
@@ -1989,6 +1994,7 @@
     border-radius: 0.3rem;
     vertical-align: top;
     height: 20px;
+    min-width: 50px;
     /*min-height: 20px;*/
   }
 

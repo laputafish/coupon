@@ -86,7 +86,8 @@
     "deleted_successfully": "Deleted Successfully.",
     "code_exists_append_same_column_are_you_sure": "Code(s) exists. They may be removed completely if columns are different. Are you sure?",
     "reset_status": "After status is reset, the time of sending will be lost. Are you sure?",
-    "code_status_has_been_reset": "Code status reset successfully."
+    "code_status_has_been_reset": "Code status reset successfully.",
+    "existingContentWillBeCleared": "Existing content will be removed. Are you sure?"
   },
   "menu": {
     "dashboard": "Dashboard",

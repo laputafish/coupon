@@ -149,3 +149,21 @@ div[name=Datatable] .table > thead > th {
 .toolbar .btn {
   margin-left: 2px;
 }
+
+.input-group button:active,
+.input-group button:focused {
+  outline: none;
+}
+
+.input-group button:hover {
+  background-color: darkgray;
+}
+
+.input-group button {
+  border: solid 1px lightgray;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  outline: none;
+  min-width: 50px;
+}

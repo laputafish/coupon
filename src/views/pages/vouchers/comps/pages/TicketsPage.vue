@@ -39,6 +39,9 @@ export default {
     onCommandHandler (payload) {
       const vm = this
       switch (payload.command) {
+        // case 'previewTemplate':
+        //   vm.previewTemplate()
+        //   break
         case 'updateTemplateContent':
           vm.$emit('onCommand', {
             command: 'updateField',
@@ -61,6 +64,24 @@ export default {
           vm.$emit('onCommand', payload)
       }
     }
+    // ,
+    // previewTemplate () {
+    //   const vm = this
+    //   const postData = {
+    //     urlCommand: '/voucher_template/create_preview',
+    //     data: {
+    //       content: vm.voucher.email_template
+    //     }
+    //   }
+    //   vm.$store.dispatch('AUTH_POST', postData).then(
+    //     (result) => {
+    //       const key = result.key
+    //       const url = vm.$store.getters.appHost+ '/m/preview/_' + key
+    //       window.open(url, '_blank')
+    //     }
+    //   )
+    //   voucher.email_template
+    // }
   }
 }
 </script>

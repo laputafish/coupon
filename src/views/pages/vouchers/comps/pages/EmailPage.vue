@@ -33,8 +33,13 @@
           :smtpServers="smtpServers"
           @onCommand="onCommandHandler"
           v-if="activeSection.key==='email-servers'"></voucher-smtp-servers-section>
+      <email-basic-info-section
+          :voucher="record"
+          @onCommand="onCommandHandler"
+          v-if="activeSection.key==='email-basic-info'"></email-basic-info-section>
       <email-template-section
           :voucher="record"
+          :smtpServer="activeSmtpServer"
           @onCommand="onCommandHandler"
           v-if="activeSection.key==='email-template'"></email-template-section>
     </div>
@@ -81,6 +86,12 @@ export default {
           iconOffSrc: '/img/email-servers_off.png',
           key: 'email-servers'
         },
+        // {
+        //   caption: 'Email Basic Info',
+        //   iconSrc: '/img/email-basic-info.png',
+        //   iconOffSrc: '/img/email-basic-info_off.png',
+        //   key: 'email-basic-info'
+        // },
         {
           caption: 'Email Template',
           iconSrc: '/img/email_template.png',
@@ -196,6 +207,7 @@ export default {
       width: 180px;
       height: 130px;
       border-radius: 0.5rem;
+      cursor: pointer;
     }
 
     .smtp-server-icon-container {
