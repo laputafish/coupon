@@ -22,16 +22,19 @@
                  @input="$event=>updateValue('email_bcc', $event.target.value)"/>
         </div>
       </div>
-      <div class="col-sm-6">
+      <div class="col-sm-12">
         <div class="form-group my-1">
           <label for="testEmail" class="mr-2">Email Testing</label>
           <div class="input-group">
             <input type="mail" class="flex-grow-1 form-control" v-model="testEmail"/>
             <button class="input-group-append"
               @click="sendTestEmail">
-              <i class="fas fa-paper-plane"></i>
+              <font-awesome-icon v-if="sendingTestEmail" icon="spinner" class="fa-spin"></font-awesome-icon>
+              <i v-else class="fas fa-paper-plane"></i>
             </button>
           </div>
+          <div v-if="sendingTestEmailResult" class="ml-3"
+            :class="{'text-danger': !sendingTestEmailResult['status']}">{{ sendingTestEmailResult['message'] }}</div>
         </div>
       </div>
     </div>
@@ -56,6 +59,8 @@ export default {
   },
   data () {
     return {
+      sendingTestEmail: false,
+      sendingTestEmailResult: null,
       testEmail: ''
     }
   },
@@ -98,18 +103,36 @@ export default {
         vm.$toaster.warning('Email not defined!')
         return
       }
+      vm.sendingTestEmail = true
       const postData = {
         urlCommand: '/email_templates/test',
         data: {
           template: vm.voucher.email_template,
           email: vm.testEmail,
           smtpServer: vm.smtpServer,
-          tagGroups: vm.templateTagGroups
+          tagGroups: vm.templateTagGroups,
+          subject: vm.voucher.email_subject,
+          cc: vm.voucher.email_cc,
+          bcc: vm.voucher.email_bcc
         }
       }
-      vm.$store.dispatch('AUTH_POST', data).then(
+      vm.$store.dispatch('AUTH_POST', postData).then(
         response => {
           console.log('sendTestEmail: response: ', response)
+          vm.sendingTestEmail = false
+          vm.$dialog.alert('Test email sent successfully.')
+          // vm.sendingTestEmailResult = {
+          //   status: true,
+          //   message: 'Test email sent successfully.'
+          // }
+        },
+        error => {
+          vm.sendingTestEmail = false
+          vm.$dialog.alert(error.message)
+          // vm.sendingTestEmailResult = {
+          //   status: false,
+          //   message: error.message
+          // }
         }
       )
     },
