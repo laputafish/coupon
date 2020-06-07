@@ -496,6 +496,7 @@
     },
     data () {
       return {
+        pusherChannel: null,
         emailPageSectionKey: '',
         apiPath: '/vouchers',
         titleField: 'description',
@@ -616,6 +617,9 @@
     },
 
     computed: {
+      pusher () {
+        return this.$store.getters.pusher
+      },
       agentName () {
         const vm = this
         var result = ''
@@ -733,6 +737,12 @@
       }
     },
     watch: {
+      pusher: function (newValue) {
+        const vm = this
+        if (newValue) {
+          vm.initPusherChannel()
+        }
+      },
       recordId: function (newValue) {
         const vm = this
         // console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
@@ -759,7 +769,25 @@
 
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
+    created () {
+      const vm = this
+    },
     methods: {
+      onVoucherStatusUpdated (data) {
+
+      },
+      initPusherChannel () {
+        const vm = this
+        if (vm.pusher) {
+          if (vm.pusherChannel) {
+            vm.pusherChannel.unbind_all()
+          }
+          vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
+          vm.pusherChannel.bind('VoucherStatusUpdated', function(data) {
+            vm.onVoucherStatusUpdated(data)
+          })
+        }
+      },
       onPageSelected (pageName) {
         this.activePage = pageName
       },

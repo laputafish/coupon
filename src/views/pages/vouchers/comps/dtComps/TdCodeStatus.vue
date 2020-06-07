@@ -35,7 +35,7 @@
         statusOptions: [
           {value: 'pending', label: 'Pending', variant: 'info'},
           {value: 'processing', label: 'Processing', variant: 'warning'},
-          {value: 'ready', label: 'Ready', variant: 'info'},
+          {value: 'ready', label: 'Ready to Send', variant: 'primary'},
           {value: 'completed', label: 'Completed', variant: 'success'},
           {value: 'fails', label: 'Fails', variant: 'danger'}
         ]

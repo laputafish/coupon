@@ -40,6 +40,7 @@
     </div>
     <hr class="my-1"/>
     <template-editor
+      :voucher="voucher"
       ref="emailTemplateEditor"
       id="emailTemplateEditor"
       :content="voucher.email_template"
@@ -79,7 +80,7 @@ export default {
     participantTags () {
       const vm = this
       var result = []
-      const participantConfigs = vm.voucher.participant_configs
+      // const participantConfigs = vm.voucher.participant_configs
       if (vm.voucher && vm.voucher.participant_configs) {
         // console.log('participantKeys :: vm.voucher.participant_conifgs: ',
         //   vm.voucher.participant_configs)
@@ -105,7 +106,7 @@ export default {
       }
       vm.sendingTestEmail = true
       const postData = {
-        urlCommand: '/email_templates/test',
+        urlCommand: '/email_templates/send_test_email',
         data: {
           template: vm.voucher.email_template,
           email: vm.testEmail,
@@ -170,9 +171,9 @@ export default {
     onCommandHandler (payload) {
       const vm = this
       switch (payload.command) {
-        case 'previewTemplate':
-          vm.previewTemplate()
-          break
+        // case 'previewTemplate':
+        //   vm.previewTemplate()
+        //   break
         case 'updateTemplateContent':
           vm.$emit('onCommand', {
             command: 'updateField',
@@ -198,24 +199,25 @@ export default {
         default:
           vm.$emit('onCommand', payload)
       }
-    },
-    previewTemplate () {
-      const vm = this
-      const postData = {
-        urlCommand: '/email_template/create_preview',
-        data: {
-          content: vm.voucher.email_template
-        }
-      }
-      vm.$store.dispatch('AUTH_POST', postData).then(
-        (result) => {
-          const key = result.key
-          const url = vm.$store.getters.appHost+ '/m/preview/_' + key
-          window.open(url, '_blank')
-        }
-      )
-      voucher.email_template
     }
+    // ,
+    // previewTemplate () {
+    //   const vm = this
+    //   const postData = {
+    //     urlCommand: '/email_template/create_preview',
+    //     data: {
+    //       content: vm.voucher.email_template
+    //     }
+    //   }
+    //   vm.$store.dispatch('AUTH_POST', postData).then(
+    //     (result) => {
+    //       const key = result.key
+    //       const url = vm.$store.getters.appHost+ '/m/preview/_' + key
+    //       window.open(url, '_blank')
+    //     }
+    //   )
+    //   voucher.email_template
+    // }
   }
 }
 </script>

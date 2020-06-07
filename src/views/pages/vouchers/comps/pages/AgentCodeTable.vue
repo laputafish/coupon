@@ -76,13 +76,12 @@
 <script>
 import Vue from 'vue'
 import dtCommon from '@/views/comps/datatable'
-import dtComps from './dtComps'
+import dtComps from '../dtComps/index'
 import xlsFileUpload from '@/views/comps/XlsFileUpload'
-import searchField from './comps/SearchField'
-import codeImportDialog from '../dialogs/CodeImportDialog'
-import deleteAllCodesDialog from '../dialogs/DeleteAllCodesDialog'
-
-// import helpers from '@/helpers'
+import searchField from '../comps/SearchField'
+import codeImportDialog from '../../dialogs/CodeImportDialog'
+import deleteAllCodesDialog from '../../dialogs/DeleteAllCodesDialog'
+import Pusher from 'pusher-js'
 
 export default {
   components: {
@@ -97,6 +96,7 @@ export default {
   },
   data () {
     return {
+      channel: null,
       showingDeleteAllCodesDialog: false,
       showingCodeImportDialog: false,
       importedFileKey: '',
@@ -117,7 +117,7 @@ export default {
         page: 0
       },
       xprops: {
-        buttons: ['view', 'delete', 'update'],
+        buttons: ['view', 'delete', 'update', 'email'],
         // buttons: ['edit','view','delete'],
         eventbus: new Vue(),
         actionButtonSize: 'xs'
@@ -178,6 +178,9 @@ export default {
     }
   },
   computed: {
+    pusher () {
+      return this.$store.getters.pusher
+    },
     voucherId () {
       const vm = this
       var result = 0
@@ -206,6 +209,12 @@ export default {
     }
   },
   watch: {
+    pusher: function (newValue) {
+      const vm = this
+      if (newValue) {
+        vm.initPusherChannel()
+      }
+    },
     files: {
       handler: function () {
         const vm = this
@@ -287,12 +296,34 @@ export default {
   created () {
     const vm = this
     vm.xprops.eventbus.$on('onRowCommand', vm.onRowCommandHandler)
+    // vm.channelVoucherCode = vm.pusher.subscribe('voucher.code.channel')
+    // vm.channelVoucherCode.bind('VoucherCodeStatusUpdated', function (data) {
+    //   console.log('VoucherCodeStatusUpdated: data: ', data)
+    // })
+
   },
   destroyed () {
     const vm = this
     vm.xprops.eventbus.$off('onRowCommand')
+    vm.channelVoucherCode.unbind_all()
+    vm.channelVoucher.unbind_all()
   },
   methods: {
+    initPusherChannel () {
+      const vm = this
+      if (vm.pusher) {
+        if (vm.pusherChannel) {
+          vm.pusherChannel.unbind_all()
+        }
+        vm.pusherChannel = vm.pusher.subscribe('voucher.code.channel')
+        vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
+          vm.onVoucherCodeStatusUpdated(data)
+        })
+      }
+    },
+    onVoucherCodeStatusUpdated (data) {
+      console.log('onVoucherCodeStatusUpdated : data: ', data)
+    },
     onCommandHandler (payload) {
       const vm = this
       // console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
@@ -462,9 +493,26 @@ export default {
         // console.log('AUTH_GET :: response: ', response)
         vm.total = response.total
         vm.data = vm.parseCodeInfoData(response.data)
+        vm.configRowButtons(vm.data)
         vm.$forceUpdate()
         vm.loading = false
       })
+    },
+
+    configRowButtons (data) {
+      const vm = this
+      for(var i = 0; i < data.length; i++) {
+        const row = data[i]
+        // var buttons = JSON.parse(JSON.stringify(vm.xprops.buttons))
+        var disabled = []
+        if (row.locked) {
+          disabled.push('delete')
+        }
+        if (row.participant_email.trim()===''||row.status==='fails'||row.status==='completed') {
+          disabled.push('email')
+        }
+        data[i]['buttons'] = vm.xprops.buttons.filter(item => disabled.indexOf(item)===-1)
+      }
     },
 
     row2CodeInfo (row) {
@@ -521,6 +569,9 @@ export default {
           //   command: 'resetStatus',
           //   row: payload.row
           // })
+        case 'email':
+          vm.setVoucherCodeStatus(payload.row, 'ready')
+          break
         case 'updateField':
           // console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
           // vm.$emit('onCommand', {
@@ -539,6 +590,38 @@ export default {
           break
       }
     },
+    setVoucherCodeStatus(row, status) {
+      const vm = this
+      const postData = {
+        urlCommand: '/vouchers/' + vm.record.id + '/codes/' + row.id + '/set_status',
+        data: {
+          status: status
+        }
+
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        response => {
+          console.log('sendEmail : response: ', response)
+          if (response.message) {
+            vm.$toaster.info(response.message)
+          }
+          const voucherCode = response.voucherCode
+          console.log('setVoucherCodeStatus :: data: ', vm.data)
+          console.log('response.voucherCode = ', voucherCode)
+          var dataVoucherCode = vm.data.find(item => item.id===voucherCode.id)
+          if (dataVoucherCode) {
+            dataVoucherCode.status = voucherCode.status
+            dataVoucherCode.error_message = voucherCode.error_message
+            dataVoucherCode.sent_on = voucherCode.sent_on
+          }
+          // vm.reloadCodeList()
+        },
+        error => {
+          vm.$toaster.error(error.message)
+        }
+      )
+    },
+
     setCodeFieldValue (row, fieldName, fieldValue) {
       const vm = this
       for (let i = 0; i < vm.data.length; i++) {

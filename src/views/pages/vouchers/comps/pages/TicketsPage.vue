@@ -2,6 +2,7 @@
   <div class="row">
     <div class="col-12">
       <template-editor
+          :voucher="voucher"
         ref="templateEditor"
         id="templateEditor"
         :content="voucher.template"

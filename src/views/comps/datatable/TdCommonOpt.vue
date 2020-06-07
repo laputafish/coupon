@@ -3,11 +3,12 @@
     :class="customClass">
     <button v-for="(btn,index) in buttons"
             :key="index"
+            :disabled="row.buttons && row.buttons.indexOf(btn.command)===-1"
             class="btn"
             :class="btn.btnClass"
             @click="processCommand(btn.command, btn.needConfirm)">
-      <i v-if="processing(btn.command)" class="fa fa-fw fa-spinner fa-spin"></i>
-      <i v-else class="fa-fw" :class="btn.iconClass"></i>
+      <i v-if="processing(btn.command)" class="fas fa-fw fa-spinner fa-spin"></i>
+      <i v-else class="fas fa-fw" :class="btn.iconClass"></i>
     </button>
   </div>
 </template>
@@ -88,6 +89,12 @@ export default {
               iconClass: 'fas fa-download',
               btnClass: 'btn-info',
               command: 'download'
+            })
+          case 'email':
+            vm.buttons.push({
+              iconClass: 'fas fa-envelope',
+              btnClass: 'btn-warning',
+              command: 'email'
             })
         }
       }

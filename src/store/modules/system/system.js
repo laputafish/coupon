@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import * as types from './system_types'
+import Pusher from 'pusher-js'
 
 const state = {
   accessToken: '',
@@ -7,6 +8,7 @@ const state = {
   team: {
     id: 1
   },
+  pusher: null,
   systemConfigs: [],
   systemConfigsLoaded: false
 }
@@ -20,6 +22,9 @@ const getters = {
   },
   team: state => {
     return state.team
+  },
+  pusher: state => {
+    return state.pusher
   },
   systemConfigs: state => {
     return state.systemConfigs
@@ -45,6 +50,10 @@ const mutations = {
   setSystemConfigs (state, payload) {
     state.systemConfigs = payload
     state.systemConfigsLoaded = true
+    state.pusher = new Pusher(payload.pusher_key, {
+      encrypted: true,
+      cluster: payload.pusher_cluster
+    })
   }
 }
 

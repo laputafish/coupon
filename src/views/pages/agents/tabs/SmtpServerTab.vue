@@ -7,7 +7,7 @@
         {{ record.smtp_servers.length }}
       </div>
     </template>
-    <div class="container-fluid">
+    <div class="container-fluid" @click="sendingResult=''">
       <div class="row">
         <div class="col-sm-6 px-3">
           <div class="d-flex flex-row align-items-start">
@@ -90,10 +90,16 @@
                        v-model="receiverEmailAddress">
                 <button type="button"
                         @click="sendTestEmail"
-                        class="ml-1 min-width-100 btn btn-primary">Send</button>
+                        class="ml-1 min-width-100 btn btn-primary">
+                  <font-awesome-icon v-if="sendingTestEmail"
+                                     icon="spinner" class="fa-spin mr-1 fa-fw"/>
+                  <font-awesome-icon v-else icon="paper-plane"
+                                     class="mr-1 fa-fw"/>
+                  Send</button>
               </div>
               <div class="ml-3">
                 {{ sendingResult }}
+                {{ sendingTestEmail ? 'yes' : 'no' }}
               </div>
               <div class="flex-grow-1"></div>
             </div>
@@ -115,6 +121,7 @@ export default {
   },
   data () {
     return {
+      sendingTestEmail: false,
       sendingResult: '',
       // example proper smtp server
       /*
@@ -179,14 +186,16 @@ export default {
         return
       }
       const data = {
-        urlCommand: '/email/check',
+        urlCommand: '/smtp_server/check',
         data: {
           smtpServer: vm.selectedServer,
           receiverEmailAddress: vm.receiverEmailAddress
         }
       }
+      vm.sendingTestEmail = true
       vm.$store.dispatch('AUTH_POST', data).then(
         response => {
+          vm.sendingTestEmail = false
           vm.sendingResult = 'Sent Successfully.'
         }
       )

@@ -82,6 +82,10 @@ export default {
       default () {
         return []
       }
+    },
+    voucher: {
+      type: Object,
+      default: null
     }
     // customTemplate: {
     //   type: Object,
@@ -96,7 +100,24 @@ export default {
     // }
   },
   computed: {
-
+    agents () {
+      return this.$store.getters.agents
+    },
+    agent () {
+      const vm = this
+      var result = {
+        name: '',
+        web: ''
+      }
+      if (vm.voucher && vm.voucher.agent_id !== 0) {
+        const agent = vm.agents.find(agent => agent.id==vm.voucher.agent_id)
+        if (agent) {
+          result.name = agent.name
+          result.web = agent.web
+        }
+      }
+      return result
+    }
   },
   data () {
     return {
@@ -155,7 +176,16 @@ export default {
         urlCommand: '/templates/create_preview',
         data: {
           content: vm.content,
-          tagListGroups: vm.templateTagGroups
+          tagListGroups: vm.templateTagGroups,
+          tagValues: {
+            'qrcode': '12345678',
+            'barcode': '12345678',
+            'voucher_description': vm.voucher.description,
+            'voucher_activation_date': vm.voucher.activation_date,
+            'voucher_expiry_date': vm.voucher.expiry_date,
+            'agent_name': vm.agent.name,
+            'agent_web': vm.agent.web
+          }
         }
       }
 
