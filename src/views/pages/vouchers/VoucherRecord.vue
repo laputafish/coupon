@@ -776,9 +776,9 @@
 
       vm.testLink = window.location.origin + '/coupons/' + vm.recordId + '/' + new Date().getTime()
     },
-    created () {
-      const vm = this
-    },
+    // created () {
+    //   const vm = this
+    // },
     methods: {
       onVoucherStatusUpdated (data) {
         const vm = this

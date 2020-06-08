@@ -149,7 +149,9 @@ export default {
       if (vm.sendingToName !== '') {
         values.push('(' + vm.sendingToName + ')')
       }
-      result = 'Sending ... <div class="badge badge-info">' + values.join(' ') + '</div>'
+      if (values.length > 0) {
+        result = 'Sending ... <div class="badge badge-info">' + values.join(' ') + '</div>'
+      }
       return result
     },
 
@@ -385,6 +387,10 @@ export default {
       vm.mailingSummary.processing = summary.processing
       vm.mailingSummary.completed = summary.completed
       vm.mailingSummary.fails = summary.fails
+      if (vm.mailingSummary.processing === 0) {
+        vm.sendingToName = ''
+        vm.sendingToEmail = ''
+      }
     },
     
     refreshSummary () {

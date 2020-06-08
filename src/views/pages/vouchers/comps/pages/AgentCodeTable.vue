@@ -149,7 +149,8 @@ export default {
         buttons: ['view', 'delete', 'update', 'email'],
         // buttons: ['edit','view','delete'],
         eventbus: new Vue(),
-        actionButtonSize: 'xs'
+        actionButtonSize: 'xs',
+        statuses: []
       },
       HeaderSettings: false,
       selectedRow: null,
@@ -315,6 +316,8 @@ export default {
   },
   mounted () {
     const vm = this
+    vm.initPusherChannel()
+
     vm.setColumns(vm.codeFieldsStr)
     // vm.setTableData(vm.codeInfos)
     vm.query.page = 1
@@ -340,20 +343,68 @@ export default {
     }
   },
   methods: {
+    sendVoucherCodeEmail (row) {
+      const vm = this
+      const postData = {
+        urlCommand: '/vouchers/' + vm.record.id + '/codes/' + row.id + '/send_email'
+      }
+      var commandStatus = 'email:' + row.id
+      vm.addXpropsStatus(commandStatus)
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        response => {
+          console.log('sendVoucherCodeEmail :: response: ', response)
+          vm.removeXpropsStatus(commandStatus)
+        }
+      )
+    },
+
+    addXpropsStatus (commandStatus) {
+      const vm = this
+      if (vm.xprops.statuses.indexOf(commandStatus) === -1) {
+        vm.xprops.statuses.push(commandStatus)
+      }
+    },
+
+    removeXpropsStatus (commandStatus) {
+      const vm = this
+      const index = vm.xprops.statuses.indexOf(commandStatus)
+      if (index >= 0) {
+        vm.xprops.statuses.splice(index, 1)
+      }
+    },
+
     initPusherChannel () {
       const vm = this
       if (vm.pusher) {
         if (vm.pusherChannel) {
           vm.pusherChannel.unbind_all()
         }
-        vm.pusherChannel = vm.pusher.subscribe('voucher.code.channel')
+        vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
         vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
           vm.onVoucherCodeStatusUpdated(data)
         })
       }
     },
     onVoucherCodeStatusUpdated (data) {
+      const vm = this
+      const voucherCode = data.voucherCode
       console.log('onVoucherCodeStatusUpdated : data: ', data)
+      for (var i = 0; i < vm.data.length; i++) {
+        if (vm.data[i].id === voucherCode.id) {
+          vm.data[i].status = voucherCode.status
+          switch (voucherCode.status) {
+            case 'processing':
+              vm.data[i].error_message = ''
+              vm.data[i].sent_on = ''
+              break
+            case 'completed':
+            case 'fails':
+              vm.data[i].error_message = voucherCode.error_message
+              vm.data[i].sent_on = voucherCode.sent_on
+          }
+          break
+        }
+      }
     },
     onCommandHandler (payload) {
       const vm = this
@@ -628,7 +679,7 @@ export default {
           //   row: payload.row
           // })
         case 'email':
-          vm.setVoucherCodeStatus(payload.row, 'ready')
+          vm.sendVoucherCodeEmail(payload.row)
           break
         case 'updateField':
           // console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)

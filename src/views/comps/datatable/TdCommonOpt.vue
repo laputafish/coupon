@@ -7,8 +7,12 @@
             class="btn"
             :class="btn.btnClass"
             @click="processCommand(btn.command, btn.needConfirm)">
-      <i v-if="processing(btn.command)" class="fas fa-fw fa-spinner fa-spin"></i>
-      <i v-else class="fas fa-fw" :class="btn.iconClass"></i>
+      <font-awesome-icon v-if="processing(btn.command)"
+                         icon="spinner"
+                         class="fa-fw fa-spin"></font-awesome-icon>
+      <font-awesome-icon v-else
+                         class="fa-fw"
+                         :icon="btn.iconClass"></font-awesome-icon>
     </button>
   </div>
 </template>
@@ -44,55 +48,55 @@ export default {
         switch (key) {
           case 'view':
             vm.buttons.push({
-              iconClass: 'fas fa-file-alt',
+              iconClass: 'file-alt',
               btnClass: 'btn-info',
               command: 'view'
             })
             break
           case 'update':
             vm.buttons.push({
-              iconClass: 'fas fa-save',
+              iconClass: 'save',
               btnClass: 'btn-success',
               command: 'update'
             })
             break
           case 'edit':
             vm.buttons.push({
-              iconClass: 'fas fa-edit',
+              iconClass: 'edit',
               btnClass: 'btn-primary',
               command: 'edit'
             })
             break
           case 'duplicate':
             vm.buttons.push({
-              iconClass: 'fas fa-copy',
+              iconClass: 'copy',
               btnClass: 'btn-info',
               command: 'duplicate'
             })
             break
           case 'delete':
             vm.buttons.push({
-              iconClass: 'fas fa-times',
+              iconClass: 'times',
               btnClass: 'btn-danger',
               command: 'delete'
             })
             break
           case 'print':
             vm.buttons.push({
-              iconClass: 'fas fa-print',
+              iconClass: 'print',
               btnClass: 'btn-info',
               command: 'print'
             })
             break
           case 'download':
             vm.buttons.push({
-              iconClass: 'fas fa-download',
+              iconClass: 'download',
               btnClass: 'btn-info',
               command: 'download'
             })
           case 'email':
             vm.buttons.push({
-              iconClass: 'fas fa-envelope',
+              iconClass: 'envelope',
               btnClass: 'btn-warning',
               command: 'email'
             })
@@ -109,11 +113,13 @@ export default {
       }
       let result = false
       if (vm.xprops['statuses']) {
+        var mappedCommand = command
         if (mapping[command]) {
-          const commandStr = mapping[command] + ':' + vm.row['id']
-          if (vm.xprops['statuses'] && commandStr) {
-            result = vm.xprops.statuses.indexOf(commandStr) >= 0
-          }
+          mappedCommand = mapping[command]
+        }
+        const commandStr = mappedCommand + ':' + vm.row['id']
+        if (vm.xprops['statuses'] && commandStr) {
+          result = vm.xprops.statuses.indexOf(commandStr) >= 0
         }
       }
       return result
