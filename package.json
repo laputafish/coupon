@@ -40,7 +40,7 @@
     "vue-tinymce-editor": "^1.6.2",
     "vue-upload-component": "^2.8.20",
     "vue2-datatable-component": "^2.3.1",
-    "vue2-datepicker": "^3.5.0",
+    "vue2-datepicker": "^3.6.0",
     "vuedraggable": "^2.23.2",
     "vuejs-dialog": "^1.4.1",
     "vuejs-progress-bar": "^1.2.2",

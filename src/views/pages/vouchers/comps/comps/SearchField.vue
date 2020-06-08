@@ -1,5 +1,5 @@
 <template>
-<div class="d-flex flex-row justify-content-end align-items-center">
+<div class="d-flex flex-row justify-content-start align-items-center">
   <h4 class="d-inline-block mr-2 my-0">
      <font-awesome-icon icon="search" />
   </h4>

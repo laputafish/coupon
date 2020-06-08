@@ -2,8 +2,25 @@
   <div class="td-code-status line-height-1">
     <div class="badge min-width-80"
          :class="'badge-' + activeStatus.variant">{{ activeStatus.label }}
+
+      <div v-if="value==='hold'"
+           class="ml-1 d-inline change-status"
+           data-toggle="tooltip"
+           title="Release"
+           @click="changeStatus('pending')">
+        <font-awesome-icon size="sm" icon="circle"></font-awesome-icon>
+      </div>
+
+      <div v-else-if="value==='pending'"
+           class="ml-1 d-inline change-status"
+           data-toggle="tooltip"
+           title="Hold"
+           @click="changeStatus('hold')">
+        <font-awesome-icon size="sm" icon="check-circle"></font-awesome-icon>
+      </div>
+
       <div v-if="value==='completed' || value==='fails'"
-           class="ml-1 d-inline reset-status"
+           class="ml-1 d-inline change-status"
            data-toggle="tooltip"
            title="Reset"
             @click="resetStatus">
@@ -37,7 +54,8 @@
           {value: 'processing', label: 'Processing', variant: 'warning'},
           {value: 'ready', label: 'Ready to Send', variant: 'primary'},
           {value: 'completed', label: 'Completed', variant: 'success'},
-          {value: 'fails', label: 'Fails', variant: 'danger'}
+          {value: 'fails', label: 'Fails', variant: 'danger'},
+          {value: 'hold', label: 'On Hold', variant: 'muted'}
         ]
       }
     },
@@ -55,15 +73,42 @@
     //   }
     // },
     methods: {
+      changeStatus (status) {
+        const vm = this
+        console.log('TdCodeStatus :: changeStatus :: stauts: ', status)
+        vm.xprops.eventbus.$emit('onRowCommand', {
+          command: 'changeCodeStatus',
+          row: vm.row,
+          status: status
+        })
+      },
+      // release () {
+      //   const vm = this
+      //   vm.xprops.eventbus.$emit('onRowCommand', {
+      //     command: 'resetStatus',
+      //     row: vm.row,
+      //     status: 'pending'
+      //   })
+      // },
+      //
+      // hold () {
+      //   const vm = this
+      //   vm.xprops.eventbus.$emit('onRowCommand', {
+      //     command: 'resetStatus',
+      //     row: vm.row,
+      //     status: 'hold'
+      //   })
+      // },
       resetStatus () {
         const vm = this
         vm.$dialog.confirm(vm.$t('messages.reset_status')).then(
           () => {
-            vm.xprops.eventbus.$emit('onRowCommand', {
-              command: 'resetStatus',
-              row: vm.row,
-              status: 'pending'
-            })
+            vm.changeStatus('pending')
+            // vm.xprops.eventbus.$emit('onRowCommand', {
+            //   command: 'resetStatus',
+            //   row: vm.row,
+            //   status: 'pending'
+            // })
           }
         )
       }
@@ -104,10 +149,10 @@
 
   }
 
-  .td-code-status .reset-status:hover {
-    font-size: 14px;
+  .td-code-status .change-status:hover {
+    /*font-size: 14px;*/
   }
-  .td-code-status .reset-status {
+  .td-code-status .change-status {
     cursor: pointer;
   }
 </style>

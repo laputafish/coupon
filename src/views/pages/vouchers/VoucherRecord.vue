@@ -37,7 +37,8 @@
 
         <div class="field-item">
           <div class="d-inline-block mr-3 field-label">{{$t('general.status')}}</div>
-          <div class="d-inline-block mr-3 field-content min-width-50">{{record.status}}</div>
+          <div class="d-inline-block mr-3 field-content min-width-50"
+            :class="{'bg-danger':record.status=='sending'}">{{ record ? ucfirst(record.status) : '' }}</div>
         </div>
 
         <div class="field-item">
@@ -62,7 +63,11 @@
         </div>
       </div>
     </div>
-
+    <div v-if="record && record.status==='sending'"
+      class="bg-danger text-white text-center p-2">
+      <h2>Email is Sending.</h2>
+      <h4>Any modification is not recommended.</h4>
+    </div>
     <div class="voucher-toolbar mb-2">
       <!-- Info -->
       <voucher-toolbar-button class="toolbar-button-wrapper"
@@ -752,6 +757,8 @@
     mounted () {
       const vm = this
 
+      vm.initPusherChannel()
+
       if (!vm.activePage) {
         vm.activePage = vm.FIRST_PAGE_TO_SHOW
       }
@@ -774,7 +781,12 @@
     },
     methods: {
       onVoucherStatusUpdated (data) {
-
+        const vm = this
+        if (vm.record) {
+          alert('onVoucherStatusUpdated')
+          console.log('onVoucherStatusUpdated :: data: ', data)
+          vm.record.status = data.voucher.status;
+        }
       },
       initPusherChannel () {
         const vm = this
@@ -786,6 +798,7 @@
           vm.pusherChannel.bind('VoucherStatusUpdated', function(data) {
             vm.onVoucherStatusUpdated(data)
           })
+          console.log('initPusherChannel :: bind(VoucherStatusUpdated)')
         }
       },
       onPageSelected (pageName) {

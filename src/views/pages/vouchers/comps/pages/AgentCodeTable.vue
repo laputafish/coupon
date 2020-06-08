@@ -5,10 +5,34 @@
         :searchValue="searchValue"
         :appLoading="appLoading"
         @onCommand="onCommandHandler"></search-field>
+    <table class="summary-table">
+      <tr>
+        <td class="summary-label"><div class="badge badge-info min-width-80">Pending</div></td>
+        <td class="summary-value">{{statusSummary.pending}}</td>
+        <td class="summary-label"><div class="badge badge-success min-width-80">Completed</div></td>
+        <td class="summary-value">{{ statusSummary.completed}}</td>
+      </tr>
+      <tr>
+        <td class="summary-label"><div class="badge badge-muted min-width-80">On Hold</div></td>
+        <td class="summary-value">{{statusSummary.ready}}</td>
+        <td class="summary-label"><div class="badge badge-danger min-width-80">Fails</div></td>
+        <td class="summary-value">{{ statusSummary.fails}}</td>
+      </tr>
+    </table>
+    <!--<div class="d-flex flex-row">-->
+      <!--<div class="d-flex flex-column">-->
+        <!--<div class="badge badge-info mr-1 mb-1">Pending: 22</div>-->
+        <!--<div class="badge badge-primary mr-1 mb-">Ready to Send: 22</div>-->
+      <!--</div>-->
+      <!--<div class="d-flex flex-column">-->
+        <!--<div class="badge badge-success mr-1 mb-1">Completed: 22</div>-->
+        <!--<div class="badge badge-danger mr-1 mb-">Fails: 22</div>-->
+      <!--</div>-->
+    <!--</div>-->
     <div>
       <button type="button"
               class="btn btn-outline-primary min-width-100 mr-1"
-              @click="reloadCodeList()">
+              @click="reloadAll()">
         <i class="fas fa-recycle"></i>
         <span class="ml-2">Refresh</span>
       </button>
@@ -81,7 +105,6 @@ import xlsFileUpload from '@/views/comps/XlsFileUpload'
 import searchField from '../comps/SearchField'
 import codeImportDialog from '../../dialogs/CodeImportDialog'
 import deleteAllCodesDialog from '../../dialogs/DeleteAllCodesDialog'
-import Pusher from 'pusher-js'
 
 export default {
   components: {
@@ -96,6 +119,12 @@ export default {
   },
   data () {
     return {
+      statusSummary: {
+        pending: 0,
+        ready: 0,
+        completed: 0,
+        fails: 0
+      },
       channel: null,
       showingDeleteAllCodesDialog: false,
       showingCodeImportDialog: false,
@@ -292,6 +321,7 @@ export default {
     vm.xprops.record = vm.record
     vm.showingCodeImportDialog = false
     vm.showingDeleteAllCodesDialog = false
+    vm.reloadCodeSummary()
   },
   created () {
     const vm = this
@@ -305,8 +335,9 @@ export default {
   destroyed () {
     const vm = this
     vm.xprops.eventbus.$off('onRowCommand')
-    vm.channelVoucherCode.unbind_all()
-    vm.channelVoucher.unbind_all()
+    if (vm.pusherChannel) {
+      vm.pusherChannel.unbind_all()
+    }
   },
   methods: {
     initPusherChannel () {
@@ -431,7 +462,12 @@ export default {
           fieldName: 'code_count',
           fieldValue: 0
         })
-        vm.onQueryChangedHandler(vm.query)
+        vm.reloadAll()
+        // vm.onQueryChangedHandler(vm.query)
+        // vm.codeSummary.pending = 0
+        // vm.codeSummary.completed = 0
+        // vm.codeSummary.fails = 0
+        // vm.codeSummary.hold = 0
       })
     },
     setSearchValue (search) {
@@ -473,6 +509,28 @@ export default {
     onQueryChangedHandler (query) {
       const vm = this
       vm.reloadCodeList(query)
+    },
+
+    reloadAll () {
+      const vm = this
+      vm.reloadCodeSummary()
+      vm.reloadCodeList()
+    },
+
+    reloadCodeSummary () {
+      const vm = this
+      vm.loading = true
+      if (vm.voucherId === 0) {
+        alert('vm.voucherId = 0')
+        return
+      }
+      const data = {
+        urlCommand: '/vouchers/' + vm.voucherId + '/code_summary'
+      }
+      vm.$store.dispatch('AUTH_GET', data).then(response => {
+        vm.statusSummary = response.code_summary
+        vm.loading = false
+      })
     },
 
     reloadCodeList (query) {
@@ -562,8 +620,8 @@ export default {
         case 'update': // = save
           vm.saveCodeInfo(payload.row);
           break
-        case 'resetStatus':
-          vm.resetStatus(payload)
+        case 'changeCodeStatus':
+          vm.changeCodeStatus(payload)
           break
           // vm.$emit('onCommand', {
           //   command: 'resetStatus',
@@ -645,15 +703,15 @@ export default {
       }
     },
 
-    resetStatus (payload) {
+    changeCodeStatus (payload) {
       const vm = this
       const postData = {
-        urlCommand: '/agent_codes/' + payload.row.id + '/reset_status'
+        urlCommand: '/agent_codes/' + payload.row.id + '/change_status/' + payload.status
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
         () => {
-          vm.$toaster.success(vm.$t('messages.code_status_has_been_reset'))
-          vm.reloadCodeList()
+          vm.$toaster.success(vm.$t('messages.code_status_has_been_updated'))
+          vm.reloadAll()
         }
       )
     },
@@ -857,7 +915,8 @@ export default {
               msgs.push('no code(s) are added')
             }
             vm.$toaster.success(msgs.join(' and ') + '.')
-            vm.onQueryChangedHandler(vm.query)
+            vm.reloadAll()
+            // vm.onQueryChangedHandler(vm.query)
           } else {
             vm.$dialog.alert(vm.$t('messages.error_occurred_maybe_invalid_format'))
           }
@@ -991,4 +1050,21 @@ export default {
   padding-top: 0.3rem;
   padding-bottom: 0.3rem;
 }
+
+.agent-code-table .summary-table {
+  font-size:90%;
+  margin: 0;
+}
+.agent-code-table .summary-table td div {
+  width: 100%;
+}
+.agent-code-table .summary-table td.summary-value {
+  padding: 0 15px 0 3px;
+  font-size: 80%;
+}
+.agent-code-table .summary-table td {
+  line-height: 1;
+  padding: 0;
+}
+
 </style>

@@ -15,13 +15,18 @@
             </button>
           </div>
         </div>
-        <yoov-progress-bar :value="processedCount"
-                           class="px-1 py-3"
-                           :max="totalCount"
-                           :progress="0"
+        <yoov-progress-bar class="px-1 py-3"
+                           :progress="percentCompleted"
                            :completed="false"
                            :notes="notes"
                            :tempo="50"></yoov-progress-bar>
+        <!--<yoov-progress-bar class="px-1 py-3"-->
+                           <!--:value="processedCount"-->
+                           <!--:max="totalCount"-->
+                           <!--:progress="percentCompleted"-->
+                           <!--:completed="false"-->
+                           <!--:notes="notes"-->
+                           <!--:tempo="50"></yoov-progress-bar>-->
       </div>
       <icon-item
           v-if="smtpServer"
@@ -54,12 +59,16 @@
                            caption="Continue"></big-border-button>
       </div>
     </div>
-    <div class="mx-3 mt-2 mb-0 d-flex flex-row">
-      <h4 class="mb-2 text-success">Success:</h4><h4 class="ml-3 text-black-50">{{ successCount }}</h4>
+    <div class="mx-3 my-0 d-flex flex-row">
+      <h4 class="mb-2 text-info">Sent:</h4><h4 class="mx-3 text-black-50">{{ processedCount }}</h4>
+      <h4 class="text-black-50">(</h4>
+      <h4 class="mb-2 text-success">Success:</h4><h4 class="ml-3 text-black-50">{{ mailingSummary.completed }}</h4>
+      <h4 class="mb-3 ml-4 text-danger">Failed:</h4><h4 class="ml-3 text-black-50">{{ mailingSummary.fails }}</h4>
+      <h4 class="text-black-50">)</h4>
     </div>
-    <div class="mx-3 mt-2 mb-1 d-flex flex-row">
-      <h4 class="mb-3 text-danger">Failed:</h4><h4 class="ml-3 text-black-50">{{ failCount }}</h4>
-    </div>
+    <!--<div class="mx-3 mt-0 mb-1 d-flex flex-row">-->
+      <!--<h4 class="mb-2 text-info">Ready to Send:</h4><h4 class="mx-3 text-black-50">{{ totalCount - processedCount }}</h4>-->
+    <!--</div>-->
     <div class="mx-3">
       <div id="failMailingTable">
         <datatable v-cloak v-bind="$data"
@@ -118,6 +127,9 @@ export default {
     iconItem
   },
   computed: {
+    pusher () {
+      return this.$store.getters.pusher
+    },
     pausing () {
       return !this.processing &&
         this.processedCount > 0 &&
@@ -129,18 +141,23 @@ export default {
     notes () {
       const vm = this
       var result = ''
-      if (vm.mailingSummary && vm.mailingSummary.sendingTo) {
-        var values = []
-        if (vm.mailingSummary.sendingTo.email && vm.mailingSummary.sendingTo.email !== '') {
-          values.push(vm.mailingSummary.sendingTo.email)
-        }
-        if (vm.mailingSummary.sendingTo.name && vm.mailingSummary.sendingTo.name !== '') {
-          values.push('(' + vm.mailingSummary.sendingTo.name + ')')
-        }
-        result = 'Sending ... <div class="badge badge-info">' + values.join(' ') + '</div>'
+
+      var values = []
+      if (vm.sendingToEmail !== '') {
+        values.push(vm.sendingToEmail)
       }
+      if (vm.sendingToName !== '') {
+        values.push('(' + vm.sendingToName + ')')
+      }
+      result = 'Sending ... <div class="badge badge-info">' + values.join(' ') + '</div>'
       return result
     },
+
+    // Mailing Summary
+    //
+    // total = (ready + completed + fails)
+    //
+
     percentCompleted () {
       const vm = this
       var result = 0
@@ -150,19 +167,34 @@ export default {
       }
       return result
     },
-    successCount () {
-      const vm = this
-      return vm.getMailingSummaryByFilter('completed')
-    },
-    failCount () {
-      const vm = this
-      return vm.getMailingSummaryByFilter('fails')
-    },
+    // successCount () {
+    //   const vm = this
+    //   return vm.mailingSummary.completed
+    // },
+    // failCount () {
+    //   const vm = this
+    //   return vm.mailingSummary.fails
+    // },
     processedCount () {
-      return this.successCount + this.failCount
+      const vm = this
+      vm.outputMailingSummary()
+      const result =
+        vm.mailingSummary.completed +
+        vm.mailingSummary.fails
+      console.log('processedCount :: result = ' + result)
+      return result
+
     },
     totalCount () {
-      return this.mailingSummary.statusList.length
+      const vm = this
+      vm.outputMailingSummary()
+      const result =
+        vm.mailingSummary.completed +
+        vm.mailingSummary.fails +
+        vm.mailingSummary.pending +
+        vm.mailingSummary.processing
+      console.log('totalCount :: result: ', result)
+      return result
     },
     ready () {
       const vm = this
@@ -190,6 +222,14 @@ export default {
       default: null
     }
   },
+  watch: {
+    pusher: function (newValue) {
+      const vm = this
+      if (newValue) {
+        vm.initPusherChannel()
+      }
+    }
+  },
   // watch: {
   //   'voucher.id': function (newVal) {
   //     alert('id changed')
@@ -197,62 +237,183 @@ export default {
   // },
   mounted () {
     const vm = this
-    vm.loadMailingSummary()
-    if (vm.voucher.status === 'sending') {
-      this.fetchMailingStatus()
-      this.timer = setInterval(this.fetchMailingStatus, 1000)
-    }
+    vm.initPusherChannel()
+    vm.refreshSummary()
+    // vm.loadMailingSummary()
+    // if (vm.voucher.status === 'sending') {
+    //   this.fetchMailingStatus()
+    //   this.timer = setInterval(this.fetchMailingStatus, 1000)
+    // }
+
   },
   beforeDestroy () {
+    const vm = this
     if (this.timer) {
       clearInterval(this.timer)
     }
+    if (vm.pusherChannel) {
+      vm.pusherChannel.unbind_all()
+    }
   },
   methods: {
-    startSendingEmails () {
+    setVoucherStatus (status) {
       const vm = this
-      const data = {
-        urlCommand: '/vouchers/' + vm.voucher.id + '/send_emails'
+      const postData = {
+        urlCommand: '/vouchers/' + vm.voucher.id + '/status/' + status
       }
-      vm.$store.dispatch('AUTH_POST', data).then(
-        () => {
-
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        response => {
+          vm.$toaster.success('Signal has been sent to server.')
         }
       )
     },
-    fetchMailingStatus () {
+    outputMailingSummary () {
       const vm = this
-      if (!vm.fetching) {
-        vm.fetching = true
-        const data = {
-          urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
+      // console.log('mailingSummary :: sending_to: ', vm.mailingSummary.sending_to)
+      // console.log('mailingSummary :: pending: ', vm.mailingSummary.pending)
+      // console.log('mailingSummary :: processing: ', vm.mailingSummary.processing)
+      // console.log('mailingSummary :: completed: ', vm.mailingSummary.completed)
+      // console.log('mailingSummary :: fails: ', vm.mailingSummary.fails)
+    },
+    initPusherChannel () {
+      const vm = this
+      if (vm.pusher) {
+        if (vm.pusherChannel) {
+          vm.pusherChannel.unbind_all()
         }
-        vm.$store.dispatch('AUTH_GET', data).then(
-          response => {
-            vm.mailingSummary = response.summary
-          }
-        )
+        vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
+
+        vm.pusherChannel.bind('VoucherMailingStatusUpdated', function (data) {
+          vm.onVoucherMailingStatusUpdated(data)
+        })
+
+        vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
+          vm.onVoucherCodeStatusUpdated(data)
+        })
+
       }
-      vm.fetching = false
     },
-    getMailingSummaryByFilter (filter) {
-      return this.mailingSummary.statusList.filter(item => item === filter).length
+
+    // startSendingEmails () {
+    //   const vm = this
+    //   const data = {
+    //     urlCommand: '/vouchers/' + vm.voucher.id + '/send_emails'
+    //   }
+    //   vm.$store.dispatch('AUTH_POST', data).then(
+    //     () => {
+    //
+    //     }
+    //   )
+    // },
+    //
+    // fetchMailingStatus () {
+    //   const vm = this
+    //   if (!vm.fetching) {
+    //     vm.fetching = true
+    //     const data = {
+    //       urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
+    //     }
+    //     vm.$store.dispatch('AUTH_GET', data).then(
+    //       response => {
+    //         vm.mailingSummary = response.summary
+    //       }
+    //     )
+    //   }
+    //   vm.fetching = false
+    // },
+
+    // getMailingSummaryByFilter (filter) {
+    //   return this.mailingSummary.statusList.filter(item => item === filter).length
+    // },
+    // refreshSummary () {
+    //   const vm = this
+    //   vm.loadMailingSummary()
+    // },
+    // loadMailingSummary () {
+    //   const vm = this
+    //   if (vm.voucher) {
+    //     const data = {
+    //       urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
+    //     }
+    //     vm.$store.dispatch('AUTH_GET', data).then(
+    //       response => {
+    //         console.log('FETCH_MAILING_SUMMARY :: response: ', response)
+    //         vm.$set(vm.mailingSummary, 'sendingTo', response.summary.sending_to)
+    //         vm.$set(vm.mailingSummary, 'statusList', response.summary.status_list)
+    //
+    //         // vm.mailingSummary.sendingTo = response.summary.sending_to
+    //         // vm.mailingSummary.statusList = response.summary.status_list
+    //         // vm.$set(vm.mailingSummary, response.summary.status_list)
+    //       },
+    //
+    //       error => console.log(error)
+    //     )
+    //   }
+    // },
+    // updateMailingSummary (summary) {
+    //   const vm = this
+    //   console.log('updateMailingSummary :: summary: ', summary)
+    //   vm.$set(vm.mailingSummary, 'sendingTo', summary.sending_to)
+    //   vm.$set(vm.mailingSummary, 'pending', summary.pending)
+    //   vm.$set(vm.mailingSummary, 'fails', summary.fails)
+    //   vm.$set(vm.mailingSummary, 'completed', summary.completed)
+    //   vm.$set(vm.mailingSummary, 'processing', summary.processing)
+    // },
+    onVoucherMailingStatusUpdated (data) {
+      console.log('onVoucherMailingStatusUpdated :: data: ', data)
+      this.setMailingSummary(data.mailingSummary.summary)
     },
-    refreshSummary () {
+
+    onVoucherCodeStatusUpdated (data) {
       const vm = this
-      vm.loadMailingSummary()
+      console.log('onVoucherCodeStatusUpdated :: data: ', data)
+      const voucherCode = data.voucherCode
+      if (voucherCode.status === 'processing') {
+        vm.sendingToName = voucherCode.participant_name
+        vm.sendingToEmail = voucherCode.participant_email
+      }
     },
-    loadMailingSummary () {
+
+    setMailingSummary (summary) {
+      const vm = this
+      // console.log('setMailingSummary: typeof summary.pending = ' + (typeof summary.pending))
+      // console.log('setMailingSummary: typeof summary.processing = ' + (typeof summary.processing))
+      // console.log('setMailingSummary: typeof summary.completed = ' + (typeof summary.completed))
+      // console.log('setMailingSummary: typeof summary.fails = ' + (typeof summary.fails))
+
+      vm.mailingSummary.pending = summary.pending
+      vm.mailingSummary.processing = summary.processing
+      vm.mailingSummary.completed = summary.completed
+      vm.mailingSummary.fails = summary.fails
+    },
+    
+    refreshSummary () {
       const vm = this
       if (vm.voucher) {
         const data = {
           urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
         }
         vm.$store.dispatch('AUTH_GET', data).then(
+          // response => {
+          //  sendintTo:
+          //  fails:
+          //  completed:
+          //  processing:
+          //  pending:
+          // }
+          //
           response => {
-            console.log('FETCH_MAILING_SUMMARY :: response: ', response)
-            vm.$set(vm.mailingSummary, 'sendingTo', response.summary.sending_to)
-            vm.$set(vm.mailingSummary, 'statusList', response.summary.status_list)
+            vm.setMailingSummary(response.summary)
+
+            //   .sendingTo = response.summary.sending_to
+            // vm.mailingSummary.pending = response.summary.pending
+            // vm.mailingSummary.processing = response.summary.processing
+            // vm.mailingSummary.fails = response.summary.fails
+            // vm.mailingSummary.completed = response.summary.completed
+
+            // vm.updateMailingSummary(response.summary)
+            // vm.$set(vm.mailingSummary, 'sendingTo', response.summary.sending_to)
+            // vm.$set(vm.mailingSummary, 'pending'', response.summary.status_list)
 
             // vm.mailingSummary.sendingTo = response.summary.sending_to
             // vm.mailingSummary.statusList = response.summary.status_list
@@ -263,6 +424,7 @@ export default {
         )
       }
     },
+
     pauseOperation () {
 
     },
@@ -271,40 +433,48 @@ export default {
       const command = payload.command
       switch (command) {
         case 'start':
-          vm.$emit('onCommand', {
-            command: 'updateField',
-            fieldName: 'status',
-            fieldValue: 'sending'
-          })
-          vm.startSendingEmails()
+          vm.setVoucherStatus('sending')
+          // vm.$emit('onCommand', {
+          //   command: 'updateField',
+          //   fieldName: 'status',
+          //   fieldValue: 'sending'
+          // })
+          // vm.startSendingEmails()
           break
         case 'pause':
-          vm.$emit('onCommand', {
-            command: 'updateField',
-            fieldName: 'status',
-            fieldValue: 'pending'
-          })
+          vm.setVoucherStatus('pending')
+          // vm.$emit('onCommand', {
+          //   command: 'updateField',
+          //   fieldName: 'status',
+          //   fieldValue: 'pending'
+          // })
           break
         case 'continue':
           console.log('onCommand :: updatefield :: status => sending')
-          vm.$emit('onCommand', {
-            command: 'updateField',
-            fieldName: 'status',
-            fieldValue: 'sending'
-          })
+          vm.setVoucherStatus('sending')
+          // vm.$emit('onCommand', {
+          //   command: 'updateField',
+          //   fieldName: 'status',
+          //   fieldValue: 'sending'
+          // })
           break
       }
     }
   },
   data () {
     return {
+      pusherChannel: null,
       fetching: false,
       timer: null,
 
       mailingSummary: {
-        statusList: [],
-        sendingTo: null
+        pending: 0,
+        completed: 0,
+        fails: 0,
+        processing: 0
       },
+      sendingToName: '',
+      sendingToEmail: '',
 
       // datatable
       columns: (() => {

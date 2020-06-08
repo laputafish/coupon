@@ -6,7 +6,7 @@
         {{ progress }}%
       </div>
     </div>
-    <div class="m-0 p-0" v-html="notes"></div>
+    <div class="mt-1 m-0 p-0" v-html="notes"></div>
   </div>
 </template>
 
