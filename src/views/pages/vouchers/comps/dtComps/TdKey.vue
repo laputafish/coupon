@@ -5,6 +5,7 @@
     </div>
     <template v-else>
       <copy-link :link="link"
+                 @onCommand="onCommandHandler"
                  :label="codeKey"
         :variant="variant"></copy-link>
       <div v-if="row.participant_name && row.participant_email">
@@ -32,6 +33,18 @@ export default {
     copyLink
   },
   props: ['row', 'value', 'xprops', 'field'],
+  methods: {
+    onCommandHandler (payload) {
+      const vm = this
+      switch (payload.command) {
+        case 'onLinkClicked':
+          vm.xprops.eventbus.$emit('onLinkClicked', {
+            row: vm.row
+          })
+          break
+      }
+    }
+  },
   computed: {
     goalType () {
       const vm = this

@@ -29,7 +29,8 @@
     "title": "Title",
     "description": "Description",
     "type": "Type",
-    "unspecified": "Unspecified"
+    "unspecified": "Unspecified",
+    "views": "Views"
   },
   "status": {
     "pending": "Pending",

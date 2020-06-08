@@ -156,6 +156,14 @@ export default {
       selectedRow: null,
       defaultColumns: [
         {
+          title: 'general.views',
+          thComp: 'ThCommonHeader',
+          tdClass: 'align-middle',
+          tdComp: 'TdViews',
+          field: 'views',
+          sortable: true
+        },
+        {
           title: 'general.key',
           thComp: 'ThCommonHeader',
           tdClass: 'align-middle',
@@ -343,6 +351,15 @@ export default {
     }
   },
   methods: {
+    updateCodeViewCount(row) {
+      const vm = this
+      const postData = {
+        urlCommand: '/agent_codes/' + row.id + '/update_views'
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        () => {}
+      )
+    },
     sendVoucherCodeEmail (row) {
       const vm = this
       const postData = {
@@ -373,6 +390,16 @@ export default {
       }
     },
 
+    onVoucherCodeViewsUpdated (voucherCode) {
+      const vm = this
+      for (var i = 0; i < vm.data.length; i++) {
+        if (vm.data[i].id === voucherCode.id) {
+          vm.data[i].views = voucherCode.views
+          break
+        }
+      }
+    },
+
     initPusherChannel () {
       const vm = this
       if (vm.pusher) {
@@ -380,8 +407,12 @@ export default {
           vm.pusherChannel.unbind_all()
         }
         vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
+
         vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
           vm.onVoucherCodeStatusUpdated(data)
+        })
+        vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
+          vm.onVoucherCodeViewsUpdated(data)
         })
       }
     },
@@ -650,6 +681,9 @@ export default {
       const vm = this
       // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
+        case 'onLinkClicked':
+          vm.updateCodeViewCount(payload.row)
+          break
         case 'edit':
           alert('onRowCommandHandler :; edit')
           break
@@ -860,6 +894,7 @@ export default {
           obj['participant_email'] = codeRecord['participant'] ? codeRecord['participant']['email'] : null
           obj['participant_phone'] = codeRecord['participant'] ? codeRecord['participant']['phone'] : null
           obj['sent_on'] = codeRecord['sent_on']
+          obj['views'] = codeRecord['views']
           result.push(obj)
         }
       } else {

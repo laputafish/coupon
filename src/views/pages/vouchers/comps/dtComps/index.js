@@ -4,6 +4,7 @@ import TdCodeStatus from './TdCodeStatus.vue'
 import TdSingleChoice from './TdSingleChoice.vue'
 import TdMultipleChoice from './TdMultipleChoice.vue'
 import TdParticipantField from './TdParticipantField.vue'
+import TdViews from './TdViews'
 
 export default {
   ThBadgeHeader,
@@ -11,5 +12,6 @@ export default {
   TdCodeStatus,
   TdSingleChoice,
   TdMultipleChoice,
-  TdParticipantField
+  TdParticipantField,
+  TdViews
 }
