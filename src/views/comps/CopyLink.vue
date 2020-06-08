@@ -1,8 +1,11 @@
 <template>
 <div class="d-flex flex-row align-items-center icon-link">
-  <a :href="link" @click="onLinkClicked" class="d-inline-block copy-link-icon" target="_blank">
+  <a :href="link" class="d-inline-block copy-link-icon" target="_blank">
     <font-awesome-icon icon="location-arrow"/>
   </a>
+  <!--<a :href="link" @click="onLinkClicked" class="d-inline-block copy-link-icon" target="_blank">-->
+    <!--<font-awesome-icon icon="location-arrow"/>-->
+  <!--</a>-->
 
   <div class="badge flex-grow-1 mx-1 key-value"
        :class="'badge-'+variant"
@@ -49,12 +52,13 @@ export default {
       const vm = this
       vm.$copyText( vm.link)
       vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
-    },
-    onLinkClicked () {
-      this.$emit('onCommand', {
-        command: 'onLinkClicked'
-      })
     }
+    // ,
+    // onLinkClicked () {
+    //   this.$emit('onCommand', {
+    //     command: 'onLinkClicked'
+    //   })
+    // }
   }
 }
 </script>

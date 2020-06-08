@@ -390,8 +390,9 @@ export default {
       }
     },
 
-    onVoucherCodeViewsUpdated (voucherCode) {
+    onVoucherCodeViewsUpdated (data) {
       const vm = this
+      const voucherCode = data.voucherCode
       for (var i = 0; i < vm.data.length; i++) {
         if (vm.data[i].id === voucherCode.id) {
           vm.data[i].views = voucherCode.views
@@ -681,9 +682,9 @@ export default {
       const vm = this
       // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
       switch (payload.command) {
-        case 'onLinkClicked':
-          vm.updateCodeViewCount(payload.row)
-          break
+        // case 'onLinkClicked':
+        //   vm.updateCodeViewCount(payload.row)
+        //   break
         case 'edit':
           alert('onRowCommandHandler :; edit')
           break
