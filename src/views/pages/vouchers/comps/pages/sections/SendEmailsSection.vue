@@ -66,7 +66,7 @@
                            variant="muted"
                            caption="Finished"></big-border-button>
         <button class="btn btn-danger btn-sm"
-                :disabled="voucher.status==='sending'"
+                :disabled="voucher.status!=='completed'&&voucher.status!=='pending'&&processedCount===0"
           @click="resetAll">
           Reset All
         </button>
@@ -290,7 +290,8 @@ export default {
         title: 'Reset All Mailing Status',
         message: 'All mailing status (completed or fails) will be lost. Are you sure?',
         confirmWord: 'reset',
-        command: 'resetAll'
+        command: 'resetAll',
+        inputValue: ''
       })
       this.showingConfirmResetAllDialog = true
     },

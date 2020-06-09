@@ -397,6 +397,7 @@ export default {
 
     onVoucherCodeViewsUpdated (data) {
       const vm = this
+      console.log('AgentCodeTable :: onVoucherCodeViewsUpdated : data: ', data)
       const voucherCode = data.voucherCode
       for (var i = 0; i < vm.data.length; i++) {
         if (vm.data[i].id === voucherCode.id) {
@@ -404,28 +405,17 @@ export default {
           break
         }
       }
+      vm.$emit('onCommand', {
+        command: 'updateField',
+        fieldName: 'total_views',
+        fieldValue: data.totalViews
+      })
     },
 
-    initPusherChannel () {
-      const vm = this
-      if (vm.pusher && vm.record) {
-        if (vm.pusherChannel) {
-          vm.pusherChannel.unbind_all()
-        }
-        vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
-
-        vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
-          vm.onVoucherCodeStatusUpdated(data)
-        })
-        vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
-          vm.onVoucherCodeViewsUpdated(data)
-        })
-      }
-    },
     onVoucherCodeStatusUpdated (data) {
       const vm = this
       const voucherCode = data.voucherCode
-      console.log('onVoucherCodeStatusUpdated : data: ', data)
+      console.log('AgentCodeTable :: onVoucherCodeStatusUpdated : data: ', data)
       for (var i = 0; i < vm.data.length; i++) {
         if (vm.data[i].id === voucherCode.id) {
           vm.data[i].status = voucherCode.status
@@ -443,6 +433,27 @@ export default {
         }
       }
     },
+
+    initPusherChannel () {
+      const vm = this
+      if (vm.pusher && vm.record) {
+        if (vm.pusherChannel) {
+          vm.pusherChannel.unbind_all()
+        }
+        vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
+
+        console.log('AgentCodeTable bind(VoucherCodeStatusUpdated)')
+        vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
+          vm.onVoucherCodeStatusUpdated(data)
+        })
+
+        console.log('AgentCodeTable bind(VoucherCodeViewsUpdated)')
+        vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
+          vm.onVoucherCodeViewsUpdated(data)
+        })
+      }
+    },
+
     onCommandHandler (payload) {
       const vm = this
       // console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
@@ -801,8 +812,19 @@ export default {
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
         () => {
-          vm.$toaster.success(vm.$t('messages.code_status_has_been_updated'))
-          vm.reloadAll()
+          for (var i =0; i < vm.data.length; i++) {
+            if (vm.data[i].id === payload.row.id) {
+              vm.data[i].status = payload.status
+              if (payload.status !== 'hold' && payload.status !== 'pending') {
+                vm.$toaster.success(vm.$t('messages.code_status_has_been_updated'))
+              } else {
+                vm.data[i].sent_on = ''
+                vm.data[i].error_message = ''
+              }
+              break
+            }
+          }
+        // vm.reloadAll()
         }
       )
     },

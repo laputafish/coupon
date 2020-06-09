@@ -752,6 +752,7 @@
         const vm = this
         // console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
         vm.refresh(newValue)
+        vm.initPusherChannel()
       }
     },
     mounted () {
@@ -781,25 +782,41 @@
     // },
     methods: {
       onVoucherStatusUpdated (data) {
+        console.log('*** VoucherRecord :: onVoucherStatusUpdated data: ', data)
         const vm = this
         if (vm.record) {
-          alert('onVoucherStatusUpdated')
-          console.log('onVoucherStatusUpdated :: data: ', data)
+          console.log('*** VoucherRecord :: onVoucherStatusUpdated :: vm.record exists :: data: ', data)
           vm.record.status = data.voucher.status;
+        } else {
+          console.log('*** VoucherRecord :: onVoucherStatusUpdated :: vm.record not exists :: data: ', data)
         }
       },
       initPusherChannel () {
         const vm = this
-        if (vm.pusher && vm.record) {
+        // console.log('*** VoucherRecord :: initPusherChannel')
+        if (vm.pusher && vm.recordId!==0) {
+          // console.log('*** VoucherRecord :: initPusherChannel (pusher and record id) ok')
           if (vm.pusherChannel) {
             vm.pusherChannel.unbind_all()
           }
-          console.log('initPusherChannel subscrib')
-          vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
+          const channelName = 'voucher' + vm.recordId + '.channel'
+          // console.log('*** initPusherChannel subscrib(' + channelName + ')')
+          vm.pusherChannel = vm.pusher.subscribe(channelName)
+
+          console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
           vm.pusherChannel.bind('VoucherStatusUpdated', function(data) {
             vm.onVoucherStatusUpdated(data)
           })
-          console.log('initPusherChannel :: bind(VoucherStatusUpdated)')
+        } else {
+          if (vm.pusher) {
+            if (vm.recordId!==0) {
+
+            } else {
+              console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
+            }
+          } else {
+            console.log('*** VoucherRecord :: initPusherChannel (pusher not, record id not)')
+          }
         }
       },
       onPageSelected (pageName) {

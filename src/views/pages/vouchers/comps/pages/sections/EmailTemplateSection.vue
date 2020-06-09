@@ -29,8 +29,8 @@
             <input type="mail" class="flex-grow-1 form-control" v-model="testEmail"/>
             <button class="input-group-append"
               @click="sendTestEmail">
-              <font-awesome-icon v-if="sendingTestEmail" icon="spinner" class="fa-spin"></font-awesome-icon>
-              <i v-else class="fas fa-paper-plane"></i>
+              <font-awesome-icon v-if="sendingTestEmail" icon="spinner" class="mr-1 fa-spin"></font-awesome-icon>
+              <font-awesome-icon v-else icon="paper-plane" class="mr-1"></font-awesome-icon>
             </button>
           </div>
           <div v-if="sendingTestEmailResult" class="ml-3"

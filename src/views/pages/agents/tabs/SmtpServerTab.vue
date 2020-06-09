@@ -99,7 +99,6 @@
               </div>
               <div class="ml-3">
                 {{ sendingResult }}
-                {{ sendingTestEmail ? 'yes' : 'no' }}
               </div>
               <div class="flex-grow-1"></div>
             </div>

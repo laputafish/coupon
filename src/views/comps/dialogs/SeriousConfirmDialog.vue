@@ -96,6 +96,7 @@ export default {
       vm.params.message = params.message
       vm.params.confirmWord = params.confirmWord
       vm.params.command = params.command
+      vm.userMessage = params.inputValue
     },
     onCommandHandler (payload) {
       const vm = this
