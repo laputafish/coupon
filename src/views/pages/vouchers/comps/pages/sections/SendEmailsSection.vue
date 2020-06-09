@@ -39,37 +39,54 @@
           :hasFault="true"
           description="No Smtp Server Specified!"></icon-item>
       <div class="">
-        <big-border-button v-if="!processing && !pausing"
-                           :disabled="!ready"
+        <big-border-button v-if="voucher.status!=='sending'&&processedCount===0&&totalCount>0"
+                           class="mb-1"
+                           :disabled="!smtpServerReady"
                            variant="success"
                            @onCommand="onCommandHandler"
                            command="start"
                            caption="Start"></big-border-button>
-        <big-border-button v-if="processing"
-                           :disabled="!ready"
+        <big-border-button v-if="voucher.status==='sending'"
+                           class="mb-1"
+                           :disabled="!smtpServerReady"
                            variant="danger"
                            @onCommand="onCommandHandler"
                            command="pause"
                            caption="Pause"></big-border-button>
-        <big-border-button v-if="pausing"
-                           :disabled="!ready"
+        <big-border-button v-if="voucher.status!=='sending'&&processedCount>0&&processedCount<totalCount"
+                           class="mb-1"
+                           :disabled="!smtpServerReady"
                            variant="info"
                            @onCommand="onCommandHandler"
                            command="continue"
                            caption="Continue"></big-border-button>
+        <big-border-button v-if="processedCount===totalCount"
+                           class="mb-1"
+                           :disabled="true"
+                           variant="muted"
+                           caption="Finished"></big-border-button>
+        <button class="btn btn-danger btn-sm"
+                :disabled="voucher.status==='sending'"
+          @click="resetAll">
+          Reset All
+        </button>
       </div>
     </div>
-    <div class="mx-3 my-0 d-flex flex-row">
-      <h4 class="mb-2 text-info">Sent:</h4><h4 class="mx-3 text-black-50">{{ processedCount }}</h4>
+    <div class="mx-4 my-0 d-flex flex-row">
+      <h4 class="mb-2 text-info">Sent:</h4>
+      <h4 class="mx-3 text-black-50">{{ processedCount }}</h4>
+
       <h4 class="text-black-50">(</h4>
-      <h4 class="mb-2 text-success">Success:</h4><h4 class="ml-3 text-black-50">{{ mailingSummary.completed }}</h4>
-      <h4 class="mb-3 ml-4 text-danger">Failed:</h4><h4 class="ml-3 text-black-50">{{ mailingSummary.fails }}</h4>
+        <h4 class="mb-2 text-success">Success:</h4>
+        <h4 class="ml-3 text-black-50">{{ mailingSummary.completed }}</h4>
+        <h4 class="mb-3 ml-4 text-danger">Failed:</h4>
+        <h4 class="ml-3 text-black-50">{{ mailingSummary.fails }}</h4>
       <h4 class="text-black-50">)</h4>
     </div>
     <!--<div class="mx-3 mt-0 mb-1 d-flex flex-row">-->
       <!--<h4 class="mb-2 text-info">Ready to Send:</h4><h4 class="mx-3 text-black-50">{{ totalCount - processedCount }}</h4>-->
     <!--</div>-->
-    <div class="mx-3">
+    <div v-if="false" class="mx-3">
       <div id="failMailingTable">
         <datatable v-cloak v-bind="$data"
                    :columns="columns"></datatable>
@@ -111,6 +128,11 @@
         <!--</table>-->
       </div>
     </div>
+    <serious-confirm-dialog
+        id="resetAllDialog"
+        ref="seriousConfirmDialog"
+        v-model="showingConfirmResetAllDialog"
+        @onCommand="onCommandHandler"></serious-confirm-dialog>
   </div>
 </template>
 
@@ -119,25 +141,27 @@ import Vue from 'vue'
 import yoovProgressBar from '@/views/comps/YoovProgressBar'
 import bigBorderButton from './comps/BigBorderButton'
 import iconItem from '@/views/comps/IconItem'
+import seriousConfirmDialog from '@/views/comps/dialogs/SeriousConfirmDialog'
 
 export default {
   components: {
     yoovProgressBar,
     bigBorderButton,
-    iconItem
+    iconItem,
+    seriousConfirmDialog
   },
   computed: {
     pusher () {
       return this.$store.getters.pusher
     },
-    pausing () {
-      return !this.processing &&
-        this.processedCount > 0 &&
-        (this.processedCount < this.totalCount)
-    },
-    processing () {
-      return this.voucher.status === 'sending'
-    },
+    // pausing () {
+    //   return this.voucher.status !== 'sending' &&
+    //     this.processedCount > 0 &&
+    //     (this.processedCount < this.totalCount)
+    // },
+    // processing () {
+    //   return this.voucher.status === 'sending'
+    // },
     notes () {
       const vm = this
       var result = ''
@@ -157,7 +181,7 @@ export default {
 
     // Mailing Summary
     //
-    // total = (ready + completed + fails)
+    // total = (smtpServerReady + completed + fails)
     //
 
     percentCompleted () {
@@ -179,7 +203,7 @@ export default {
     // },
     processedCount () {
       const vm = this
-      vm.outputMailingSummary()
+      // vm.outputMailingSummary()
       const result =
         vm.mailingSummary.completed +
         vm.mailingSummary.fails
@@ -189,7 +213,7 @@ export default {
     },
     totalCount () {
       const vm = this
-      vm.outputMailingSummary()
+      // vm.outputMailingSummary()
       const result =
         vm.mailingSummary.completed +
         vm.mailingSummary.fails +
@@ -198,7 +222,7 @@ export default {
       console.log('totalCount :: result: ', result)
       return result
     },
-    ready () {
+    smtpServerReady () {
       const vm = this
       return vm.smtpServer ? true : false
     },
@@ -241,6 +265,7 @@ export default {
     const vm = this
     vm.initPusherChannel()
     vm.refreshSummary()
+    vm.showingConfirmResetAllDialog = false
     // vm.loadMailingSummary()
     // if (vm.voucher.status === 'sending') {
     //   this.fetchMailingStatus()
@@ -258,6 +283,17 @@ export default {
     }
   },
   methods: {
+    resetAll () {
+      const vm = this
+      console.log('resetAll')
+      this.$refs.seriousConfirmDialog.init({
+        title: 'Reset All Mailing Status',
+        message: 'All mailing status (completed or fails) will be lost. Are you sure?',
+        confirmWord: 'reset',
+        command: 'resetAll'
+      })
+      this.showingConfirmResetAllDialog = true
+    },
     setVoucherStatus (status) {
       const vm = this
       const postData = {
@@ -269,21 +305,21 @@ export default {
         }
       )
     },
-    outputMailingSummary () {
-      const vm = this
-      // console.log('mailingSummary :: sending_to: ', vm.mailingSummary.sending_to)
-      // console.log('mailingSummary :: pending: ', vm.mailingSummary.pending)
-      // console.log('mailingSummary :: processing: ', vm.mailingSummary.processing)
-      // console.log('mailingSummary :: completed: ', vm.mailingSummary.completed)
-      // console.log('mailingSummary :: fails: ', vm.mailingSummary.fails)
-    },
+    // outputMailingSummary () {
+    //   const vm = this
+    //   // console.log('mailingSummary :: sending_to: ', vm.mailingSummary.sending_to)
+    //   // console.log('mailingSummary :: pending: ', vm.mailingSummary.pending)
+    //   // console.log('mailingSummary :: processing: ', vm.mailingSummary.processing)
+    //   // console.log('mailingSummary :: completed: ', vm.mailingSummary.completed)
+    //   // console.log('mailingSummary :: fails: ', vm.mailingSummary.fails)
+    // },
     initPusherChannel () {
       const vm = this
-      if (vm.pusher) {
+      if (vm.pusher && vm.voucher) {
         if (vm.pusherChannel) {
           vm.pusherChannel.unbind_all()
         }
-        vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
+        vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.voucher.id + '.channel')
 
         vm.pusherChannel.bind('VoucherMailingStatusUpdated', function (data) {
           vm.onVoucherMailingStatusUpdated(data)
@@ -434,10 +470,35 @@ export default {
     pauseOperation () {
 
     },
+    doResetAll (callback) {
+      const vm = this
+      console.log('SendEmailsSection :: doResetAll')
+      const postData = {
+        urlCommand: '/vouchers/' + vm.voucher.id + '/reset_all_codes_mailing_status'
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        response => {
+          console.log('doResetAll.then response: ', response)
+          vm.setMailingSummary(response.summary)
+          vm.$toaster.info('All mailing status have been reset.')
+          if (typeof callback === 'function') {
+            callback()
+          }
+        }
+      )
+    },
     onCommandHandler (payload) {
       const vm = this
+      console.log('SendEmailsSection :: onCommandHandler :: payload: ', payload)
       const command = payload.command
       switch (command) {
+        case 'resetAll':
+          vm.doResetAll(() => {
+            if (typeof payload.callback === 'function') {
+              payload.callback()
+            }
+          })
+          break
         case 'start':
           vm.setVoucherStatus('sending')
           // vm.$emit('onCommand', {
@@ -469,6 +530,7 @@ export default {
   },
   data () {
     return {
+      showingConfirmResetAllDialog: false,
       pusherChannel: null,
       fetching: false,
       timer: null,

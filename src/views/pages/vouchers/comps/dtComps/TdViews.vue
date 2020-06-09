@@ -1,7 +1,7 @@
 <template>
   <div class="td-views line-height-1">
-    <font-awesome-icon icon="eye"/>
-    x <div class="badge badge-warning">{{ value }}</div>
+    <span v-if="value===0">0</span>
+    <div v-else class="badge badge-warning">{{ value }}</div>
   </div>
 </template>
 

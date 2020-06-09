@@ -790,11 +790,12 @@
       },
       initPusherChannel () {
         const vm = this
-        if (vm.pusher) {
+        if (vm.pusher && vm.record) {
           if (vm.pusherChannel) {
             vm.pusherChannel.unbind_all()
           }
-          vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
+          console.log('initPusherChannel subscrib')
+          vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
           vm.pusherChannel.bind('VoucherStatusUpdated', function(data) {
             vm.onVoucherStatusUpdated(data)
           })

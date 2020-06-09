@@ -7,12 +7,16 @@
         @onCommand="onCommandHandler"></search-field>
     <table class="summary-table">
       <tr>
+        <td class="summary-label"><div class="badge badge-warning min-width-80">Views</div></td>
+        <td class="summary-value">{{record.total_views}}</td>
         <td class="summary-label"><div class="badge badge-info min-width-80">Pending</div></td>
         <td class="summary-value">{{statusSummary.pending}}</td>
         <td class="summary-label"><div class="badge badge-success min-width-80">Completed</div></td>
         <td class="summary-value">{{ statusSummary.completed}}</td>
       </tr>
       <tr>
+        <td></td>
+        <td></td>
         <td class="summary-label"><div class="badge badge-muted min-width-80">On Hold</div></td>
         <td class="summary-value">{{statusSummary.ready}}</td>
         <td class="summary-label"><div class="badge badge-danger min-width-80">Fails</div></td>
@@ -158,7 +162,8 @@ export default {
         {
           title: 'general.views',
           thComp: 'ThCommonHeader',
-          tdClass: 'align-middle',
+          thClass: 'text-center',
+          tdClass: 'align-middle text-center',
           tdComp: 'TdViews',
           field: 'views',
           sortable: true
@@ -403,11 +408,11 @@ export default {
 
     initPusherChannel () {
       const vm = this
-      if (vm.pusher) {
+      if (vm.pusher && vm.record) {
         if (vm.pusherChannel) {
           vm.pusherChannel.unbind_all()
         }
-        vm.pusherChannel = vm.pusher.subscribe('voucher.channel')
+        vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
 
         vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
           vm.onVoucherCodeStatusUpdated(data)
