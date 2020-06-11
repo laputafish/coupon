@@ -58,28 +58,6 @@ Vue.use(Toaster, {timeout: 3000})
 Vue.use(VueClipboard)
 Vue.use(VueCarousel)
 Vue.use(VueLoading)
-// Vue.use(VuejsProgressBar)
-
-// Vue.use(VueCropper)
-
-// axios.interceptors.response.use(
-//     function (response) {
-//       console.log('axios.interceptors.response :: response: ', response)
-//       const newtoken = ''
-//       if (newtoken) store.dispatch('login', newtoken)
-//       return response
-//     },
-//     function (error) {
-//       switch (error.response.status) {
-//         case 401:
-//           store.dispatch('logoff')
-//           break
-//         default:
-//           console.log(error.response)
-//       }
-//       return Promise.reject(error)
-//     }
-// )
 
 localize({
   en: {

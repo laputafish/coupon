@@ -1,7 +1,14 @@
 <template>
 <div class="d-flex flex-row align-items-stretch">
   <div class="flex-grow-1">
-    <div class="toolbar p-1 text-right">
+    <div class="toolbar p-1 text-right d-flex flex-row align-items-end justify-content-end">
+      <div class="btn-group mx-3">
+
+        <button class="btn btn-outline-info btn-sm" @click="copyContent">
+          <font-awesome-icon icon="copy" class="mr-1"/>Copy</button>
+        <button class="btn btn-outline-info btn-sm" @click="pasteContent($event)">
+          <font-awesome-icon icon="paint-brush" class="mr-1"/>Paste</button>
+      </div>
       <button type="button"
               class="btn btn-danger min-width-100"
               @click="clearTemplate">
@@ -44,7 +51,7 @@
   <div v-if="!isFullScreenEditorMode">
      <template-tag-list
          class="flex-grow-0 p-2 bg-muted ml-2"
-         :templateTagGroups="templateTagGroups"
+         :templateTagGroups="templateTagGroups"met
          @onCommand="onCommandHandler"></template-tag-list>
   </div>
   <div v-else
@@ -125,6 +132,41 @@ export default {
     }
   },
   methods: {
+    onPaste (evt) {
+      const vm = this
+      console.log('pasteContent : $event: ', evt)
+      evt.preventDefaults();
+      evt.stopPropagation();
+    },
+    copyContent () {
+      const vm = this
+      vm.$copyText(vm.content)
+      vm.$toaster.success('Template content copyied to clipboard successfull')
+    },
+
+    pasteContent ($event) {
+      const vm = this
+      navigator.clipboard.readText().then(
+        text => {
+          vm.setContent(text)
+        }
+      ).catch(
+        err => {
+          vm.$toaste.error('Error: cannot paste content in clipboard!')
+        }
+      )
+      // console.log('pasteContent :: dummy: ', vm.$refs.dummy.$el)
+      // vm.$refs.dummy.exec
+      // console.log('pasteContent : $event: ', $event)
+      // const clipboardData = window.clipboardData || event.clipboardData || event.originalEvent && event.originalEvent.clipboardData;
+      // const pastedText = clipboardData.getData("Text") || clipboardData.getData("text/plain");
+      //
+      // if (!pastedText && pastedText.length) {
+      //   return;
+      // }
+      //
+      // vm.setContent(pastedText);
+    },
     onUploadingHandler () {
     },
 

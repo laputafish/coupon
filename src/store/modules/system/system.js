@@ -50,10 +50,19 @@ const mutations = {
   setSystemConfigs (state, payload) {
     state.systemConfigs = payload
     state.systemConfigsLoaded = true
-    state.pusher = new Pusher(payload.pusher_key, {
-      encrypted: true,
-      cluster: payload.pusher_cluster
-    })
+
+    if (payload.pusher_key === 'websocketsyoov') {
+      state.pusher = new Pusher(payload.pusher_key, {
+        cluster: payload.pusher_cluster,
+        httpHost: payload.pusher_host,
+        httpPort: parseInt(payload.push_port)
+      })
+    } else {
+      state.pusher = new Pusher(payload.pusher_key, {
+        encrypted: true,
+        cluster: payload.pusher_cluster
+      })
+    }
   }
 }
 

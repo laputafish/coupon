@@ -8,11 +8,7 @@
             <div class="huge-font2 badge badge-warning">{{ processedCount }} / {{ totalCount }}</div>
           </div>
           <div class="align-self-stretch px-2">
-            <button class="btn btn-outline-primary min-width-100"
-                    @click="refreshSummary">
-              <i class="fas fa-sync"></i>
-              <!--<font-awesome-icon icon="refresh"></font-awesome-icon>-->
-            </button>
+…
           </div>
         </div>
         <yoov-progress-bar class="px-1 py-3"
@@ -316,16 +312,19 @@ export default {
     // },
     initPusherChannel () {
       const vm = this
+      console.log('SendEmailsSection :: initPusherChannel')
       if (vm.pusher && vm.voucher) {
         if (vm.pusherChannel) {
           vm.pusherChannel.unbind_all()
         }
         vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.voucher.id + '.channel')
 
+        console.log('SendEmailsSection :: bind(VoucherMailingStatusUpdated)')
         vm.pusherChannel.bind('VoucherMailingStatusUpdated', function (data) {
           vm.onVoucherMailingStatusUpdated(data)
         })
 
+        console.log('SendEmailsSection :: bind(VoucherCodeStatusUpdated)')
         vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
           vm.onVoucherCodeStatusUpdated(data)
         })
@@ -612,7 +611,7 @@ export default {
 }
 
 .vue-progress-path path {
-  stroke-width: 12;
+  stroke-width: 12px;
 }
 
 .vue-progress-path .progress {

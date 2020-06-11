@@ -797,9 +797,11 @@
         if (vm.pusher && vm.recordId!==0) {
           // console.log('*** VoucherRecord :: initPusherChannel (pusher and record id) ok')
           if (vm.pusherChannel) {
+            // alert('unbind_all')
             vm.pusherChannel.unbind_all()
           }
           const channelName = 'voucher' + vm.recordId + '.channel'
+          // alert('subscribe: channel = ' + channelName)
           // console.log('*** initPusherChannel subscrib(' + channelName + ')')
           vm.pusherChannel = vm.pusher.subscribe(channelName)
 
