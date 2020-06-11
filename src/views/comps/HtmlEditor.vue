@@ -13,7 +13,8 @@
           @input="value=>updateContent(value)"></tinymce>
     <image-select-dialog
         :title="$t('vouchers.images')"
-        scope="tinymce"
+        :voucher="voucher"
+        imageScope="local"
         v-model="showingImageSelectDialog"
         @onCommand="onCommandHandler"></image-select-dialog>
   </div>
@@ -117,6 +118,10 @@ export default {
     content: {
       type: String,
       default: ''
+    },
+    voucher: {
+      type: Object,
+      default: null
     }
   },
   methods: {

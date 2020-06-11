@@ -210,12 +210,12 @@
     },
     mounted () {
       const vm = this
-      // vm.activeScope = vm.scopeOptions[0].value
-      // vm.$nextTick(() => {
-      //   console.log('mounted :: scopeOptions: ', vm.scopeOptions)
-      //   console.log('mounted :: activeScope: ', vm.activeScope)
-      //   vm.fetchImages()
-      // })
+      vm.activeScope = vm.scopeOptions[0].value
+      vm.$nextTick(() => {
+        console.log('mounted :: scopeOptions: ', vm.scopeOptions)
+        console.log('mounted :: activeScope: ', vm.activeScope)
+        vm.fetchImages()
+      })
       // vm.fetchImages()
     },
     model: {
@@ -223,9 +223,14 @@
       event: 'input'
     },
     watch: {
-      activeScope: function() {
+      voucher: function () {
+        const vm = this
+        vm.fetchImages()
+      },
+      activeScope: function (newVal) {
         // alert('watch(activeScope)')
         const vm = this
+        console.log('activeScope: newVal = ' + newVal)
         vm.fetchImages()
       },
       value: function () {
@@ -282,7 +287,7 @@
           {name: 'Agents', value: 'agent'},
           {name: 'All', value: 'all'}
         ],
-        activeScope: '',
+        activeScope: 'local',
         objectFitMode: 'cover',
         loading: false,
         // selectedAgent: null,
@@ -502,33 +507,39 @@
 
       fetchImages () {
         const vm = this
-        vm.loading = true
-        const data = {
-          urlCommand: '/medias',
-          options: {
-            params: {
-              scope: vm.activeScope,
-              voucherId: vm.voucher.id
-            }
-          }
-        }
-        vm.$store.dispatch('AUTH_GET', data).then(
-          response => {
-            if (vm.hasGroups) {
-              vm.groups = response
-              if (vm.groups.length > 0) {
-                vm.selectedGroup = vm.groups[0]
-                vm.selectedImage = null
-              } else {
-                vm.selectedGroup = null
+        if (vm.voucher) {
+          console.log('fetchImages :: voucher exists: ', vm.voucher)
+          console.log('fetchImages :: activeScope = ' + vm.activeScope)
+          vm.loading = true
+          const data = {
+            urlCommand: '/medias',
+            options: {
+              params: {
+                scope: vm.activeScope,
+                voucherId: vm.voucher.id
               }
-            } else {
-              vm.images = response
-              vm.selectedImage = null
             }
-            vm.loading = false
           }
-        )
+          vm.$store.dispatch('AUTH_GET', data).then(
+            response => {
+              if (vm.hasGroups) {
+                vm.groups = response
+                if (vm.groups.length > 0) {
+                  vm.selectedGroup = vm.groups[0]
+                  vm.selectedImage = null
+                } else {
+                  vm.selectedGroup = null
+                }
+              } else {
+                vm.images = response
+                vm.selectedImage = null
+              }
+              vm.loading = false
+            }
+          )
+        } else {
+          console.log('fetchImages :: voucher not exists')
+        }
       },
 
       confirmImage () {

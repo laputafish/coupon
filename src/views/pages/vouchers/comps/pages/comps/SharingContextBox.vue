@@ -88,11 +88,13 @@
                 Link for testing
               </div>
               <div class="badge badge-info test-link-url">
-                {{ testLink }}
+                Copy Test Link
+                <font-awesome-icon class="ml-1" icon="copy"/>
+                <!--{{ testLink }}-->
               </div>
-              <div class="px-1 d-inline-block copy-link" @click.prevent.stop="copySharingLink()">
-                <font-awesome-icon icon="copy"/>
-              </div>
+              <!--<div class="px-1 d-inline-block copy-link" @click.prevent.stop="copySharingLink()">-->
+                <!---->
+              <!--</div>-->
             </div>
           </div>
         </div>
@@ -185,19 +187,25 @@ export default {
 
   mounted () {
     const vm = this
-    vm.updateTestLink()
+    vm.createTestLink()
   },
 
   methods: {
-    updateTestLink () {
+    createTestLink () {
       const vm = this
       vm.testLink = vm.$store.getters.appHost + '/' + vm.sharingType + '/' + vm.record.id + '/' + new Date().getTime()
     },
+
     copySharingLink () {
       const vm = this
-      vm.updateTestLink()
-      vm.$copyText(vm.testLink)
-      vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+      vm.$emit('onCommand', {
+        command: 'save',
+        callback: () => {
+          vm.createTestLink()
+          vm.$copyText(vm.testLink)
+          vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+        }
+      })
     },
 
     updateField (fieldName, fieldValue) {

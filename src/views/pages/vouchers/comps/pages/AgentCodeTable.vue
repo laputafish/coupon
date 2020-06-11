@@ -1,4 +1,4 @@
-<template>
+i<template>
 <div class="py-2 px-3 agent-code-table">
   <div class="toolbar d-flex justify-content-between mb-1">
     <search-field
@@ -54,6 +54,13 @@
         <i class="fas fa-download"></i>
         <span class="ml-2">{{ $t('buttons.download') }}</span>
       </button>
+      <!--<button type="button"-->
+              <!--:disabled="data.length===0"-->
+              <!--class="btn btn-warning min-width-100 mr-1"-->
+              <!--@click="exportExcel()">-->
+        <!--<i class="fas fa-download"></i>-->
+        <!--<span class="ml-2">{{ $t('buttons.download') }}</span>-->
+      <!--</button>-->
       <xls-file-upload
           inputId="uploadCodes"
           uploadUrl="/agent_codes/upload"
@@ -93,6 +100,14 @@
       callbackCommand="confirmCodeImport"
       @onCommand="onCommandHandler"></code-import-dialog>
 
+  <common-dialog
+      id="codeExportDialog"
+      ref="codeExportDialog"
+      title="Download"
+      v-model="showingCodeExportDialog"
+      :buttons="[{caption:'Only Codes',command:'exportCodesOnly',variant:'info'},{caption:'Codes with Participants',command:'exportCodesWithParticipants',variant:'primary'}]"
+      @onCommand="onCommandHandler"></common-dialog>
+
   <delete-all-codes-dialog
     ref="deleteAllCodesDialog"
     v-model="showingDeleteAllCodesDialog"
@@ -109,6 +124,7 @@ import xlsFileUpload from '@/views/comps/XlsFileUpload'
 import searchField from '../comps/SearchField'
 import codeImportDialog from '../../dialogs/CodeImportDialog'
 import deleteAllCodesDialog from '../../dialogs/DeleteAllCodesDialog'
+import commonDialog from '@/views/comps/dialogs/CommonDialog'
 
 export default {
   components: {
@@ -117,7 +133,8 @@ export default {
     xlsFileUpload,
     searchField,
     codeImportDialog,
-    deleteAllCodesDialog
+    deleteAllCodesDialog,
+    commonDialog
     // ,
     // helpers
   },
@@ -132,6 +149,8 @@ export default {
       channel: null,
       showingDeleteAllCodesDialog: false,
       showingCodeImportDialog: false,
+      showingCodeExportDialog: false,
+
       importedFileKey: '',
       importedFieldInfos: [],
       uploadRoute: '/agent_codes/upload',
@@ -336,6 +355,7 @@ export default {
     vm.query.page = 1
     vm.xprops.record = vm.record
     vm.showingCodeImportDialog = false
+    vm.showingCodeExportDialog = false
     vm.showingDeleteAllCodesDialog = false
     vm.reloadCodeSummary()
   },
@@ -356,6 +376,11 @@ export default {
     }
   },
   methods: {
+    download () {
+      const vm = this
+      console.log('AgentCodeTable :: download')
+      vm.showingCodeExportDialog = true
+    },
     updateCodeViewCount(row) {
       const vm = this
       const postData = {
@@ -471,6 +496,18 @@ export default {
             payload.callback()
           }
           break
+        case 'exportCodesOnly':
+          vm.$emit('onCommand', {
+            command: command
+          })
+          vm.$refs.codeExportDialog.close()
+          break
+        case 'exportCodesWithParticipants':
+          vm.$emit('onCommand', {
+            command: command
+          })
+          vm.$refs.codeExportDialog.close()
+          break
         case 'deleteAllCodesAndParticipants':
           vm.doDeleteAll()
           vm.doDeleteAllParticipants()
@@ -502,7 +539,7 @@ export default {
     exportExcel () {
       const vm = this
       vm.$emit('onCommand', {
-        command: 'export'
+        command: 'exportCodesWithParticipants'
       })
     },
 

@@ -38,7 +38,8 @@
         <div class="field-item">
           <div class="d-inline-block mr-3 field-label">{{$t('general.status')}}</div>
           <div class="d-inline-block mr-3 field-content min-width-50"
-            :class="{'bg-danger':record.status=='sending'}">{{ record ? ucfirst(record.status) : '' }}</div>
+               :class="{'bg-danger':record.status=='sending'}">{{ record ? ucfirst(record.status) : '' }}
+          </div>
         </div>
 
         <div class="field-item">
@@ -59,12 +60,13 @@
 
         <div class="field-item">
           <div class="d-inline-block mr-3 field-label">{{ $t('general.type')}}</div>
-          <div class="d-inline-block mr-3 field-content min-width-50 text-center">{{ ucfirst(record.voucher_type) }}</div>
+          <div class="d-inline-block mr-3 field-content min-width-50 text-center">{{ ucfirst(record.voucher_type) }}
+          </div>
         </div>
       </div>
     </div>
     <div v-if="record && record.status==='sending'"
-      class="bg-danger text-white text-center p-2">
+         class="bg-danger text-white text-center p-2">
       <h2>Email is Sending.</h2>
       <h4>Any modification is not recommended.</h4>
     </div>
@@ -122,10 +124,10 @@
     </div>
 
     <!--<voucher-toolbar-->
-        <!--v-if="record"-->
-        <!--:buttons="tabButtons"-->
-        <!--:activeButton="activeTabButton"-->
-        <!--@click="selectTab"></voucher-toolbar>-->
+    <!--v-if="record"-->
+    <!--:buttons="tabButtons"-->
+    <!--:activeButton="activeTabButton"-->
+    <!--@click="selectTab"></voucher-toolbar>-->
 
     <info-page
         v-if="record && activePage==='info'"
@@ -380,6 +382,7 @@
     <image-cropper-dialog
         id="imageCropperDialog"
         ref="imageCropperDialog"
+        title="Image Cropper"
         :mediaId="selectedTempMediaId"
         :mediaIdField="selectedTempMediaIdField"
         :voucherId="recordId"
@@ -456,11 +459,12 @@
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
-      copyToken,
-      copyLink,
-      toggleBlackWhite,
-      templateEditor,
+      // copyToken,
+      // copyLink,
+      // toggleBlackWhite,
+      // templateEditor,
       imageCropperDialog,
+
       // agentCodeTable,
       agentCodeTab,
       // mailingManagerTab,
@@ -476,7 +480,7 @@
 
       voucherToolbarButton,
 
-      fileUpload,
+      // fileUpload,
       // emailTable,
       // datePicker,
       tinymce,
@@ -526,13 +530,12 @@
         showingCopyTemplateDialog: false,
         copyTemplateFor: 'template',
         showingImageSelectDialog: false,
+        showingImageCropperDialog: false,
 
         // sharing Image properties
         imageScope: '',
         selectedTempMediaId: 0,
         selectedTempMediaIdField: '',
-
-        showingImageCropperDialog: false,
 
         processingButtons: [],
 
@@ -794,7 +797,7 @@
       initPusherChannel () {
         const vm = this
         // console.log('*** VoucherRecord :: initPusherChannel')
-        if (vm.pusher && vm.recordId!==0) {
+        if (vm.pusher && vm.recordId !== 0) {
           // console.log('*** VoucherRecord :: initPusherChannel (pusher and record id) ok')
           if (vm.pusherChannel) {
             // alert('unbind_all')
@@ -806,12 +809,12 @@
           vm.pusherChannel = vm.pusher.subscribe(channelName)
 
           console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
-          vm.pusherChannel.bind('VoucherStatusUpdated', function(data) {
+          vm.pusherChannel.bind('VoucherStatusUpdated', function (data) {
             vm.onVoucherStatusUpdated(data)
           })
         } else {
           if (vm.pusher) {
-            if (vm.recordId!==0) {
+            if (vm.recordId !== 0) {
 
             } else {
               console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
@@ -1034,7 +1037,7 @@
             vm.record.email_template = vm.getVoucherTemplate(selectedVoucher.id)
             vm.$toaster.success(vm.$t('messages.email_template_copied_successfully'))
           }
-          
+
         }
       },
       getVoucherTemplate (voucherId) {
@@ -1337,8 +1340,8 @@
             vm.selectedTempMediaIdField = payload.imageIdField
             /* sharing_image_id or form_sharing_image_id */
             // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
-            vm.$bvModal.show('imageCropperDialog')
-            // vm.showingImageCropperDialog = true
+            // vm.$bvModal.show('imageCropperDialog')
+            vm.showingImageCropperDialog = true
             vm.$nextTick(() => {
               vm.$refs.imageCropperDialog.startCrop()
             })
@@ -1438,8 +1441,11 @@
           case 'exportParticipants':
             vm.exportParticipants()
             break
-          case 'export':
+          case 'exportCodesOnly':
             vm.exportCodes()
+            break
+          case 'exportCodesWithParticipants':
+            vm.exportCodesWithParticipants()
             break
           case 'refreshCouponCodes':
             vm.$refs.agentCodePage.refresh()
@@ -1573,9 +1579,13 @@
         )
       },
       exportCodes () {
+        // const vm = this
+        alert('exportCodes : not implemented!')
+      },
+      exportCodesWithParticipants () {
         const vm = this
         const data = {
-          urlCommand: '/vouchers/' + vm.record.id + '/codes/export',
+          urlCommand: '/vouchers/' + vm.record.id + '/codes_with_participants/export',
           options: {
             data: {
               description: vm.record.description
@@ -2064,7 +2074,7 @@
   }
 
   .voucher-toolbar {
-    border-top: 1px solid rgba(127,127,127,.2);
+    border-top: 1px solid rgba(127, 127, 127, .2);
     border-bottom: 4px solid #9fcdff;
     border-left: none;
     border-right: none;

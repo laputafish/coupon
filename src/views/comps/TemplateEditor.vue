@@ -44,6 +44,7 @@
         ref="htmlEditor"
         id="emailTemplateEditor"
         :content="content"
+        :voucher="voucher"
         @onCommand="onCommandHandler"
         @input="value=>updateContent(value)">
     </html-editor>
