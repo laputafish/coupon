@@ -6,7 +6,7 @@
       </div>
       <div class="p-2">
         <attribute-set
-            attributeSet="system-page"
+            attributeSetName="system-page"
             :options="inputObj.options"
             @onCommand="onCommandHandler"></attribute-set>
       </div>
@@ -130,7 +130,7 @@
               @onCommand="onCommandHandler"></fields-table-row>
         </table>
         <attribute-set
-          :attributeSet="inputObj.inputType"
+            :attributeSetName="inputObj.inputType"
           :options="inputObj.options"
           @onCommand="onCommandHandler"></attribute-set>
       </div>
@@ -158,7 +158,7 @@
 
         </table>
         <attribute-set
-            :attributeSet="inputObj.inputType"
+            attributeSetName="inputObj.inputType"
             :options="inputObj.options"
             @onCommand="onCommandHandler"></attribute-set>
       </div>
@@ -173,7 +173,7 @@
           <fields-table-row label="Button Label" placeholder="Submit" :value="inputObj.question" fieldName="question" @onCommand="onCommandHandler"></fields-table-row>
         </table>
         <attribute-set
-            :attributeSet="inputObj.inputType"
+            attributeSetName="inputObj.inputType"
             :options="inputObj.options"
             @onCommand="onCommandHandler"></attribute-set>
       </div>

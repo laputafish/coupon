@@ -154,12 +154,14 @@
 
 <script>
 import copyToken from '@/views/comps/CopyToken'
+import copyLink from '@/views/comps/CopyLink'
 import formInputs from '@/views/comps/forms'
 import vueRangeSlider from 'vue-range-slider'
 
 export default {
   components: {
     copyToken,
+    copyLink,
     vueRangeSlider,
     ...formInputs
   },

@@ -2,7 +2,7 @@
   <div>
     <div v-for="(attributeGroup,index) in objAttributeInfo"
          class="mb-3"
-         :key="attributeGroup.caption">
+         :key="index">
       <u v-if="attributeGroup.caption !== ''">{{ attributeGroup.caption }}</u>
       <attribute-table
           :optionIndex="index"
@@ -33,7 +33,7 @@ export default {
     // },
     objAttributeInfo () {
       const vm = this
-      const result = this.$store.getters.objAttributeGroups[vm.attributeSet]
+      const result = this.$store.getters.objAttributeGroups[vm.attributeSetName]
       return result ? result : []
     },
     attributeInfos () {
@@ -54,7 +54,7 @@ export default {
     }
   },
   props: {
-    attributeSet: {
+    attributeSetName: {
       type: String,
       default () {
         return ''

@@ -1,7 +1,7 @@
 <template>
   <table class="w-100">
     <tr v-for="(keyValue, index) in keyValues"
-        :key="keyValue.attributeKey">
+        :key="index">
       <td class="label-cell">
         {{ attributeInfos[keyValue.attributeKey].caption }}
       </td>
