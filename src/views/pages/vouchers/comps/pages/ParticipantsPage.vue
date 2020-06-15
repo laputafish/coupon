@@ -44,24 +44,16 @@ export default {
     setInputObjs () {
       const vm = this
       if (vm.record) {
-        console.log('ParticipantsPage :: inputObjs :: vm.record')
         switch (vm.record.voucher_type) {
           case 'form':
-            console.log('inputObjs :: vm.record.voucher_type === form')
             if (vm.record.form_configs && vm.record.form_configs.inputObjs) {
               vm.inputObjs = vm.record.form_configs.inputObjs
             }
             break
           case 'voucher':
-            console.log('ParticipantsPage :: setInputObjs :: vm.record.voucher_type === voucher')
-            console.log('ParticipantsPage :: setInputObjs :: vm.record.participant_configs: ', vm.record.participant_configs)
-            console.log('ParticipantsPage :: setInputObjs :: vm.record.participant_configs.inputObjs: ', vm.record.participant_configs.inputObjs)
-
             if (vm.record.participant_configs && vm.record.participant_configs.inputObjs) {
-              console.log('ParticipantsPage :: participant_configs and inputObjs: => assign participant_configs.inputObjs: ', vm.record.participant_configs.inputObjs)
               vm.inputObjs = vm.record.participant_configs.inputObjs
             } else {
-              console.log('ParticipantsPage :: setInputObjs :: no pparticipant_configs')
             }
             break
           default:
@@ -98,18 +90,14 @@ export default {
     inputObjs2 () {
       const vm = this
       var result = []
-      console.log('inputObjs')
       if (vm.record) {
-        console.log('inputObjs :: vm.record')
         switch (vm.record.voucher_type) {
           case 'form':
-            console.log('inputObjs :: vm.record.voucher_type === form')
             if (vm.record.form_configs && vm.record.form_configs.inputObjs) {
               result = vm.record.form_configs.inputObjs
             }
             break
           case 'voucher':
-            console.log('inputObjs :: vm.record.voucher_type === voucher')
             if (vm.record.participant_configs && vm.record.participant_configs.inputObjs) {
               result = vm.record.participant_configs.inputObjs
             }
@@ -118,7 +106,7 @@ export default {
             console.log('inputObjs :: vm.voucher_type unknown')
         }
       }
-      console.log('computed(inputObjs) :: inputObjs.length = ' + vm.record.partipiant-length)
+      // console.log('computed(inputObjs) :: inputObjs.length = ' + vm.record.partipiant-length)
       return result
     }
   }

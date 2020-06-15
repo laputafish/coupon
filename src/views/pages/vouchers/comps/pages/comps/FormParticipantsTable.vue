@@ -423,10 +423,11 @@
         }
       },
       getInputObjOption (inputObj, optionKey) {
+        const vm = this
         var result = false
         if (inputObj.options.length > 0) {
           const keyValues = vm.strToKeyValues(inputObj.options[0])
-          if (Ohject.keys(keyValues).indexOf('twoFields') >= 0) {
+          if (Object.keys(keyValues).indexOf('twoFields') >= 0) {
             result = keyValues['twoFields']
           }
         }

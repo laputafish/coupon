@@ -70,7 +70,7 @@
       <h2>Email is Sending.</h2>
       <h4>Any modification is not recommended.</h4>
     </div>
-    <div class="voucher-toolbar mb-2">
+    <div v-if="record" class="voucher-toolbar mb-2">
       <!-- Info -->
       <voucher-toolbar-button
           :class="{'has-error': infoPageError}"
@@ -908,6 +908,8 @@
         }
 
         // init form configs
+        // alert('onRefreshed')
+        // console.log('vm.record.form_configs: ', vm.record.form_configs)
         if (vm.record.form_configs === null || vm.record.form_configs.length === 0) {
           vm.record.form_configs = JSON.parse(JSON.stringify(vm.DEFAULT_FORM_CONFIGS))
         }
@@ -1753,6 +1755,7 @@
       certifyFormConfigs () {
         const vm = this
         var formConfigs = vm.record.form_configs;
+        console.log('certifyFormConfigs :: formConfigs: ', formConfigs)
         if (formConfigs['inputObjs']) {
           var inputObjs = formConfigs['inputObjs']
           for (var i = 0; i < inputObjs.length; i++) {
@@ -1776,8 +1779,7 @@
 
       async save (callback) {
         const vm = this
-        const infoPageError = !await vm.$refs.infoPage.validate()
-        if (!infoPageError) {
+        if (!vm.infoPageError) {
           return vm.doSave(callback)
         } else {
           vm.$toaster.warning('Some field is essential but missing.')
