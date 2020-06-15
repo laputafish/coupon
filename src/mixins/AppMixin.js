@@ -17,6 +17,32 @@ const AppMixin = {
     }
   },
   methods: {
+    showToaster (msgInfo) {
+      // messageInfo = {
+      //    variant:
+      //    message:
+      //    ...
+      // }
+      const vm = this
+      var variant = 'info'
+      if (msgInfo.variant) {
+        variant = msgInfo.variant
+      }
+      switch (variant) {
+        case 'warning':
+          vm.$toaster.warning(msgInfo.message, {timeout: 100000})
+          break
+        case 'info':
+          vm.$toaster.warning(msgInfo.message)
+          break
+        case 'success':
+          vm.$toaster.warning(msgInfo.message)
+          break
+        case 'error':
+          vm.$toaster.warning(msgInfo.message)
+          break
+      }
+    },
     // showErrors (data) {
     //   let vm = this
     //

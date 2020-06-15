@@ -172,3 +172,12 @@ div[name=Datatable] .table > thead > th {
   background-color: #999;
   color: white;
 }
+
+.v-toaster .v-toast.v-toast-warning {
+  color: black;
+}
+
+input.has-error:focus,
+input.has-error {
+  border-color: red;
+}

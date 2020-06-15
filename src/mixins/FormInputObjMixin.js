@@ -79,6 +79,7 @@ const FormInputObjMixin = {
             vm.newInputObj(payload, formConfigs)
             break
           case 'selectInputObjImage':
+            // alert('selectInputObjImage')
             vm.selectInputObjImage(payload, formConfigs)
             break
           case 'deleteInputObj':
@@ -253,6 +254,7 @@ const FormInputObjMixin = {
         vm.selectedFormConfigs = formConfigs
         vm.selectedInputObjIndex = currentIndex
         vm.imageScope = 'inputObj'
+        vm.$refs.imageSelectDialog.refresh()
         vm.showingImageSelectDialog = true
       }
     },

@@ -40,7 +40,7 @@ import 'vuejs-dialog/dist/vuejs-dialog.min.css'
 import 'v-toaster/dist/v-toaster.css'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
-import {ValidationProvider, extend} from 'vee-validate'
+import {ValidationProvider, ValidationObserver, extend, configure} from 'vee-validate'
 import {required, email, confirmed} from 'vee-validate/dist/rules'
 import {localize} from 'vee-validate'
 
@@ -76,9 +76,16 @@ extend('confirmed', {...confirmed, message: 'Password not matched.'})
 extend('nonzero', value => {
   return value !== 0
 })
+configure({
+	classes: {
+		valid: 'is-valid',
+		invalid: 'is-invalid'
+	}
+})
 Vue.component('vue-loading', VueLoading)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('validationProvider', ValidationProvider)
+Vue.component('validationObserver', ValidationObserver)
 
 Vue.config.productionTip = false
 
@@ -87,6 +94,24 @@ store.dispatch('FETCH_CONSTANTS')
 //     () => store.dispatch('FETCH_AGENTS')
 // )
 // store.dispatch('FETCH_SYSTEM_CONFIG')
+
+// import Echo from 'laravel-echo'
+// //
+// window.Pusher = require('pusher-js');
+// window.Echo = new Echo({
+// 	broadcaster: 'pusher',
+// 	key: '1fe6acadae70811a093e',
+// 	cluster: 'ap1',
+// 	encrypted: true
+// });
+
+// export var echo_instance = new Echo({
+// 	broadcaster: 'pusher',
+// 	key: '1fe6acadae70811a093e',
+// 	cluster: 'ap1',
+// 	encrypted: true
+// })
+// Vue.prototype.$echo = echo_instance
 
 new Vue({
   router,

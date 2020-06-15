@@ -203,6 +203,11 @@
 </script>
 
 <style>
+  #voucherSelectDialog .modal-body {
+    display: flex;
+    flex-direction: row;
+    min-height: 480px;
+  }
   #voucherSelectDialog .left-pane {
     display: block;
     padding-right: 10px;

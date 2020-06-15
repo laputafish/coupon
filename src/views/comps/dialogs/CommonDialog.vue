@@ -8,6 +8,9 @@
       @onCommand="onCommandHandler"
       modalType="confirmation"
       @input="value=>$emit('input',value)">
+    <template v-if="message" v-slot:dialogBody>
+      <div class="text-left">{{ message }}</div>
+    </template>
     <template v-slot:buttonBar>
       <button v-for="button in buttons"
               class="btn"
@@ -55,10 +58,14 @@
     },
     data () {
       return {
-        loading: false
+        loading: false,
+        message: ''
       }
     },
     methods: {
+      setMessage (message) {
+        this.message = message
+      },
       close () {
         this.closeDialog()
       },
@@ -73,6 +80,7 @@
       closeDialog () {
         const vm = this
         vm.$emit('input', false)
+        vm.$bvModal.hide(vm.id)
       },
       onButtonClicked (command) {
         this.$emit('onCommand', {

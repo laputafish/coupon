@@ -8,8 +8,8 @@
       </div>
     </template>
     <div class="container-fluid" @click="sendingResult=''">
-      <div class="row">
-        <div class="col-sm-6 px-3">
+      <div class="d-flex flex-row align-items-start">
+        <div class="flex-grow-1">
           <div class="d-flex flex-row align-items-start">
             <div class="pr-2">
               <button class="btn btn-circle btn-primary"
@@ -47,7 +47,7 @@
             </div>
           </div>
         </div>
-        <div v-if="selectedServer" class="col-sm-6 border p-2 mb-3" style="background-color:#fdf3ba;">
+        <div v-if="selectedServer" class="border p-2 mb-3" style="background-color:#fdf3ba;max-width:50%;">
           <div class="row mb-3">
             <div class="col-sm-12">
               <div class="d-flex flex-row bg-gray align-items-center pr-1 pl-2">

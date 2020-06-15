@@ -12,7 +12,7 @@
           :value="content"
           @input="value=>updateContent(value)"></tinymce>
     <image-select-dialog
-        :title="$t('vouchers.images')"
+        title="Image Selection"
         :voucher="voucher"
         imageScope="local"
         v-model="showingImageSelectDialog"
@@ -143,7 +143,7 @@ export default {
     },
 
     onCommandHandler (payload) {
-      alert('onCommandHandler')
+      console.log('HtmlEditor :: onCommandHandler :: payload: ', payload)
     },
     onEditorInit () {
       const vm = this

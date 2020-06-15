@@ -1,4 +1,5 @@
-import ThBadgeHeader from './ThBadgeHeader.vue'
+import ThCodeBadgeHeader from './ThCodeBadgeHeader.vue'
+import ThParticipantBadgeHeader from './ThParticipantBadgeHeader.vue'
 import TdKey from './TdKey.vue'
 import TdCodeStatus from './TdCodeStatus.vue'
 import TdSingleChoice from './TdSingleChoice.vue'
@@ -7,7 +8,8 @@ import TdParticipantField from './TdParticipantField.vue'
 import TdViews from './TdViews'
 
 export default {
-  ThBadgeHeader,
+  ThCodeBadgeHeader,
+  ThParticipantBadgeHeader,
   TdKey,
   TdCodeStatus,
   TdSingleChoice,

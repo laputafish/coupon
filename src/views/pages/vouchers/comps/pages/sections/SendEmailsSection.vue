@@ -35,9 +35,9 @@
           :hasFault="true"
           description="No Smtp Server Specified!"></icon-item>
       <div class="">
-        <big-border-button v-if="voucher.status!=='sending'&&processedCount===0&&totalCount>0"
+        <big-border-button v-if="(voucher.status!=='sending'&&processedCount===0&&totalCount>0)||(totalCount==0)"
                            class="mb-1"
-                           :disabled="!smtpServerReady"
+                           :disabled="!smtpServerReady || totalCount===0"
                            variant="success"
                            @onCommand="onCommandHandler"
                            command="start"
@@ -56,13 +56,13 @@
                            @onCommand="onCommandHandler"
                            command="continue"
                            caption="Continue"></big-border-button>
-        <big-border-button v-if="processedCount===totalCount"
+        <big-border-button v-if="processedCount===totalCount && totalCount!==0"
                            class="mb-1"
                            :disabled="true"
                            variant="muted"
                            caption="Finished"></big-border-button>
         <button class="btn btn-danger btn-sm"
-                :disabled="voucher.status!=='completed'&&voucher.status!=='pending'&&processedCount===0"
+                :disabled="(voucher.status!=='completed'&&voucher.status!=='pending'&&processedCount===0) || totalCount===0"
           @click="resetAll">
           Reset All
         </button>
@@ -74,9 +74,21 @@
 
       <h4 class="text-black-50">(</h4>
         <h4 class="mb-2 text-success">Success:</h4>
-        <h4 class="ml-3 text-black-50">{{ mailingSummary.completed }}</h4>
-        <h4 class="mb-3 ml-4 text-danger">Failed:</h4>
-        <h4 class="ml-3 text-black-50">{{ mailingSummary.fails }}</h4>
+        <h4 class="mx-3 text-black-50">{{ mailingSummary.completed }}</h4>
+        <div class="mb-3 ml-0 ">
+          <div class="d-flex flex-row">
+            <h4 class="text-danger">Failed:</h4>
+            <h4 class="ml-3 text-black-50">{{ mailingSummary.fails }}</h4>
+          </div>
+          <button class="btn btn-sm btn-outline-danger"
+                  @click="doResetFails"
+            :disabled="mailingSummary.fails===0">
+            <font-awesome-icon class="mr-1" icon="redo"></font-awesome-icon>
+            Resend
+          </button>
+        </div>
+
+
       <h4 class="text-black-50">)</h4>
     </div>
     <!--<div class="mx-3 mt-0 mb-1 d-flex flex-row">-->
@@ -469,6 +481,20 @@ export default {
 
     pauseOperation () {
 
+    },
+    doResetFails () {
+      const vm = this
+      console.log('SendEmailsSection :: doResetAll')
+      const postData = {
+        urlCommand: '/vouchers/' + vm.voucher.id + '/reset_failed_codes'
+      }
+      vm.$store.dispatch('AUTH_POST', postData).then(
+        response => {
+          vm.setMailingSummary(response.summary)
+          vm.$toaster.info('All failed entries have been reset.')
+          vm.setVoucherStatus('sending')
+        }
+      )
     },
     doResetAll (callback) {
       const vm = this

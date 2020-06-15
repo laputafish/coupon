@@ -1,7 +1,10 @@
 <template>
   <div class="td-code-status line-height-1">
-    <div class="badge min-width-80"
-         :class="'badge-' + activeStatus.variant">{{ activeStatus.label }}
+    <div class="badge min-width-80 d-flex flex-row"
+         data-toggle="tooltip"
+         :title="row['error_message']"
+         :class="'badge-' + activeStatus.variant">
+      <div class="flex-grow-1 text-center">{{ activeStatus.label }}</div>
 
       <div v-if="value==='hold'"
            class="ml-1 d-inline change-status"
@@ -19,7 +22,7 @@
         <font-awesome-icon size="sm" icon="check-circle"></font-awesome-icon>
       </div>
 
-      <div v-if="value==='completed' || value==='fails'"
+      <div v-else-if="value==='completed' || value==='fails'"
            class="ml-1 d-inline change-status"
            data-toggle="tooltip"
            title="Reset"
@@ -30,13 +33,10 @@
     <!--<button v-if="value==='completed'" class="btn btn-xs btn-danger line-height-1 rounded px-2">-->
       <!---->
     <!--</button>-->
-    <br/>
-    <div v-if="value==='fails'"
-         class="badge badge-muted bg-gray-light" >{{ row['error_message'] }}</div>
-    <div v-if="value==='completed'"
+    <div v-if="value==='fails' || value==='completed'"
          class="badge badge-muted bg-gray-light">{{ row['sent_on'] }}</div>
 
-    <!--<select class="form-control" :value="value"-->
+  <!--<select class="form-control" :value="value"-->
       <!--@input="$event=>updateStatus($event.target.value)">-->
       <!--<option v-for="(option, index) in options"-->
               <!--:value="option.value"-->

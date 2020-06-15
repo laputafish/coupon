@@ -9,54 +9,57 @@
       @onCommand="onCommandHandler"
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
-      <div class="left-pane">
-        Image
-        <div class="left-pane-scroll d-flex flex-column">
-          <div class="cut" style="width:800px;height:400px;">
-            <vue-cropper ref="cropper"
-                         :img="imageSrc"
-                         :output-size="option.outputSize"
-                         :output-type="option.outputType"
-                         :info="option.info"
-                         :full="option.full"
-                         :fixed="option.fixed"
-                         :fixed-number="option.fixedNumber"
-                         :canMoveBox="true"
-                         :canMove="true"
-                         :auto-crop="option.autoCrop"
-                         :auto-crop-width="option.autoCropWidth"
-                         :auto-crop-height="option.autoCropHeight"
-                         :fixed-box="option.fixedBox"
-                         :original="option.original"
-                         :mode="option.mode"
-                         :center-box="option.centerBox"
-                         @real-time="realTime"
-                         @img-load="imgLoad"></vue-cropper>
-          </div>
-        </div><!-- left-pane-scroll -->
-      </div><!-- left-pane -->
-      <div class="right-pane">
-        Preview
-        <div class="right-pane-scroll">
-          <!--<div class="rectangle-stencil" :style="style">-->
-          <!--<preview-result-->
-          <!--classname="circle-stencil__preview"-->
-          <!--:img="img"-->
-          <!--:width="stencilCoordinates.width"-->
-          <!--:height="stencilCoordinates.height"-->
-          <!--:coordinates="resultCoordinates"-->
-          <!--/>-->
-          <!--</div>-->
-          <div v-if="previews" class="show-preview"
-               :style="{'width': previews.w + 'px', 'height': previews.h + 'px',  'overflow': 'hidden', 'margin': '5px'}">
-            <div>
-            <!--<div :style="previews.div">-->
-              <img :src="previews.url" :style="previews.img">
+      <div class="d-flex flex-row">
+        <div class="left-pane">
+          Image
+          <div class="left-pane-scroll d-flex flex-column">
+            <div class="cut" style="width:800px;height:400px;">
+              <vue-cropper ref="cropper"
+                           :img="imageSrc"
+                           :output-size="option.outputSize"
+                           :output-type="option.outputType"
+                           :info="option.info"
+                           :full="option.full"
+                           :fixed="option.fixed"
+                           :fixed-number="option.fixedNumber"
+                           :canMoveBox="true"
+                           :canMove="true"
+                           :maxImgSize="option.maxImgSize"
+                           :auto-crop="option.autoCrop"
+                           :auto-crop-width="option.autoCropWidth"
+                           :auto-crop-height="option.autoCropHeight"
+                           :fixed-box="option.fixedBox"
+                           :original="option.original"
+                           :mode="option.mode"
+                           :center-box="option.centerBox"
+                           @real-time="realTime"
+                           @img-load="imgLoad"></vue-cropper>
             </div>
-          </div>
-        </div><!-- right-pane-scroll -->
-      </div><!-- right-pane -->
-
+          </div><!-- left-pane-scroll -->
+        </div><!-- left-pane -->
+        <div class="right-pane">
+          Preview
+          <div class="right-pane-scroll">
+            <!--<div class="rectangle-stencil" :style="style">-->
+            <!--<preview-result-->
+            <!--classname="circle-stencil__preview"-->
+            <!--:img="img"-->
+            <!--:width="stencilCoordinates.width"-->
+            <!--:height="stencilCoordinates.height"-->
+            <!--:coordinates="resultCoordinates"-->
+            <!--/>-->
+            <!--</div>-->
+            <div v-if="previews" class="show-preview"
+                 :style="{'width': previews.w + 'px', 'height': previews.h + 'px',  'overflow': 'hidden', 'margin': '5px'}">
+              <div>
+              <!--<div :style="previews.div">-->
+                <!--<img :src="previews.url" style="width:256px;height:256px;transform:scale(1) translate3d(0px, 0px, 0px) rotateZ(0deg);">-->
+                <img :src="previews.url" :style="previews.img">
+              </div>
+            </div>
+          </div><!-- right-pane-scroll -->
+        </div><!-- right-pane -->
+      </div>
     </template>
   </base-dialog>
 </template>
@@ -121,7 +124,7 @@
           fixedNumber: [1, 1],
           canMove: true,
           canMoveBox: true,
-          fixedBox: false,
+          fixedBox: true,
           autoCrop: true,
           autoCropWidth: 256,
           autoCropHeight: 256,
@@ -208,6 +211,7 @@
                   })
                   vm.deleteMedia(vm.mediaId)
                   vm.$bvModal.hide('imageCropperDialog')
+                  vm.$emit('input', false)
                 }
               )
 
@@ -276,6 +280,13 @@
 </script>
 
 <style>
+
+  #imageCropperDialog .modal-body {
+    display: flex;
+    flex-direction: row;
+    min-height: 480px;
+  }
+
   #imageCropperDialog .left-pane {
     display: block;
     padding-right: 10px;

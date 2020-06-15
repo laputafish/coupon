@@ -46,6 +46,9 @@ export default {
 </script>
 
 <style>
+  .toolbar-button-wrapper.has-error {
+    border-color: red;
+  }
   .toolbar-button-wrapper.selected:hover {
     background-color: #7fa4cc;
   }
@@ -57,8 +60,10 @@ export default {
 
   }
   .toolbar-button-wrapper {
+    border: 2px solid transparent;
+    border-bottom: none;
     display: inline-block;
-    padding: 5px 20px 2px 20px;
+    padding: 3px 18px 0px 18px;
     margin: 2px;
     margin-bottom: 0;
     border-top-left-radius: 0.5rem;

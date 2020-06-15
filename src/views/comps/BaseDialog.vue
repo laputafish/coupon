@@ -2,6 +2,7 @@
   <b-modal :id="id"
            :size="size"
            :value="value"
+           @input="value=>$emit('input',value)"
            :title="title">
     <slot name="dialogBody">
     </slot>
@@ -96,3 +97,9 @@
     }
   }
 </script>
+
+<style>
+  .modal-header button.close {
+    display: none;
+  }
+</style>

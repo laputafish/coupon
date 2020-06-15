@@ -295,6 +295,31 @@ const actions = {
           resolve(response)
         })
         .catch(error => {
+          console.log('AUTH_POST error: ', error)
+          reject(error)
+        })
+    })
+  },
+
+  [types.AUTH_POST+'0'] ({dispatch, rootGetters}, payload) {
+    return new Promise((resolve, reject) => {
+      // console.log('AUTH_GET :: payload: ', payload)
+      if (typeof payload !== 'object') {
+        payload = {
+          urlCommand: payload
+        }
+      }
+      if (!payload.options) {
+        payload.options = {}
+      }
+      // console.log('AUTH_POST :: payload: ', payload)
+      payload.options.headers = {Authorization: 'bearer ' + rootGetters.accessToken}
+      dispatch('COMMON_POST', payload)
+        .then(response => {
+          resolve(response)
+        })
+        .catch(error => {
+          console.log('AUTH_POST error: ', error)
           reject(error)
         })
     })

@@ -2,8 +2,7 @@
   <div class="th-field">
     <div class="text-center">
       {{ title }}<br/>
-      <copy-token
-        :token="token"></copy-token>
+      <copy-token :token="token"></copy-token>
     </div>
   </div>
 </template>

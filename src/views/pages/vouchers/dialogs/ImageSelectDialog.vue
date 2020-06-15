@@ -12,7 +12,7 @@
       <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
         <h3>Drop files to upload</h3>
       </div>
-      <div class="w-100 d-flex flex-column">
+      <div class="w-100 d-flex flex-column" style="min-height:100%;">
         <div class="mb-2">
           <data-radio-toggle
               btnClass="min-width-100"
@@ -214,9 +214,9 @@
       vm.$nextTick(() => {
         console.log('mounted :: scopeOptions: ', vm.scopeOptions)
         console.log('mounted :: activeScope: ', vm.activeScope)
-        vm.fetchImages()
+        vm.fetchImageIds()
       })
-      // vm.fetchImages()
+      // vm.fetchImageIds()
     },
     model: {
       prop: 'value',
@@ -225,19 +225,19 @@
     watch: {
       voucher: function () {
         const vm = this
-        vm.fetchImages()
+        vm.fetchImageIds()
       },
       activeScope: function (newVal) {
         // alert('watch(activeScope)')
         const vm = this
-        console.log('activeScope: newVal = ' + newVal)
-        vm.fetchImages()
+        console.log('activeScope: newVal = ' + newVal )
+        vm.fetchImageIds()
       },
       value: function () {
         // alert('watch(value)')
         const vm = this
         console.log('ImageSelectDialog :: watch(value)')
-        // vm.fetchImages()
+        // vm.fetchImageIds()
         vm.$nextTick(() => {
           vm.activeScope = vm.scopeOptions[0].value
         })
@@ -448,7 +448,7 @@
         }
 
         if (newFile && newFile.success) {
-          vm.fetchImages()
+          vm.fetchImageIds()
           // vm.$emit('onUploaded', newFile.response.result)
         } else {
 
@@ -499,17 +499,21 @@
           }
           vm.$store.dispatch('AUTH_DELETE', data).then(
             () => {
-              vm.fetchImages()
+              vm.fetchImageIds()
             }
           )
         })
       },
 
-      fetchImages () {
+      refresh () {
+        this.fetchImageIds()
+      },
+
+      fetchImageIds () {
         const vm = this
         if (vm.voucher) {
-          console.log('fetchImages :: voucher exists: ', vm.voucher)
-          console.log('fetchImages :: activeScope = ' + vm.activeScope)
+          console.log('fetchImageIds :: voucher exists: ', vm.voucher)
+          console.log('fetchImageIds :: activeScope = ' + vm.activeScope)
           vm.loading = true
           const data = {
             urlCommand: '/medias',
@@ -522,6 +526,7 @@
           }
           vm.$store.dispatch('AUTH_GET', data).then(
             response => {
+              console.log('fetchImageIds :: response: ', response)
               if (vm.hasGroups) {
                 vm.groups = response
                 if (vm.groups.length > 0) {
@@ -538,7 +543,7 @@
             }
           )
         } else {
-          console.log('fetchImages :: voucher not exists')
+          console.log('fetchImageIds :: voucher not exists')
         }
       },
 
@@ -747,5 +752,18 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,.6);
+  }
+
+  #imageSelectDialog .modal-dialog .modal-content {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
   }
 </style>

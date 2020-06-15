@@ -72,51 +72,52 @@
     </div>
     <div class="voucher-toolbar mb-2">
       <!-- Info -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button
+          :class="{'has-error': infoPageError}"
                               caption="Info"
                               @click="onPageSelected('info')"
                               :selected="activePage=='info'"
                               :imgSrc="IMAGE_PATH_INFO"></voucher-toolbar-button>
       <!-- Codes -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button
                               caption="Codes"
                               @click="onPageSelected('codes')"
                               :selected="activePage==='codes'"
                               :imgSrc="IMAGE_PATH_CODES"
                               :badge="record ? record.code_count : 0"></voucher-toolbar-button>
       <!-- Ticket -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button
                               caption="Ticket"
                               @click="onPageSelected('tickets')"
                               :selected="activePage==='tickets'"
                               :imgSrc="IMAGE_PATH_TICKETS"></voucher-toolbar-button>
       <!-- Sharing -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button
                               caption="Sharing"
                               @click="onPageSelected('sharing')"
                               :selected="activePage==='sharing'"
                               :imgSrc="IMAGE_PATH_SHARING"></voucher-toolbar-button>
       <!-- Form Filling -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button v-if="record.voucher_type==='form'"
                               caption="Form Filling"
                               @click="onPageSelected('form_filling')"
                               :selected="activePage==='form_filling'"
                               :imgSrc="IMAGE_PATH_FORM_FILLING"></voucher-toolbar-button>
       <!-- Custom Forms -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button v-if="record.voucher_type==='form'"
                               caption="Custom Forms"
                               @click="onPageSelected('custom_forms')"
                               :selected="activePage==='custom_forms'"
                               :imgSrc="IMAGE_PATH_CUSTOM_FORMS"></voucher-toolbar-button>
       <!-- Participant -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button
                               caption="Participants"
                               @click="onPageSelected('participants')"
                               :selected="activePage==='participants'"
                               :badge="record ? record.participant_count : 0"
                               :imgSrc="IMAGE_PATH_PARTICIPANTS"></voucher-toolbar-button>
       <!-- Send Email -->
-      <voucher-toolbar-button class="toolbar-button-wrapper"
+      <voucher-toolbar-button v-if="record.voucher_type==='voucher'"
                               caption="Email"
                               @click="onPageSelected('email')"
                               :selected="activePage==='email'"
@@ -130,6 +131,8 @@
     <!--@click="selectTab"></voucher-toolbar>-->
 
     <info-page
+        @onError="value=>infoPageError=value"
+        ref="infoPage"
         v-if="record && activePage==='info'"
         :record="record"
         @onCommand="onCommandHandler"
@@ -137,44 +140,44 @@
         :barcodeConfig="barcodeConfig"></info-page>
 
     <agent-code-page
-        v-if="record && activePage==='codes'"
         ref="agentCodePage"
+        v-if="record && activePage==='codes'"
         :record="record"
         @onCommand="onCommandHandler"></agent-code-page>
 
     <tickets-page
-        v-if="record && activePage==='tickets'"
         ref="ticketsPage"
+        v-if="record && activePage==='tickets'"
         :voucher="record"
         @onCommand="onCommandHandler"></tickets-page>
 
     <sharing-page
-        v-if="record && activePage==='sharing'"
         ref="sharingPage"
+        v-if="record && activePage==='sharing'"
         :record="record"
         @onCommand="onCommandHandler"></sharing-page>
 
     <form-filling-page
-        v-if="record && activePage==='form_filling'"
         ref="formFillingPage"
+        v-if="record && activePage==='form_filling'"
         :record="record"
         @onCommand="onCommandHandler"></form-filling-page>
 
     <custom-forms-page
-        v-if="record && activePage==='custom_forms'"
         ref="customFormsPage"
+        v-if="record && activePage==='custom_forms'"
         :record="record"
         @onCommand="onCommandHandler"></custom-forms-page>
 
     <participants-page
-        v-if="record && activePage==='participants'"
         ref="participantsPage"
+        v-if="record && activePage==='participants'"
         :record="record"
         @onCommand="onCommandHandler"></participants-page>
 
     <email-page
-        v-if="record && activePage==='email'"
         ref="emailPage"
+        v-if="record && activePage==='email'"
         :activeSectionKey="emailPageSectionKey"
         :record="record"
         @onCommand="onCommandHandler"></email-page>
@@ -395,7 +398,8 @@
         okCommand="copySelectedTemplate"
         @onCommand="onCommandHandler"></voucher-select-dialog>
     <image-select-dialog
-        :title="$t('vouchers.images')"
+        title="Image Selection"
+        ref="imageSelectDialog"
         :voucher="record"
         :imageScope="imageScope"
         v-model="showingImageSelectDialog"
@@ -407,24 +411,12 @@
 </template>
 
 <script>
-  import copyToken from '@/views/comps/CopyToken'
   import titleRow from '@/views/comps/TitleRow'
-
-  import fileUpload from 'vue-upload-component'
-  import templateEditor from '../../comps/TemplateEditor'
-  import toggleBlackWhite from './comps/ToggleBlackWhite'
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
-  import copyLink from '@/views/comps/CopyLink'
 
-  // import agentCodeTable from './comps/AgentCodeTable'
-
-  // import emailTable from './comps/EmailTable'
   import tinymce from 'vue-tinymce-editor'
-  // import datePicker from 'vue2-datepicker'
-  import 'vue2-datepicker/index.css'
   import helpers from '@/helpers'
-  // import vueRangeSlider from 'vue-range-slider'
 
   import voucherSelectDialog from './dialogs/VoucherSelectDialog'
   import imageSelectDialog from './dialogs/ImageSelectDialog'
@@ -456,18 +448,15 @@
 
   import sharingContextBox from './comps/pages/comps/SharingContextBox'
 
+  import 'vue2-datepicker/index.css'
+
   export default {
     mixins: [DataRecordMixin, appMixin, formInputObjMixin],
     components: {
-      // copyToken,
-      // copyLink,
-      // toggleBlackWhite,
-      // templateEditor,
       imageCropperDialog,
-
-      // agentCodeTable,
-      agentCodeTab,
-      // mailingManagerTab,
+      voucherSelectDialog,
+      imageSelectDialog,
+      singleFieldDialog,
 
       infoPage,
       agentCodePage,
@@ -477,6 +466,10 @@
       customFormsPage,
       participantsPage,
       emailPage,
+
+      // agentCodeTable,
+      agentCodeTab,
+      // mailingManagerTab,
 
       voucherToolbarButton,
 
@@ -488,9 +481,6 @@
       // ...formInputs,
       // ,
       // vueRangeSlider,
-      voucherSelectDialog,
-      imageSelectDialog,
-      singleFieldDialog,
 
       formPageTemplatesTab,
       formFillingTab,
@@ -505,6 +495,7 @@
     },
     data () {
       return {
+        // infoPageError: false,
         pusherChannel: null,
         emailPageSectionKey: '',
         apiPath: '/vouchers',
@@ -625,6 +616,10 @@
     },
 
     computed: {
+      infoPageError () {
+        const vm = this
+        return vm.record && vm.record.description === ''
+      },
       pusher () {
         return this.$store.getters.pusher
       },
@@ -886,6 +881,7 @@
         console.log('onUploaded :: result: ', result)
         vm.selectedTempMediaId = result.imageId
         // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
+        // vm.$bvModal('imageCropperDialog').show()
         vm.$bvModal.show('imageCropperDialog')
         // vm.showingImageCropperDialog = true
         vm.$nextTick(() => {
@@ -1341,7 +1337,8 @@
             /* sharing_image_id or form_sharing_image_id */
             // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
             // vm.$bvModal.show('imageCropperDialog')
-            vm.showingImageCropperDialog = true
+            vm.$bvModal.show('imageCropperDialog')
+            // showingImageCropperDialog = true
             vm.$nextTick(() => {
               vm.$refs.imageCropperDialog.startCrop()
             })
@@ -1415,7 +1412,9 @@
             customForm.name = payload.fieldValue
             break
           case 'showImageSelectDialog':
+            // alert('showImageSelectDialog')
             vm.imageScope = payload.imageScope
+            // vm.$refs.imageSelectDialog.refresh()
             vm.showingImageSelectDialog = true
             break
           case 'onImageSelected':
@@ -1425,10 +1424,18 @@
                 break
               case 'inputObj':
                 if (vm.selectedFormConfigs && vm.selectedInputObjIndex >= 0) {
-                  vm.selectedFormConfigs.inputObjs[vm.selectedInputObjIndex]['question'] =
-                    vm.$store.getters.appHost + '/media/image/' + payload.imageId
+                  vm.$nextTick(() => {
+                    var inputObjs = JSON.parse(JSON.stringify(vm.selectedFormConfigs.inputObjs))
+                    inputObjs[vm.selectedInputObjIndex]['question'] =
+                      vm.$store.getters.appHost + '/media/image/' + payload.imageId
+
+                    vm.$set(vm.selectedFormConfigs, 'inputObjs', inputObjs)
+                    // vm.selectedFormConfigs.inputObjs[vm.selectedInputObjIndex]['question'] =
+                    //   vm.$store.getters.appHost + '/media/image/' + payload.imageId
+                  })
                 }
                 vm.showingImageSelectDialog = false
+                vm.$bvModal.hide('imageSelectDialog')
                 break
             }
             break
@@ -1507,9 +1514,14 @@
             console.log('updateField :: payload: ', payload)
             var fieldName = payload.fieldName
             var fieldValue = payload.fieldValue
-            vm.record[fieldName] = fieldValue
+            vm.record[payload.fieldName] = JSON.parse(JSON.stringify(fieldValue))
+            // vm.record[fieldName] = fieldValue
             if (fieldName === 'smtp_server_id') {
               vm.save()
+            }
+            if (fieldName === 'participant_configs') {
+              console.log('VoucherRecord :: onCommandHandler :: vm.$refs: ', vm.$refs)
+              // vm.$refs.participantsPage.updateInputObjs()
             }
             if (typeof payload.callback === 'function') {
               payload.callback()
@@ -1518,8 +1530,8 @@
 
           case 'setRecordField':
             console.log('setRecordField :: payload: ', payload)
-            vm.record[payload.fieldName] = payload.fieldValue
-            if (payload.fieldName === 'participant_count') {
+            vm.record[payload.fieldName] = JSON.parse(JSON.stringify(payload.fieldValue))
+            if (payload.fieldName === 'participant_count' && payload.fieldValue === 0) {
               if (vm.record.voucher_type === 'voucher') {
                 vm.record.participant_configs = {
                   inputObjs: []
@@ -1536,7 +1548,7 @@
             vm.updateCodeInfos(payload.value)
             // vm.record.codeInfos = vm.createCodeInfos(payload.value)
             break
-          case 'setQrCodeComposition':
+          case 'setQrCodeAndBarcodeComposition':
             // console.log('setQrCodeComposition :: payload.data: ', payload.data)
             if (vm.qrcodeConfig.composition === '' || payload.data === '') {
               // console.log('setQrCodeComposition: vm.qrcodeConfig.composition === "" || payload.data === ""')
@@ -1762,9 +1774,18 @@
         }
       },
 
-      save (callback) {
+      async save (callback) {
         const vm = this
-        // console.log('VoucherRecord :: save')
+        const infoPageError = !await vm.$refs.infoPage.validate()
+        if (!infoPageError) {
+          return vm.doSave(callback)
+        } else {
+          vm.$toaster.warning('Some field is essential but missing.')
+        }
+      },
+
+      doSave (callback) {
+        const vm = this
         const codeConfigs = [
           vm.qrcodeConfig,
           vm.barcodeConfig
