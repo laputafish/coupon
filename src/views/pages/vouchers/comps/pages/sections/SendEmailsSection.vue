@@ -8,7 +8,11 @@
             <div class="huge-font2 badge badge-warning">{{ processedCount }} / {{ totalCount }}</div>
           </div>
           <div class="align-self-stretch px-2">
-…
+            <!--<button class="btn btn-outline-primary min-width-100"-->
+                    <!--@click="refreshSummary">-->
+              <!--<i class="fas fa-sync"></i>-->
+              <!--&lt;!&ndash;<font-awesome-icon icon="refresh"></font-awesome-icon>&ndash;&gt;-->
+            <!--</button>-->
           </div>
         </div>
         <yoov-progress-bar class="px-1 py-3"

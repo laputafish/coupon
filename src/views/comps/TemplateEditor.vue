@@ -207,6 +207,7 @@ export default {
 
     showPreview () {
       const vm = this
+      console.log('TemplateEditor :: showPreview')
       // vm.$emit('onCommand', {
       //   command: 'previewTemplate'
       // })
@@ -215,11 +216,21 @@ export default {
 
     previewTemplate () {
       const vm = this
+      console.log('TemplateEditor :: previewTemplate')
+      vm.$emit('onCommand', {
+        command: 'save',
+        callback: vm.doPreviewTemplate
+      })
+    },
+
+    doPreviewTemplate() {
+      const vm = this
       const postData = {
         urlCommand: '/templates/create_preview',
         data: {
           content: vm.content,
           tagListGroups: vm.templateTagGroups,
+          voucherId: vm.voucher.id,
           tagValues: {
             'qrcode': '12345678',
             'barcode': '12345678',

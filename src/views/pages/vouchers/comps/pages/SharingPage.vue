@@ -20,6 +20,16 @@
         sharingImageIdField="form_sharing_image_id"
         @onCommand="onCommandHandler">
     </sharing-context-box>
+
+   <div class="col-sm-12 mt-4 px-5 d-flex flex-column">
+     <h6>Reference</h6>
+     <ul>
+       <li>
+         <a href="https://developers.facebook.com/tools/debug" target="_blank"
+            class="useful-link">Facebook Sharing Debugger (Link Validator)</a>
+       </li>
+     </ul>
+   </div>
   </div>
 </template>
 
@@ -44,3 +54,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .useful-link:hover {
+    color: red;
+  }
+</style>

@@ -108,6 +108,7 @@ export default {
       const postData = {
         urlCommand: '/email_templates/send_test_email',
         data: {
+          voucherId: vm.voucher.id,
           template: vm.voucher.email_template,
           email: vm.testEmail,
           smtpServer: vm.smtpServer,
@@ -144,7 +145,7 @@ export default {
       console.log('EmailTemplateSection :: onTemplateTagGroupsReady :: participantTags: ', vm.participantTags)
 
       tagGroups.push({
-        name: 'participants',
+        name: 'participant',
         tags: vm.participantTags
       })
       return tagGroups
@@ -170,6 +171,7 @@ export default {
 
     onCommandHandler (payload) {
       const vm = this
+      console.log('EmailTemplateSection :: onCommandHandler :: payload: ', payload)
       switch (payload.command) {
         // case 'previewTemplate':
         //   vm.previewTemplate()

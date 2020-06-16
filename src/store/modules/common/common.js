@@ -222,25 +222,29 @@ const actions = {
     return new Promise((resolve, reject) => {
       // console.log('AUTH_REFRESH')
       let url = rootGetters.constants.apiUrl + '/auth/refresh'
-      let options = {
-        headers: {
-          Authorization: 'bearer ' + rootGetters.accessToken
+      if (rootGetters.accessToken) {
+        let options = {
+          headers: {
+            Authorization: 'bearer ' + rootGetters.accessToken
+          }
         }
-      }
-      Vue.axios.post(url, {}, options)
-        .then(response => {
-          const accessToken = response.data.result.access_token
-          dispatch('SET_TOKEN', accessToken).then(() => {
-            resolve(accessToken)
+        Vue.axios.post(url, {}, options)
+          .then(response => {
+            const accessToken = response.data.result.access_token
+            dispatch('SET_TOKEN', accessToken).then(() => {
+              resolve(accessToken)
+            })
           })
-        })
-        .catch(error => {
-          // Vue.$dialog(Vue.$t('messages.session_invalid_or_expired_goto_login_page'))
-          //   .then(() => {
-          //     Vue.$router.push({name: 'Logout'})
-          //   })
-          reject(error.response.data)
-        })
+          .catch(error => {
+            // Vue.$dialog(Vue.$t('messages.session_invalid_or_expired_goto_login_page'))
+            //   .then(() => {
+            //     Vue.$router.push({name: 'Logout'})
+            //   })
+            reject(error.response.data)
+          })
+      } else {
+        reject(new Error('no access token'))
+      }
     })
   },
 

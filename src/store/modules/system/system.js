@@ -72,8 +72,8 @@ const actions = {
       // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
       /*const promise = */
-      // console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
-      // console.log('localStorage(accessToken) = ' + accessToken)
+      console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
+      console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
       //   resolve(accessToken)
       // })

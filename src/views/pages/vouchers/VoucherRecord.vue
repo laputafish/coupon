@@ -60,9 +60,12 @@
 
         <div class="field-item">
           <div class="d-inline-block mr-3 field-label">{{ $t('general.type')}}</div>
-          <div class="d-inline-block mr-3 field-content min-width-50 text-center">{{ ucfirst(record.voucher_type) }}
+          <div class="d-inline-block mr-3 field-content min-width-50 text-center">{{ ucfirst(record.voucher_type) }}</div>
+          <div class="d-inline-block">
+            <copy-link :link="customLink" variant="danger"></copy-link>
           </div>
         </div>
+
       </div>
     </div>
     <div v-if="record && record.status==='sending'"
@@ -440,6 +443,7 @@
   import participantsPage from './comps/pages/ParticipantsPage'
   import emailPage from './comps/pages/EmailPage'
   import vouchertoolbarButton from './comps/VoucherToolbarButton'
+  import copyLink from '@/views/comps/CopyLink'
 
   import formInputObjMixin from '@/mixins/FormInputObjMixin'
   import voucherToolbarButton from './comps/VoucherToolbarButton'
@@ -486,7 +490,8 @@
       formFillingTab,
       customFormsTab,
       formParticipantsTab,
-      sharingContextBox
+      sharingContextBox,
+      copyLink
       // ,
       // yoovEditor
       // ,
@@ -616,6 +621,10 @@
     },
 
     computed: {
+      customLink () {
+        const vm = this
+        return vm.$store.getters.appHost + '/q/' + vm.record.custom_link_key
+      },
       infoPageError () {
         const vm = this
         return vm.record && vm.record.description === ''
@@ -748,14 +757,12 @@
       },
       recordId: function (newValue) {
         const vm = this
-        // console.log('VoucherRecord :: watch(recordId) : newvalue = ' + newValue)
         vm.refresh(newValue)
         vm.initPusherChannel()
       }
     },
     mounted () {
       const vm = this
-
       vm.initPusherChannel()
 
       if (!vm.activePage) {

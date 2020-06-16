@@ -145,7 +145,7 @@ export default {
       })
     },
     onCommandHandler (payload) {
-      console.log('onCommandHandler :: payload: ', payload)
+      console.log('EmailPage :: onCommandHandler :: payload: ', payload)
       this.$emit('onCommand', payload)
     },
     loadAgentSmtpServers (callback) {

@@ -74,6 +74,9 @@ const TemplateMixin = {
 
       if (vm.defaultTemplateTagGroups) {
         result = JSON.parse(JSON.stringify(vm.defaultTemplateTagGroups))
+
+
+        // Apend code fields tag
         if (vm.codeFields.length > 0) {
           result.push({
             name: 'code',

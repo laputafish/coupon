@@ -98,15 +98,14 @@ const ifAuthenticated = (to, from, next) => {
   // console.log('ifAuthenticated')
   const user = store.getters.user;
   if (user === null) {
-    // console.log('ifAuthenticated => FETCH_TOKEN')
     store.dispatch('FETCH_TOKEN').then(
       (token) => {
-        // console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
+        console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
         if (token === '' || token === null) {
-          // console.log('ifAuthenticated :: token is blank')
+          console.log('ifAuthenticated :: token is blank')
           next('/login')
         } else {
-          // console.log('ifAuthenticated => FETCH_user')
+          console.log('ifAuthenticated => FETCH_user')
           store.dispatch('FETCH_USER')
           if (!store.getters.agentsLoaded) {
             console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
@@ -129,9 +128,15 @@ const ifAuthenticated = (to, from, next) => {
               () => {}
             )
           }
+          next()
         }
+      },
+      error => {
+        alert('error')
+        next('/login')
       }
     )
+    console.log('ifAuthenticated => FETCH_TOKEN')
   } else {
     if (!store.getters.agentsLoaded) {
 	    console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
@@ -156,8 +161,8 @@ const ifAuthenticated = (to, from, next) => {
           () => {}
       )
 	  }
+    next()
   }
-  next()
 
   // // store.dispatch('REFRESH_TOKEN').then(accessToken => {
   // store.dispatch('REFRESH_TOKEN').then(() => {
