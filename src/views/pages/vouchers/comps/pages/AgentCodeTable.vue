@@ -385,12 +385,13 @@
       // })
 
     },
+    beforeDestroy () {
+      const vm = this
+      vm.unbindEvents()
+    },
     destroyed () {
       const vm = this
       vm.xprops.eventbus.$off('onRowCommand')
-      if (vm.pusherChannel) {
-        vm.pusherChannel.unbind_all()
-      }
     },
     methods: {
       listen () {
@@ -503,9 +504,7 @@
       initPusherChannel () {
         const vm = this
         if (vm.pusher && vm.record) {
-          if (vm.pusherChannel) {
-            vm.pusherChannel.unbind_all()
-          }
+          vm.unbindEvents()
           vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
 
           vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
@@ -515,6 +514,14 @@
           vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
             vm.onVoucherCodeViewsUpdated(data)
           })
+        }
+      },
+
+      unbindEvents () {
+        const vm = this
+        if (vm.pusherChannel) {
+          vm.pusherChannel.unbind('VoucherCodeStatusUpdated')
+          vm.pusherChannel.unbind('VoucherCodeViewsUpdated')
         }
       },
 

@@ -3,6 +3,7 @@
     <div class="col-12">
       <agent-code-table
           ref="agentCodeTable"
+          :pusherChannel="pusherChannel"
           @onCommand="onCommandHandler"
           :record="record"></agent-code-table>
       <!--<agent-code-table-->
@@ -23,6 +24,10 @@ export default {
   },
   props: {
     record: {
+      type: Object,
+      default: null
+    },
+    pusherChannel: {
       type: Object,
       default: null
     }

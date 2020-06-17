@@ -27,6 +27,7 @@
           :voucher="record"
           :smtpServer="activeSmtpServer"
           @onCommand="onCommandHandler"
+          :pusherChannel="pusherChannel"
           v-if="activeSection.key=='send-emails'"></send-emails-section>
       <voucher-smtp-servers-section
           :voucher="record"
@@ -66,6 +67,10 @@ export default {
     activeSectionKey: {
       type: String,
       default: ''
+    },
+    pusherChannel: {
+      type: Object,
+      default: null
     }
   },
   data () {

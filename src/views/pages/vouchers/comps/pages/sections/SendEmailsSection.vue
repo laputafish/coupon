@@ -257,6 +257,10 @@ export default {
     smtpServer: {
       type: Object,
       default: null
+    },
+    pusherChannel: {
+      type: Object,
+      default: null
     }
   },
   watch: {
@@ -289,9 +293,7 @@ export default {
     if (this.timer) {
       clearInterval(this.timer)
     }
-    if (vm.pusherChannel) {
-      vm.pusherChannel.unbind_all()
-    }
+    vm.unbindEvents()
   },
   methods: {
     resetAll () {
@@ -327,9 +329,7 @@ export default {
     initPusherChannel () {
       const vm = this
       if (vm.pusher && vm.voucher) {
-        if (vm.pusherChannel) {
-          vm.pusherChannel.unbind_all()
-        }
+        vm.unbindEvents()
         vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.voucher.id + '.channel')
         vm.pusherChannel.bind('VoucherMailingStatusUpdated', function (data) {
           vm.onVoucherMailingStatusUpdated(data)
@@ -339,6 +339,14 @@ export default {
           vm.onVoucherCodeStatusUpdated(data)
         })
 
+      }
+    },
+
+    unbindEvents () {
+      const vm = this
+      if (vm.pusherChannel) {
+        vm.pusherChannel.unbind('VoucherMailingStatusUpdated')
+        vm.pusherChannel.unbind('VoucherCodeStatusUpdated')
       }
     },
 
@@ -478,7 +486,6 @@ export default {
   data () {
     return {
       showingConfirmResetAllDialog: false,
-      pusherChannel: null,
       fetching: false,
       timer: null,
 

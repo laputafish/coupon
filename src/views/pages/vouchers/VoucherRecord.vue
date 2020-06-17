@@ -146,6 +146,7 @@
         ref="agentCodePage"
         v-if="record && activePage==='codes'"
         :record="record"
+        :pusherChannel="pusherChannel"
         @onCommand="onCommandHandler"></agent-code-page>
 
     <tickets-page
@@ -182,6 +183,7 @@
         ref="emailPage"
         v-if="record && activePage==='email'"
         :activeSectionKey="emailPageSectionKey"
+        :pusherChannel="pusherChannel"
         :record="record"
         @onCommand="onCommandHandler"></email-page>
 
@@ -751,18 +753,24 @@
     watch: {
       pusher: function (newValue) {
         const vm = this
+        console.log('VoucherRecord :: watch(pusher)')
         if (newValue) {
+          console.log('VoucherRecord :: watch(pusher) :: new value => initPusherChannel')
           vm.initPusherChannel()
+        } else {
+          console.log('VoucherRecord :: watch(pusher) :: not new value')
         }
       },
       recordId: function (newValue) {
         const vm = this
         vm.refresh(newValue)
+        console.log('VoucherRecord :: watch(recordId) => initPusherChannel')
         vm.initPusherChannel()
       }
     },
     mounted () {
       const vm = this
+      console.log('VoucherRecord :: mounted => initPusherChannel')
       vm.initPusherChannel()
 
       if (!vm.activePage) {
@@ -785,12 +793,23 @@
     // created () {
     //   const vm = this
     // },
+    beforeDestroy () {
+      const vm = this
+      vm.unbindEvents()
+    },
     methods: {
       onVoucherStatusUpdated (data) {
         const vm = this
+        console.log('onVoucherStatusUpdated: data: ', data)
         if (vm.record) {
           vm.record.status = data.voucher.status;
         } else {
+        }
+      },
+      unbindEvents () {
+        const vm = this
+        if (vm.pusherChannel) {
+          vm.pusherChannel.unbind('VoucherStatusUpdated')
         }
       },
       initPusherChannel () {
@@ -798,28 +817,26 @@
         // console.log('*** VoucherRecord :: initPusherChannel')
         if (vm.pusher && vm.recordId !== 0) {
           // console.log('*** VoucherRecord :: initPusherChannel (pusher and record id) ok')
-          if (vm.pusherChannel) {
-            // alert('unbind_all')
-            vm.pusherChannel.unbind_all()
-          }
+          vm.unbindEvents()
           const channelName = 'voucher' + vm.recordId + '.channel'
           // alert('subscribe: channel = ' + channelName)
-          // console.log('*** initPusherChannel subscrib(' + channelName + ')')
+          console.log('VoucherRecord :: initPusherChannel subscrib(' + channelName + ')')
           vm.pusherChannel = vm.pusher.subscribe(channelName)
 
-          // console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
+          console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
           vm.pusherChannel.bind('VoucherStatusUpdated', function (data) {
             vm.onVoucherStatusUpdated(data)
           })
         } else {
           if (vm.pusher) {
+
             if (vm.recordId !== 0) {
 
             } else {
-              // console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
+              console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
             }
           } else {
-            // console.log('*** VoucherRecord :: initPusherChannel (pusher not, record id not)')
+            console.log('*** VoucherRecord :: initPusherChannel (pusher not, record id not)')
           }
         }
       },
