@@ -141,24 +141,12 @@ export default {
 
     onTemplateTagGroupsReady (tagGroups) {
       const vm = this
-      console.log('EmailTemplateSection :: onTemplateTagGroupsReady :: tagGroup: ', tagGroups)
-      console.log('EmailTemplateSection :: onTemplateTagGroupsReady :: participantTags: ', vm.participantTags)
-
       tagGroups.push({
         name: 'participant',
         tags: vm.participantTags
       })
       return tagGroups
     },
-
-    // updateContent (content) {
-    //   const vm = this
-    //   this.$emit('onCommand', {
-    //     command: 'updateField',
-    //     fieldName: 'email_template',
-    //     fieldValue: content
-    //   })
-    // },
 
     updateValue (fieldName, fieldValue) {
       const vm = this
@@ -171,11 +159,7 @@ export default {
 
     onCommandHandler (payload) {
       const vm = this
-      console.log('EmailTemplateSection :: onCommandHandler :: payload: ', payload)
       switch (payload.command) {
-        // case 'previewTemplate':
-        //   vm.previewTemplate()
-        //   break
         case 'updateTemplateContent':
           vm.$emit('onCommand', {
             command: 'updateField',
@@ -184,7 +168,6 @@ export default {
           })
           break
         case 'clearTemplate':
-          console.log('EmailTemplateSection :: onCommandHandler :: command == clearTemplate')
           vm.$emit('onCommand', {
             command: 'updateField',
             fieldName: 'email_template',
@@ -195,31 +178,10 @@ export default {
         case 'changeEditorFullscreenState':
           vm.isFullScreenEditorMode = payload.isFullScreen
           break
-        // case 'insertTag':
-        //   vm.$refs.htmlEditor.insertTag(payload.value)
-        //   break
         default:
           vm.$emit('onCommand', payload)
       }
     }
-    // ,
-    // previewTemplate () {
-    //   const vm = this
-    //   const postData = {
-    //     urlCommand: '/email_template/create_preview',
-    //     data: {
-    //       content: vm.voucher.email_template
-    //     }
-    //   }
-    //   vm.$store.dispatch('AUTH_POST', postData).then(
-    //     (result) => {
-    //       const key = result.key
-    //       const url = vm.$store.getters.appHost+ '/m/preview/_' + key
-    //       window.open(url, '_blank')
-    //     }
-    //   )
-    //   voucher.email_template
-    // }
   }
 }
 </script>

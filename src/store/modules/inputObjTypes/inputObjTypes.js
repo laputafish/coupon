@@ -246,7 +246,7 @@ const actions = {
       }
       dispatch('AUTH_GET', data).then(
         response => {
-          console.log('FETCH_INPUT_OBJS_INFO :: response: ', response)
+          // console.log('FETCH_INPUT_OBJS_INFO :: response: ', response)
           commit('setInputObjsInfo', response)
           resolve(response)
         },

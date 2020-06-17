@@ -39,7 +39,8 @@
                          v-model="record.expiry_date"></data-input-date>
         <data-input-readonly width="2" id="status" labelTag="general.status"
                              :value="$t('status.'+record.status)"></data-input-readonly>
-
+      </div>
+      <div class="row pt-3">
         <!-- ********* -->
         <!-- Row #1 -->
         <!-- ********* -->
@@ -144,17 +145,12 @@
               </button>
             </div>
           </div>
-          <div v-if="record.voucher_type==='form'"
-               class="position-absolute d-flex flex-row justify-content-center align-items-center"
-               style="left:0;right:0;">
-            <small class="mr-1">Form Link</small>
-            <copy-link :link="customLink" variant="danger"></copy-link>
-            <!--<div class="badge badge-success mr-2 custom-link d-flex flex-row align-items-center"-->
-            <!--@click="copyCustomLink()">-->
-            <!--{{ customLink }}-->
-            <!--<font-awesome-icon class="ml-1" icon="copy"/>-->
-            <!--</div>-->
-          </div>
+          <!--<div v-if="record.voucher_type==='form'"-->
+               <!--class="position-absolute d-flex flex-row justify-content-center align-items-center"-->
+               <!--style="left:0;right:0;">-->
+            <!--<small class="mr-1">Form Link</small>-->
+            <!--<copy-link :link="customLink" variant="danger"></copy-link>-->
+          <!--</div>-->
         </div>
       </div>
     </validation-observer>

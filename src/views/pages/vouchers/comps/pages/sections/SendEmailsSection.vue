@@ -66,7 +66,7 @@
                            variant="muted"
                            caption="Finished"></big-border-button>
         <button class="btn btn-danger btn-sm"
-                :disabled="(voucher.status!=='completed'&&voucher.status!=='pending'&&processedCount===0) || totalCount===0"
+                :disabled="(voucher.status!=='completed'&&voucher.status!=='pending'&&processedCount===0) || totalCount===0 || voucher.status==='sending'"
           @click="resetAll">
           Reset All
         </button>
@@ -219,7 +219,7 @@ export default {
       const result =
         vm.mailingSummary.completed +
         vm.mailingSummary.fails
-      console.log('processedCount :: result = ' + result)
+      // console.log('processedCount :: result = ' + result)
       return result
 
     },
@@ -231,7 +231,6 @@ export default {
         vm.mailingSummary.fails +
         vm.mailingSummary.pending +
         vm.mailingSummary.processing
-      console.log('totalCount :: result: ', result)
       return result
     },
     smtpServerReady () {
@@ -297,7 +296,6 @@ export default {
   methods: {
     resetAll () {
       const vm = this
-      console.log('resetAll')
       this.$refs.seriousConfirmDialog.init({
         title: 'Reset All Mailing Status',
         message: 'All mailing status (completed or fails) will be lost. Are you sure?',
@@ -328,19 +326,15 @@ export default {
     // },
     initPusherChannel () {
       const vm = this
-      console.log('SendEmailsSection :: initPusherChannel')
       if (vm.pusher && vm.voucher) {
         if (vm.pusherChannel) {
           vm.pusherChannel.unbind_all()
         }
         vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.voucher.id + '.channel')
-
-        console.log('SendEmailsSection :: bind(VoucherMailingStatusUpdated)')
         vm.pusherChannel.bind('VoucherMailingStatusUpdated', function (data) {
           vm.onVoucherMailingStatusUpdated(data)
         })
 
-        console.log('SendEmailsSection :: bind(VoucherCodeStatusUpdated)')
         vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
           vm.onVoucherCodeStatusUpdated(data)
         })
@@ -348,79 +342,12 @@ export default {
       }
     },
 
-    // startSendingEmails () {
-    //   const vm = this
-    //   const data = {
-    //     urlCommand: '/vouchers/' + vm.voucher.id + '/send_emails'
-    //   }
-    //   vm.$store.dispatch('AUTH_POST', data).then(
-    //     () => {
-    //
-    //     }
-    //   )
-    // },
-    //
-    // fetchMailingStatus () {
-    //   const vm = this
-    //   if (!vm.fetching) {
-    //     vm.fetching = true
-    //     const data = {
-    //       urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
-    //     }
-    //     vm.$store.dispatch('AUTH_GET', data).then(
-    //       response => {
-    //         vm.mailingSummary = response.summary
-    //       }
-    //     )
-    //   }
-    //   vm.fetching = false
-    // },
-
-    // getMailingSummaryByFilter (filter) {
-    //   return this.mailingSummary.statusList.filter(item => item === filter).length
-    // },
-    // refreshSummary () {
-    //   const vm = this
-    //   vm.loadMailingSummary()
-    // },
-    // loadMailingSummary () {
-    //   const vm = this
-    //   if (vm.voucher) {
-    //     const data = {
-    //       urlCommand: '/vouchers/' + vm.voucher.id + '/mailing_summary'
-    //     }
-    //     vm.$store.dispatch('AUTH_GET', data).then(
-    //       response => {
-    //         console.log('FETCH_MAILING_SUMMARY :: response: ', response)
-    //         vm.$set(vm.mailingSummary, 'sendingTo', response.summary.sending_to)
-    //         vm.$set(vm.mailingSummary, 'statusList', response.summary.status_list)
-    //
-    //         // vm.mailingSummary.sendingTo = response.summary.sending_to
-    //         // vm.mailingSummary.statusList = response.summary.status_list
-    //         // vm.$set(vm.mailingSummary, response.summary.status_list)
-    //       },
-    //
-    //       error => console.log(error)
-    //     )
-    //   }
-    // },
-    // updateMailingSummary (summary) {
-    //   const vm = this
-    //   console.log('updateMailingSummary :: summary: ', summary)
-    //   vm.$set(vm.mailingSummary, 'sendingTo', summary.sending_to)
-    //   vm.$set(vm.mailingSummary, 'pending', summary.pending)
-    //   vm.$set(vm.mailingSummary, 'fails', summary.fails)
-    //   vm.$set(vm.mailingSummary, 'completed', summary.completed)
-    //   vm.$set(vm.mailingSummary, 'processing', summary.processing)
-    // },
     onVoucherMailingStatusUpdated (data) {
-      console.log('onVoucherMailingStatusUpdated :: data: ', data)
       this.setMailingSummary(data.mailingSummary.summary)
     },
 
     onVoucherCodeStatusUpdated (data) {
       const vm = this
-      console.log('onVoucherCodeStatusUpdated :: data: ', data)
       const voucherCode = data.voucherCode
       if (voucherCode.status === 'processing') {
         vm.sendingToName = voucherCode.participant_name
@@ -430,11 +357,6 @@ export default {
 
     setMailingSummary (summary) {
       const vm = this
-      // console.log('setMailingSummary: typeof summary.pending = ' + (typeof summary.pending))
-      // console.log('setMailingSummary: typeof summary.processing = ' + (typeof summary.processing))
-      // console.log('setMailingSummary: typeof summary.completed = ' + (typeof summary.completed))
-      // console.log('setMailingSummary: typeof summary.fails = ' + (typeof summary.fails))
-
       vm.mailingSummary.pending = summary.pending
       vm.mailingSummary.processing = summary.processing
       vm.mailingSummary.completed = summary.completed
@@ -488,7 +410,6 @@ export default {
     },
     doResetFails () {
       const vm = this
-      console.log('SendEmailsSection :: doResetAll')
       const postData = {
         urlCommand: '/vouchers/' + vm.voucher.id + '/reset_failed_codes'
       }
@@ -502,13 +423,11 @@ export default {
     },
     doResetAll (callback) {
       const vm = this
-      console.log('SendEmailsSection :: doResetAll')
       const postData = {
         urlCommand: '/vouchers/' + vm.voucher.id + '/reset_all_codes_mailing_status'
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
         response => {
-          console.log('doResetAll.then response: ', response)
           vm.setMailingSummary(response.summary)
           vm.$toaster.info('All mailing status have been reset.')
           if (typeof callback === 'function') {
@@ -519,7 +438,6 @@ export default {
     },
     onCommandHandler (payload) {
       const vm = this
-      console.log('SendEmailsSection :: onCommandHandler :: payload: ', payload)
       const command = payload.command
       switch (command) {
         case 'resetAll':
@@ -547,7 +465,6 @@ export default {
           // })
           break
         case 'continue':
-          console.log('onCommand :: updatefield :: status => sending')
           vm.setVoucherStatus('sending')
           // vm.$emit('onCommand', {
           //   command: 'updateField',

@@ -62,15 +62,12 @@ const TemplateMixin = {
   },
   mounted () {
     const vm = this
-    console.log('TemplateMixin :: mounted')
     vm.fetchDefaultTemplateKeys()
   },
   methods: {
     getTemplateTagGroups () {
       const vm = this
       var result = []
-
-      console.log('getTemplateTagGroups :: vm.defaultTemplateTagGroups: ', vm.defaultTemplateTagGroups)
 
       if (vm.defaultTemplateTagGroups) {
         result = JSON.parse(JSON.stringify(vm.defaultTemplateTagGroups))
@@ -83,7 +80,6 @@ const TemplateMixin = {
             tags: []
           })
         }
-        console.log('getTemplateTagGroups :: result: ', result)
 
         var lastIndex = result.length - 1
         for (let i = 0; i < vm.codeFields.length; i++) {
@@ -91,24 +87,10 @@ const TemplateMixin = {
           result[lastIndex]['tags'].push(key)
         }
 
-        // if (vm.extraKeyGroup !== null) {
-        //   result.push({
-        //     name: vm.extraKeyGroup.groupName,
-        //     keys: []
-        //   })
-        //   lastIndex = result.length - 1
-        //   for (let j = 0; j < vm.extraKeyGroup.keys.length; j++) {
-        //     var key = vm.extraKeyGroup.keys[j]
-        //     result[lastIndex]['keys'].push(key)
-        //   }
-        // }
-        console.log('getTemplateTagGroups: before onTemplateTagGroupsReady : result:  ', result)
         if (typeof vm.onTemplateTagGroupsReady === 'function') {
-          console.log('getTemplateTagGroups: onTemplateTagGroupsReady is function')
           result = vm.onTemplateTagGroupsReady(result)
         }
       }
-      console.log('getTemplateTagGroups: final result: ', result)
       return result
     },
     fetchDefaultTemplateKeys () {
@@ -134,9 +116,7 @@ const TemplateMixin = {
               })
             }
           }
-          console.log('fetchDefaultTemplateKeys finish: defaultTemplateTagGroups: ', vm.defaultTemplateTagGroups)
           vm.templateTagGroups = vm.getTemplateTagGroups()
-          console.log('fetchDefaultTemplateKeys finish: templateTagGroups: ', vm.templateTagGroups)
         },
         () => {
           vm.showSessionExpired('template keys')

@@ -130,7 +130,7 @@
           autoCropHeight: 256,
           maxImgSize: 512, // maxImgSize: 256,
           original: true,
-          mode: 'cover', // mode: 'contain', // cover',
+          mode: 'contain', // mode: 'contain', // cover',
           centerBox: true,
           high: true
         },

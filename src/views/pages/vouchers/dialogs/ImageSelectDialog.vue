@@ -212,8 +212,8 @@
       const vm = this
       vm.activeScope = vm.scopeOptions[0].value
       vm.$nextTick(() => {
-        console.log('mounted :: scopeOptions: ', vm.scopeOptions)
-        console.log('mounted :: activeScope: ', vm.activeScope)
+        // console.log('mounted :: scopeOptions: ', vm.scopeOptions)
+        // console.log('mounted :: activeScope: ', vm.activeScope)
         vm.fetchImageIds()
       })
       // vm.fetchImageIds()
@@ -230,13 +230,13 @@
       activeScope: function (newVal) {
         // alert('watch(activeScope)')
         const vm = this
-        console.log('activeScope: newVal = ' + newVal )
+        // console.log('activeScope: newVal = ' + newVal )
         vm.fetchImageIds()
       },
       value: function () {
         // alert('watch(value)')
         const vm = this
-        console.log('ImageSelectDialog :: watch(value)')
+        // console.log('ImageSelectDialog :: watch(value)')
         // vm.fetchImageIds()
         vm.$nextTick(() => {
           vm.activeScope = vm.scopeOptions[0].value
@@ -424,7 +424,7 @@
       uploadFile () {
         const vm = this
         vm.$nextTick(function () {
-          console.log('uploadFile :: onUploading')
+          // console.log('uploadFile :: onUploading')
           // vm.$emit('onUploading')
           vm.$refs[vm.inputId].active = true
         })
@@ -434,9 +434,9 @@
       inputFile(newFile, oldFile) {
         const vm = this
         if (newFile && !oldFile) {
-          console.log('inputFile : newFile : ' + (newFile ? 'yes' : 'no'))
-          console.log('inputFile : oldFile : ' + (oldFile ? 'yes' : 'no'))
-          console.log('inputFile : edit : ' + (vm.edit ? 'yes' : 'no'))
+          // console.log('inputFile : newFile : ' + (newFile ? 'yes' : 'no'))
+          // console.log('inputFile : oldFile : ' + (oldFile ? 'yes' : 'no'))
+          // console.log('inputFile : edit : ' + (vm.edit ? 'yes' : 'no'))
 
           vm.edit = true
           // vm.uploadFile()
@@ -491,9 +491,9 @@
 
       deleteImage (image) {
         const vm = this
-        console.log('deleteImage')
+        // console.log('deleteImage')
         vm.confirm('Are you sure?', () => {
-          console.log('deleteImage :; ok')
+          // console.log('deleteImage :; ok')
           const data = {
             urlCommand: '/medias/' + image.id
           }
@@ -512,8 +512,8 @@
       fetchImageIds () {
         const vm = this
         if (vm.voucher) {
-          console.log('fetchImageIds :: voucher exists: ', vm.voucher)
-          console.log('fetchImageIds :: activeScope = ' + vm.activeScope)
+          // console.log('fetchImageIds :: voucher exists: ', vm.voucher)
+          // console.log('fetchImageIds :: activeScope = ' + vm.activeScope)
           vm.loading = true
           const data = {
             urlCommand: '/medias',
@@ -526,7 +526,7 @@
           }
           vm.$store.dispatch('AUTH_GET', data).then(
             response => {
-              console.log('fetchImageIds :: response: ', response)
+              // console.log('fetchImageIds :: response: ', response)
               if (vm.hasGroups) {
                 vm.groups = response
                 if (vm.groups.length > 0) {
@@ -543,7 +543,7 @@
             }
           )
         } else {
-          console.log('fetchImageIds :: voucher not exists')
+          // console.log('fetchImageIds :: voucher not exists')
         }
       },
 
@@ -560,7 +560,7 @@
 
       onCommandHandler (payload) {
         const vm = this
-        console.log('ImageSelectDialog :: onCommandHandler :: payload: ', payload)
+        // console.log('ImageSelectDialog :: onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
           case 'onDeleteImage':

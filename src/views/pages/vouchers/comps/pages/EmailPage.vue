@@ -145,22 +145,18 @@ export default {
       })
     },
     onCommandHandler (payload) {
-      console.log('EmailPage :: onCommandHandler :: payload: ', payload)
       this.$emit('onCommand', payload)
     },
     loadAgentSmtpServers (callback) {
       const vm = this
-      console.log('loadAgentSmtpServers :: record: ', vm.record)
       if (vm.record && vm.record.agent_id !== 0) {
         const data = {
           urlCommand: '/agents/' + vm.record.agent_id + '/' + 'smtp_servers'
         }
         vm.$store.dispatch('AUTH_GET', data).then(
           response => {
-            console.log('AUTH_GET.then :: response: ', response)
             vm.agentSmtpServers = response.smtpServers
             vm.agentTag = response.tag
-            console.log('AUTH_GET.then :: vm.agentSmtpServers: ', vm.agentSmtpServers)
             if (typeof callback === 'function') {
               callback()
             }
@@ -181,7 +177,7 @@ export default {
   mounted () {
     const vm = this
     vm.loadAgentSmtpServers(() => {
-      console.log('mounted :: loadAgentSmtpServers.then => updateEmailPageSection')
+      // console.log('mounted :: loadAgentSmtpServers.then => updateEmailPageSection')
       if (vm.activeSectionKey==='') {
         vm.$emit('onCommand', {
           command: 'updateEmailPageSectionKey',

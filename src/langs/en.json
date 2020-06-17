@@ -30,7 +30,8 @@
     "description": "Description",
     "type": "Type",
     "unspecified": "Unspecified",
-    "views": "Views"
+    "views": "Views",
+    "qr_barcode": "QR/Barcode"
   },
   "status": {
     "pending": "Pending",

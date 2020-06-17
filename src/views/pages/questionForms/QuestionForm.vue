@@ -14,7 +14,6 @@ export default {
   },
   mounted () {
     const vm = this
-    console.log('mounted :: vm.route: ', vm.$route.params.key)
     const key = vm.$route.params.key
     const getData = {
       urlCommand: '/form_questions/' + key

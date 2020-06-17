@@ -91,7 +91,7 @@ export default {
     },
     init (params) {
       const vm = this
-      console.log('SeriousConfirmDialog :: init')
+      // console.log('SeriousConfirmDialog :: init')
       vm.params.title = params.title
       vm.params.message = params.message
       vm.params.confirmWord = params.confirmWord

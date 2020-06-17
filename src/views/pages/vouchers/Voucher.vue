@@ -37,7 +37,7 @@
               tdClass: 'text-center',
               field: 'voucher_type'
             },
-            {title: 'QR/Barcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCodes', field: 'id'},
+            {title: 'general.qr_barcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCodes', field: 'id'},
             {
               title: 'vouchers.activation_date',
               thComp: 'ThCommonHeader',

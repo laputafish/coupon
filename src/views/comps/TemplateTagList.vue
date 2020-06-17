@@ -4,7 +4,7 @@
             <!--class="btn btn-primary mb-3 w-100">-->
     <!--{{ $t('vouchers.copyTemplateFrom') }}-->
   <!--</b-button>-->
-  <h6 v-if="templateTagGroups.length>0">Token List</h6>
+  <h6 class="text-center" v-if="templateTagGroups.length>0">Tag List</h6>
   <div v-for="tagGroup in templateTagGroups"
        :key="tagGroup['name']">
     {{ $t('vouchers.' + tagGroup['name']) }}

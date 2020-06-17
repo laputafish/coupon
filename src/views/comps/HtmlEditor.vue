@@ -181,8 +181,6 @@ export default {
           isFullScreen: e.state
         })
       })
-
-      console.log('onEditorInit => vm.addTinyMCEButtonEvents')
       vm.addTinyMCEButtonEvents(tinyMCE.get(vm.id))
     },
     addTinyMCEButtonEvents (editor) {
@@ -208,7 +206,6 @@ export default {
       })
     },
     uploadImage (inpUpload, editor) {
-      console.log('uploadImage')
       const vm = this
       var input = inpUpload.get(0);
       var data = new FormData();
@@ -218,7 +215,6 @@ export default {
 
       const url = vm.$store.getters.apiUrl + '/media/upload_image'
       const bearerToken = 'bearer ' + vm.$store.getters.accessToken
-      console.log('uploadImage')
       $.ajax({
         headers: {'Authorization': bearerToken},
         url: url,
@@ -227,12 +223,10 @@ export default {
         processData: false, // Don't process the files
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         success: function (response, textStatus, jqXHR) {
-          console.log('VoucherRecord :: uploadImage :: response :: data: ', response)
           const data = response.result
           editor.insertContent('<img class="content-img" src="' + data.imageUrl + '"/>');
         },
         error: function (jqXHR, textStatus, errorThrown) {
-          console.log('VoucherRecord :: uploadImage :: error')
           if (jqXHR.responseText) {
             const errors = JSON.parse(jqXHR.responseText).errors
             alert('Error uploading image: ' + errors.join(", ") + '. Make sure the file is an image and has extension jpg/jpeg/png.');

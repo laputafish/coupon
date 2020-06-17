@@ -787,13 +787,10 @@
     // },
     methods: {
       onVoucherStatusUpdated (data) {
-        console.log('*** VoucherRecord :: onVoucherStatusUpdated data: ', data)
         const vm = this
         if (vm.record) {
-          console.log('*** VoucherRecord :: onVoucherStatusUpdated :: vm.record exists :: data: ', data)
           vm.record.status = data.voucher.status;
         } else {
-          console.log('*** VoucherRecord :: onVoucherStatusUpdated :: vm.record not exists :: data: ', data)
         }
       },
       initPusherChannel () {
@@ -810,7 +807,7 @@
           // console.log('*** initPusherChannel subscrib(' + channelName + ')')
           vm.pusherChannel = vm.pusher.subscribe(channelName)
 
-          console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
+          // console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
           vm.pusherChannel.bind('VoucherStatusUpdated', function (data) {
             vm.onVoucherStatusUpdated(data)
           })
@@ -819,10 +816,10 @@
             if (vm.recordId !== 0) {
 
             } else {
-              console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
+              // console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
             }
           } else {
-            console.log('*** VoucherRecord :: initPusherChannel (pusher not, record id not)')
+            // console.log('*** VoucherRecord :: initPusherChannel (pusher not, record id not)')
           }
         }
       },
@@ -885,7 +882,6 @@
       //
       onUploaded (result) {
         const vm = this
-        console.log('onUploaded :: result: ', result)
         vm.selectedTempMediaId = result.imageId
         // sharingImageSrc = vm.$store.getters.appHost + '/media/image/' + result.imageId
         // vm.$bvModal('imageCropperDialog').show()
@@ -1126,7 +1122,6 @@
 
         const url = vm.$store.getters.apiUrl + '/media/upload_image'
         const bearerToken = 'bearer ' + vm.$store.getters.accessToken
-        console.log('uploadImage')
         $.ajax({
           headers: {'Authorization': bearerToken},
           url: url,
@@ -1135,12 +1130,10 @@
           processData: false, // Don't process the files
           contentType: false, // Set content type to false as jQuery will tell the server its a query string request
           success: function (response, textStatus, jqXHR) {
-            console.log('VoucherRecord :: uploadImage :: response :: data: ', response)
             const data = response.result
             editor.insertContent('<img class="content-img" src="' + data.imageUrl + '"/>');
           },
           error: function (jqXHR, textStatus, errorThrown) {
-            console.log('VoucherRecord :: uploadImage :: error')
             if (jqXHR.responseText) {
               const errors = JSON.parse(jqXHR.responseText).errors
               alert('Error uploading image: ' + errors.join(", ") + '. Make sure the file is an image and has extension jpg/jpeg/png.');
@@ -1328,7 +1321,6 @@
       onCommandHandler (payload) {
         const vm = this
         var customForm = null
-        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         switch (payload.command) {
           case 'copyTemplate':
             vm.showingCopyTemplateDialog = true
@@ -1360,7 +1352,6 @@
                 vm.record.custom_form_key_before_goal = payload.formKey
                 break
               case 'actionTypeAfterGoal':
-                console.log('voucherRecord > onCommandHandler > selectCustomForm > actionTypeAfterGoal formKey = ' + payload.formKey)
                 vm.record.custom_form_key_after_goal = payload.formKey
                 break
             }
@@ -1520,7 +1511,6 @@
           //   vm.saveTemp()
           //   break
           case 'updateField':
-            console.log('updateField :: payload: ', payload)
             var fieldName = payload.fieldName
             var fieldValue = payload.fieldValue
             vm.record[payload.fieldName] = JSON.parse(JSON.stringify(fieldValue))
@@ -1529,7 +1519,6 @@
               vm.save()
             }
             if (fieldName === 'participant_configs') {
-              console.log('VoucherRecord :: onCommandHandler :: vm.$refs: ', vm.$refs)
               // vm.$refs.participantsPage.updateInputObjs()
             }
             if (typeof payload.callback === 'function') {
@@ -1538,7 +1527,6 @@
             break
 
           case 'setRecordField':
-            console.log('setRecordField :: payload: ', payload)
             vm.record[payload.fieldName] = JSON.parse(JSON.stringify(payload.fieldValue))
             if (payload.fieldName === 'participant_count' && payload.fieldValue === 0) {
               if (vm.record.voucher_type === 'voucher') {
@@ -1762,7 +1750,6 @@
       certifyFormConfigs () {
         const vm = this
         var formConfigs = vm.record.form_configs;
-        console.log('certifyFormConfigs :: formConfigs: ', formConfigs)
         if (formConfigs['inputObjs']) {
           var inputObjs = formConfigs['inputObjs']
           for (var i = 0; i < inputObjs.length; i++) {

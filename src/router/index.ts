@@ -77,7 +77,7 @@ import QuestionForm from '@/views/pages/questionForms/QuestionForm.vue'
 Vue.use(VueRouter)
 
 const checkIfMember = (to, from, next) => {
-  console.log('checkIfMember')
+  // console.log('checkIfMember')
   const token = store.getters.accessToken;
   if (token === '' || token === null) {
     next('/login')
@@ -100,27 +100,27 @@ const ifAuthenticated = (to, from, next) => {
   if (user === null) {
     store.dispatch('FETCH_TOKEN').then(
       (token) => {
-        console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
+        // console.log('ifAuthenticated :: FETCH_TOKEN.then token = ' + token)
         if (token === '' || token === null) {
-          console.log('ifAuthenticated :: token is blank')
+          // console.log('ifAuthenticated :: token is blank')
           next('/login')
         } else {
-          console.log('ifAuthenticated => FETCH_user')
+          // console.log('ifAuthenticated => FETCH_user')
           store.dispatch('FETCH_USER')
           if (!store.getters.agentsLoaded) {
-            console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
+            // console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
             store.dispatch('FETCH_AGENTS')
           } else {
-            console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
+            // console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
           }
 	        if (!store.getters.inputObjsInfoLoaded) {
-		        console.log('ifAuthenticated => inputObjsInfoLoaded==false ==> FETCH_INPUT_OBJS_INFO')
+		        // console.log('ifAuthenticated => inputObjsInfoLoaded==false ==> FETCH_INPUT_OBJS_INFO')
 		        store.dispatch('FETCH_INPUT_OBJS_INFO').then(
 			        ()=>{},
 			        ()=>{}
 		        )
 	        } else {
-		        console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
+		        // console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
 	        }
 	        if (!store.getters.systemConfigsLoaded) {
             store.dispatch('FETCH_SYSTEM_CONFIGS').then(
@@ -136,26 +136,26 @@ const ifAuthenticated = (to, from, next) => {
         next('/login')
       }
     )
-    console.log('ifAuthenticated => FETCH_TOKEN')
+    // console.log('ifAuthenticated => FETCH_TOKEN')
   } else {
     if (!store.getters.agentsLoaded) {
-	    console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
+	    // console.log('ifAuthenticated => agentsLoaded==false ==> FETCH_AGENTS')
 	    store.dispatch('FETCH_AGENTS')
 
     } else {
-	    console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
+	    // console.log('ifAuthenticated => agentsLoaded==true => no fetch-agents')
     }
 	  if (!store.getters.inputObjsInfoLoaded) {
-		  console.log('ifAuthenticated => inputObjsInfoLoaded==false ==> FETCH_INPUT_OBJS_INFO')
+		  // console.log('ifAuthenticated => inputObjsInfoLoaded==false ==> FETCH_INPUT_OBJS_INFO')
 		  store.dispatch('FETCH_INPUT_OBJS_INFO').then(
 			  ()=>{},
 			  ()=>{}
 		  )
 	  } else {
-		  console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
+		  // console.log('ifAuthenticated => inputObjsInfoLoaded==true => no action')
 	  }
 	  if (!store.getters.sytemConfigsLoaded) {
-		  console.log('ifAuthenticated => systemConfigsLoaded==false ==> FETCH_SYSTEM_CONFIGS')
+		  // console.log('ifAuthenticated => systemConfigsLoaded==false ==> FETCH_SYSTEM_CONFIGS')
       store.dispatch('FETCH_SYSTEM_CONFIGS').then(
         () => {},
           () => {}

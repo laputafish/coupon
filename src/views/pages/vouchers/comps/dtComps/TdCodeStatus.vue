@@ -34,7 +34,7 @@
       <!---->
     <!--</button>-->
     <div v-if="value==='fails' || value==='completed'"
-         class="badge badge-muted bg-gray-light">{{ row['sent_on'] }}</div>
+         class="badge">{{ row['sent_on'] }}</div>
 
   <!--<select class="form-control" :value="value"-->
       <!--@input="$event=>updateStatus($event.target.value)">-->

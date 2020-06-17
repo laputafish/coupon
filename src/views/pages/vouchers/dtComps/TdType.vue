@@ -5,7 +5,7 @@
     </div>
     <div v-else>
       <div class="badge badge-success">Form <i class="fas fa-caret-right"></i> Voucher</div>
-      <div><small>{{ countDetails }}</small></div>
+      <div data-toggle="tooltips" title="Current / Goals"><small>{{ countDetails }}</small></div>
     </div>
   </div>
 </template>

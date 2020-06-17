@@ -26,7 +26,7 @@
           <td class="summary-label">
             <div class="badge badge-muted min-width-80">On Hold</div>
           </td>
-          <td class="summary-value">{{statusSummary.ready}}</td>
+          <td class="summary-value">{{statusSummary.hold}}</td>
           <td class="summary-label">
             <div class="badge badge-danger min-width-80">Fails</div>
           </td>
@@ -155,7 +155,7 @@
         // echo: null,
         statusSummary: {
           pending: 0,
-          ready: 0,
+          hold: 0,
           completed: 0,
           fails: 0
         },
@@ -190,7 +190,7 @@
         },
         HeaderSettings: false,
         selectedRow: null,
-        defaultColumns: [
+        defaultColumns1: [
           {
             title: 'general.views',
             thComp: 'ThCommonHeader',
@@ -198,7 +198,7 @@
             tdClass: 'align-middle text-center',
             tdComp: 'TdViews',
             field: 'views',
-            sortable: true
+            sortable: false
           },
           {
             title: 'general.key',
@@ -208,6 +208,8 @@
             field: 'key',
             sortable: true
           },
+        ],
+        defaultColumns2: [
           {
             title: 'general.remark',
             thComp: 'ThCommonHeader',
@@ -419,7 +421,6 @@
       },
       download () {
         const vm = this
-        console.log('AgentCodeTable :: download')
         vm.showingCodeExportDialog = true
       },
       updateCodeViewCount (row) {
@@ -464,7 +465,6 @@
 
       onVoucherCodeViewsUpdated (data) {
         const vm = this
-        console.log('AgentCodeTable :: onVoucherCodeViewsUpdated : data: ', data)
         const voucherCode = data.voucherCode
         for (var i = 0; i < vm.data.length; i++) {
           if (vm.data[i].id === voucherCode.id) {
@@ -482,7 +482,6 @@
       onVoucherCodeStatusUpdated (data) {
         const vm = this
         const voucherCode = data.voucherCode
-        console.log('AgentCodeTable :: onVoucherCodeStatusUpdated : data: ', data)
         for (var i = 0; i < vm.data.length; i++) {
           if (vm.data[i].id === voucherCode.id) {
             vm.data[i].status = voucherCode.status
@@ -509,12 +508,10 @@
           }
           vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
 
-          console.log('AgentCodeTable bind(VoucherCodeStatusUpdated)')
           vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
             vm.onVoucherCodeStatusUpdated(data)
           })
 
-          console.log('AgentCodeTable bind(VoucherCodeViewsUpdated)')
           vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
             vm.onVoucherCodeViewsUpdated(data)
           })
@@ -957,10 +954,32 @@
           field: 'id'
         }];
 
-        for (let i = 0; i < codeFields.length; i++) {
+        var tdClass = 'text-left align-middle'
+        var thClass = 'text-left'
+        var field = null
+
+        // code field
+        if (codeFields.length > 0) {
+          field = codeFields[0]
+          vm.columns.push({
+            title: field['title'],
+            thComp: 'ThCodeBadgeHeader',
+            tdClass: tdClass,
+            thClass: thClass,
+            field: 'field0'
+          })
+        }
+
+        // default columns set #1
+        for (let j = 0; j < vm.defaultColumns1.length; j++) {
+          vm.columns.push(vm.defaultColumns1[j])
+        }
+
+        // code fields except "code"
+        for (let i = 1; i < codeFields.length; i++) {
+          tdClass = 'text-left align-middle'
+          thClass = 'text-left'
           const field = codeFields[i]
-          let tdClass = 'text-left align-middle'
-          let thClass = 'text-left'
           switch (field['type']) {
             case 'date':
             case 'integer':
@@ -976,9 +995,12 @@
             field: 'field' + i
           })
         }
-        for (let j = 0; j < vm.defaultColumns.length; j++) {
-          vm.columns.push(vm.defaultColumns[j])
+
+        // default columns set #2
+        for (let j = 0; j < vm.defaultColumns2.length; j++) {
+          vm.columns.push(vm.defaultColumns2[j])
         }
+
       },
 
       parseCodeInfoData (infoData) {

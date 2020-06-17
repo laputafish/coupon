@@ -50,6 +50,10 @@
     </html-editor>
   </div>
   <div v-if="!isFullScreenEditorMode">
+     <invalid-tag-list
+       class="flex-grow-0 p-2 bg-danger ml-2"
+       @onCommand="onCommandHandler"
+       :invalidTags="invalidTags"></invalid-tag-list>
      <template-tag-list
          class="flex-grow-0 p-2 bg-muted ml-2"
          :templateTagGroups="templateTagGroups"met
@@ -57,6 +61,10 @@
   </div>
   <div v-else
        class="fullscreen-token-list-panel d-flex flex-column">
+       <invalid-tag-list
+         class="flex-grow-0 p-2 bg-danger ml-2"
+         @onCommand="onCommandHandler"
+         :invalidTags="invalidTags"></invalid-tag-list>
       <template-tag-list
           class="flex-grow-0 p-2 bg-muted ml-2"
           :templateTagGroups="templateTagGroups"
@@ -68,12 +76,14 @@
 <script>
 import htmlEditor from '@/views/comps/HtmlEditor'
 import templateTagList from '@/views/comps/TemplateTagList'
+import invalidTagList from '@/views/comps/InvalidTagList'
 import xlsFileUpload from '@/views/comps/XlsFileUpload'
 
 export default {
   components: {
     htmlEditor,
     templateTagList,
+    invalidTagList,
     xlsFileUpload
   },
   props: {
@@ -129,10 +139,19 @@ export default {
   },
   data () {
     return {
-      isFullScreenEditorMode: false
+      isFullScreenEditorMode: false,
+      invalidTags: null
     }
   },
   methods: {
+    getAllTags () {
+      const vm = this
+      var result = []
+      for(var i = 0; i < vm.templateTagGroups.length; i++) {
+        result = [...result, ...vm.templateTagGroups[i]['tags']]
+      }
+      return result
+    },
     onPaste (evt) {
       const vm = this
       console.log('pasteContent : $event: ', evt)
@@ -212,16 +231,12 @@ export default {
 
     showPreview () {
       const vm = this
-      console.log('TemplateEditor :: showPreview')
-      // vm.$emit('onCommand', {
-      //   command: 'previewTemplate'
-      // })
+      vm.checkTags()
       vm.previewTemplate()
     },
 
     previewTemplate () {
       const vm = this
-      console.log('TemplateEditor :: previewTemplate')
       vm.$emit('onCommand', {
         command: 'save',
         callback: vm.doPreviewTemplate
@@ -259,7 +274,6 @@ export default {
 
     updateContent (content) {
       const vm = this
-      console.log('TemplateEditor :: updateContent :: content: ', content)
       vm.$emit('onCommand', {
         command: 'updateTemplateContent',
         fieldValue: content
@@ -290,7 +304,6 @@ export default {
           vm.$emit('onCommand', {
             'command': 'clearTemplate',
             'callback': () => {
-              console.log('TemplateEditor :: clearTemplate :: callback vm: ', vm)
               vm.$refs.htmlEditor.clearContent()
             }
           })
@@ -298,9 +311,35 @@ export default {
       )
     },
 
+    checkTags () {
+      const vm = this
+      const founds = [...vm.content.matchAll(/{([^:^}^;]+?)}/g)]
+      // console.log('TemplateEditor :: onCommandHandler :: founds: ', founds)
+      var userTags = founds.map(item => item[1])
+      var allTags = vm.getAllTags()
+
+      var invalidTags = userTags
+        .filter(item => allTags.indexOf(item)===-1)
+        .map(item => '{' + item + '}')
+        .sort()
+
+      vm.invalidTags = {}
+      for (var i = 0; i < invalidTags.length; i++) {
+        var tag = invalidTags[i]
+        if (Object.keys(vm.invalidTags).indexOf(tag) === -1) {
+          vm.invalidTags[tag] = 1
+        } else {
+          vm.invalidTags[tag]++
+        }
+      }
+    },
+
     onCommandHandler (payload) {
       const vm = this
       switch (payload.command) {
+        case 'checkTags':
+          vm.checkTags()
+          break
         case 'changeEditorFullscreenState':
           vm.isFullScreenEditorMode = payload.isFullScreen
           break

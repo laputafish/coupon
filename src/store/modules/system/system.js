@@ -40,8 +40,8 @@ const mutations = {
   },
   setAccessToken (state, payload) {
     state.accessToken = payload
-    console.log('setAccessToken payload = ' + payload)
-    console.log('setAccessToken state.accessToken = (' + state.accessToken + ')')
+    // console.log('setAccessToken payload = ' + payload)
+    // console.log('setAccessToken state.accessToken = (' + state.accessToken + ')')
     const localToken = localStorage.getItem('accessToken')
     if (payload !== localToken) {
       localStorage.setItem('accessToken', payload)
@@ -72,8 +72,8 @@ const actions = {
       // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
       /*const promise = */
-      console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
-      console.log('localStorage(accessToken) = ' + accessToken)
+      // console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
+      // console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
       //   resolve(accessToken)
       // })
@@ -83,8 +83,8 @@ const actions = {
 
   [types.SET_TOKEN] ({commit, getters}, payload) {
     return new Promise((resolve) => {
-      console.log('SET_TOKEN :: payload: ', payload)
-      console.log('SET_TOKEN :: getters.accessToken = ' + getters.accessToken)
+      // console.log('SET_TOKEN :: payload: ', payload)
+      // console.log('SET_TOKEN :: getters.accessToken = ' + getters.accessToken)
       if (getters.accessToken !== payload) {
         localStorage.setItem('accessToken', payload)
         commit('setAccessToken', payload)
@@ -98,8 +98,8 @@ const actions = {
 
   [types.SET_USER] ({commit, getters}, payload) {
     return new Promise((resolve) => {
-      console.log('SET_USER :: payload: ', payload)
-      console.log('SET_USER :: getters.user = ' + getters.user)
+      // console.log('SET_USER :: payload: ', payload)
+      // console.log('SET_USER :: getters.user = ' + getters.user)
       if (getters.user !== payload) {
         commit('setUser', payload)
         resolve(payload)
@@ -130,7 +130,7 @@ const actions = {
       urlCommand: '/system/configs'
     }
     dispatch('AUTH_GET', data).then(response => {
-      console.log('FETCH_SYSTEM_CONFIGS :: AUTH_GET :: response: ', response)
+      // console.log('FETCH_SYSTEM_CONFIGS :: AUTH_GET :: response: ', response)
       commit('setSystemConfigs', response)
     })
   },
