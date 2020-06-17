@@ -183,5 +183,6 @@
 <style>
 .record-notes {
   font-size: 80%;
+  min-height: 12px;
 }
 </style>

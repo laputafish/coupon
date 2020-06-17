@@ -147,6 +147,21 @@ export default {
 
     pasteContent ($event) {
       const vm = this
+      var proceed = false
+
+      if (vm.content.trim() !== '') {
+        vm.$dialog.confirm('It will overwrite existing content. Are you sure?').then(
+          () => {
+            vm.doPasteContent()
+          }
+        )
+      } else {
+        vm.doPasteContent()
+      }
+    },
+
+    doPasteContent () {
+      const vm = this
       navigator.clipboard.readText().then(
         text => {
           vm.setContent(text)
@@ -156,18 +171,8 @@ export default {
           vm.$toaste.error('Error: cannot paste content in clipboard!')
         }
       )
-      // console.log('pasteContent :: dummy: ', vm.$refs.dummy.$el)
-      // vm.$refs.dummy.exec
-      // console.log('pasteContent : $event: ', $event)
-      // const clipboardData = window.clipboardData || event.clipboardData || event.originalEvent && event.originalEvent.clipboardData;
-      // const pastedText = clipboardData.getData("Text") || clipboardData.getData("text/plain");
-      //
-      // if (!pastedText && pastedText.length) {
-      //   return;
-      // }
-      //
-      // vm.setContent(pastedText);
     },
+
     onUploadingHandler () {
     },
 

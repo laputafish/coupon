@@ -61,7 +61,7 @@
         <div class="field-item">
           <div class="d-inline-block mr-3 field-label">{{ $t('general.type')}}</div>
           <div class="d-inline-block mr-3 field-content min-width-50 text-center">{{ ucfirst(record.voucher_type) }}</div>
-          <div class="d-inline-block">
+          <div class="d-inline-block" v-if="record && record.voucher_type==='form'">
             <copy-link :link="customLink" variant="danger"></copy-link>
           </div>
         </div>

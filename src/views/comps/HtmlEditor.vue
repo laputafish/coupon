@@ -12,6 +12,7 @@
           :value="content"
           @input="value=>updateContent(value)"></tinymce>
     <image-select-dialog
+        ref="imageSelectDialog"
         title="Image Selection"
         :voucher="voucher"
         imageScope="local"
@@ -143,7 +144,32 @@ export default {
     },
 
     onCommandHandler (payload) {
-      console.log('HtmlEditor :: onCommandHandler :: payload: ', payload)
+      const vm = this
+      console.log('HtmlEditor :: onCommandHandler :: paylaod: ', payload)
+      switch (payload.command) {
+        case 'onImageSelected':
+          const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId
+          const editor = tinyMCE.get(vm.id)
+          editor.insertContent('<img class="content-img" src="' + url + '"/>');
+          vm.$toaster.success('Image Added')
+          vm.$bvModal.hide('imageSelectDialog')
+          break
+      }
+      // vm.$emit('onCommand', payload)
+    //   switch (payload.command) {
+    //     case 'onImageSelected':
+    //       vm.$emit('onCommand', {
+    //
+    //       })
+    //   }
+    // }
+    // case 'onImageSelected':
+    //   switch (payload.imageScope) {
+    //     case 'tinymce':
+    //       vm.$refs.ticketsPage.insertImage(payload.imageId)
+    //       break
+    //
+    //   console.log('HtmlEditor :: onCommandHandler :: payload: ', payload)
     },
     onEditorInit () {
       const vm = this
@@ -162,37 +188,24 @@ export default {
     addTinyMCEButtonEvents (editor) {
       const vm = this
 
-      console.log('addTinyMCEButtonEvents')
-
+      //**************
       // Upload Image
+      //**************
       var editorObj = $('#' + vm.id)
       var inpUpload = $(editorObj).parent().find('input#tinymce-uploader')
-
-      console.log('addTinyMCEButtonEvents :: inpUpload: ', inpUpload)
-
       $(inpUpload).off('change').on('change', function () {
         vm.uploadImage(inpUpload, editor)
       })
 
+      //**************
       // Select Image
+      //**************
       const objTinymce = $('#' + vm.id).prev('.mce-tinymce')
-      console.log('VoucherRecord :: objTinymce :: ', objTinymce)
       const btnSelectImage = $(objTinymce).find('.mce-select-image button')
-      console.log('VoucherRecord :: btnSelectImage :: ', btnSelectImage)
       $(btnSelectImage).off('click').on('click', function () {
-        vm.showingImageSelectDialog = true
+        vm.$bvModal.show('imageSelectDialog')
+        // vm.showingImageSelectDialog = true
       })
-
-
-      // Select Image
-
-      //   '' +
-      //   ' inpUpload = $(\'<input id="tinymce-uploader' +
-      //   '' +
-      //   '')
-      // vm.addTinyMCEButtonEmbedImage(editor, 'embedImage')
-      // vm.addTinyMCEButtonUploadImage(editor, 'uploadImage')
-      // vm.tinymceToolbar1 = 'undo redo | formatselect | bold italic strikethrough forecolor backcolor | link embedImage uploadImage | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat | fullscreen'
     },
     uploadImage (inpUpload, editor) {
       console.log('uploadImage')
