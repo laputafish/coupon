@@ -120,7 +120,7 @@
           outputType: 'jpg',
           info: true,
           full: true, // full: false,
-          fixed: true,
+          fixed: false,
           fixedNumber: [1, 1],
           canMove: true,
           canMoveBox: true,
