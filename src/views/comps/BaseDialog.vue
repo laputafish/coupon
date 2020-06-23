@@ -3,6 +3,7 @@
            :size="size"
            :value="value"
            @input="value=>$emit('input',value)"
+           @shown="onShown"
            :title="title">
     <slot name="dialogBody">
     </slot>
@@ -86,6 +87,12 @@
       }
     },
     methods: {
+      onShown () {
+        const vm = this
+        vm.$emit('onCommand', {
+          command: 'onShown'
+        })
+      },
       closeDialog () {
         const vm = this
         vm.$emit('onCommand', {

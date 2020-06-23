@@ -107,6 +107,8 @@
     <code-import-dialog
         ref="codeImportDialog"
         v-model="showingCodeImportDialog"
+        :codeFieldsStr="codeFieldNamesStr"
+        :participantFieldsStr="participantFieldNamesStr"
         callbackCommand="confirmCodeImport"
         @onCommand="onCommandHandler"></code-import-dialog>
 
@@ -202,7 +204,8 @@
           },
           {
             title: 'general.key',
-            thComp: 'ThCommonHeader',
+            thComp: 'ThKeyBadgeHeader',
+            thClass: 'text-center',
             tdClass: 'align-middle',
             tdComp: 'TdKey',
             field: 'key',
@@ -269,7 +272,35 @@
       codeFieldsStr () {
         const vm = this
         return vm.record.code_fields
+      },
+      codeFieldNamesStr () {
+        const vm = this
+        var result = ''
+        var fieldInfos = []
+        if (vm.codeFieldsStr !== '') {
+          fieldInfos = vm.codeFieldsStr.split('|')
+          var fieldNames = []
+          for (var i = 0; i < fieldInfos.length; i++) {
+            const segs = fieldInfos[i].split(':')
+            const tag = i === 0 ? 'code' : 'code-other'
+            fieldNames.push(segs[0] + ':' + tag)
+          }
+          result = fieldNames.join('|')
+        }
+        return result
+      },
+      participantFieldNamesStr () {
+        const vm = this
+        var result = []
+        if (vm.record.participant_configs && vm.record.participant_configs['inputObjs']) {
+          const inputObjs = vm.record.participant_configs['inputObjs']
+          for (var i = 0; i < inputObjs.length; i++) {
+            result.push(inputObjs[i].name);
+          }
+        }
+        return result.join('|')
       }
+
     },
     props: {
       // voucherId: {
@@ -387,6 +418,7 @@
     },
     beforeDestroy () {
       const vm = this
+      vm.xprops.eventbus.$off('onRowCommand')
       vm.unbindEvents()
     },
     destroyed () {
@@ -783,7 +815,7 @@
       },
       onRowCommandHandler (payload) {
         const vm = this
-        // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+        console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
         switch (payload.command) {
           // case 'onLinkClicked':
           //   vm.updateCodeViewCount(payload.row)
@@ -834,6 +866,9 @@
             //   fieldName: payload.fieldName,
             //   fieldValue: payload.fieldValue
             // })
+            break
+          case 'gotoLink':
+            vm.$emit('onCommand', payload)
             break
         }
       },
@@ -1074,7 +1109,9 @@
         const postData = {
           urlCommand: '/agent_codes/parse/' + payload.key,
           data: {
-            fieldInfos: payload.fieldInfos
+            fieldInfos: payload.fieldInfos,
+            includeCode: payload.includeCode,
+            includeParticipant: payload.includeParticipant
           }
         }
 
@@ -1102,7 +1139,8 @@
               vm.updateParticipantFields(result)
               msgs.push(result.participantIds.length + ' participant(s) are added')
             }
-            vm.$toaster.success(msgs.join(' and ') + '.')
+            vm.$dialog.alert(msgs.join('<br/>'), {html: true})
+            // vm.$toaster.success(msgs.join(' and ') + '.')
             vm.reloadAll()
               // const newParticipantConfigs = result.participantConfigs
               // console.log('parse: vm.record.participant_configs: ', vm.record.participant_configs)

@@ -36,12 +36,20 @@ export default {
   methods: {
     onCommandHandler (payload) {
       const vm = this
+
       switch (payload.command) {
         case 'onLinkClicked':
-          vm.xprops.eventbus.$emit('onLinkClicked', {
-            row: vm.row
+          console.log('TdKey :: onCommandHandler :: payload: ', payload)
+          vm.xprops.eventbus.$emit('onRowCommand', {
+            command: 'gotoLink',
+            link: payload.link
           })
           break
+        // case 'gotoLink':
+        //   vm.xprops.eventbus.$emit('gotoLink', {
+        //     link: payload.link
+        //   })
+        //   break
       }
     }
   },

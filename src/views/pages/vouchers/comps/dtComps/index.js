@@ -1,4 +1,5 @@
 import ThCodeBadgeHeader from './ThCodeBadgeHeader.vue'
+import ThKeyBadgeHeader from './ThKeyBadgeHeader.vue'
 import ThParticipantBadgeHeader from './ThParticipantBadgeHeader.vue'
 import TdKey from './TdKey.vue'
 import TdCodeStatus from './TdCodeStatus.vue'
@@ -9,6 +10,7 @@ import TdViews from './TdViews'
 
 export default {
   ThCodeBadgeHeader,
+  ThKeyBadgeHeader,
   ThParticipantBadgeHeader,
   TdKey,
   TdCodeStatus,

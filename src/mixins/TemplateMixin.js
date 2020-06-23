@@ -51,12 +51,18 @@ const TemplateMixin = {
     codeFields () {
       const vm = this
       let result = []
+      // result = [
+      //    'code',
+      //    'serial',
+      //    'ticket_link'
+      // ]
       if (vm.voucher.code_fields !== null && vm.voucher.code_fields !== '') {
         // console.log('codeFields :: codeFields = ' + vm.voucher.code_fields)
         const arKeyPairs = helpers.getKeyPairArray(vm.voucher.code_fields)
         // console.log('codeFields :: arKeyPairs: ', arKeyPairs)
         result = arKeyPairs.map(keyPair => keyPair[0])
       }
+      result.push('ticket_link')
       return result
     }
   },

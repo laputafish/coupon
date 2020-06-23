@@ -1,9 +1,9 @@
 <template>
 <div class="d-flex flex-row align-items-center icon-link">
-  <a :href="link" class="d-inline-block copy-link-icon" target="_blank">
+  <div @click="gotoLink(link)" class="d-inline-block copy-link-icon">
     <font-awesome-icon icon="location-arrow"/>
-  </a>
-  <!--<a :href="link" @click="onLinkClicked" class="d-inline-block copy-link-icon" target="_blank">-->
+  </div>
+  <!--<a :href="link" class="d-inline-block copy-link-icon" target="_blank">-->
     <!--<font-awesome-icon icon="location-arrow"/>-->
   <!--</a>-->
 
@@ -52,6 +52,13 @@ export default {
       const vm = this
       vm.$copyText( vm.link)
       vm.$toaster.info(vm.$t('messages.link_copied_to_clipboard'))
+    },
+    gotoLink (link) {
+      const vm = this
+      vm.$emit('onCommand', {
+        command: 'onLinkClicked',
+        link: link
+      })
     }
     // ,
     // onLinkClicked () {

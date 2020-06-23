@@ -1339,6 +1339,11 @@
         const vm = this
         var customForm = null
         switch (payload.command) {
+          case 'gotoLink':
+            vm.save(() => {
+              window.open(payload.link, '_blank')
+            })
+            break
           case 'copyTemplate':
             vm.showingCopyTemplateDialog = true
             vm.copyTemplateFor = payload.contentType
