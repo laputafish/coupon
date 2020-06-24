@@ -160,6 +160,13 @@ export default {
     onCommandHandler (payload) {
       const vm = this
       switch (payload.command) {
+        case 'copyTemplate':
+          console.log('EmailTemplateSection :: onCommandHandler :: payload: ', payload)
+          vm.$emit('onCommand', {
+            command: 'copyTemplate',
+            copyTemplateFor: 'email_template'
+          })
+          break
         case 'updateTemplateContent':
           vm.$emit('onCommand', {
             command: 'updateField',

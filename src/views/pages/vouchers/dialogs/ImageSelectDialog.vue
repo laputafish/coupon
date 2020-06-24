@@ -1,5 +1,6 @@
 <template>
   <base-dialog
+      ref="baseDialog"
       id="imageSelectDialog"
       :title="title"
       modalType="confirmation"
@@ -18,6 +19,7 @@
               btnClass="min-width-100"
               :options="scopeOptions"
               v-model="activeScope"></data-radio-toggle>
+
           <!--<div class="footer-status float-right">-->
             <!--Drop: {{$refs.upload ? $refs.upload.drop : false}},-->
             <!--Active: {{$refs.upload ? $refs.upload.active : false}},-->
@@ -39,7 +41,6 @@
                     :key="group.id">
                   <span v-if="group.description!==''">{{ group.description }}</span>
                   <span v-else>(No Title)</span>
-
                 </li>
               </ul>
             </div>
@@ -211,12 +212,14 @@
     mounted () {
       const vm = this
       vm.activeScope = vm.scopeOptions[0].value
-      vm.$nextTick(() => {
-        // console.log('mounted :: scopeOptions: ', vm.scopeOptions)
-        // console.log('mounted :: activeScope: ', vm.activeScope)
-        vm.fetchImageIds()
-      })
-      // vm.fetchImageIds()
+
+      // reffresh images for self-invoice invoices
+      if (vm.voucher) {
+        vm.$nextTick(() => {
+          vm.fetchImages()
+        })
+      }
+      // vm.fetchImages()
     },
     model: {
       prop: 'value',
@@ -225,23 +228,28 @@
     watch: {
       voucher: function () {
         const vm = this
-        vm.fetchImageIds()
+        console.log('ImageSelectDialog :: watch(voucher) => fetchImages')
+
+        vm.fetchImages()
       },
       activeScope: function (newVal) {
         // alert('watch(activeScope)')
         const vm = this
         // console.log('activeScope: newVal = ' + newVal )
-        vm.fetchImageIds()
-      },
-      value: function () {
-        // alert('watch(value)')
-        const vm = this
-        // console.log('ImageSelectDialog :: watch(value)')
-        // vm.fetchImageIds()
-        vm.$nextTick(() => {
-          vm.activeScope = vm.scopeOptions[0].value
-        })
+        console.log('ImageSelectDialog :: watch(activeScope) => fetchImages')
+
+        vm.fetchImages()
       }
+      // ,
+      // value: function () {
+      //   // alert('watch(value)')
+      //   const vm = this
+      //   // console.log('ImageSelectDialog :: watch(value)')
+      //   // vm.fetchImages()
+      //   vm.$nextTick(() => {
+      //     vm.activeScope = vm.scopeOptions[0].value
+      //   })
+      // }
     },
     data () {
       return {
@@ -366,6 +374,14 @@
     //   }
     // },
     methods: {
+      toggle () {
+        const vm = this
+        vm.$refs.baseDialog.toggle()
+      },
+      updateImages (payload) {
+        const vm = this
+        vm.imageCount = payload.count
+      },
       closeDialog () {
         const vm = this
         vm.$emit('input',false)
@@ -421,17 +437,18 @@
       },
 
 
-      uploadFile () {
-        const vm = this
-        vm.$nextTick(function () {
-          // console.log('uploadFile :: onUploading')
-          // vm.$emit('onUploading')
-          vm.$refs[vm.inputId].active = true
-        })
-      },
+      // uploadFile () {
+      //   const vm = this
+      //   vm.$nextTick(function () {
+      //     // console.log('uploadFile :: onUploading')
+      //     // vm.$emit('onUploading')
+      //     vm.$refs[vm.inputId].active = true
+      //   })
+      // },
 
       // add, update, remove File Event
       inputFile(newFile, oldFile) {
+
         const vm = this
         if (newFile && !oldFile) {
           // console.log('inputFile : newFile : ' + (newFile ? 'yes' : 'no'))
@@ -448,7 +465,10 @@
         }
 
         if (newFile && newFile.success) {
-          vm.fetchImageIds()
+          console.log('inputFile :: newfile: ', newFile)
+          console.log('inputFile :: newfile.success: ', newFile.success)
+          console.log('inputFile :: oldFile: ', oldFile)
+          vm.fetchImages()
           // vm.$emit('onUploaded', newFile.response.result)
         } else {
 
@@ -499,21 +519,22 @@
           }
           vm.$store.dispatch('AUTH_DELETE', data).then(
             () => {
-              vm.fetchImageIds()
+              vm.fetchImages()
             }
           )
         })
       },
 
       refresh () {
-        this.fetchImageIds()
+        console.log('ImageSelectDialog :: refresh')
+        this.fetchImages()
       },
 
-      fetchImageIds () {
+      fetchImages () {
         const vm = this
         if (vm.voucher) {
-          // console.log('fetchImageIds :: voucher exists: ', vm.voucher)
-          // console.log('fetchImageIds :: activeScope = ' + vm.activeScope)
+          console.log('fetchImages :: voucher exists: ', vm.voucher)
+          console.log('fetchImages :: activeScope = ' + vm.activeScope)
           vm.loading = true
           const data = {
             urlCommand: '/medias',
@@ -526,7 +547,7 @@
           }
           vm.$store.dispatch('AUTH_GET', data).then(
             response => {
-              // console.log('fetchImageIds :: response: ', response)
+              console.log('fetchImages :: response: ', response)
               if (vm.hasGroups) {
                 vm.groups = response
                 if (vm.groups.length > 0) {
@@ -536,20 +557,51 @@
                   vm.selectedGroup = null
                 }
               } else {
-                vm.images = response
-                vm.selectedImage = null
+                // alert('fetchImages')
+                // vm.$set('images', response)
+                // vm.$nextTick(() => {
+                  // const existingImageIds = vm.images.map(item => item.id)
+                  // const newImageIds = response.map(item => item.id)
+                  //
+                  // const deletedIds = existingImageIds.filter(id => newImageIds.indexOf(id)===-1)
+                  // const newIds = newImageIds.filter(id => existingImageIds.indexOf(id)===-1)
+                  //
+                  // for (var i = 0; i < deletedIds.length; i++) {
+                  //   for (var j = 0; j < vm.images.length; j++) {
+                  //     if (vm.images[j].id === deletedIds[i]) {
+                  //       vm.images.splice(j, 1)
+                  //       break
+                  //     }
+                  //   }
+                  // }
+                  //
+                  // for (var k = 0; k < response.length; i++) {
+                  //   var newImage = response[k]
+                  //   if (newIds.indexOf(newImage.id) >= 0) {
+                  //     vm.images.push(newImage)
+                  //   }
+                  // }
+
+                  // vm.images = []
+                  // for (var i = 0; i < response.length; i++) {
+                  //   vm.images.push(response[i])
+                  // }
+                  vm.images = response
+                  vm.selectedImage = null
+                // })
               }
               vm.loading = false
             }
           )
         } else {
-          // console.log('fetchImageIds :: voucher not exists')
+          console.log('fetchImages :: voucher not exists')
         }
       },
 
       confirmImage () {
         const vm = this
         if (vm.selectedImage) {
+          vm.toggle()
           vm.$emit('onCommand', {
             command: 'onImageSelected',
             imageScope: vm.imageScope,
@@ -634,6 +686,10 @@
 </script>
 
 <style>
+  #imageSelectDialog .modal-dialog.modal-xl {
+    width: 1600px;
+    max-width: 95%;
+  }
   /*************************/
   /* Content Configuration */
   /*************************/

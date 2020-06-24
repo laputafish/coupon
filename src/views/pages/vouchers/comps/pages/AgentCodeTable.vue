@@ -185,6 +185,7 @@
         },
         xprops: {
           buttons: ['view', 'delete', 'update', 'email'],
+          // buttons: ['view', 'delete', 'update', 'email'],
           // buttons: ['edit','view','delete'],
           eventbus: new Vue(),
           actionButtonSize: 'xs',
@@ -217,7 +218,7 @@
             title: 'general.remark',
             thComp: 'ThCommonHeader',
             tdClass: 'align-middle',
-            tdComp: 'TdCommonInput',
+            tdComp: 'TdCommonInputWithButton',
             field: 'remark'
           },
           // {
@@ -624,7 +625,8 @@
       deleteAll () {
         const vm = this
         if (vm.record.participant_count > 0) {
-          vm.showingDeleteAllCodesDialog = true
+          vm.$bvModal.show('deleteAllCodesDialog')
+          // vm.showingDeleteAllCodesDialog = true
         } else {
           vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
             () => {
@@ -844,16 +846,17 @@
           case 'changeCodeStatus':
             vm.changeCodeStatus(payload)
             break
-          // vm.$emit('onCommand', {
-          //   command: 'resetStatus',
-          //   row: payload.row
-          // })
           case 'email':
             vm.sendVoucherCodeEmail(payload.row)
             break
+          case 'saveField':
+            vm.saveCodeInfoField(
+              payload.row,
+              payload.fieldName,
+              payload.fieldValue
+            )
+            break
           case 'updateField':
-            // console.log('AgentCodeTable :: onRowCommandHandler :: updateField: payload: ', payload)
-            // vm.$emit('onCommand', {
             vm.setCodeFieldValue(
               payload.row,
               // vm.row2CodeInfo(payload.row),
@@ -900,6 +903,22 @@
           },
           error => {
             vm.$toaster.error(error.message)
+          }
+        )
+      },
+
+      saveCodeInfoField (row, fieldName, fieldValue) {
+        const vm = this
+        const postData = {
+          urlCommand: '/agent_codes/' + row.id + '/update_field',
+          data: {
+            fieldName: fieldName,
+            fieldValue: fieldValue
+          }
+        }
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          () => {
+            vm.$toaster.info('Successfully updated!')
           }
         )
       },
@@ -1087,7 +1106,8 @@
       onUploadingHandler () {
         const vm = this
         vm.uploading = true
-        vm.showingCodeImportDialog = false
+        vm.$bvModal.hide('codeImportDialog')
+        // vm.showingCodeImportDialog = false
       },
 
       onUploadedHandler (result) {
@@ -1100,8 +1120,10 @@
         // }
         //
         vm.uploading = false
-        vm.showingCodeImportDialog = true
+        // vm.showingCodeImportDialog = true
         vm.$refs.codeImportDialog.preInit(result.fields, result.key)
+        vm.$bvModal.show('codeImportDialog')
+        // vm.$refs.codeImportDialog.toggle()
       },
 
       onParsingCodes (payload) {

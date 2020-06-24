@@ -9,22 +9,26 @@
       @onCommand="onCommandHandler"
       @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
-      <div class="left-pane">
-        {{ $t('menu.agents') }}
-        <div class="left-pane-scroll">
+      <div class="left-pane d-flex flex-column">
+        <div>{{ $t('menu.agents') }}</div>
+        <div class="left-pane-scroll flex-grow-1">
           <b-list-group style="line-height:1;">
             <b-list-group-item v-for="agent in agents"
                                @click="selectedAgent=agent"
                                :class="{'active': selectedAgent && selectedAgent.id===agent.id}"
                                :key="agent.id">
-              {{ agent.name }}&nbsp;<div class="badge badge-info">{{ agent.voucher_count }}</div>
+              {{ agent.name }}&nbsp;
+              <div class="badge badge-warning">
+                <font-awesome-icon icon="ticket-alt" class="mr-1"></font-awesome-icon>
+              x {{ agent.voucher_count }}
+              </div>
             </b-list-group-item>
           </b-list-group>
         </div><!-- left-pane-scroll -->
       </div><!-- left-pane -->
-      <div class="right-pane">
-        {{ $t('menu.vouchers') }}
-        <div class="right-pane-scroll">
+      <div class="right-pane d-flex flex-column">
+        <div>{{ $t('menu.vouchers') }}</div>
+        <div class="right-pane-scroll flex-grow-1">
           <b-list-group style="line-height:1;">
             <h3 v-if="loading" class="text-center pt-5">
               <font-awesome-icon v-if="loading" icon="spinner" class="fa-spin" />
@@ -32,26 +36,28 @@
             <b-list-group-item v-else v-for="voucher in vouchers"
                                @click="selectedVoucher=voucher"
                                :class="{'active': selectedVoucher==voucher}"
-                               class="voucher-item"
+                               class="voucher-item d-flex flex-row align-items-between"
                                :key="voucher.id">
-              <div class="float-right">
-                <small class="voucher-note d-flex flex-column justify-content-start">
+              <div class="d-flex flex-column justify-content-center voucher-item-title-block flex-grow-1">
+                <template v-if="voucher.notes">
+                  <h5 class="p-0 m-0 voucher-item-description">{{ voucher.description }}</h5>
+                  <small class="voucher-item-notes">{{ voucher.notes }}</small>
+                </template>
+                <template v-else>
+                  <h5 class="p-0 m-0 voucher-item-description">{{ voucher.description }}</h5>
+                </template>
+              </div>
+              <div class="d-flex flex-column justify-content-between min-width-200">
+                <small class="voucher-note">
                   <div class="">
                     {{ $t('vouchers.coupons') }}: <div class="d-inline note-value">{{ voucher.code_count }}</div>
                   </div>
+                </small>
+                <small class="voucher-note">
                   <div class="">
                     {{ $t('general.created_at') }}: <div class="d-inline note-value">{{ voucher.created_at }}</div>
                   </div>
                 </small>
-              </div>
-              <div class="d-flex flex-column justify-content-center voucher-item-title-block">
-              <template v-if="voucher.notes">
-                <h5 class="p-0 m-0 voucher-item-description">{{ voucher.description }}</h5>
-                <small class="voucher-item-notes">{{ voucher.notes }}</small>
-              </template>
-              <template v-else>
-                <h5 class="p-0 m-0 voucher-item-description">{{ voucher.description }}</h5>
-              </template>
               </div>
             </b-list-group-item>
           </b-list-group>

@@ -1,5 +1,6 @@
 <template>
   <b-modal :id="id"
+           :ref="id"
            :size="size"
            :value="value"
            @input="value=>$emit('input',value)"
@@ -77,16 +78,21 @@
       }
     },
     watch: {
-      value: function(newValue) {
-        const vm = this
-        if (newValue) {
-          vm.$bvModal.show(vm.id)
-        } else {
-          vm.$bvModal.hide(vm.id)
-        }
-      }
+      // value: function(newValue) {
+      //   alert('baseDialog :: watch(value)')
+      //   const vm = this
+      //   if (newValue) {
+      //     vm.$bvModal.show(vm.id)
+      //   } else {
+      //     vm.$bvModal.hide(vm.id)
+      //   }
+      // }
     },
     methods: {
+      toggle () {
+        const vm = this
+        vm.$refs[vm.id].toggle()
+      },
       onShown () {
         const vm = this
         vm.$emit('onCommand', {

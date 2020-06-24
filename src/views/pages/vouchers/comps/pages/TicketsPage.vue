@@ -43,6 +43,13 @@ export default {
         // case 'previewTemplate':
         //   vm.previewTemplate()
         //   break
+        case 'copyTemplate':
+          console.log('TicketsPage :: onCommandHandler :: payload: ', payload)
+          vm.$emit('onCommand', {
+            command: 'copyTemplate',
+            copyTemplateFor: 'voucher_template'
+          })
+          break
         case 'updateTemplateContent':
           vm.$emit('onCommand', {
             command: 'updateField',

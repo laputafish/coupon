@@ -11,6 +11,12 @@
           :options="tinymceOptions"
           :value="content"
           @input="value=>updateContent(value)"></tinymce>
+    <!--<image-select-dialog-->
+        <!--ref="imageSelectDialog"-->
+        <!--title="Image Selection"-->
+        <!--:voucher="voucher"-->
+        <!--imageScope="local"-->
+        <!--@onCommand="onCommandHandler"></image-select-dialog>-->
     <image-select-dialog
         ref="imageSelectDialog"
         title="Image Selection"
@@ -152,7 +158,8 @@ export default {
           const editor = tinyMCE.get(vm.id)
           editor.insertContent('<img class="content-img" src="' + url + '"/>');
           vm.$toaster.success('Image Added')
-          vm.$bvModal.hide('imageSelectDialog')
+          vm.showingImageSelectDialog = false
+          // vm.$bvModal.hide('imageSelectDialog')
           break
       }
       // vm.$emit('onCommand', payload)
@@ -201,7 +208,9 @@ export default {
       const objTinymce = $('#' + vm.id).prev('.mce-tinymce')
       const btnSelectImage = $(objTinymce).find('.mce-select-image button')
       $(btnSelectImage).off('click').on('click', function () {
-        vm.$bvModal.show('imageSelectDialog')
+        vm.$refs.imageSelectDialog.fetchImages()
+        vm.$refs.imageSelectDialog.toggle()
+        // vm.$bvModal.show('imageSelectDialog')
         // vm.showingImageSelectDialog = true
       })
     },

@@ -16,7 +16,7 @@
       </button>
       <button type="button"
               class="btn btn-warning"
-              @click="copyFile">
+              @click="copyFrom">
         <i class="fas fa-copy mr-1"></i>Copy From ...
       </button>
       <button type="button"
@@ -51,20 +51,20 @@
   </div>
   <div v-if="!isFullScreenEditorMode">
      <invalid-tag-list
-       class="flex-grow-0 p-2 bg-danger ml-2"
-       @onCommand="onCommandHandler"
-       :invalidTags="invalidTags"></invalid-tag-list>
+         class="flex-grow-0 p-2 bg-danger ml-2"
+         @onCommand="onCommandHandler"
+         :invalidTags="invalidTags"></invalid-tag-list>
      <template-tag-list
          class="flex-grow-0 p-2 bg-muted ml-2"
-         :templateTagGroups="templateTagGroups"met
+         :templateTagGroups="templateTagGroups" met
          @onCommand="onCommandHandler"></template-tag-list>
   </div>
   <div v-else
        class="fullscreen-token-list-panel d-flex flex-column">
        <invalid-tag-list
-         class="flex-grow-0 p-2 bg-danger ml-2"
-         @onCommand="onCommandHandler"
-         :invalidTags="invalidTags"></invalid-tag-list>
+           class="flex-grow-0 p-2 bg-danger ml-2"
+           @onCommand="onCommandHandler"
+           :invalidTags="invalidTags"></invalid-tag-list>
       <template-tag-list
           class="flex-grow-0 p-2 bg-muted ml-2"
           :templateTagGroups="templateTagGroups"
@@ -128,7 +128,7 @@ export default {
         web: ''
       }
       if (vm.voucher && vm.voucher.agent_id !== 0) {
-        const agent = vm.agents.find(agent => agent.id==vm.voucher.agent_id)
+        const agent = vm.agents.find(agent => agent.id == vm.voucher.agent_id)
         if (agent) {
           result.name = agent.name
           result.web = agent.web
@@ -147,7 +147,7 @@ export default {
     getAllTags () {
       const vm = this
       var result = []
-      for(var i = 0; i < vm.templateTagGroups.length; i++) {
+      for (var i = 0; i < vm.templateTagGroups.length; i++) {
         result = [...result, ...vm.templateTagGroups[i]['tags']]
       }
       return result
@@ -197,7 +197,7 @@ export default {
 
     onUploadedHandler (result) {
       const vm = this
-      if (vm.content.trim()==='') {
+      if (vm.content.trim() === '') {
         vm.setContent(result.content)
       } else {
         vm.$dialog.confirm(vm.$t('messages.existingContentWillBeCleared')).then(
@@ -216,11 +216,12 @@ export default {
       })
     },
 
-    copyFile () {
+    copyFrom () {
       const vm = this
       vm.$emit('onCommand', {
-        command: 'copyTemplate',
-        contentType: 'email_template'
+        command: 'copyTemplate'
+        // ,
+        // contentType: 'email_template'
       })
     },
 
@@ -243,7 +244,7 @@ export default {
       })
     },
 
-    doPreviewTemplate() {
+    doPreviewTemplate () {
       const vm = this
       const postData = {
         urlCommand: '/templates/create_preview',
@@ -266,7 +267,7 @@ export default {
       vm.$store.dispatch('AUTH_POST', postData).then(
         (result) => {
           const key = result.key
-          const url = vm.$store.getters.appHost+ '/t/preview/_' + key
+          const url = vm.$store.getters.appHost + '/t/preview/_' + key
           window.open(url, '_blank')
         }
       )
@@ -318,8 +319,11 @@ export default {
       var userTags = founds.map(item => item[1])
       var allTags = vm.getAllTags()
 
+      console.log('checkTags :: userTags: ', userTags)
+      console.log('checkTags :: allTags: ', allTags)
+
       var invalidTags = userTags
-        .filter(item => allTags.indexOf(item)===-1)
+        .filter(item => allTags.indexOf(item) === -1)
         .map(item => '{' + item + '}')
         .sort()
 
@@ -332,6 +336,9 @@ export default {
           vm.invalidTags[tag]++
         }
       }
+
+      console.log('checkTags :: invalidTags: ', vm.invalidTags)
+
     },
 
     onCommandHandler (payload) {

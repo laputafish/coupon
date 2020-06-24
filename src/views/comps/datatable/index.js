@@ -9,6 +9,7 @@ import TdCommonDummy from './TdCommonDummy.vue'
 import TdCommonGender from './TdCommonGender.vue'
 import TdCommonIndex from './TdCommonIndex.vue'
 import TdCommonInput from './TdCommonInput.vue'
+import TdCommonInputWithButton from './TdCommonInputWithButton.vue'
 import TdCommonInputDate from './TdCommonInputDate.vue'
 import TdCommonName from './TdCommonName.vue'
 import TdCommonOpt from './TdCommonOpt.vue'
@@ -30,6 +31,7 @@ export default {
   TdCommonGender,
   TdCommonIndex,
   TdCommonInput,
+  TdCommonInputWithButton,
   TdCommonInputDate,
   TdCommonName,
   TdCommonOpt,

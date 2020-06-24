@@ -397,6 +397,7 @@
         v-model="showingImageCropperDialog"
         @onCommand="onCommandHandler"></image-cropper-dialog>
     <voucher-select-dialog
+        id="voucherSelectDialog"
         :title="$t('vouchers.copyTemplateFrom')"
         :initialAgentId="record ? record.agent_id : 0"
         v-model="showingCopyTemplateDialog"
@@ -526,7 +527,7 @@
         agentVouchers: [],
 
         showingCopyTemplateDialog: false,
-        copyTemplateFor: 'template',
+        copyTemplateFor: 'voucher_template',
         showingImageSelectDialog: false,
         showingImageCropperDialog: false,
 
@@ -1029,36 +1030,68 @@
       // },
       copyTemplate (selectedVoucher) {
         const vm = this
-        // console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
-        vm.showingCopyTemplateDialog = false
-        if (vm.copyTemplateFor === 'template') {
-          if (vm.record.template && vm.record.template.trim() !== '') {
-            vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
-              () => {
-                vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
-                vm.$toaster.success(vm.$t('messages.template_copied'))
-              }
-            )
-          } else {
-            vm.record.template = vm.getVoucherTemplate(selectedVoucher.id)
-            vm.$toaster.success(vm.$t('messages.template_copied_successfully'))
-          }
-        } else {
-          if (vm.record.email_template && vm.record.email_template.trim() !== '') {
-            vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
-              () => {
-                vm.record.email_template = vm.getVoucherTemplate(selectedVoucher.id)
-                vm.$toaster.success(vm.$t('messages.email_template_copied'))
-              }
-            )
-          } else {
-            vm.record.email_template = vm.getVoucherTemplate(selectedVoucher.id)
-            vm.$toaster.success(vm.$t('messages.email_template_copied_successfully'))
-          }
+        console.log('VoucherRecord :: copyTemplate :: vm.copyTemplateFor = ' + vm.copyTemplateFor)
+        console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
 
+        // console.log('VoucherRecord :: copyTemplate :: selectedVoucher: ', selectedVoucher)
+        vm.$bvModal.hide('voucherSelectDialog')
+        vm.showingCopyTemplateDialog = false
+        switch (vm.copyTemplateFor) {
+          case 'voucher_template':
+            vm.copyTemplateForVoucher(selectedVoucher)
+            break
+          case 'email_template':
+            vm.copyTemplateForEmail(selectedVoucher)
+            break
         }
       },
-      getVoucherTemplate (voucherId) {
+
+      copyTemplateForVoucher (selectedVoucher) {
+        const vm = this
+        console.log('VoucherRecord :: copyTemplateForVoucher')
+        if (vm.record.template && vm.record.template.trim() !== '') {
+          vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
+            () => {
+              vm.getVoucherTemplate(selectedVoucher.id, (template) => {
+                vm.record.template = template
+                vm.$toaster.success(vm.$t('messages.voucher_template_copied_successfully'))
+                console.log('voucher_template: ' + template)
+              })
+            }
+          )
+        } else {
+          vm.getVoucherTemplate(selectedVoucher.id, (template) => {
+            vm.record.template = template
+            vm.$toaster.success(vm.$t('messages.voucher_template_copied_successfully'))
+            console.log('voucher_template: ' + template)
+          })
+        }
+      },
+
+      copyTemplateForEmail (selectedVoucher) {
+        const vm = this
+        console.log('VoucherRecord :: copyTemplateForEmail')
+        if (vm.record.email_template && vm.record.email_template.trim() !== '') {
+          vm.$dialog.confirm(vm.$t('messages.overwrite_existing_content') + '?').then(
+            () => {
+              vm.getVoucherTemplate(selectedVoucher.id, (template) => {
+                vm.record.email_template = template
+                vm.$toaster.success(vm.$t('messages.email_template_copied_successfully'))
+                console.log('email_template: ' + template)
+              })
+              // vm.record.email_template = vm.getVoucherTemplate(selectedVoucher.id)
+            }
+          )
+        } else {
+          vm.getVoucherTemplate(selectedVoucher.id, (template) => {
+            vm.record.email_template = template
+            vm.$toaster.success(vm.$t('messages.email_template_copied_successfully'))
+            console.log('email_template: ' + template)
+          })
+        }
+      },
+
+      getVoucherTemplate (voucherId, callback) {
         const vm = this
         const data = {
           urlCommand: '/vouchers/' + voucherId,
@@ -1070,7 +1103,11 @@
         }
         vm.$store.dispatch('AUTH_GET', data).then(
           response => {
-            vm.record.template = response.data.template
+            if (typeof callback === 'function') {
+              callback(response.data.template)
+            } else {
+              vm.record.template = response.data.template
+            }
           }
         )
       },
@@ -1345,8 +1382,10 @@
             })
             break
           case 'copyTemplate':
+            console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
+            vm.$bvModal.show('voucherSelectDialog')
             vm.showingCopyTemplateDialog = true
-            vm.copyTemplateFor = payload.contentType
+            vm.copyTemplateFor = payload.copyTemplateFor
             break
           case 'updateEmailPageSectionKey':
             vm.emailPageSectionKey = payload.value

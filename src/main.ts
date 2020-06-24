@@ -55,6 +55,7 @@ Vue.use(VuejsDialog)
 Vue.use(VModal, 'dialog')
 Vue.use(Toaster, {timeout: 3000})
 // Vue.use(Toaster, {timeout: 3000})
+VueClipboard.config.autoSetContainer = true
 Vue.use(VueClipboard)
 Vue.use(VueCarousel)
 Vue.use(VueLoading)
