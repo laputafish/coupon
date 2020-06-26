@@ -1,10 +1,13 @@
 <template>
   <div class="py-2 px-3 agent-code-table">
     <div class="toolbar d-flex justify-content-between mb-1">
+      <!-- Search Panel -->
       <search-field
           :searchValue="searchValue"
           :appLoading="appLoading"
           @onCommand="onCommandHandler"></search-field>
+
+      <!-- Status summary table -->
       <table class="summary-table">
         <tr>
           <td class="summary-label">
@@ -33,6 +36,11 @@
           <td class="summary-value">{{ statusSummary.fails}}</td>
         </tr>
       </table>
+
+      <data-radio-toggle
+        label="Voucher Type"
+        v-model="record.has_one_code"
+        :options="voucherTypeOptions"></data-radio-toggle>
       <!--<div class="d-flex flex-row">-->
       <!--<div class="d-flex flex-column">-->
       <!--<div class="badge badge-info mr-1 mb-1">Pending: 22</div>-->
@@ -71,12 +79,16 @@
         <!--<i class="fas fa-download"></i>-->
         <!--<span class="ml-2">{{ $t('buttons.download') }}</span>-->
         <!--</button>-->
-        <xls-file-upload
-            inputId="uploadCodes"
-            uploadUrl="/agent_codes/upload"
-            :postData="{id: voucherId}"
-            @onUploading="onUploadingHandler"
-            @onUploaded="onUploadedHandler"></xls-file-upload>
+        <!--<xls-file-upload-->
+            <!--inputId="uploadCodes"-->
+            <!--uploadUrl="/agent_codes/upload"-->
+            <!--:postData="{id: voucherId}"-->
+            <!--@onUploading="onUploadingHandler"-->
+            <!--@onUploaded="onUploadedHandler"></xls-file-upload>-->
+        <!--<upload-button-->
+          <!--:record="record"-->
+          <!--size="lg"></upload-button>-->
+
       </div>
     </div>
     <div v-if="data.length>0" id="code-table">
@@ -104,13 +116,13 @@
       </h3>
     </div>
 
-    <code-import-dialog
-        ref="codeImportDialog"
-        v-model="showingCodeImportDialog"
-        :codeFieldsStr="codeFieldNamesStr"
-        :participantFieldsStr="participantFieldNamesStr"
-        callbackCommand="confirmCodeImport"
-        @onCommand="onCommandHandler"></code-import-dialog>
+    <!--<code-import-dialog-->
+        <!--ref="codeImportDialog"-->
+        <!--v-model="showingCodeImportDialog"-->
+        <!--:codeFieldsStr="codeFieldNamesStr"-->
+        <!--:participantFieldsStr="participantFieldNamesStr"-->
+        <!--callbackCommand="confirmCodeImport"-->
+        <!--@onCommand="onCommandHandler"></code-import-dialog>-->
 
     <common-dialog
         id="codeExportDialog"
@@ -130,13 +142,18 @@
 
 <script>
   import Vue from 'vue'
+
+  import uploadButton from '@/views/comps/UploadButton'
+  import dataRadioToggle from '@/views/comps/forms/DataRadioToggle'
   import dtCommon from '@/views/comps/datatable'
   import dtComps from '../dtComps/index'
   import xlsFileUpload from '@/views/comps/XlsFileUpload'
   import searchField from '../comps/SearchField'
-  import codeImportDialog from '../../dialogs/CodeImportDialog'
   import deleteAllCodesDialog from '../../dialogs/DeleteAllCodesDialog'
+
+  import codeImportDialog from '@/views/comps/dialogs/CodeImportDialog'
   import commonDialog from '@/views/comps/dialogs/CommonDialog'
+
 
   // import Echo from 'laravel-echo'
 
@@ -148,12 +165,18 @@
       searchField,
       codeImportDialog,
       deleteAllCodesDialog,
-      commonDialog
+      commonDialog,
+      uploadButton,
+      dataRadioToggle,
       // ,
       // helpers
     },
     data () {
       return {
+        voucherTypeOptions: [
+          {name: 'Multiple', value: 'multiple'},
+          {name: 'Single', value: 'single'}
+        ],
         // echo: null,
         statusSummary: {
           pending: 0,
@@ -184,7 +207,7 @@
           page: 0
         },
         xprops: {
-          buttons: ['view', 'delete', 'update', 'email'],
+          buttons: ['view', 'delete', 'email'],
           // buttons: ['view', 'delete', 'update', 'email'],
           // buttons: ['edit','view','delete'],
           eventbus: new Vue(),
@@ -278,7 +301,7 @@
         const vm = this
         var result = ''
         var fieldInfos = []
-        if (vm.codeFieldsStr !== '') {
+        if (vm.codeFieldsStr && vm.codeFieldsStr !== '') {
           fieldInfos = vm.codeFieldsStr.split('|')
           var fieldNames = []
           for (var i = 0; i < fieldInfos.length; i++) {
@@ -725,6 +748,12 @@
       onQueryChangedHandler (query) {
         const vm = this
         vm.reloadCodeList(query)
+      },
+
+      refresh () {
+        const vm = this
+        vm.reloadCodeSummary()
+        vm.reloadCodeList()
       },
 
       reloadAll () {

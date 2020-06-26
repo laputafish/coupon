@@ -34,6 +34,10 @@ export default {
     vm.setInputObjs()
   },
   methods: {
+    refresh () {
+      const vm = this
+      vm.$refs.formParticipantsTable.refresh()
+    },
     updateInputObjs () {
       const vm = this
       vm.setInputObjs()

@@ -286,6 +286,10 @@
             break
         }
       },
+      refresh () {
+        console.log('FormParticipantsTable :: refresh()')
+        this.reloadData()
+      },
       exportExcel () {
         const vm = this
         vm.$emit('onCommand', {

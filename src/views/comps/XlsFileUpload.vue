@@ -4,8 +4,8 @@
           :extensions="filterInfo.extensions"
           :accept="filterInfo.accept"
           name="file"
-          class="btn min-width-100"
-          :class="'btn-'+variant"
+          class="btn"
+          :class="containerClass"
           :post-action="postAction"
           :drop="!edit"
           :data="postData"
@@ -51,6 +51,10 @@ export default {
         return {}
       }
     },
+    cssClass: {
+      type: String,
+      default: ''
+    },
     uploadUrl: {
       type: String,
       default: ''
@@ -62,7 +66,12 @@ export default {
     variant: {
       type: String,
       default: 'primary'
+    },
+    size: {
+      type: String,
+      default: 'md'
     }
+
   },
   data () {
     return {
@@ -71,6 +80,17 @@ export default {
     }
   },
   computed: {
+    containerClass () {
+      const vm = this
+      var result = ['btn-' + vm.variant]
+      result.push('btn-' + vm.size)
+      if (vm.title!=='') {
+        result.push('min-width-100')
+      } else if (vm.cssClass && vm.cssClass != '') {
+        result.push(vm.cssClass)
+      }
+      return result.join(' ')
+    },
     filterInfo () {
       const vm = this
       switch (vm.fileType) {

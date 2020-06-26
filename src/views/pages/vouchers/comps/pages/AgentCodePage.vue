@@ -38,7 +38,7 @@ export default {
       vm.$emit('onCommand', payload)
     },
     refresh () {
-      this.$refs.agentCodeTable.reloadCodeList()
+      this.$refs.agentCodeTable.refresh()
     }
   }
 }

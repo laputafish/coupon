@@ -74,6 +74,11 @@
       <h4>Any modification is not recommended.</h4>
     </div>
     <div v-if="record" class="voucher-toolbar mb-2">
+      <upload-button
+        :record="record"
+        @onCommand="onCommandHandler"
+        cssClass="float-right"
+        size="lg"></upload-button>
       <!-- Info -->
       <voucher-toolbar-button
           :class="{'has-error': infoPageError}"
@@ -418,6 +423,8 @@
 
 <script>
   import titleRow from '@/views/comps/TitleRow'
+  import uploadButton from '@/views/comps/UploadButton'
+
   import appMixin from '@/mixins/AppMixin'
   import DataRecordMixin from '@/mixins/DataRecordMixin'
 
@@ -435,6 +442,7 @@
   import formPageTemplatesTab from './comps/tabs/FormPageTemplatesTab'
   import customFormsTab from './comps/tabs/CustomFormsTab'
   import formParticipantsTab from './comps/tabs/FormParticipantsTab'
+
   // import mailingManagerTab from './comps/tabs/MailingManagerTab'
 
   import infoPage from './comps/pages/InfoPage'
@@ -465,6 +473,7 @@
       imageSelectDialog,
       singleFieldDialog,
 
+      uploadButton,
       infoPage,
       agentCodePage,
       ticketsPage,
@@ -1376,6 +1385,16 @@
         const vm = this
         var customForm = null
         switch (payload.command) {
+          case 'onUploadCompleted':
+            switch (vm.activePage) {
+              case 'participants':
+                vm.$refs.participantsPage.refresh()
+                break
+              case 'codes':
+                vm.$refs.agentCodePage.refresh()
+                break
+            }
+            break
           case 'gotoLink':
             vm.save(() => {
               window.open(payload.link, '_blank')
@@ -2159,4 +2178,10 @@
     padding: 10px 2px 0 2px;
   }
 
+  .upload-data,
+  .upload-data:active,
+  .upload-data:focus {
+    border: transparent;
+    outline: none;
+  }
 </style>
