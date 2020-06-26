@@ -1381,10 +1381,35 @@
         }
         return result
       },
+      keepOnlyOneCode (callback) {
+        const vm = this
+        const postData = {
+          urlCommand: '/vouchers/' + vm.record.id + '/use_one_code_mode'
+        }
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          response => {
+            console.log('VoucherRecord :: keepOnlyOneCode.then')
+            if (typeof callback === 'function') {
+              callback()
+            }
+            vm.$toaster.success(response.message)
+          },
+          error => {
+
+          }
+        )
+      },
       onCommandHandler (payload) {
         const vm = this
         var customForm = null
         switch (payload.command) {
+          case 'keepFirstCode':
+            vm.keepOnlyOneCode(() => {
+              if (typeof payload.callback === 'function') {
+                payload.callback()
+              }
+            })
+            break
           case 'onUploadCompleted':
             switch (vm.activePage) {
               case 'participants':

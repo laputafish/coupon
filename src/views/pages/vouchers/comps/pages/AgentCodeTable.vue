@@ -39,7 +39,9 @@
 
       <data-radio-toggle
         label="Voucher Type"
-        v-model="record.has_one_code"
+        btnClass="min-width-100"
+        :value="record.has_one_code"
+        @input="value=>updateOneCodeMode('has_one_code', value)"
         :options="voucherTypeOptions"></data-radio-toggle>
       <!--<div class="d-flex flex-row">-->
       <!--<div class="d-flex flex-column">-->
@@ -174,8 +176,8 @@
     data () {
       return {
         voucherTypeOptions: [
-          {name: 'Multiple', value: 'multiple'},
-          {name: 'Single', value: 'single'}
+          {name: 'Multiple', value: 0},
+          {name: 'Single', value: 1}
         ],
         // echo: null,
         statusSummary: {
@@ -450,6 +452,53 @@
       vm.xprops.eventbus.$off('onRowCommand')
     },
     methods: {
+      updateOneCodeMode (fieldName, fieldValue) {
+        const vm = this
+
+        console.log('udpateOneCodeMode :: fieldName = ' + fieldName)
+        console.log('udpateOneCodeMode :: fieldValue = ' + fieldValue)
+
+        switch (fieldName) {
+          case 'has_one_code':
+            const hasOneCode = fieldValue===1
+            console.log('updateOneCodeMode :: hasOneCode = ' + hasOneCode)
+            console.log('updateOneCodeMode :: record.code_count = ' + vm.record.code_count)
+
+            if (hasOneCode && vm.record.code_count > 1) {
+              vm.$dialog.confirm('Only first code will remain. Are you sure?', {
+                customClass: 'confirm-keep-one-code'
+              }).then(
+                () => {
+                  console.log('confirm removal of others except first one')
+                  vm.$emit('onCommand', {
+                    command: 'keepFirstCode',
+                    callback: () => {
+                      vm.$emit('onCommand', {
+                        command: 'updateField',
+                        fieldName: fieldName,
+                        fieldValue: fieldValue
+                      })
+                      console.log('AgentCodeTable :: updateOneCodeMode => refresh')
+                      vm.$emit('onCommand', {
+                        command: 'updateField',
+                        fieldName: 'code_count',
+                        fieldValue: 1
+                      })
+                      vm.refresh()
+                    }
+                  })
+                }
+              )
+            } else {
+              vm.$emit('onCommand', {
+                command: 'updateField',
+                fieldName: fieldName,
+                fieldValue: fieldValue
+              })
+            }
+            break
+        }
+      },
       listen () {
         const vm = this
         console.log('methods :: listen :: $echo: ', window.Echo)
@@ -583,7 +632,7 @@
 
       onCommandHandler (payload) {
         const vm = this
-        // console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
+        console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
           case 'search':
@@ -1157,15 +1206,18 @@
 
       onParsingCodes (payload) {
         const vm = this
+        console.log('onParsingCodes :: payload: ', payload)
         const postData = {
           urlCommand: '/agent_codes/parse/' + payload.key,
           data: {
             fieldInfos: payload.fieldInfos,
             includeCode: payload.includeCode,
-            includeParticipant: payload.includeParticipant
+            includeParticipant: payload.includeParticipant,
+            singleCodeMode: vm.record.has_one_code
           }
         }
 
+        console.log('AgentCodeTable :: onParsingCodes :: postData: ', postData)
         vm.uploading = true
         vm.$store.dispatch('AUTH_POST', postData).then(
           result => {
@@ -1411,4 +1463,8 @@
     padding: 0 0 1px 0;
   }
 
+  .confirm-keep-one-code .dg-main-content {
+    background-color: #dc3545;
+    color: white;
+  }
 </style>

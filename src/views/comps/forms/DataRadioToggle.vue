@@ -1,7 +1,9 @@
 <template>
-  <div class="btn-group">
+  <div class="btn-group data-radio-toggle"
+    :class="{'disabled':!enabled}">
     <button type="button"
             class="btn"
+            :disabled="!enabled"
             v-for="option in options"
             :key="option.name"
             @click="selectOption(option.value)"
@@ -31,6 +33,10 @@ export default {
       default () {
         return []
       }
+    },
+    enabled: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
@@ -49,9 +55,21 @@ export default {
     },
     selectOption (value) {
       const vm = this
-      console.log('DataRadioToggle :: selectOption :: value: ', value)
-      vm.$emit('input', value)
+      if (vm.enabled) {
+        // console.log('DataRadioToggle :: selectOption :: value: ', value)
+        vm.$emit('input', value)
+      }
     }
   }
 }
 </script>
+
+<style>
+  .data-radio-toggle .btn-success {
+
+  }
+  .data-radio-toggle.disabled .btn-success {
+    background-color: rgba(200,200,200,.5);
+    border: transparent;
+  }
+</style>

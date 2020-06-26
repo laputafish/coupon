@@ -4,7 +4,7 @@
       title="Code Import"
       size="lg"
       modalType="confirmation"
-      :okButtonState="!hasError && !importing"
+      :okButtonState="allowProceed"
       :value="value"
       @onCommand="onCommandHandler"
       @input="value=>$emit('input',value)">
@@ -23,6 +23,8 @@
             <div class="d-flex flex-column">
               <div class="flex-grow-1 import-code-content"
                    style="max-height:640px;overflow-y:auto;overflow-x:hidden;padding-right:10px;">
+
+                <!-- Headers -->
                 <div class="row bg-lightblue" style="position:sticky;top:0;">
                   <div class="col-sm-3 text-center import-table-header"
                        style="border-right:1px solid lightgray;overflow-x:hidden;white-space:nowrap;text-overflow:ellipsis;">Column</div>
@@ -44,17 +46,22 @@
                     Participant Table
                   </div>
                 </div>
+
+                <!-- Error Message -->
                 <div class="row" v-if="hasError">
                   <div class="col-sm-3"></div>
                   <div class="col-sm-3"><div class="badge badge-danger">{{ errorMessages[0] }}</div></div>
                   <div class="col-sm-6"><div class="badge badge-danger">{{ errorMessages[1] }}</div></div>
                 </div>
+
+                <!-- Content -->
                 <div class="row content-row" v-for="fieldInfo in fieldInfos"
                      :key="fieldInfo.title">
                   <div class="col-sm-3 line-height-1 align-self-center">
                     <div class="badge" :class="getColumnClass(fieldInfo)"
                     >{{ fieldInfo.title }}</div>
                   </div>
+                  <!-- Code fields -->
                   <div class="col-sm-3 import-code-table-content"
                        :class="{'disabled bg-muted':!enableImportCode}">
                     <div class="btn-group mt-1">
@@ -65,9 +72,10 @@
                               :key="fieldType.value">{{ fieldType.label }}</button>
                     </div>
                   </div>
+                  <!-- Participant fields -->
                   <div class="col-sm-6 import-code-table-content"
                        :class="{'disabled bg-muted':!enableImportParticipant}">
-                    <div class="btn-group mt-1">
+                    <div class="btn-group ml-2 mt-1">
                       <button type="button" class="btn btn-sm"
                               :class="{'btn-success': fieldInfo.fieldType===fieldType.value,'btn-light':fieldInfo.fieldType!==fieldType.value}"
                               @click="selectFieldType(fieldInfo, 'participant', fieldType.value)"
@@ -79,26 +87,40 @@
               </div>
 
               <div class="flex-grow-0">
-                <div style="font-size:80%;" class="mt-2 line-height-1">
-                * Import will append data only. It will ensure all columns match existing data before going ahead.
+                <!--<div style="font-size:80%;" class="mt-2 line-height-1">-->
+                <!--* Import will append data only. Columns must match existing data before going ahead.-->
+                <!--</div>-->
+                <div v-if="singleCodeMode" style="font-size:80%;"
+                     class="mt-2 line-height-1 d-flex flex-row align-items-center">
+                * Single code mode - only first code will be saved.
+                </div>
+                <div v-if="singleCodeMode && codeCount>0" style="font-size:80%;"
+                     class="mt-2 line-height-1">
+                  * One code existed. Replace?
+                  <data-radio-toggle
+                    v-model="replaceSingleCode"
+                    :enabled="enableImportCode"
+                    class="ml-2"
+                    btnClass="btn-sm"
+                    :options="yesNoOptions"></data-radio-toggle>
                 </div>
               </div>
               <!--<div class="flex-grow-0">-->
-                <!--<hr/>-->
-                <!--<div>-->
-                  <!--Import Mode-->
-                  <!--<data-radio-toggle-->
-                      <!--class="ml-2"-->
-                      <!--:options="importModes"-->
-                      <!--v-model="importMode"></data-radio-toggle>-->
-                <!--</div>-->
+              <!--<hr/>-->
+              <!--<div>-->
+              <!--Import Mode-->
+              <!--<data-radio-toggle-->
+              <!--class="ml-2"-->
+              <!--:options="importModes"-->
+              <!--v-model="importMode"></data-radio-toggle>-->
+              <!--</div>-->
               <!--</div>-->
             </div>
           </div>
 
           <!-- Existing Fields -->
           <div class="flex-grow-1 ml-1 d-flex flex-column justify-content-stretch"
-            style="min-width:300px;">
+               style="min-width:300px;">
             <div class="flex-grow-1 flex-grow-1 scrolling-pane">
               <div class="px-2 existing-fields-container">
                 <div class="row bg-lightblue" style="position:sticky;top:0;">
@@ -149,6 +171,20 @@ export default {
     baseDialog
   },
   computed: {
+    allowProceed () {
+      const vm = this
+      var result = !vm.hasError && !vm.importing && (vm.enableImportCode || vm.enableImportParticipant)
+      console.log('allowProceed :: hasError = ' + vm.hasError)
+      console.log('allowProceed :: importing = ' + vm.importing)
+      console.log('allowProceed :: includeCode = ' + vm.enableImportCode)
+      console.log('allowProceed :: includeParticipant = ' + vm.enableImportParticipant)
+      console.log('allowProceed :: singleCodeMode = ' + vm.singleCodeMode)
+      console.log('allowProceed :: codeCount = ' + vm.codeCount)
+      if (vm.enableImportCode && vm.singleCodeMode && vm.codeCount>0) {
+        result = result && vm.replaceSingleCode===1
+      }
+      return result
+    },
     userFieldStrs () {
       const vm = this
       var result = {
@@ -195,7 +231,7 @@ export default {
     errorCode () {
       const vm = this
       var result = ''
-      if (vm.hasCode && vm.importMode === 'append' && vm.codeFieldsStr !== vm.userFieldStrs.code) {
+      if (!vm.singleCodeMode && vm.hasCode && vm.importMode === 'append' && vm.codeFieldsStr !== vm.userFieldStrs.code) {
         result = 'Mismatched'
       }
       return result
@@ -244,6 +280,11 @@ export default {
   },
   data () {
     return {
+      replaceSingleCode: 0,
+      yesNoOptions: [
+        {name: 'Yes', value: 1},
+        {name: 'No', value: 0}
+      ],
       importMode: 'new', // add or append
       importModes: [
         {name: 'New / Overwrite', value: 'new'},
@@ -286,6 +327,14 @@ export default {
     importing: {
       type: Boolean,
       default: false
+    },
+    singleCodeMode: {
+      type: Boolean,
+      default: false
+    },
+    codeCount: {
+      type: Number,
+      default: 0
     }
   },
   model: {
@@ -317,37 +366,44 @@ export default {
       }
     },
 
+    // group = ['code', 'participant']
     selectFieldType (fieldInfo, group, fieldType) {
+      // console.log('CodeImportDialog :: selectFieldType :: fieldInfo.fieldtype = ' + fieldInfo.fieldType)
+      // console.log('CodeImportDialog :: selectFieldType :: fieldType = ' + fieldType)
+
       const vm = this
       if (fieldInfo.fieldType === fieldType) {
+        // console.log('same field clicked again => deselect it')
         fieldInfo.fieldType = 'none'
         return
       }
-      if (fieldType === 'code-other' || fieldType === 'participant-other') {
-        fieldInfo.fieldType = fieldType
-        return
-      }
 
-      var otherType = 'code-other'
-      switch (fieldType) {
-        case 'code':
-          break
-        default:
-          otherType = 'participant-other'
-      }
+      var otherType = group === 'code' ? 'code-other' : 'participant-other'
       for (var i = 0; i < vm.fieldInfos.length; i++) {
+        // console.log('#' + i + ': vm.fieldInfos[i]: ', vm.fieldInfos[i])
+        // console.log('#' + i + ': vm.fieldInfos[i].fieldType = ' + vm.fieldInfos[i].fieldType)
+        // console.log('#' + i + ': otherType = ' + otherType)
+
+        // loop each field
         if (vm.fieldInfos[i].fieldType === fieldType) {
-          if (vm.fieldInfos[i] !== fieldInfo) {
+          // console.log('vm.fieldInfos[i].fieldType === fieldType')
+          if (vm.fieldInfos[i] !== fieldInfo && fieldType !== otherType) {
+            // if fieldType correct but not expected, set it to other
+
+            // console.log('not the field in consideration')
             vm.fieldInfos[i].fieldType = otherType
           }
         } else {
           if (vm.fieldInfos[i] === fieldInfo) {
+            // console.log('if it is the field in consideration')
+            // if fieldType not in consideration, but the is the field should be, change it
             vm.fieldInfos[i].fieldType = fieldType
           }
         }
       }
       vm.fieldInfos = JSON.parse(JSON.stringify(vm.fieldInfos))
     },
+
     preInit (fieldInfos, tempFileKey) {
       const vm = this
       vm.fieldInfos = JSON.parse(JSON.stringify(fieldInfos))
@@ -359,7 +415,8 @@ export default {
         }
       }
       vm.tempFileKey = tempFileKey
-    },
+    }
+    ,
     onCommandHandler (payload) {
       const vm = this
       const command = payload.command

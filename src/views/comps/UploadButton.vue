@@ -14,6 +14,8 @@
         ref="codeImportDialog"
         :importing="uploading"
         :codeFieldsStr="codeFieldNamesStr"
+        :codeCount="record.code_count"
+        :singleCodeMode="record.has_one_code===1"
         :participantFieldsStr="participantFieldNamesStr"
         callbackCommand="confirmCodeImport"
         @onCommand="onCommandHandler"></code-import-dialog>
@@ -107,7 +109,8 @@ export default {
         data: {
           fieldInfos: payload.fieldInfos,
           includeCode: payload.includeCode,
-          includeParticipant: payload.includeParticipant
+          includeParticipant: payload.includeParticipant,
+          singleCodeMode: vm.record.has_one_code
         }
       }
 
@@ -152,12 +155,12 @@ export default {
     updateCodeFields (result) {
       const vm = this
       const newCodeFieldsStr = result.codeFields
-      if (vm.codeFieldsStr == newCodeFieldsStr) {} else {
+      if (vm.codeFieldsStr !== newCodeFieldsStr) {
         vm.$emit('onCommand', {command: 'setCodeFields', value: newCodeFieldsStr})
-        vm.$emit('onCommand', {command: 'setRecordField', fieldName: 'code_count', fieldValue: result.codeCount })
-        if (result.code_composition) {
-          vm.$emit('onCommand', {command: 'setQrCodeAndBarcodeComposition', data: result.code_composition })
-        }
+      }
+      vm.$emit('onCommand', {command: 'setRecordField', fieldName: 'code_count', fieldValue: result.codeCount })
+      if (result.code_composition) {
+        vm.$emit('onCommand', {command: 'setQrCodeAndBarcodeComposition', data: result.code_composition })
       }
     },
 
@@ -168,11 +171,15 @@ export default {
       // }
       const vm = this
       const newParticipantConfigs = result.participantConfigs
-      const newParticipantCount = result.participantIds.length
-      if (JSON.stringify(vm.record.participant_configs) === JSON.stringify(newParticipantConfigs)) {} else {
-        vm.$emit('onCommand', {command: 'updateField', fieldName: 'participant_configs', fieldValue: newParticipantConfigs})
-        vm.$emit('onCommand', {command: 'updateField', fieldName: 'participant_count', fieldValue: newParticipantCount })
+      const newParticipantCount = result.participantCount
+      if (JSON.stringify(vm.record.participant_configs) !== JSON.stringify(newParticipantConfigs)) {
+        vm.$emit('onCommand', {
+          command: 'updateField',
+          fieldName: 'participant_configs',
+          fieldValue: newParticipantConfigs
+        })
       }
+      vm.$emit('onCommand', {command: 'updateField', fieldName: 'participant_count', fieldValue: newParticipantCount })
     },
 
     onUploadedHandler (result) {
