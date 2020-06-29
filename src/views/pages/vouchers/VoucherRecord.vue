@@ -461,7 +461,7 @@
 
   import $ from 'jquery'
 
-  import sharingContextBox from './comps/pages/comps/SharingContextBox'
+  import sharingContextBox from './comps/pages/page_sharing/SharingContextBox'
 
   import 'vue2-datepicker/index.css'
 

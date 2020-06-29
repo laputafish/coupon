@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import sharingContextBox from './comps/SharingContextBox'
+import sharingContextBox from './page_sharing/SharingContextBox'
 
 export default {
   components: {

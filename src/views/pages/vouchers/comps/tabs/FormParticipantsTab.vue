@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import formParticipantsTable from '../pages/comps/FormParticipantsTable'
+import formParticipantsTable from '../pages/page_participants/FormParticipantsTable'
 export default {
   components: {
     formParticipantsTable

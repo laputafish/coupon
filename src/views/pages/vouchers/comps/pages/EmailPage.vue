@@ -49,9 +49,9 @@
 </template>
 
 <script>
-import sendEmailsSection from './sections/SendEmailsSection'
-import voucherSmtpServersSection from './sections/VoucherSmtpServersSection'
-import emailTemplateSection from './sections/EmailTemplateSection'
+import sendEmailsSection from './page_email/SendEmailsSection'
+import voucherSmtpServersSection from './page_email/VoucherSmtpServersSection'
+import emailTemplateSection from './page_email/EmailTemplateSection'
 
 export default {
   components: {

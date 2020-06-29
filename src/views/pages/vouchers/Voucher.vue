@@ -34,7 +34,7 @@
               thComp: 'ThCommonHeader',
               thClass: 'text-center',
               tdComp: 'TdType',
-              tdClass: 'text-center',
+              tdClass: 'text-center vertical-middle',
               field: 'voucher_type'
             },
             {title: 'general.qr_barcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCodes', field: 'id'},
@@ -63,7 +63,15 @@
               field: 'created_at'
             },
             {
-              title: 'vouchers.no_of_codes',
+              title: 'vouchers.participants',
+              thComp: 'ThCommonHeader',
+              thClass: 'text-center',
+              tdClass: 'text-center',
+              tdComp: 'TdCommon',
+              field: 'participant_count'
+            },
+            {
+              title: 'vouchers.codes',
               thComp: 'ThCommonHeader',
               thClass: 'text-center',
               tdClass: 'text-center',

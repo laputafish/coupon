@@ -183,82 +183,6 @@ input.has-error {
   border-color: red;
 }
 
-/* #code-table [name=Datatable] [name=SimpleTable] table { */
-#code-table [name=Datatable] [name=SimpleTable] {
-  max-width: 100%;
-  overflow-x: scroll;
-  position: relative;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table {
-  position: relative;
-  border-collapse: collapse;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table thead th {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  border: none;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table thead th:first-child,
-#code-table [name=Datatable] [name=SimpleTable] table thead th:nth-child(2),
-#code-table [name=Datatable] [name=SimpleTable] table thead th:nth-child(3) {
-  z-index: 1;
-  background-color: darkgray;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table thead th:first-child {
-  left: 0;
-}
-#code-table [name=Datatable] [name=SimpleTable] table thead th:nth-child(2) {
-  left: 42px;
-}
-#code-table [name=Datatable] [name=SimpleTable] table thead th:nth-child(3) {
-  left: 158px;
-}
-
-
-
-
-#code-table [name=Datatable] [name=SimpleTable] table thead th:last-child {
-  right: 0;
-  z-index: 1;
-  width: 100px;
-  text-align: center;
-  background-color: darkgray;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table tr td:last-child
- {
-  position: -webkit-sticky;
-  position: sticky;
-  right: 0;
-  z-index: 1;
-  width: 100px;
-  text-align: center;
-  background-color: #EEE;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table tbody tr td:first-child,
-#code-table [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(2),
-#code-table [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(3) {
-  position: -webkit-sticky;
-  position: sticky;
-  background-color: #EEE;
-}
-
-#code-table [name=Datatable] [name=SimpleTable] table tbody tr td:first-child {
-  left: 0;
-}
-#code-table [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(2) {
-  left: 42px;
-}
-#code-table [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(3) {
-  left: 158px;
-}
-
 .cursor-pointer {
   cursor: pointer;
 }
@@ -272,4 +196,73 @@ input.has-error {
   background-color: rgba(0,0,0,.5);
   z-index: 1000;
   font-size:72px;
+}
+
+  /***********************************************/
+  /*              Freezable Table                */
+  /***********************************************/
+
+  /* #code-table [name=Datatable] [name=SimpleTable] table { */
+  .freezable-table [name=Datatable] [name=SimpleTable] {
+    max-width: 100%;
+    overflow-x: scroll;
+    position: relative;
+  }
+
+  .freezable-table [name=Datatable] [name=SimpleTable] table {
+    position: relative;
+    border-collapse: collapse;
+  }
+
+  .freezable-table [name=Datatable] [name=SimpleTable] table thead th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    border: none;
+  }
+
+  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:first-child,
+  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:nth-child(2),
+  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:nth-child(3) {
+    z-index: 1;
+    background-color: darkgray;
+  }
+
+  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:first-child {
+    left: 0;
+  }
+
+  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table tbody tr td:first-child {
+    left: 0;
+  }
+
+  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table thead th:last-child {
+    right: 0;
+    z-index: 1;
+    width: 100px;
+    text-align: center;
+    background-color: darkgray;
+  }
+
+  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tr td:last-child
+  {
+    position: -webkit-sticky;
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    width: 100px;
+    text-align: center;
+    background-color: #EEE;
+  }
+
+  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tbody tr td:first-child,
+  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(2),
+  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(3) {
+    position: -webkit-sticky;
+    position: sticky;
+    background-color: #EEE;
+  }
+
+.vertical-middle {
+  vertical-align: middle !important;
 }

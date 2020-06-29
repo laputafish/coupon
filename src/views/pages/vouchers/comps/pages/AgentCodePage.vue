@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import agentCodeTable from './AgentCodeTable'
+import agentCodeTable from './page_codes/AgentCodeTable'
 
 export default {
   components: {

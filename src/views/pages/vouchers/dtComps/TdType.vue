@@ -1,7 +1,12 @@
 <template>
   <div class="text-center line-height-1">
-    <div v-if="value==='voucher'"
-      class="badge badge-primary">Voucher
+    <div v-if="value==='voucher'" class="d-flex flex-row">
+      <div class="badge badge-primary">Voucher</div>
+      <div v-if="row['has_one_code']" class="ml-1">
+        <div class="badge badge-success">
+          <font-awesome-icon icon="ticket-alt" class="mr-1"></font-awesome-icon>x1
+        </div>
+      </div>
     </div>
     <div v-else>
       <div class="badge badge-success">Form <i class="fas fa-caret-right"></i> Voucher</div>

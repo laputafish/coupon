@@ -145,6 +145,8 @@
     "agent": "Agent",
     "voucher": "Voucher",
     "code": "Code",
+    "codes": "Codes",
+    "participants": "Participants",
     "sent_on": "Sent On",
     "qr_code_composition": "QR Code Composition",
     "qr_code_size": "QR Code Size",

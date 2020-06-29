@@ -77,7 +77,7 @@
         const vm = this
         console.log('TdCodeStatus :: changeStatus :: stauts: ', status)
         vm.xprops.eventbus.$emit('onRowCommand', {
-          command: 'changeCodeStatus',
+          command: 'changeStatus',
           row: vm.row,
           status: status
         })
