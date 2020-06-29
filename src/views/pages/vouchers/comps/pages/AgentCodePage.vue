@@ -33,6 +33,11 @@ export default {
     }
   },
   methods: {
+    updateStatus (data) {
+      const vm = this
+      vm.$refs.agentCodeTable.updateStatus(data)
+    },
+
     onCommandHandler (payload) {
       const vm = this
       vm.$emit('onCommand', payload)

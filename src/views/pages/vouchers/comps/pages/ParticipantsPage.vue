@@ -4,6 +4,7 @@
     <form-participants-table
         ref="formParticipantsTable"
         @onCommand="onCommandHandler"
+        :record="record"
         :voucherId="record.id"
         :inputObjs="inputObjs">
     </form-participants-table>
@@ -34,6 +35,11 @@ export default {
     vm.setInputObjs()
   },
   methods: {
+    updateStatus (data) {
+      const vm = this
+      vm.$refs.formParticipantsTable.updateStatus(data)
+    },
+
     refresh () {
       const vm = this
       vm.$refs.formParticipantsTable.refresh()

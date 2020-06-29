@@ -33,8 +33,11 @@
     <!--<button v-if="value==='completed'" class="btn btn-xs btn-danger line-height-1 rounded px-2">-->
       <!---->
     <!--</button>-->
+    <div v-if="value==='fails'">
+      <small class="text-danger">{{ row['error_message'] }}</small>
+    </div>
     <div v-if="value==='fails' || value==='completed'"
-         class="badge">{{ row['sent_on'] }}</div>
+         class="badge">{{ row['sent_at'] }}</div>
 
   <!--<select class="form-control" :value="value"-->
       <!--@input="$event=>updateStatus($event.target.value)">-->
@@ -55,7 +58,9 @@
           {value: 'ready', label: 'Ready to Send', variant: 'primary'},
           {value: 'completed', label: 'Completed', variant: 'success'},
           {value: 'fails', label: 'Fails', variant: 'danger'},
-          {value: 'hold', label: 'On Hold', variant: 'muted'}
+          {value: 'hold', label: 'On Hold', variant: 'muted'},
+          {value: '-', label: 'SINGLE-CODE MODE', variant: 'muted'},
+          {value: 'unassigned', label: '-', variant: 'muted'}
         ]
       }
     },

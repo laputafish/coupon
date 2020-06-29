@@ -67,7 +67,7 @@
               thComp: 'ThCommonHeader',
               thClass: 'text-center',
               tdClass: 'text-center',
-              tdComp: 'TdCommon',
+              tdComp: 'TdParticipantCount',
               field: 'participant_count'
             },
             {

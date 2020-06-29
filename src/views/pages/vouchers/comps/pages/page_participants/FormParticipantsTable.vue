@@ -168,6 +168,11 @@
           return []
         }
       },
+      record: {
+        type: Object,
+        default: null
+      }
+
     },
     watch: {
       userInputObjs: {
@@ -224,6 +229,50 @@
       vm.xprops.eventbus.$off('onRowCommand')
     },
     methods: {
+      updateStatus (data) {
+        const vm = this
+        console.log('FormParticipantsTable :: updateStatus :: data: ', data)
+        const statusInfo = data.statusInfo
+        for (var i = 0; i < vm.data.length; i++) {
+          if (vm.data[i].id === statusInfo.participant_id) {
+            vm.updateStatusByIndex(i, statusInfo)
+            // vm.data[i].status = statusInfo.status
+            // switch (statusInfo.status) {
+            //   case 'processing':
+            //     vm.data[i].error_message = ''
+            //     vm.data[i].sent_at = ''
+            //     break
+            //   case 'completed':
+            //   case 'fails':
+            //     vm.data[i].error_message = statusInfo.error_message
+            //     vm.data[i].sent_at = statusInfo.sent_at
+            // }
+            break
+          }
+        }
+      },
+
+      updateStatusByIndex (index, statusInfo) {
+        const vm = this
+        const status = statusInfo.status
+        vm.data[index].status = status
+        switch (status) {
+          case 'fails':
+          case 'completed':
+            vm.data[index].sent_at = statusInfo.sent_at
+            vm.data[index].error_message = statusInfo.error_message
+            break
+          case 'hold':
+          case 'pending':
+          case 'processing':
+            vm.data[index].sent_at = ''
+            vm.data[index].error_message = ''
+            break
+        }
+        vm.configRowButtonsByIndex(index)
+        // console.log('updateStatusByIndex: index =' + index + ': ', vm.data[index])
+      },
+
       clearCodeAssignment () {
         const vm = this
         vm.$dialog.confirm({
@@ -385,28 +434,22 @@
             fieldName: 'participant_count',
             fieldValue: vm.total
           })
-          vm.data = response.data
+          vm.data = vm.parseCodeInfoData(response.data)
+          vm.configRowButtons(vm.data)
           vm.$forceUpdate()
           vm.loading = false
         })
+      },
 
-        // console.log('reloadData :: query: ', query)
-        // this.data = [
-        //   {
-        //     id:1,
-        //     field2_0:'first name',
-        //     field2_1:'last name',
-        //     field3: 'peter@yahoo.com',
-        //     field4_0:'852',
-        //     field4_1:'12345678',
-        //     field5: 'address line 1',
-        //     field6: 'address line 2',
-        //     field8: 'know or not',
-        //     field9: 'used or not',
-        //     field10: 'seen in shops'
-        //   }
-        // ]
-        // this.total = this.data.length
+      parseCodeInfoData (data) {
+        const vm = this
+        var result = []
+        for (var i = 0; i < data.length; i++) {
+          var obj = data[i]
+          obj['buttons'] = []
+          result.push(obj)
+        }
+        return result
       },
       onRowCommandHandler (payload) {
         const vm = this
@@ -456,31 +499,52 @@
         vm.addXpropsStatus(commandStatus)
         vm.$store.dispatch('AUTH_POST', postData).then(
           response => {
-            console.log('sendVoucherCodeEmail :: response: ', response)
+            console.log('FormParticipantsTable :: sendEmail :: response: ', response)
             vm.removeXpropsStatus(commandStatus)
+          },
+          error => {
+            row['error_message'] = error['message']
+            row['sent_at'] = error['sent_at']
+            row['status'] = error['status']
+            vm.$toaster.warning(error['message'])
+            vm.removeXpropsStatus(commandStatus)
+            vm.configRowButtons()
           }
         )
       },
       changeStatus (payload) {
         const vm = this
+        console.log('FormParticipantsTable :: changeStatus :: payload: ', payload)
         const postData = {
           urlCommand: '/participants/' + payload.row.id + '/change_status/' + payload.status
         }
         vm.$store.dispatch('AUTH_POST', postData).then(
           () => {
+            const statusInfo = {
+              status: payload.status,
+              sent_at: '',
+              error_message: ''
+            }
+            // vm.refresh()
             for (var i = 0; i < vm.data.length; i++) {
               if (vm.data[i].id === payload.row.id) {
-                vm.data[i].status = payload.status
-                if (payload.status !== 'hold' && payload.status !== 'pending') {
-                  vm.$toaster.success(vm.$t('messages.participant_status_has_been_updated'))
-                } else {
-                  vm.data[i].sent_on = ''
-                  vm.data[i].error_message = ''
-                }
+                vm.updateStatusByIndex(i, statusInfo)
                 break
               }
             }
-            // vm.reloadAll()
+            // for (var i = 0; i < vm.data.length; i++) {
+            //   if (vm.data[i].id === payload.row.id) {
+            //     vm.data[i].status = payload.status
+            //     if (payload.status !== 'hold' && payload.status !== 'pending') {
+            //       vm.$toaster.success(vm.$t('messages.participant_status_has_been_updated'))
+            //     } else {
+            //       vm.data[i].sent_on = ''
+            //       vm.data[i].error_message = ''
+            //     }
+            //     vm.configRowButtonsByIndex(i)
+            //     break
+            //   }
+            // }
           }
         )
       },
@@ -496,6 +560,34 @@
         }
         return result
       },
+
+      configRowButtonsByIndex (index) {
+        const vm = this
+        const row = vm.data[index]
+        var disabled = []
+        if (row.locked) {
+          disabled.push('delete')
+        }
+        if (row) {
+          if (row.email.trim() === '' || row.status === 'fails' || row.status === 'completed') {
+            disabled.push('email')
+          }
+        } else {
+          disabled.push('email')
+        }
+        vm.data[index].buttons = vm.xprops.buttons.filter(item => disabled.indexOf(item) === -1)
+      },
+
+      configRowButtons (data) {
+        const vm = this
+        if (typeof data === 'undefined') {
+          data = vm.data
+        }
+        for (var i = 0; i < data.length; i++) {
+          vm.configRowButtonsByIndex(i)
+        }
+      },
+
       setColumns (userInputObjs) {
         const vm = this
         vm.xprops['optionalChoices'] = {}

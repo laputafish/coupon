@@ -1,26 +1,38 @@
 <template>
   <div class="text-nowrap action-btn-group btn-group-gap"
     :class="customClass">
-    <button v-for="(btn,index) in buttons"
-            :key="index"
-            :disabled="row.buttons && row.buttons.indexOf(btn.command)===-1"
-            class="btn"
-            :class="btn.btnClass"
-            @click="processCommand(btn.command, btn.needConfirm)">
-      <font-awesome-icon v-if="processing(btn.command)"
-                         icon="spinner"
-                         class="fa-fw fa-spin"></font-awesome-icon>
-      <font-awesome-icon v-else
-                         class="fa-fw"
-                         :icon="btn.iconClass"></font-awesome-icon>
-    </button>
+    <template v-for="(btn,index) in buttons">
+      <action-button
+          :statuses="xprops['statuses']"
+          :key="index"
+          :button="btn"
+          :row="row"
+          :xprops="xprops"></action-button>
+    </template>
+    <!--<button v-for="(btn,index) in buttons"-->
+            <!--:key="index"-->
+            <!--:disabled="row.buttons && row.buttons.indexOf(btn.command)===-1"-->
+            <!--class="btn"-->
+            <!--:class="btn.btnClass"-->
+            <!--@click="processCommand(btn.command, btn.needConfirm)">-->
+      <!--<font-awesome-icon v-if="processing(btn.command)"-->
+                         <!--icon="spinner"-->
+                         <!--class="fa-fw fa-spin"></font-awesome-icon>-->
+      <!--<font-awesome-icon v-else-->
+                         <!--class="fa-fw"-->
+                         <!--:icon="btn.iconClass"></font-awesome-icon>-->
+    <!--</button>-->
   </div>
 </template>
 
 <script>
 import helpers from '@/helpers'
+import actionButton from '@/views/comps/ActionButton'
 
 export default {
+  components: {
+    actionButton
+  },
   data () {
     return {
       buttons: []
@@ -106,53 +118,53 @@ export default {
     // console.log('mounted ends')
   },
   methods: {
-    processing (command) {
-      const vm = this
-      const mapping = {
-        print: 'printing'
-      }
-      let result = false
-      if (vm.xprops['statuses']) {
-        var mappedCommand = command
-        if (mapping[command]) {
-          mappedCommand = mapping[command]
-        }
-        const commandStr = mappedCommand + ':' + vm.row['id']
-        if (vm.xprops['statuses'] && commandStr) {
-          result = vm.xprops.statuses.indexOf(commandStr) >= 0
-        }
-      }
-      return result
-    },
-    processCommand (command, needConfirm) {
-      const vm = this
-      // console.log('tdCommonOpt :: processCommand')
-      if (typeof needConfirm === 'undefined') {
-        needConfirm = false
-      }
-      if (needConfirm) {
-        // alert('tdCommonOpt :: processCommand => call showConfirmDialog')
-        helpers.showConfirmDialog(vm, () => {
-          // alert('tdCommonOpt :: processCommand :: helpers.showConfirmDialog :: callback')
-          // console.log('tdCommonOpt :: processCommand showConfirmDialog.callback')
-          vm.doProcessCommand(command)
-        })
-        // alert('tdCommonOpt :: processCommand => after call showConfirmDialog')
-      } else {
-        // alert('tdCommonOpt :: processCommand (no need confirm)')
-        vm.doProcessCommand(command)
-      }
-      // alert('tdCommonOPt :: processCommand ends')
-    },
-
-    doProcessCommand (command) {
-      const vm = this
-      // console.log('TdCommonOpt :: doProcessCommand :: command: ', command)
-      vm.xprops.eventbus.$emit('onRowCommand', {
-        command: command,
-        row: vm.row
-      })
-    }
+    // processing (command) {
+    //   const vm = this
+    //   const mapping = {
+    //     print: 'printing'
+    //   }
+    //   let result = false
+    //   if (vm.xprops['statuses']) {
+    //     var mappedCommand = command
+    //     if (mapping[command]) {
+    //       mappedCommand = mapping[command]
+    //     }
+    //     const commandStr = mappedCommand + ':' + vm.row['id']
+    //     if (vm.xprops['statuses'] && commandStr) {
+    //       result = vm.xprops.statuses.indexOf(commandStr) >= 0
+    //     }
+    //   }
+    //   return result
+    // },
+    // processCommand (command, needConfirm) {
+    //   const vm = this
+    //   // console.log('tdCommonOpt :: processCommand')
+    //   if (typeof needConfirm === 'undefined') {
+    //     needConfirm = false
+    //   }
+    //   if (needConfirm) {
+    //     // alert('tdCommonOpt :: processCommand => call showConfirmDialog')
+    //     helpers.showConfirmDialog(vm, () => {
+    //       // alert('tdCommonOpt :: processCommand :: helpers.showConfirmDialog :: callback')
+    //       // console.log('tdCommonOpt :: processCommand showConfirmDialog.callback')
+    //       vm.doProcessCommand(command)
+    //     })
+    //     // alert('tdCommonOpt :: processCommand => after call showConfirmDialog')
+    //   } else {
+    //     // alert('tdCommonOpt :: processCommand (no need confirm)')
+    //     vm.doProcessCommand(command)
+    //   }
+    //   // alert('tdCommonOPt :: processCommand ends')
+    // },
+    //
+    // doProcessCommand (command) {
+    //   const vm = this
+    //   // console.log('TdCommonOpt :: doProcessCommand :: command: ', command)
+    //   vm.xprops.eventbus.$emit('onRowCommand', {
+    //     command: command,
+    //     row: vm.row
+    //   })
+    // }
   }
 }
 </script>

@@ -209,6 +209,8 @@
         total: 0,
         query: {
           filter: '',
+          limit: 10,
+          offset: 0,
           sort: '',
           order: '',
           page: 0
@@ -391,6 +393,13 @@
       query: {
         handler: function (newValue) {
           const vm = this
+          // console.log('watch(query): filter = ' + newValue.filter)
+          // console.log('watch(query): limit = ' + newValue.limit)
+          // console.log('watch(query): offset = ' + newValue.offset)
+          // console.log('watch(query): order = ' + newValue.order)
+          // console.log('watch(query): page = ' + newValue.page)
+          // console.log('watch(query): sort = ' + newValue.sort)
+
           if (vm.voucherId !== 0) {
             // console.log('watch(query) && voucherId !== 0: ', vm.voucherId)
             vm.onQueryChangedHandler(newValue)
@@ -450,46 +459,73 @@
     methods: {
       updateOneCodeMode (fieldName, fieldValue) {
         const vm = this
-
-        console.log('udpateOneCodeMode :: fieldName = ' + fieldName)
-        console.log('udpateOneCodeMode :: fieldValue = ' + fieldValue)
-
         switch (fieldName) {
           case 'has_one_code':
             const hasOneCode = fieldValue===1
-            console.log('updateOneCodeMode :: hasOneCode = ' + hasOneCode)
-            console.log('updateOneCodeMode :: record.code_count = ' + vm.record.code_count)
+            // console.log('updateOneCodeMode :: hasOneCode = ' + hasOneCode)
+            // console.log('updateOneCodeMode :: record.code_count = ' + vm.record.code_count)
 
-            if (hasOneCode && vm.record.code_count > 1) {
-              vm.$dialog.confirm('Only first code will remain. Are you sure?', {
-                customClass: 'confirm-keep-one-code'
-              }).then(
-                () => {
-                  console.log('confirm removal of others except first one')
-                  vm.$emit('onCommand', {
-                    command: 'keepFirstCode',
-                    callback: () => {
-                      vm.$emit('onCommand', {
-                        command: 'updateField',
-                        fieldName: fieldName,
-                        fieldValue: fieldValue
-                      })
-                      console.log('AgentCodeTable :: updateOneCodeMode => refresh')
-                      vm.$emit('onCommand', {
-                        command: 'updateField',
-                        fieldName: 'code_count',
-                        fieldValue: 1
-                      })
-                      vm.refresh()
-                    }
-                  })
-                }
-              )
+            if (hasOneCode) {
+              if (vm.record.code_count > 1) {
+                vm.$dialog.confirm('Only first code will remain. Are you sure?', {
+                  customClass: 'confirm-keep-one-code'
+                }).then(
+                  () => {
+                    console.log('confirm removal of others except first one')
+                    vm.$emit('onCommand', {
+                      command: 'keepOnlyOneCode',
+                      callback: () => {
+                        vm.$emit('onCommand', {
+                          command: 'updateField',
+                          fieldName: fieldName,
+                          fieldValue: fieldValue
+                        })
+                        console.log('AgentCodeTable :: updateOneCodeMode => refresh')
+                        vm.$emit('onCommand', {
+                          command: 'updateField',
+                          fieldName: 'code_count',
+                          fieldValue: 1
+                        })
+                        console.log('AgentCodeTable :: updateOneCodeMode :: callback')
+                        vm.refresh()
+                      }
+                    })
+                  }
+                )
+              } else {
+                vm.$emit('onCommand', {
+                  command: 'keepOnlyOneCode',
+                  callback: () => {
+                    vm.$emit('onCommand', {
+                      command: 'updateField',
+                      fieldName: fieldName,
+                      fieldValue: fieldValue
+                    })
+                    // console.log('AgentCodeTable :: updateOneCodeMode => refresh')
+                    vm.$emit('onCommand', {
+                      command: 'updateField',
+                      fieldName: 'code_count',
+                      fieldValue: 1
+                    })
+                    // console.log('AgentCodeTable :: updateOneCodeMode :: code_count==1 :: callback => refresh')
+                    vm.refresh()
+                  }
+                })
+                // console.log('AgentCodeTable :: updateOneCodeMode :: code_count==1 :: refresh')
+                vm.refresh()
+              } // if vm.record.rode_count > 1
             } else {
               vm.$emit('onCommand', {
-                command: 'updateField',
-                fieldName: fieldName,
-                fieldValue: fieldValue
+                command: 'useMultipleCodes',
+                callback: () => {
+                  vm.$emit('onCommand', {
+                    command: 'updateField',
+                    fieldName: fieldName,
+                    fieldValue: fieldValue
+                  })
+                  // console.log('not has one code => refresh')
+                  vm.refresh()
+                }
               })
             }
             break
@@ -497,7 +533,7 @@
       },
       listen () {
         const vm = this
-        console.log('methods :: listen :: $echo: ', window.Echo)
+        // console.log('methods :: listen :: $echo: ', window.Echo)
         // alert('listen')
         // vm.$echo = new Echo({
         //   broadcaster: 'pusher',
@@ -535,6 +571,32 @@
           }
         )
       },
+      sendEmail (row) {
+        const vm = this
+        const participant = row['participant']
+        if (participant) {
+          const postData = {
+            urlCommand: '/participants/' + participant.id + '/send_email'
+          }
+          var commandStatus = 'email:' + row.id
+          vm.addXpropsStatus(commandStatus)
+          vm.$store.dispatch('AUTH_POST', postData).then(
+            response => {
+              // console.log('AgentCodeTable :: sendEmail :: response: ', response)
+              vm.removeXpropsStatus(commandStatus)
+            },
+            error => {
+              row['error_message'] = error['message']
+              row['sent_at'] = error['sent_at']
+              row['status'] = error['status']
+              vm.$toaster.warning(error['message'])
+              vm.removeXpropsStatus(commandStatus)
+            }
+          )
+        } else {
+          vm.$toaster.error('Participant not specified!')
+        }
+      },
       sendVoucherCodeEmail (row) {
         const vm = this
         const postData = {
@@ -544,18 +606,10 @@
         vm.addXpropsStatus(commandStatus)
         vm.$store.dispatch('AUTH_POST', postData).then(
           response => {
-            console.log('sendVoucherCodeEmail :: response: ', response)
+            // console.log('sendVoucherCodeEmail :: response: ', response)
             vm.removeXpropsStatus(commandStatus)
           }
         )
-      },
-
-      removeXpropsStatus (commandStatus) {
-        const vm = this
-        const index = vm.xprops.statuses.indexOf(commandStatus)
-        if (index >= 0) {
-          vm.xprops.statuses.splice(index, 1)
-        }
       },
 
       onVoucherCodeViewsUpdated (data) {
@@ -572,6 +626,33 @@
           fieldName: 'total_views',
           fieldValue: data.totalViews
         })
+      },
+
+      updateStatus (data) {
+        const vm = this
+        // console.log('AgentCodeTable :; updateStatus :: data: ', data)
+        const statusInfo = data.statusInfo
+        for (var i = 0; i < vm.data.length; i++) {
+          if (vm.data[i].id === statusInfo.code_id) {
+            vm.updateStatusByIndex(i, statusInfo)
+            // vm.data[i].status = statusInfo.status
+            // switch (statusInfo.status) {
+            //   case 'hold':
+            //   case 'pending':
+            //   case 'processing':
+            //     vm.data[i].sent_at = ''
+            //     vm.data[i].error_message = ''
+            //     break
+            //   case 'completed':
+            //   case 'fails':
+            //     vm.data[i].sent_at = statusInfo.sent_at
+            //     vm.data[i].error_message = statusInfo.error_message
+            //     break
+            // }
+            // vm.configRowButtonsByIndex(i)
+            break
+          }
+        }
       },
 
       onVoucherCodeStatusUpdated (data) {
@@ -601,9 +682,9 @@
           vm.unbindEvents()
           vm.pusherChannel = vm.pusher.subscribe('voucher' + vm.record.id + '.channel')
 
-          vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
-            vm.onVoucherCodeStatusUpdated(data)
-          })
+          // vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
+          //   vm.onVoucherCodeStatusUpdated(data)
+          // })
 
           vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
             vm.onVoucherCodeViewsUpdated(data)
@@ -614,14 +695,14 @@
       unbindEvents () {
         const vm = this
         if (vm.pusherChannel) {
-          vm.pusherChannel.unbind('VoucherCodeStatusUpdated')
+          // vm.pusherChannel.unbind('VoucherCodeStatusUpdated')
           vm.pusherChannel.unbind('VoucherCodeViewsUpdated')
         }
       },
 
       onCommandHandler (payload) {
         const vm = this
-        console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
+        // console.log('AgentCodeTable :: onCommandHandler :: payload: ', payload)
         const command = payload.command
         switch (command) {
           case 'search':
@@ -765,6 +846,7 @@
       },
       clearSearch () {
         const vm = this
+        // console.log('clearSearch')
         vm.query.filter = vm.filterFields + ':'
         vm.onQueryChangedHandler(vm.query)
       },
@@ -785,17 +867,20 @@
 
       onQueryChangedHandler (query) {
         const vm = this
+        // console.log('onQueryChangedHandler')
         vm.reloadCodeList(query)
       },
 
       refresh () {
         const vm = this
+        // console.log('refresh')
         vm.reloadCodeSummary()
         vm.reloadCodeList()
       },
 
       reloadAll () {
         const vm = this
+
         vm.reloadCodeSummary()
         vm.reloadCodeList()
       },
@@ -818,6 +903,7 @@
 
       reloadCodeList (query) {
         const vm = this
+        // console.log('AgentCodeTable :: reloadCodeList')
         vm.loading = true
         if (typeof query === 'undefined') {
           query = vm.query
@@ -834,30 +920,44 @@
           // console.log('AUTH_GET :: response: ', response)
           vm.total = response.total
           vm.data = vm.parseCodeInfoData(response.data)
+          // console.log('reloadCodeList => configRowButtons: vm.data.length = ' + vm.data.length)
+
+          // console.log('reloadCodeList => configRowButtons: buttons.length = ' + vm.data[0].buttons)
           vm.configRowButtons(vm.data)
+          // console.log('reloadCodeList => forceUpdate')
           vm.$forceUpdate()
+          // console.log('reloadCodeList => loading = false')
           vm.loading = false
+          // console.log('reloadCodeList ends')
         })
       },
 
       configRowButtons (data) {
         const vm = this
+        if (typeof data === 'undefined') {
+          data = vm.data
+        }
         for (var i = 0; i < data.length; i++) {
-          const row = data[i]
-          // var buttons = JSON.parse(JSON.stringify(vm.xprops.buttons))
-          var disabled = []
-          if (row.locked) {
-            disabled.push('delete')
-          }
-          if (row.participant) {
-            if (row.participant_email.trim() === '' || row.status === 'fails' || row.status === 'completed') {
-              disabled.push('email')
-            }
-          } else {
+          vm.configRowButtonsByIndex(i)
+        }
+      },
+
+      configRowButtonsByIndex (index) {
+        const vm = this
+        const row = vm.data[index]
+        var disabled = []
+        if (row.locked) {
+          disabled.push('delete')
+        }
+        if (row.participant) {
+          disabled.push('delete')
+          if (vm.record.has_one_code || row.participant_email.trim() === '' || row.status === 'fails' || row.status === 'completed') {
             disabled.push('email')
           }
-          data[i]['buttons'] = vm.xprops.buttons.filter(item => disabled.indexOf(item) === -1)
+        } else {
+          disabled.push('email')
         }
+        vm.data[index].buttons = vm.xprops.buttons.filter(item => disabled.indexOf(item) === -1)
       },
 
       row2CodeInfo (row) {
@@ -884,7 +984,7 @@
       },
       onRowCommandHandler (payload) {
         const vm = this
-        console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+        // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
         switch (payload.command) {
           // case 'onLinkClicked':
           //   vm.updateCodeViewCount(payload.row)
@@ -914,7 +1014,10 @@
             vm.changeStatus(payload)
             break
           case 'email':
-            vm.sendVoucherCodeEmail(payload.row)
+            if (payload.row.participant) {
+              vm.sendEmail(payload.row)
+            }
+            // vm.sendVoucherCodeEmail(payload.row)
             break
           case 'saveField':
             vm.saveCodeInfoField(
@@ -953,13 +1056,13 @@
         }
         vm.$store.dispatch('AUTH_POST', postData).then(
           response => {
-            console.log('sendEmail : response: ', response)
+            // console.log('sendEmail : response: ', response)
             if (response.message) {
               vm.$toaster.info(response.message)
             }
             const voucherCode = response.voucherCode
-            console.log('setVoucherCodeStatus :: data: ', vm.data)
-            console.log('response.voucherCode = ', voucherCode)
+            // console.log('setVoucherCodeStatus :: data: ', vm.data)
+            // console.log('response.voucherCode = ', voucherCode)
             var dataVoucherCode = vm.data.find(item => item.id === voucherCode.id)
             if (dataVoucherCode) {
               dataVoucherCode.status = voucherCode.status
@@ -1015,26 +1118,56 @@
 
       changeStatus (payload) {
         const vm = this
-        const postData = {
-          urlCommand: '/agent_codes/' + payload.row.id + '/change_status/' + payload.status
-        }
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          () => {
-            for (var i = 0; i < vm.data.length; i++) {
-              if (vm.data[i].id === payload.row.id) {
-                vm.data[i].status = payload.status
-                if (payload.status !== 'hold' && payload.status !== 'pending') {
-                  vm.$toaster.success(vm.$t('messages.code_status_has_been_updated'))
-                } else {
-                  vm.data[i].sent_on = ''
-                  vm.data[i].error_message = ''
-                }
-                break
-              }
-            }
-            // vm.reloadAll()
+        const participant = payload.row.participant
+        if (participant) {
+          const postData = {
+            // urlCommand: '/agent_codes/' + payload.row.id + '/change_status/' + payload.status
+            urlCommand: '/participants/' + participant.id + '/change_status/' + payload.status
           }
-        )
+          vm.$store.dispatch('AUTH_POST', postData).then(
+            () => {
+              const statusInfo = {
+                status: payload.status,
+                sent_at: '',
+                error_message: ''
+              }
+
+              for (var i = 0; i < vm.data.length; i++) {
+                if (vm.data[i].id === payload.row.id) {
+                  vm.updateStatusByIndex(i, statusInfo)
+                  break
+                }
+              }
+              // vm.reloadAll()
+            }
+          )
+        }
+      },
+
+      // statusInfo = {
+      //    status: '',
+      //    sent_at: '',
+      //    error_message: ''
+      // }
+      updateStatusByIndex (index, statusInfo) {
+        const vm = this
+        const status = statusInfo.status
+        vm.data[index].status = status
+        switch (status) {
+          case 'fails':
+          case 'completed':
+            vm.data[index].sent_at = statusInfo.sent_at
+            vm.data[index].error_message = statusInfo.error_message
+            break
+          case 'hold':
+          case 'pending':
+          case 'processing':
+            vm.data[index].sent_at = ''
+            vm.data[index].error_message = ''
+            break
+        }
+        vm.configRowButtonsByIndex(index)
+        // console.log('updateStatusByIndex: index =' + index + ': ', vm.data[index])
       },
 
       getCodeFieldsFromStr (fieldStr) {
@@ -1151,11 +1284,13 @@
             obj['key'] = codeRecord['key']
             obj['remark'] = codeRecord['remark']
             obj['error_message'] = codeRecord['error_message']
+            obj['participant'] = codeRecord['participant']
             obj['participant_name'] = codeRecord['participant'] ? codeRecord['participant']['name'] : null
             obj['participant_email'] = codeRecord['participant'] ? codeRecord['participant']['email'] : null
             obj['participant_phone'] = codeRecord['participant'] ? codeRecord['participant']['phone'] : null
-            obj['sent_on'] = codeRecord['sent_on']
+            obj['sent_at'] = codeRecord['sent_at']
             obj['views'] = codeRecord['views']
+            obj['buttons'] = []
             result.push(obj)
           }
         } else {

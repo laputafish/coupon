@@ -816,10 +816,19 @@
         } else {
         }
       },
-      unbindEvents () {
+      onVoucherParticipantStatusUpdated (data) {
         const vm = this
-        if (vm.pusherChannel) {
-          vm.pusherChannel.unbind('VoucherStatusUpdated')
+
+        switch (vm.activePage) {
+          case 'codes':
+            vm.$refs.agentCodePage.updateStatus(data)
+            break
+          case 'participants':
+            vm.$refs.participantsPage.updateStatus(data)
+            break
+          case 'email':
+            vm.$refs.emailPage.updateStatus(data)
+            break
         }
       },
       initPusherChannel () {
@@ -829,25 +838,22 @@
           // console.log('*** VoucherRecord :: initPusherChannel (pusher and record id) ok')
           vm.unbindEvents()
           const channelName = 'voucher' + vm.recordId + '.channel'
-          // alert('subscribe: channel = ' + channelName)
-          console.log('VoucherRecord :: initPusherChannel subscrib(' + channelName + ')')
           vm.pusherChannel = vm.pusher.subscribe(channelName)
 
-          console.log('VoucherRecord :: bind(VoucherStatusUpdated)')
           vm.pusherChannel.bind('VoucherStatusUpdated', function (data) {
             vm.onVoucherStatusUpdated(data)
           })
-        } else {
-          if (vm.pusher) {
 
-            if (vm.recordId !== 0) {
-
-            } else {
-              console.log('*** VoucherRecord :: initPusherChannel (pusher ok, record id not)')
-            }
-          } else {
-            console.log('*** VoucherRecord :: initPusherChannel (pusher not, record id not)')
-          }
+          vm.pusherChannel.bind('VoucherParticipantStatusUpdated', function (data) {
+            vm.onVoucherParticipantStatusUpdated(data)
+          })
+        }
+      },
+      unbindEvents () {
+        const vm = this
+        if (vm.pusherChannel) {
+          vm.pusherChannel.unbind('VoucherStatusUpdated')
+          vm.pusherChannel.unbind('VoucherParticipantStatusUpdated')
         }
       },
       onPageSelected (pageName) {
@@ -1381,10 +1387,28 @@
         }
         return result
       },
+      useMultipleCodes (callback) {
+        const vm = this
+        const postData = {
+          urlCommand: '/vouchers/' + vm.record.id + '/update_field/has_one_code/0'
+        }
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          response => {
+            console.log('VoucherRecord :: keepOnlyOneCode.then')
+            if (typeof callback === 'function') {
+              callback()
+            }
+            vm.$toaster.success(response.message)
+          },
+          error => {
+
+          }
+        )
+      },
       keepOnlyOneCode (callback) {
         const vm = this
         const postData = {
-          urlCommand: '/vouchers/' + vm.record.id + '/use_one_code_mode'
+          urlCommand: '/vouchers/' + vm.record.id + '/update_field/has_one_code/1'
         }
         vm.$store.dispatch('AUTH_POST', postData).then(
           response => {
@@ -1403,7 +1427,14 @@
         const vm = this
         var customForm = null
         switch (payload.command) {
-          case 'keepFirstCode':
+          case 'useMultipleCodes':
+            vm.useMultipleCodes(() => {
+              if (typeof payload.callback === 'function') {
+                payload.callback()
+              }
+            })
+            break
+          case 'keepOnlyOneCode':
             vm.keepOnlyOneCode(() => {
               if (typeof payload.callback === 'function') {
                 payload.callback()

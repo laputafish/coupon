@@ -24,6 +24,7 @@
     </div>
     <div v-if="activeSection">
       <send-emails-section
+          ref="sendEmailsSection"
           :voucher="record"
           :smtpServer="activeSmtpServer"
           @onCommand="onCommandHandler"
@@ -143,6 +144,11 @@ export default {
     }
   },
   methods: {
+    updateStatus (data) {
+      const vm = this
+      vm.$refs.sendEmailsSection.updateStatus(data)
+    },
+
     updateActiveSection (section) {
       this.$emit('onCommand', {
         command: 'updateEmailPageSectionKey',
