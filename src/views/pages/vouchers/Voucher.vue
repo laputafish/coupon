@@ -27,8 +27,19 @@
         columns: (() => {
           const cols = [
             {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
-            {title: 'general.description', thComp: 'ThCommonHeader', tdComp: 'TdDescription', field: 'description'},
-            {title: 'agents.agent', thComp: 'ThCommonHeader', tdComp: 'TdAgent', field: 'agent'},
+            {
+              title: 'general.description',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdDescription',
+              tdClass: 'vertical-middle',
+              field: 'description'
+            },
+            {
+              title: 'agents.agent',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdAgent',
+              tdClass: 'vertical-middle',
+              field: 'agent'},
             {
               title: 'general.type',
               thComp: 'ThCommonHeader',
@@ -66,7 +77,7 @@
               title: 'vouchers.participants',
               thComp: 'ThCommonHeader',
               thClass: 'text-center',
-              tdClass: 'text-center',
+              tdClass: 'text-center vertical-middle',
               tdComp: 'TdParticipantCount',
               field: 'participant_count'
             },

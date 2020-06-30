@@ -1,6 +1,6 @@
 <template>
   <div class="py-2 px-3 agent-code-table">
-    <div class="toolbar d-flex justify-content-between mb-1">
+    <div class="toolbar d-flex justify-content-between mb-1 align-items-center">
       <!-- Search Panel -->
       <search-field
           :searchValue="searchValue"
@@ -14,27 +14,27 @@
             <div class="badge badge-warning min-width-80">Views</div>
           </td>
           <td class="summary-value">{{record.total_views}}</td>
-          <td class="summary-label">
-            <div class="badge badge-info min-width-80">Pending</div>
-          </td>
-          <td class="summary-value">{{statusSummary.pending}}</td>
-          <td class="summary-label">
-            <div class="badge badge-success min-width-80">Completed</div>
-          </td>
-          <td class="summary-value">{{ statusSummary.completed}}</td>
+          <!--<td class="summary-label">-->
+            <!--<div class="badge badge-info min-width-80">Pending</div>-->
+          <!--</td>-->
+          <!--<td class="summary-value">{{statusSummary.pending}}</td>-->
+          <!--<td class="summary-label">-->
+            <!--<div class="badge badge-success min-width-80">Completed</div>-->
+          <!--</td>-->
+          <!--<td class="summary-value">{{ statusSummary.completed}}</td>-->
         </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="summary-label">
-            <div class="badge badge-muted min-width-80">On Hold</div>
-          </td>
-          <td class="summary-value">{{statusSummary.hold}}</td>
-          <td class="summary-label">
-            <div class="badge badge-danger min-width-80">Fails</div>
-          </td>
-          <td class="summary-value">{{ statusSummary.fails}}</td>
-        </tr>
+        <!--<tr>-->
+          <!--<td></td>-->
+          <!--<td></td>-->
+          <!--<td class="summary-label">-->
+            <!--<div class="badge badge-muted min-width-80">On Hold</div>-->
+          <!--</td>-->
+          <!--<td class="summary-value">{{statusSummary.hold}}</td>-->
+          <!--<td class="summary-label">-->
+            <!--<div class="badge badge-danger min-width-80">Fails</div>-->
+          <!--</td>-->
+          <!--<td class="summary-value">{{ statusSummary.fails}}</td>-->
+        <!--</tr>-->
       </table>
 
       <data-radio-toggle

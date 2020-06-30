@@ -27,6 +27,14 @@
             {title: 'general.web_url', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'web_url'},
             {title: 'general.email', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'email'},
             {
+              title: 'agents.smtp_servers',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdCommon',
+              tdClass: 'text-center',
+              thClass: 'text-center',
+              field: 'smtp_server_count'
+            },
+            {
               title: 'agents.voucher_count',
               thComp: 'ThCommonHeader',
               tdComp: 'TdCommon',

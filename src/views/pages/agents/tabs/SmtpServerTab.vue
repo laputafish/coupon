@@ -17,15 +17,16 @@
                 <i class="fa fa-plus"></i>
               </button>
             </div>
-            <div class="flex-grow-1">
-
+            <div class="">
               <icon-item
                   iconKey="smtp-server"
                   :selected="selectedServer===server"
                   :item="server"
+                  :tag="server.id===0 ? 'Unsaved' : ''"
                   v-for="server in record.smtp_servers"
                   :description="server.description"
                   @click="onServerClicked"
+                  style="vertical-align:top;"
                   :key="server.id"></icon-item>
                   <!---->
               <!--<div class="smtp-server-item"-->
@@ -211,7 +212,42 @@ export default {
     },
 
     removeSmtpServer () {
-      alert('removeSmtpServer not implemented!')
+      const vm = this
+      vm.$dialog.confirm('Are you sure?').then(
+        () => {
+          vm.doRemoveSmtpServer(vm.selectedServer)
+        }
+      )
+    },
+
+    doRemoveSmtpServer (smtpServer) {
+      const vm = this
+      if (smtpServer.id === 0) {
+        // var index = vm.record.smtp_servers.findIndex(loopServer => loopServer===smtpServer)
+        // if (index >= 0) {
+        vm.$emit('onCommand', {
+          command: 'removeNewSmtpServer',
+          smtpServer: smtpServer,
+          callback: (index) => {
+            if (index >= vm.record.smtp_servers.length) {
+              index--
+            }
+            vm.selectedServer = vm.record.smtp_servers[index]
+          }
+        })
+        // }
+      } else {
+        var postData = {
+          urlCommand: '/agents/' + vm.record.id + '/smtp_servers/' + smtpServer.id
+        }
+        vm.$store.dispatch('AUTH_DELETE', postData).then(
+          repsonse => {
+            vm.$emit('onCommand', {
+              command: 'refresh'
+            })
+          }
+        )
+      }
     }
 
   }

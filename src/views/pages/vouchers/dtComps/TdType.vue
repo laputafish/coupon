@@ -2,9 +2,17 @@
   <div class="text-center line-height-1">
     <div v-if="value==='voucher'" class="d-flex flex-row">
       <div class="badge badge-primary">Voucher</div>
-      <div v-if="row['has_one_code']" class="ml-1">
+      <div v-if="row['has_one_code']" class="ml-1" data-toggle="tooltip"
+        title="Single Code">
+        <div class="badge badge-warning">
+          <font-awesome-icon icon="ticket-alt" class=""></font-awesome-icon>
+        </div>
+      </div>
+      <div v-else class="ml-1" data-toggle="tooltip"
+        title="Multiple Codes">
         <div class="badge badge-success">
-          <font-awesome-icon icon="ticket-alt" class="mr-1"></font-awesome-icon>x1
+          <font-awesome-icon icon="ticket-alt" class="mr-1"></font-awesome-icon>
+          <font-awesome-icon icon="ticket-alt" class="mr-1"></font-awesome-icon>...
         </div>
       </div>
     </div>

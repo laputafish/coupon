@@ -71,6 +71,7 @@ export default {
     },
     onCommandHandler (payload) {
       const vm = this
+      console.log('CustomFormsPage :: onCommandHandler :: payload: ', payload)
       const command = payload.command
       switch (command) {
         case 'renameFormType':

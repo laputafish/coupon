@@ -133,7 +133,7 @@
             vm.record.id = response.id
             vm.$store.dispatch('FETCH_AGENTS')
             vm.$toaster.success(vm.$t('messages.saved_successfully'))
-
+            vm.refresh(vm.record.id)
             // vm.$router.go(-1);
           },
           error => {
@@ -207,6 +207,9 @@
         const vm = this
         // console.log('VoucherRecord :: onCommandHandler :: command = ' + payload.command)
         switch (payload.command) {
+          case 'refresh':
+            vm.refresh(vm.record.id)
+            break
           case 'newSmtpServer':
             var newSmtpServer = JSON.parse(JSON.stringify(vm.blankSmtpServer))
             newSmtpServer.description = vm.newSmtpServerDescription()
@@ -217,6 +220,18 @@
             break
           case 'save':
             vm.save()
+            break
+          case 'removeNewSmtpServer':
+            const smtpServerToRemove = payload.smtpServer
+            for (var i = 0; i < vm.record.smtp_servers.length; i++) {
+              if (vm.record.smtp_servers[i] === smtpServerToRemove) {
+                vm.record.smtp_servers.splice(i, 1)
+                if (typeof payload.callback === 'function') {
+                  payload.callback(i)
+                }
+                break
+              }
+            }
             break
         }
       },

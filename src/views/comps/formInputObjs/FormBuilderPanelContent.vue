@@ -278,7 +278,7 @@
         })
       },
       onCommandHandler (payload) {
-        // console.log('FormBuilderPanelContent :: onCommandHandler : payload: ', payload)
+        console.log('FormBuilderPanelContent :: onCommandHandler : payload: ', payload)
         const vm = this
         const command = payload.command
         switch (command) {

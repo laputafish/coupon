@@ -250,12 +250,18 @@ const FormInputObjMixin = {
     selectInputObjImage (payload, formConfigs) {
       const vm = this
       var currentIndex = payload.objIndex
+
+      console.log('selectInputObjImage: payload: ', payload)
+      console.log('selectInputObjImage: formConfigs: ', formConfigs)
+      console.log('selectInputObjImage :: currentIndex = ' + currentIndex)
+
       if (currentIndex !== -1) {
         vm.selectedFormConfigs = formConfigs
         vm.selectedInputObjIndex = currentIndex
         vm.imageScope = 'inputObj'
         vm.$refs.imageSelectDialog.refresh()
-        vm.showingImageSelectDialog = true
+        vm.$bvModal.show('imageSelectDialog')
+        // vm.showingImageSelectDialog = true
       }
     },
 

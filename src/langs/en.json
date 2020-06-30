@@ -2,7 +2,8 @@
   "general": {
     "home": "Home",
     "number": "#",
-    "brand_text": "Digital Coupon",
+    "brand_text": "Digital Ticket",
+    "version": "2.0.0",
     "description": "Description",
     "expiry_date": "Expiry Date",
     "action" : "Action",
@@ -131,6 +132,7 @@
   },
   "agents": {
     "agent": "Agent",
+    "smtp_servers": "SMTP Servers",
     "voucher_count": "Vouchers"
   },
   "vouchers": {

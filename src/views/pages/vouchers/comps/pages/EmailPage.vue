@@ -77,7 +77,7 @@ export default {
   data () {
     return {
       agentTag: '',
-      agentSmtpServers: [],
+      smtpServers: [],
 
       sections: [
         {
@@ -131,17 +131,18 @@ export default {
         }
       }
       return result
-    },
-    smtpServers () {
-      const vm = this
-      // var result = []
-      // if (vm.agentSmtpServers) {
-      //   for (var i = 0; i < vm.agentSmtpServers.length; i++) {
-      //     vm.agentSmtpServers[i]['tag'] = vm.agentTag
-      //   }
-      // }
-      return vm.agentSmtpServers
     }
+    // ,
+    // smtpServers () {
+    //   const vm = this
+    //   // var result = []
+    //   // if (vm.agentSmtpServers) {
+    //   //   for (var i = 0; i < vm.agentSmtpServers.length; i++) {
+    //   //     vm.agentSmtpServers[i]['tag'] = vm.agentTag
+    //   //   }
+    //   // }
+    //   return vm.agentSmtpServers
+    // }
   },
   methods: {
     updateStatus (data) {
@@ -166,7 +167,20 @@ export default {
         }
         vm.$store.dispatch('AUTH_GET', data).then(
           response => {
-            vm.agentSmtpServers = response.smtpServers
+            var smtpServers = []
+            for (var i = 0; i < response.smtpServers.length; i++) {
+              var smtpServer = response.smtpServers[i]
+              smtpServer['is_system'] = 0
+              smtpServer['tag'] = ''
+              smtpServers.push(smtpServer)
+            }
+            for (var j = 0; j < response.systemSmtpServers.length; j++) {
+              var smtpServer = response.systemSmtpServers[j]
+              smtpServer['is_system'] = 1
+              smtpServer['tag'] = 'SYSTEM'
+              smtpServers.push(smtpServer)
+            }
+            vm.smtpServers = smtpServers
             vm.agentTag = response.tag
             if (typeof callback === 'function') {
               callback()

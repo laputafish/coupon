@@ -409,6 +409,7 @@
         okCommand="copySelectedTemplate"
         @onCommand="onCommandHandler"></voucher-select-dialog>
     <image-select-dialog
+        id="imageSelectDialog"
         title="Image Selection"
         ref="imageSelectDialog"
         :voucher="record"
@@ -1425,6 +1426,7 @@
       },
       onCommandHandler (payload) {
         const vm = this
+        console.log('VoucherRecord :: onCommandHandler :: payload: ', payload)
         var customForm = null
         switch (payload.command) {
           case 'useMultipleCodes':
@@ -1548,10 +1550,12 @@
             customForm.name = payload.fieldValue
             break
           case 'showImageSelectDialog':
+            console.log('VoucherRecord :: onCommandHandler :: showImageSelectDialog : payload: ', payload)
             // alert('showImageSelectDialog')
             vm.imageScope = payload.imageScope
+            // vm.showingImageSelectDialog = true
             // vm.$refs.imageSelectDialog.refresh()
-            vm.showingImageSelectDialog = true
+            vm.$bvModal.show('imageSelectDialog')
             break
           case 'onImageSelected':
             switch (payload.imageScope) {

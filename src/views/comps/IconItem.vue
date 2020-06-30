@@ -7,6 +7,11 @@
       <div v-if="hasFault" class="position-absolute question-mark text-danger d-flex flex-column justify-content-center">
         ?
       </div>
+      <div v-if="tagText!==''" class="icon-tag position-absolute"
+           style="left: 2px;top:2px;">
+        <div class="badge"
+             :class="{'badge-warning':!disabled,'badge-muted':disabled}">{{ tagText }}</div>
+      </div>
     </div>
     <div class="icon-img-title">
       {{ description }}
@@ -57,9 +62,26 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+
+    tag: {
+      tyep: String,
+      default: ''
     }
   },
   computed: {
+    tagText () {
+      const vm = this
+      var result = ''
+      if (vm.tag !== '') {
+        result = vm.tag
+      } else {
+        if (vm.item) {
+          result = vm.item.tag
+        }
+      }
+      return result
+    },
     imgSrc () {
       const vm = this
       var result = ''
@@ -88,7 +110,7 @@ export default {
     margin-bottom: 5px;
     display: inline-block;
     width: 180px;
-    height: 130px;
+    height: 140px;
     border-radius: 0.5rem;
     cursor: pointer;
   }

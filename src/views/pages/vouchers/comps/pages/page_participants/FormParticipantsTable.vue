@@ -571,7 +571,7 @@
           urlCommand: '/participants/' + payload.row.id + '/change_status/' + payload.status
         }
         vm.$store.dispatch('AUTH_POST', postData).then(
-          () => {
+          response => {
             const statusInfo = {
               status: payload.status,
               sent_at: '',
@@ -584,6 +584,7 @@
                 break
               }
             }
+            vm.statusSummary = response.status_summary
             // for (var i = 0; i < vm.data.length; i++) {
             //   if (vm.data[i].id === payload.row.id) {
             //     vm.data[i].status = payload.status

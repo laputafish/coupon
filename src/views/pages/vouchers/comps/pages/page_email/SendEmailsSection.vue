@@ -13,7 +13,7 @@
               Single Code Mode: All participants are assigned same code.
             </small>
             <small v-else class="text-muted">
-              Only participants with codes assigned are considered.
+              Only participants (not on hold) having codes assigned are included.
             </small>
             <!--<button class="btn btn-outline-primary min-width-100"-->
                     <!--@click="refreshSummary">-->
@@ -38,6 +38,7 @@
       <icon-item
           v-if="smtpServer"
           iconKey="smtp-server"
+          :item="smtpServer"
           :description="smtpServer.description"></icon-item>
       <icon-item
           v-else
