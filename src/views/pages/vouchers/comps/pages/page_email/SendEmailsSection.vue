@@ -5,9 +5,16 @@
         <div class="d-flex flex-row align-items-end">
           <div class="huge-font">{{ percentCompleted }}%</div>
           <div class="ml-4 flex-grow-1">
-            <div class="huge-font2 badge badge-warning">{{ processedCount }} / {{ totalCount }}</div>
+            <div class="huge-font2 badge badge-warning">{{ processedCount }} / {{ totalCount }}*</div>
           </div>
-          <div class="align-self-stretch px-2">
+          <div class="align-self-stretch text-right px-2 d-flex flex-row justify-content-end text-muted align-items-end">
+            *
+            <small v-if="voucher.has_one_code" class="text-muted">
+              Single Code Mode: All participants are assigned same code.
+            </small>
+            <small v-else class="text-muted">
+              Only participants with codes assigned are considered.
+            </small>
             <!--<button class="btn btn-outline-primary min-width-100"-->
                     <!--@click="refreshSummary">-->
               <!--<i class="fas fa-sync"></i>-->
@@ -91,8 +98,6 @@
             Resend
           </button>
         </div>
-
-
       <h4 class="text-black-50">)</h4>
     </div>
     <!--<div class="mx-3 mt-0 mb-1 d-flex flex-row">-->
@@ -335,10 +340,14 @@ export default {
           vm.onVoucherMailingStatusUpdated(data)
         })
 
-        vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
-          vm.onVoucherCodeStatusUpdated(data)
+        vm.pusherChannel.bind('VoucherParticipantStatusUpdated', function (data) {
+          vm.onVoucherParticipantStatusUpdated(data)
         })
 
+        // vm.pusherChannel.bind('VoucherCodeStatusUpdated', function (data) {
+        //   vm.onVoucherCodeStatusUpdated(data)
+        // })
+        //
       }
     },
 
@@ -354,7 +363,7 @@ export default {
       this.setMailingSummary(data.mailingSummary.summary)
     },
 
-    onVoucherCodeStatusUpdated (data) {
+    onVoucherParticipantStatusUpdated (data) {
       const vm = this
       const voucherCode = data.voucherCode
       if (voucherCode.status === 'processing') {
@@ -363,6 +372,15 @@ export default {
       }
     },
 
+    // onVoucherCodeStatusUpdated (data) {
+    //   const vm = this
+    //   const voucherCode = data.voucherCode
+    //   if (voucherCode.status === 'processing') {
+    //     vm.sendingToName = voucherCode.participant_name
+    //     vm.sendingToEmail = voucherCode.participant_email
+    //   }
+    // },
+    //
     setMailingSummary (summary) {
       const vm = this
       vm.mailingSummary.pending = summary.pending
@@ -419,7 +437,7 @@ export default {
     doResetFails () {
       const vm = this
       const postData = {
-        urlCommand: '/vouchers/' + vm.voucher.id + '/reset_failed_codes'
+        urlCommand: '/vouchers/' + vm.voucher.id + '/reset_failed_participants'
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
         response => {
@@ -432,7 +450,7 @@ export default {
     doResetAll (callback) {
       const vm = this
       const postData = {
-        urlCommand: '/vouchers/' + vm.voucher.id + '/reset_all_codes_mailing_status'
+        urlCommand: '/vouchers/' + vm.voucher.id + '/reset_participants_mailing_status'
       }
       vm.$store.dispatch('AUTH_POST', postData).then(
         response => {

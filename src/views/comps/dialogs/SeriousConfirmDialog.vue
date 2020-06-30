@@ -9,7 +9,7 @@
                @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
       <p>{{ params.message }}</p>
-      <input class="form-control text-capitalize" v-model="userMessage"/>
+      <input class="form-control text-lowercase" v-model="userMessage"/>
       <small>{{ $t('messages.type__to_proceed', {word: params.confirmWord}) }}</small>
     </template>
   </base-dialog>

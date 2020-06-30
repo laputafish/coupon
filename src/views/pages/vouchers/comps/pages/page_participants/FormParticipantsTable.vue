@@ -4,6 +4,31 @@
       <search-field
           :searchValue="searchValue"
           :appLoading="appLoading"></search-field>
+
+      <!-- Status summary table -->
+      <table class="summary-table">
+        <tr>
+          <td class="summary-label">
+            <div class="badge badge-info min-width-80">Pending</div>
+          </td>
+          <td class="summary-value">{{statusSummary.pending}}</td>
+          <td class="summary-label">
+            <div class="badge badge-success min-width-80">Completed</div>
+          </td>
+          <td class="summary-value">{{ statusSummary.completed}}</td>
+        </tr>
+        <tr>
+          <td class="summary-label">
+            <div class="badge badge-muted min-width-80">On Hold</div>
+          </td>
+          <td class="summary-value">{{statusSummary.hold}}</td>
+          <td class="summary-label">
+            <div class="badge badge-danger min-width-80">Fails</div>
+          </td>
+          <td class="summary-value">{{ statusSummary.fails}}</td>
+        </tr>
+      </table>
+
       <div class="text-center btn-group mx-3">
         <button type="button"
                 class="btn btn-sm btn-outline-success min-width-100"
@@ -21,7 +46,7 @@
       <div>
         <button type="button"
                 class="btn btn-outline-primary min-width-100 mr-1"
-                @click="reloadData()">
+                @click="reloadAll()">
           <i class="fas fa-recycle"></i>
           <span class="ml-2">Refresh</span>
         </button>
@@ -92,6 +117,12 @@
         codeAssignmentConfirmationButtons: [
           {caption: 'Go Ahead', command: 'confirmAssignCode', variant: 'primary'}
         ],
+        statusSummary: {
+          pending: 0,
+          hold: 0,
+          completed: 0,
+          fails: 0
+        },
         loading: false,
         appLoading: false,
         columns: [],
@@ -285,7 +316,7 @@
           vm.$store.dispatch('AUTH_POST', postData).then(
             response => {
               vm.showToaster(response)
-              vm.reloadData()
+              vm.reloadAll()
             },
             error => {
               vm.showToaster(error)
@@ -309,7 +340,7 @@
           response => {
             console.log('assignCode.then response: ', response)
             vm.showToaster(response)
-            vm.reloadData()
+            vm.reloadAll()
           },
           error => {
             console.log('assignCode.then error: ', error)
@@ -330,7 +361,7 @@
         vm.$store.dispatch('AUTH_DELETE', data).then(
           response => {
             console.log('deleteParticipant :: AUTH_DELETE.then : response: ', response)
-            vm.reloadData(vm.query)
+            vm.reloadAll()
             vm.$emit('onCommand', {
               command: 'refreshCouponCodes'
             })
@@ -360,7 +391,7 @@
       },
       refresh () {
         console.log('FormParticipantsTable :: refresh()')
-        this.reloadData()
+        this.reloadAll()
       },
       exportExcel () {
         const vm = this
@@ -412,7 +443,28 @@
         vm.onQueryChangedHandler(vm.query)
       },
       onQueryChangedHandler (query) {
-        this.reloadData(query)
+        this.reloadAll(query)
+      },
+      reloadStatusSummary () {
+        const vm = this
+        vm.loading = true
+        if (vm.voucherId === 0) {
+          alert('vm.voucherId = 0')
+          return
+        }
+        const data = {
+          urlCommand: '/vouchers/' + vm.voucherId + '/status_summary'
+        }
+        vm.$store.dispatch('AUTH_GET', data).then(response => {
+          console.log('FormParticipantsTable :: reloadStatusSummary: response: ', response)
+          vm.statusSummary = response.status_summary
+          vm.loading = false
+        })
+      },
+      reloadAll (query) {
+        const vm = this
+        vm.reloadData(query)
+        vm.reloadStatusSummary()
       },
       reloadData (query) {
         const vm = this

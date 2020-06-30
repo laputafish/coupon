@@ -886,19 +886,19 @@
       },
 
       reloadCodeSummary () {
-        const vm = this
-        vm.loading = true
-        if (vm.voucherId === 0) {
-          alert('vm.voucherId = 0')
-          return
-        }
-        const data = {
-          urlCommand: '/vouchers/' + vm.voucherId + '/code_summary'
-        }
-        vm.$store.dispatch('AUTH_GET', data).then(response => {
-          vm.statusSummary = response.code_summary
-          vm.loading = false
-        })
+        // const vm = this
+        // vm.loading = true
+        // if (vm.voucherId === 0) {
+        //   alert('vm.voucherId = 0')
+        //   return
+        // }
+        // const data = {
+        //   urlCommand: '/vouchers/' + vm.voucherId + '/code_summary'
+        // }
+        // vm.$store.dispatch('AUTH_GET', data).then(response => {
+        //   vm.statusSummary = response.code_summary
+        //   vm.loading = false
+        // })
       },
 
       reloadCodeList (query) {
