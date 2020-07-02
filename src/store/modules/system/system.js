@@ -5,6 +5,7 @@ import Pusher from 'pusher-js'
 const state = {
   accessToken: '',
   user: null,
+  userSettings: {},
   team: {
     id: 1
   },
@@ -34,6 +35,9 @@ const getters = {
   },
   systemConfigsLoaded: state => {
     return state.systemConfigsLoaded
+  },
+  userSettings: state => {
+    return state.userSettings
   }
 }
 
@@ -66,6 +70,12 @@ const mutations = {
         cluster: payload.pusher_cluster
       })
     }
+  },
+  setUserSettings (state, payload) {
+    state.userSettings = payload
+  },
+  updateUserSetting (state, payload) {
+    state.userSettings[payload.keyName] = payload.keyValue
   }
 }
 
@@ -113,11 +123,12 @@ const actions = {
   },
 
   [types.FETCH_USER] ({commit, dispatch}) {
-    return new Promise((resolve, reject) =>  {
+    return new Promise((resolve, reject) => {
       // console.log('FETCH_USER')
       dispatch('AUTH_POST', '/auth/me').then(
         response => {
           // console.log('FETCH_USER :: response: ', response)
+          dispatch('FETCH_USER_SETTINGS')
           commit('setUser', response)
           resolve(response)
         },
@@ -126,6 +137,31 @@ const actions = {
         }
       )
     })
+  },
+
+  [types.UPDATE_USER_SETTING] ({commit, dispatch, getters}, payload) {
+    commit('updateUserSetting', payload)
+    const postData = {
+      urlCommand: '/users/settings',
+      data: getters.userSettings
+    }
+    dispatch('AUTH_POST', postData).then(
+      response => {
+        console.log('AUTH_POST (/users/settings): response: ', response)
+      }
+    )
+  },
+
+  [types.FETCH_USER_SETTINGS] ({commit, dispatch}) {
+    const data = {
+      urlCommand: '/users/settings'
+    }
+    dispatch('AUTH_GET', data).then(
+      response => {
+        console.log('FETCH_USER_SETTINGS :: response: ', response)
+        commit('setUserSettings', response)
+      }
+    )
   },
 
   [types.FETCH_SYSTEM_CONFIGS] ({commit, rootGetters, dispatch}) {

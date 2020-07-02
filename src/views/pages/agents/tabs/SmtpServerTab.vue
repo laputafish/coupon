@@ -187,6 +187,7 @@ export default {
       }
       const data = {
         urlCommand: '/smtp_server/check',
+
         data: {
           smtpServer: vm.selectedServer,
           receiverEmailAddress: vm.receiverEmailAddress
@@ -197,6 +198,10 @@ export default {
         response => {
           vm.sendingTestEmail = false
           vm.sendingResult = 'Sent Successfully.'
+        },
+        error => {
+          vm.sendingTestEmail = false
+          vm.$dialog.alert(error.message)
         }
       )
     },

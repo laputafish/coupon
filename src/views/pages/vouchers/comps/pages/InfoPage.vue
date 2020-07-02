@@ -197,11 +197,11 @@ export default {
     return {
     }
   },
-  watch: {
-    'vm.$refs.infoPageObserver.flags.invalid': function(invalid) {
-      alert('invalid = ' + (invalid ? 'yes' : 'no'))
-    }
-  },
+  // watch: {
+  //   'vm.$refs.infoPageObserver.flags.invalid': function(invalid) {
+  //     alert('invalid = ' + (invalid ? 'yes' : 'no'))
+  //   }
+  // },
   methods: {
     async validate () {
       const vm = this

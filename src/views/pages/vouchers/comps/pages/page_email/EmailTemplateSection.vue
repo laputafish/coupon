@@ -1,18 +1,26 @@
 <template>
   <div class="pl-2">
+    <validation-observer ref="sendEmailInfoObserver" v-slot="{ invalid }">
     <div class="row form-inline">
       <div class="col-sm-6">
         <div class="form-group my-1">
           <label for="subject" class="mr-2">Subject</label>
-          <input type="text" class="flex-grow-1 form-control" :value="voucher.email_subject"
-            @input="$event=>updateValue('email_subject', $event.target.value)"/>
+          <validation-provider name="Subject"
+                               rules="required" :immediate="true" v-slot="{errors}"
+                               class="d-inline-block flex-grow-1">
+            <input type="text"
+                   class="w-100 flex-grow-1 form-control"
+                   :value="voucher.email_subject"
+                   :class="{'has-error':errors.length>0}"
+              @input="$event=>updateValue('email_subject', $event.target.value)"/>
+          </validation-provider>
         </div>
       </div>
       <div class="col-sm-3">
         <div class="form-group my-1">
           <label for="cc" class="mr-2">cc</label>
-          <input type="text" class="flex-grow-1 form-control" :value="voucher.email_cc"
-                 @input="$event=>updateValue('email_cc', $event.target.value)"/>
+            <input type="text" class="flex-grow-1 form-control" :value="voucher.email_cc"
+                   @input="$event=>updateValue('email_cc', $event.target.value)"/>
         </div>
       </div>
       <div class="col-sm-3">
@@ -26,7 +34,13 @@
         <div class="form-group my-1">
           <label for="testEmail" class="mr-2">Email Testing</label>
           <div class="input-group">
-            <input type="mail" class="flex-grow-1 form-control" v-model="testEmail"/>
+            <validation-provider name="Email"
+                                 rules="required|email" :immediate="true" v-slot="{errors}"
+                               class="d-inline-block flex-grow-1">
+              <input type="mail" class="flex-grow-1 form-control" v-model="testEmail"
+                     @blur="$event=>updateTestEmail($event.target.value)"
+                     :class="{'has-error':errors.length>0}"/>
+            </validation-provider>
             <button class="input-group-append"
               @click="sendTestEmail">
               <font-awesome-icon v-if="sendingTestEmail" icon="spinner" class="mr-1 fa-spin"></font-awesome-icon>
@@ -38,6 +52,7 @@
         </div>
       </div>
     </div>
+    </validation-observer>
     <hr class="my-1"/>
     <template-editor
       :voucher="voucher"
@@ -76,7 +91,25 @@ export default {
     }
   },
 
+  watch: {
+    'userSettings': {
+      handler: function (newValue) {
+        const vm = this
+        vm.testEmail = newValue['test_email']
+      },
+      deep: true
+    }
+  },
+
+  mounted () {
+    const vm = this
+    vm.testEmail = vm.userSettings['test_email']
+  },
+
   computed: {
+    userSettings () {
+      return this.$store.getters.userSettings
+    },
     participantTags () {
       const vm = this
       var result = []
@@ -94,8 +127,30 @@ export default {
     }
   },
   methods: {
+    updateTestEmail (testEmail) {
+      const vm = this
+      vm.$store.dispatch('UPDATE_USER_SETTING', {keyName: 'test_email', keyValue: vm.testEmail})
+    },
+    async validate () {
+      const vm = this
+      return vm.$refs.sendEmailInfoObserver.validate()
+    },
     sendTestEmail () {
       const vm = this
+      const invalid = vm.$refs.sendEmailInfoObserver.flags.invalid
+      console.log('sendTestEmail: flags: ', vm.$refs.sendEmailInfoObserver.flags)
+      if (invalid) {
+        var errors = []
+        for (var fieldName in vm.$refs.sendEmailInfoObserver.errors) {
+          var fieldErrors = vm.$refs.sendEmailInfoObserver.errors[fieldName]
+          for (var i = 0; i < fieldErrors.length; i++) {
+            // console.log('sendTestEmail :: error.value:', error.value)
+            errors.push(fieldErrors[i].replace('This field', fieldName))
+          }
+        }
+        vm.$toaster.warning(errors.join('\n'))
+        return
+      }
       if (!vm.smtpServer) {
         vm.$toaster.warning('SMTP server not defined')
         return
@@ -105,6 +160,16 @@ export default {
         return
       }
       vm.sendingTestEmail = true
+      vm.$emit('onCommand', {
+        command: 'save',
+        callback: () => {
+          vm.doSendTestEmail()
+        }
+      })
+    },
+
+    doSendTestEmail () {
+      const vm = this
       const postData = {
         urlCommand: '/email_templates/send_test_email',
         data: {

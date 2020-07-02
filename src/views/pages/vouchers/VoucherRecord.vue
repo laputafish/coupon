@@ -1626,19 +1626,19 @@
           case 'delete_code_info':
             vm.record.code_infos.splice(payload.index, 1)
             break
-          case 'view_leaflet':
-            if (vm.record.template && vm.record.template.trim() !== '') {
-              if (payload.row.key === '') {
-                vm.createTempLeaflet(payload.row)
-              } else {
-                vm.save(() => {
-                  vm.showLeaflet(payload.row.key)
-                })
-              }
-            } else {
-              vm.$dialog.alert(vm.$t('messages.template_missing'))
-            }
-            break
+          // case 'view_leaflet':
+          //   if (vm.record.template && vm.record.template.trim() !== '') {
+          //     if (payload.row.key === '') {
+          //       vm.createTempLeaflet(payload.row)
+          //     } else {
+          //       vm.save(() => {
+          //         vm.showLeaflet(payload.row.key)
+          //       })
+          //     }
+          //   } else {
+          //     vm.$dialog.alert(vm.$t('messages.template_missing'))
+          //   }
+          //   break
           case 'save':
             vm.save(payload.callback)
             break

@@ -8,12 +8,11 @@
             <div class="huge-font2 badge badge-warning">{{ processedCount }} / {{ totalCount }}*</div>
           </div>
           <div class="align-self-stretch text-right px-2 d-flex flex-row justify-content-end text-muted align-items-end">
-            *
             <small v-if="voucher.has_one_code" class="text-muted">
-              Single Code Mode: All participants are assigned same code.
+              * Single Code Mode: All participants are assigned same code.
             </small>
             <small v-else class="text-muted">
-              Only participants (not on hold) having codes assigned are included.
+              * Only participants (not on hold) having codes assigned are included.
             </small>
             <!--<button class="btn btn-outline-primary min-width-100"-->
                     <!--@click="refreshSummary">-->

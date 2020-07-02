@@ -992,12 +992,12 @@
           case 'edit':
             alert('onRowCommandHandler :; edit')
             break
-          case 'view':
-            vm.$emit('onCommand', {
-              command: 'view_leaflet',
-              row: payload.row
-            })
-            break
+          // case 'view':
+          //   vm.$emit('onCommand', {
+          //     command: 'view_leaflet',
+          //     row: payload.row
+          //   })
+          //   break
           case 'delete':
             vm.$dialog.confirm(vm.$t('messages.areYouSure'))
               .then(() => {
