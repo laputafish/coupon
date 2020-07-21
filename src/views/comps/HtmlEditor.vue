@@ -151,7 +151,7 @@ export default {
 
     onCommandHandler (payload) {
       const vm = this
-      console.log('HtmlEditor :: onCommandHandler :: paylaod: ', payload)
+      console.log('HtmlEditor :: onCommandHandler :: payload: ', payload)
       switch (payload.command) {
         case 'onImageSelected':
           const url = vm.$store.getters.appHost + '/media/image/' + payload.imageId

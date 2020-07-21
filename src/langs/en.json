@@ -32,7 +32,8 @@
     "type": "Type",
     "unspecified": "Unspecified",
     "views": "Views",
-    "qr_barcode": "QR/Barcode"
+    "qr_barcode": "QR/Barcode",
+    "redempted_on": "Redempted On"
   },
   "status": {
     "pending": "Pending",

@@ -244,6 +244,15 @@
             field: 'key',
             sortable: true
           },
+          {
+            title: 'general.redempted_on',
+            thComp: 'ThCommonHeader',
+            thClass: 'text-center',
+            tdClass: 'align-middle',
+            tdComp: 'TdRedemptedOn',
+            field: 'redempted_on',
+            sortable: true
+          }
         ],
         defaultColumns2: [
           {
@@ -1013,6 +1022,13 @@
           case 'changeStatus':
             vm.changeStatus(payload)
             break
+          case 'resetRedemptionStatus':
+            vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
+              () => {
+                vm.resetRedemptionStatus(payload)
+              }
+            )
+            break
           case 'email':
             if (payload.row.participant) {
               vm.sendEmail(payload.row)
@@ -1116,6 +1132,24 @@
         }
       },
 
+      resetRedemptionStatus (payload) {
+        const vm = this
+        const postData = {
+          urlCommand: '/agent_codes/' + payload.row.id + '/reset_redemption_status'
+        }
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          () => {
+            for (var i = 0; i < vm.data.length; i++) {
+              if (vm.data[i].id === payload.row.id) {
+                vm.updateCodeField(i, 'redempted_on', '')
+                break
+              }
+            }
+          }
+        )
+
+      },
+
       changeStatus (payload) {
         const vm = this
         const participant = payload.row.participant
@@ -1142,6 +1176,11 @@
             }
           )
         }
+      },
+
+      updateCodeField (index, fieldName, fieldValue) {
+        const vm = this
+        vm.data[index][fieldName] = fieldValue
       },
 
       // statusInfo = {
@@ -1282,6 +1321,7 @@
             }
             obj['status'] = codeRecord['status']
             obj['key'] = codeRecord['key']
+            obj['redempted_on'] = codeRecord['redempted_on']
             obj['remark'] = codeRecord['remark']
             obj['error_message'] = codeRecord['error_message']
             obj['participant'] = codeRecord['participant']

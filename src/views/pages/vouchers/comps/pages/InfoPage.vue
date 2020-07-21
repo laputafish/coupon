@@ -100,6 +100,7 @@
             </vue-range-slider>
             <div class="line-height-1 text-nowrap">{{ barcodeConfig.height }}</div>
           </div>
+
         </div>
 
         <div class="col-sm-6">
@@ -153,6 +154,28 @@
           <!--</div>-->
         </div>
       </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-1">
+            <label>Redemption</label>
+            <div class="form-control p-0 m-0 border-0">
+              <data-radio-toggle
+                  :options="redemptionOptions"
+                  v-model="record.redemption_method"></data-radio-toggle>
+            </div>
+            <div v-if="record.redemption_method==='password'"
+                 class="d-flex flex-row align-items-center" style="max-width:200px;">
+              <div class="mr-1">Password</div>
+              <input class="form-control mt-1 d-inline-block"
+                   id="redemptionPassword"
+                   name="redemptionPassword"
+                   type="password"
+                   style="padding: 0.25rem 0.75rem;line-height: 1.2;height:1.4rem;"
+                   v-model="record.redemption_password"/>
+            </div>
+          </div>
+        </div>
+      </div>
     </validation-observer>
   </div>
 </template>
@@ -162,9 +185,11 @@ import copyToken from '@/views/comps/CopyToken'
 import copyLink from '@/views/comps/CopyLink'
 import formInputs from '@/views/comps/forms'
 import vueRangeSlider from 'vue-range-slider'
+import DataRadioToggle from "../../../../comps/forms/DataRadioToggle";
 
 export default {
   components: {
+    DataRadioToggle,
     copyToken,
     copyLink,
     vueRangeSlider,
@@ -195,6 +220,10 @@ export default {
   },
   data () {
     return {
+      redemptionOptions: [
+        {name: 'Use Password', value: 'password'},
+        {name: 'None', value: 'none'}
+      ]
     }
   },
   // watch: {
