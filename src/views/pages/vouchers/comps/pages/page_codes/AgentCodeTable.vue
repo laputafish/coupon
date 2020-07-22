@@ -14,14 +14,13 @@
             <div class="badge badge-warning min-width-80">Views</div>
           </td>
           <td class="summary-value">{{record.total_views}}</td>
-          <!--<td class="summary-label">-->
-            <!--<div class="badge badge-info min-width-80">Pending</div>-->
-          <!--</td>-->
-          <!--<td class="summary-value">{{statusSummary.pending}}</td>-->
-          <!--<td class="summary-label">-->
-            <!--<div class="badge badge-success min-width-80">Completed</div>-->
-          <!--</td>-->
-          <!--<td class="summary-value">{{ statusSummary.completed}}</td>-->
+        </tr>
+
+        <tr v-if="record.redemption_method!=='none'">
+          <td class="summary-label">
+            <div class="badge badge-warning min-width-80">Redempted</div>
+          </td>
+          <td class="summary-value">{{record.total_redeemed}}</td>
         </tr>
         <!--<tr>-->
           <!--<td></td>-->
@@ -239,18 +238,9 @@
             title: 'general.key',
             thComp: 'ThKeyBadgeHeader',
             thClass: 'text-center',
-            tdClass: 'align-middle',
+            tdClass: 'align-middle text-center',
             tdComp: 'TdKey',
             field: 'key',
-            sortable: true
-          },
-          {
-            title: 'general.redempted_on',
-            thComp: 'ThCommonHeader',
-            thClass: 'text-center',
-            tdClass: 'align-middle',
-            tdComp: 'TdRedemptedOn',
-            field: 'redempted_on',
             sortable: true
           }
         ],
@@ -621,6 +611,23 @@
         )
       },
 
+      onVoucherCodeRedeemed (data) {
+        const vm = this
+        console.log('onVoucherCodeRedeemed: data: ', data)
+        const voucherCode = data.voucherCode
+        for (var i = 0; i < vm.data.length; i++) {
+          if (vm.data[i].id === voucherCode.id) {
+            vm.data[i].redeemed_on = voucherCode.redeemed_on
+            break
+          }
+        }
+        vm.$emit('onCommand', {
+          command: 'updateField',
+          fieldName: 'total_redeemed',
+          fieldValue: data.totalRedeemed
+        })
+      },
+
       onVoucherCodeViewsUpdated (data) {
         const vm = this
         const voucherCode = data.voucherCode
@@ -698,6 +705,10 @@
           vm.pusherChannel.bind('VoucherCodeViewsUpdated', function (data) {
             vm.onVoucherCodeViewsUpdated(data)
           })
+
+          vm.pusherChannel.bind('VoucherCodeRedeemed', function (data) {
+            vm.onVoucherCodeRedeemed(data)
+          })
         }
       },
 
@@ -706,6 +717,7 @@
         if (vm.pusherChannel) {
           // vm.pusherChannel.unbind('VoucherCodeStatusUpdated')
           vm.pusherChannel.unbind('VoucherCodeViewsUpdated')
+          vm.pusherChannel.unbind('VoucherCodeRedeemed')
         }
       },
 
@@ -1141,7 +1153,7 @@
           () => {
             for (var i = 0; i < vm.data.length; i++) {
               if (vm.data[i].id === payload.row.id) {
-                vm.updateCodeField(i, 'redempted_on', '')
+                vm.updateCodeField(i, 'redeemed_on', '')
                 break
               }
             }
@@ -1275,6 +1287,18 @@
           vm.columns.push(vm.defaultColumns1[j])
         }
 
+        if (vm.record.redemption_method && vm.record.redemption_method !== 'none') {
+          vm.columns.push({
+            title: 'general.redeemed_on',
+            thComp: 'ThCommonHeader',
+            thClass: 'text-center',
+            tdClass: 'align-middle',
+            tdComp: 'TdRedeemedOn',
+            field: 'redeemed_on',
+            sortable: true
+          })
+        }
+
         // code fields except "code"
         for (let i = 1; i < codeFields.length; i++) {
           tdClass = 'text-left align-middle'
@@ -1321,7 +1345,7 @@
             }
             obj['status'] = codeRecord['status']
             obj['key'] = codeRecord['key']
-            obj['redempted_on'] = codeRecord['redempted_on']
+            obj['redeemed_on'] = codeRecord['redeemed_on']
             obj['remark'] = codeRecord['remark']
             obj['error_message'] = codeRecord['error_message']
             obj['participant'] = codeRecord['participant']

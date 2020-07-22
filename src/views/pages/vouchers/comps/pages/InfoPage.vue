@@ -166,12 +166,19 @@
             <div v-if="record.redemption_method==='password'"
                  class="d-flex flex-row align-items-center" style="max-width:200px;">
               <div class="mr-1">Password</div>
-              <input class="form-control mt-1 d-inline-block"
-                   id="redemptionPassword"
-                   name="redemptionPassword"
-                   type="password"
-                   style="padding: 0.25rem 0.75rem;line-height: 1.2;height:1.4rem;"
-                   v-model="record.redemption_password"/>
+              <div class="input-container position-relative">
+                <input class="form-control pl-1 mt-1 d-inline-block"
+                     id="redemptionCode"
+                     name="redemptionCode"
+                       autocomplete="new-password"
+                       :type="showRedemptionCode ? 'text' : 'password'"
+                     style="padding: 0.25rem 0.75rem;line-height: 1.2;height:1.4rem;"
+                     v-model="record.redemption_code">
+                  <font-awesome-icon style="right:4px;top:8px;"
+                                     class="position-absolute"
+                                     @click="showRedemptionCode=!showRedemptionCode"
+                                     :icon="showRedemptionCode ? 'eye' : 'eye-slash'"></font-awesome-icon>
+                </div>
             </div>
           </div>
         </div>
@@ -220,6 +227,7 @@ export default {
   },
   data () {
     return {
+      showRedemptionCode: false,
       redemptionOptions: [
         {name: 'Use Password', value: 'password'},
         {name: 'None', value: 'none'}

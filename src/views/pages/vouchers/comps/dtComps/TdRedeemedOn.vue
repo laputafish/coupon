@@ -1,9 +1,9 @@
 <template>
   <div class="text-center">{{ value }}
     <button v-if="value && value!==''" type="button" style="padding:0.1rem 0.3rem;"
-      class="btn btn-danger"
+      class="btn btn-info"
       @click="resetStatus">
-      <font-awesome-icon class="fa-fw" icon="times"></font-awesome-icon>
+      <font-awesome-icon class="fa-fw" icon="recycle"></font-awesome-icon>
     </button>
     <span class="text-muted" v-else>Available</span>
   </div>
