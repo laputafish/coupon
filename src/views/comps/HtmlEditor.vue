@@ -44,6 +44,9 @@ export default {
       },
       tinymceOtherOptions: {
         icons: 'small',
+        relative_urls : false,
+        remove_script_host : false,
+        convert_urls : true,
         setup: function (editor) {
           // *********************
           // Embed Image
