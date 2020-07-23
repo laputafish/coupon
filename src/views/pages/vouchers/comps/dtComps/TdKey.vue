@@ -1,11 +1,13 @@
 <template>
-  <div class="w-100 d-flex flex-column justify-content-center align-items-start" style="height:34px;">
+  <div class="w-100 d-flex flex-column justify-content-center align-items-center" style="height:34px;">
     <div v-if="value===''" class="d-inline badge badge-secondary">
       {{ $t('vouchers.available_after_saving') }}
     </div>
     <template v-else>
       <copy-link :link="link"
                  @onCommand="onCommandHandler"
+                 :hideLink="true"
+                 :showQr="true"
                  :label="codeKey"
         :variant="variant"></copy-link>
       <div v-if="row.participant_name && row.participant_email">
@@ -38,6 +40,10 @@ export default {
       const vm = this
 
       switch (payload.command) {
+        case 'showQrCodeDialog':
+          console.log('TdKey :: onCommandHandler :; showQrCodeDialog')
+          vm.xprops.eventbus.$emit('onRowCommand', payload)
+          break
         case 'onLinkClicked':
           console.log('TdKey :: onCommandHandler :: payload: ', payload)
           vm.xprops.eventbus.$emit('onRowCommand', {

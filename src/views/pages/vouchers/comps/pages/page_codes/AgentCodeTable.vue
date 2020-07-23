@@ -139,6 +139,11 @@
         v-model="showingDeleteAllCodesDialog"
         @onCommand="onCommandHandler"></delete-all-codes-dialog>
 
+    <qr-code-dialog
+      ref="qrCodeDialog"
+      :params="qrCodeDialogParams"
+      v-model="showingQrCodeDialog"></qr-code-dialog>
+
   </div>
 </template>
 
@@ -151,10 +156,11 @@
   import dtComps from '../../dtComps/index'
   import xlsFileUpload from '@/views/comps/XlsFileUpload'
   import searchField from '../../comps/SearchField'
-  import deleteAllCodesDialog from '../../../dialogs/DeleteAllCodesDialog'
 
+  import deleteAllCodesDialog from '../../../dialogs/DeleteAllCodesDialog'
   import codeImportDialog from '@/views/comps/dialogs/CodeImportDialog'
   import commonDialog from '@/views/comps/dialogs/CommonDialog'
+  import qrCodeDialog from './dialogs/QrCodeDialog'
 
   import dtTableMixin from '@/mixins/DtTableMixin'
 
@@ -169,9 +175,12 @@
       ...dtComps,
       xlsFileUpload,
       searchField,
+
       codeImportDialog,
       deleteAllCodesDialog,
       commonDialog,
+      qrCodeDialog,
+
       uploadButton,
       dataRadioToggle,
       // ,
@@ -179,6 +188,10 @@
     },
     data () {
       return {
+        qrCodeDialogParams: {
+          link: '',
+          key: ''
+        },
         voucherTypeOptions: [
           {name: 'Multiple', value: 0},
           {name: 'Single', value: 1}
@@ -194,6 +207,7 @@
         showingDeleteAllCodesDialog: false,
         showingCodeImportDialog: false,
         showingCodeExportDialog: false,
+        showingQrCodeDialog: false,
 
         importedFileKey: '',
         importedFieldInfos: [],
@@ -1005,11 +1019,18 @@
       },
       onRowCommandHandler (payload) {
         const vm = this
-        // console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+        console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
         switch (payload.command) {
           // case 'onLinkClicked':
           //   vm.updateCodeViewCount(payload.row)
           //   break
+          case 'showQrCodeDialog':
+            vm.qrCodeDialogParams = {
+              link: payload.link,
+              codeKey: payload.codeKey
+            }
+            vm.$bvModal.show('qrCodeDialog')
+            break
           case 'edit':
             alert('onRowCommandHandler :; edit')
             break
