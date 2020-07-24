@@ -221,18 +221,17 @@ input.has-error {
     border: none;
   }
 
-  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:first-child,
-  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:nth-child(2),
-  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:nth-child(3) {
-    z-index: 1;
+  .freezable-table.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:first-child,
+  .freezable-table.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:nth-child(2) {
+    z-index: 1000;
     background-color: darkgray;
   }
 
-  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:first-child {
+  .freezable-table.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table thead th:first-child {
     left: 0;
   }
 
-  .freeze-headers.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table tbody tr td:first-child {
+  .freezable-table.freeze-left-three-columns [name=Datatable] [name=SimpleTable] table tbody tr td:first-child {
     left: 0;
   }
 
@@ -254,8 +253,7 @@ input.has-error {
 
   .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tbody tr td:first-child,
   .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(2),
-  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(3),
-  .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tr td:last-child {
+    .freezable-table.freeze-last-column [name=Datatable] [name=SimpleTable] table tr td:last-child {
     position: -webkit-sticky;
     position: sticky;
     background-color: #CCC;

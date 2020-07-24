@@ -99,6 +99,12 @@
                               @click="onPageSelected('tickets')"
                               :selected="activePage==='tickets'"
                               :imgSrc="IMAGE_PATH_TICKETS"></voucher-toolbar-button>
+      <!-- Redemption -->
+      <voucher-toolbar-button
+                              caption="Redemption"
+                              @click="onPageSelected('redemption')"
+                              :selected="activePage==='redemption'"
+                              :imgSrc="IMAGE_PATH_REDEMPTION"></voucher-toolbar-button>
       <!-- Sharing -->
       <voucher-toolbar-button
                               caption="Sharing"
@@ -159,6 +165,13 @@
         v-if="record && activePage==='tickets'"
         :voucher="record"
         @onCommand="onCommandHandler"></tickets-page>
+
+    <redemption-page
+        ref="redemptionPage"
+        v-if="record && activePage==='redemption'"
+        :record="record"
+        :pusherChannel="pusherChannel"
+        @onCommand="onCommandHandler"></redemption-page>
 
     <sharing-page
         ref="sharingPage"
@@ -449,6 +462,7 @@
   import infoPage from './comps/pages/InfoPage'
   import agentCodePage from './comps/pages/AgentCodePage'
   import ticketsPage from './comps/pages/TicketsPage'
+  import redemptionPage from './comps/pages/RedemptionPage'
   import sharingPage from './comps/pages/SharingPage'
   import formFillingPage from './comps/pages/FormFillingPage'
   import customFormsPage from './comps/pages/CustomFormsPage'
@@ -478,6 +492,7 @@
       infoPage,
       agentCodePage,
       ticketsPage,
+      redemptionPage,
       sharingPage,
       formFillingPage,
       customFormsPage,
@@ -568,6 +583,7 @@
         IMAGE_PATH_INFO: '/img/64x64/info.png',
         IMAGE_PATH_CODES: '/img/64x64/codes.png',
         IMAGE_PATH_TICKETS: '/img/64x64/tickets.png',
+        IMAGE_PATH_REDEMPTION: '/img/64x64/redemption.png',
         IMAGE_PATH_SHARING: '/img/64x64/sharing.png',
         IMAGE_PATH_FORM_FILLING: '/img/64x64/form_filling.png',
         IMAGE_PATH_CUSTOM_FORMS: '/img/64x64/form_builder.png',

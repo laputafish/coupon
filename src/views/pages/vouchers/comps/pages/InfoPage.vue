@@ -154,35 +154,6 @@
           <!--</div>-->
         </div>
       </div>
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="form-group mb-1">
-            <label>Redemption</label>
-            <div class="form-control p-0 m-0 border-0">
-              <data-radio-toggle
-                  :options="redemptionOptions"
-                  v-model="record.redemption_method"></data-radio-toggle>
-            </div>
-            <div v-if="record.redemption_method==='password'"
-                 class="d-flex flex-row align-items-center" style="max-width:200px;">
-              <div class="mr-1">Password</div>
-              <div class="input-container position-relative">
-                <input class="form-control pl-1 mt-1 d-inline-block"
-                     id="redemptionCode"
-                     name="redemptionCode"
-                       autocomplete="new-password"
-                       :type="showRedemptionCode ? 'text' : 'password'"
-                     style="padding: 0.25rem 0.75rem;line-height: 1.2;height:1.4rem;"
-                     v-model="record.redemption_code">
-                  <font-awesome-icon style="right:4px;top:8px;"
-                                     class="position-absolute"
-                                     @click="showRedemptionCode=!showRedemptionCode"
-                                     :icon="showRedemptionCode ? 'eye' : 'eye-slash'"></font-awesome-icon>
-                </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </validation-observer>
   </div>
 </template>

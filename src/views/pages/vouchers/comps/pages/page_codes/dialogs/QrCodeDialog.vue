@@ -22,7 +22,7 @@
       </div>
     </template>
     <template v-slot:buttonBar>
-      <button class="px-2 btn btn-secondary" @click="closeDialog">Close</button>
+      <button class="px-2 btn btn-secondary min-width-100" @click="closeDialog">Close</button>
     </template>
   </base-dialog>
 </template>

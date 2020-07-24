@@ -1288,7 +1288,7 @@
         }];
 
         var tdClass = 'text-left align-middle'
-        var thClass = 'text-left'
+        var thClass = 'text-center'
         var field = null
 
         // code field
@@ -1677,18 +1677,29 @@
     color: white;
   }
 
+  /* Assume */
+  /* column#0.width = 48px */
+  /* column#1.width = 116px */
+  #code-table.freezable-table [name=Datatable] [name=SimpleTable] table thead th:first-child {
+    width: 60px;
+    min-width: 60px;
+  }
   #code-table.freezable-table [name=Datatable] [name=SimpleTable] table thead th:nth-child(2) {
-    left: 42px;
+    left: 60px;
   }
   #code-table.freezable-table [name=Datatable] [name=SimpleTable] table thead th:nth-child(3) {
-    left: 158px;
+    left: 176px;
   }
 
+  #code-table.freezable-table [name=Datatable] [name=SimpleTable] table tbody tr td:first-child {
+    width: 60px;
+    min-width: 60px;
+  }
   #code-table.freezable-table [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(2) {
-    left: 42px;
+    left: 60px;
   }
   #code-table.freezable-table [name=Datatable] [name=SimpleTable] table tbody tr td:nth-child(3) {
-    left: 158px;
+    left: 176px;
   }
   #code-table [name=Datatable] [name=SimpleTable] table thead th:last-child,
   #code-table [name=Datatable] [name=SimpleTable] table tr td:last-child {
