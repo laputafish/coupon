@@ -33,7 +33,10 @@
     "unspecified": "Unspecified",
     "views": "Views",
     "qr_barcode": "QR/Barcode",
-    "redeemed_on": "Redeemed On"
+    "redeemed_on": "Redeemed On",
+    "location_code": "Location Code",
+    "confirmation_code": "Confirmation Code",
+    "redemption_count": "Redemption Count"
   },
   "status": {
     "pending": "Pending",

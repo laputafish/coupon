@@ -1,98 +1,6 @@
 <template>
-  <div class="py-2 px-3 redemption-location-table">
-    <div class="toolbar d-flex justify-content-between mb-1 align-items-center">
-      <!-- Search Panel -->
-      <search-field
-          :searchValue="searchValue"
-          :appLoading="appLoading"
-          @onCommand="onCommandHandler"></search-field>
-
-      <!-- Status summary table -->
-      <table class="summary-table">
-        <tr>
-          <td class="summary-label">
-            <div class="badge badge-warning min-width-80">Views</div>
-          </td>
-          <td class="summary-value">{{record.total_views}}</td>
-        </tr>
-
-        <tr v-if="record.redemption_method!=='none'">
-          <td class="summary-label">
-            <div class="badge badge-warning min-width-80">Redempted</div>
-          </td>
-          <td class="summary-value">{{record.total_redeemed}}</td>
-        </tr>
-        <!--<tr>-->
-        <!--<td></td>-->
-        <!--<td></td>-->
-        <!--<td class="summary-label">-->
-        <!--<div class="badge badge-muted min-width-80">On Hold</div>-->
-        <!--</td>-->
-        <!--<td class="summary-value">{{statusSummary.hold}}</td>-->
-        <!--<td class="summary-label">-->
-        <!--<div class="badge badge-danger min-width-80">Fails</div>-->
-        <!--</td>-->
-        <!--<td class="summary-value">{{ statusSummary.fails}}</td>-->
-        <!--</tr>-->
-      </table>
-
-      <data-radio-toggle
-          label="Voucher Type"
-          btnClass="min-width-100"
-          :value="record.has_one_code"
-          @input="value=>updateOneCodeMode('has_one_code', value)"
-          :options="voucherTypeOptions"></data-radio-toggle>
-      <!--<div class="d-flex flex-row">-->
-      <!--<div class="d-flex flex-column">-->
-      <!--<div class="badge badge-info mr-1 mb-1">Pending: 22</div>-->
-      <!--<div class="badge badge-primary mr-1 mb-">Ready to Send: 22</div>-->
-      <!--</div>-->
-      <!--<div class="d-flex flex-column">-->
-      <!--<div class="badge badge-success mr-1 mb-1">Completed: 22</div>-->
-      <!--<div class="badge badge-danger mr-1 mb-">Fails: 22</div>-->
-      <!--</div>-->
-      <!--</div>-->
-      <div>
-        <button type="button"
-                class="btn btn-outline-primary min-width-100 mr-1"
-                @click="reloadAll()">
-          <i class="fas fa-recycle"></i>
-          <span class="ml-2">Refresh</span>
-        </button>
-        <button type="button"
-                :disabled="data.length===0"
-                class="btn btn-danger min-width-100 mr-1"
-                @click="deleteAll()">
-          <i class="fas fa-times"></i>
-          <span class="ml-2">{{ $t('buttons.deleteAll') }}</span>
-        </button>
-        <button type="button"
-                :disabled="data.length===0"
-                class="btn btn-warning min-width-100 mr-1"
-                @click="exportExcel()">
-          <i class="fas fa-download"></i>
-          <span class="ml-2">{{ $t('buttons.download') }}</span>
-        </button>
-        <!--<button type="button"-->
-        <!--:disabled="data.length===0"-->
-        <!--class="btn btn-warning min-width-100 mr-1"-->
-        <!--@click="exportExcel()">-->
-        <!--<i class="fas fa-download"></i>-->
-        <!--<span class="ml-2">{{ $t('buttons.download') }}</span>-->
-        <!--</button>-->
-        <!--<xls-file-upload-->
-        <!--inputId="uploadCodes"-->
-        <!--uploadUrl="/agent_codes/upload"-->
-        <!--:postData="{id: voucherId}"-->
-        <!--@onUploading="onUploadingHandler"-->
-        <!--@onUploaded="onUploadedHandler"></xls-file-upload>-->
-        <!--<upload-button-->
-        <!--:record="record"-->
-        <!--size="lg"></upload-button>-->
-
-      </div>
-    </div>
-    <div v-if="data.length>0" id="code-table"
+  <div class="py-2 px-0 redemption-location-table">
+    <div v-if="!loading" id="code-table"
          class="freezable-table freeze-last-column freeze-left-three-columns">
       <datatable v-cloak v-bind="$data"
                  :columns="columns"></datatable>
@@ -112,8 +20,8 @@
     <vue-loading
         :active.sync="uploading"
         :can-cancel="true"></vue-loading>
-    <div v-if="loading" id="loadingMask" class="text-center">
-      <h3 class="d-inline-block mr-auto">
+    <div v-if="loading" class="text-center loading-mask d-flex flex-column justify-content-center align-items-center">
+      <h3 class="d-inline-block">
         <font-awesome-icon icon="spinner" class="fa-spin fa-3x"/>
       </h3>
     </div>
@@ -126,23 +34,14 @@
     <!--callbackCommand="confirmCodeImport"-->
     <!--@onCommand="onCommandHandler"></code-import-dialog>-->
 
-    <common-dialog
-        id="codeExportDialog"
-        ref="codeExportDialog"
-        title="Download"
-        v-model="showingCodeExportDialog"
-        :buttons="[{caption:'Only Codes',command:'exportCodesOnly',variant:'info'},{caption:'Codes with Participants',command:'exportCodesWithParticipants',variant:'primary'}]"
-        @onCommand="onCommandHandler"></common-dialog>
+    <!--<common-dialog-->
+        <!--id="codeExportDialog"-->
+        <!--ref="codeExportDialog"-->
+        <!--title="Download"-->
+        <!--v-model="showingCodeExportDialog"-->
+        <!--:buttons="[{caption:'Only Codes',command:'exportCodesOnly',variant:'info'},{caption:'Codes with Participants',command:'exportCodesWithParticipants',variant:'primary'}]"-->
+        <!--@onCommand="onCommandHandler"></common-dialog>-->
 
-    <delete-all-codes-dialog
-        ref="deleteAllCodesDialog"
-        v-model="showingDeleteAllCodesDialog"
-        @onCommand="onCommandHandler"></delete-all-codes-dialog>
-
-    <qr-code-dialog
-        ref="qrCodeDialog"
-        :params="qrCodeDialogParams"
-        v-model="showingQrCodeDialog"></qr-code-dialog>
 
   </div>
 </template>
@@ -150,17 +49,16 @@
 <script>
   import Vue from 'vue'
 
-  import uploadButton from '@/views/comps/UploadButton'
+  // import uploadButton from '@/views/comps/UploadButton'
   import dataRadioToggle from '@/views/comps/forms/DataRadioToggle'
   import dtCommon from '@/views/comps/datatable'
   import dtComps from '../../dtComps/index'
-  import xlsFileUpload from '@/views/comps/XlsFileUpload'
-  import searchField from '../../comps/SearchField'
 
-  import deleteAllCodesDialog from '../../../dialogs/DeleteAllCodesDialog'
-  import codeImportDialog from '@/views/comps/dialogs/CodeImportDialog'
-  import commonDialog from '@/views/comps/dialogs/CommonDialog'
-  import qrCodeDialog from './dialogs/QrCodeDialog'
+  // import searchField from '../../comps/SearchField'
+  // import deleteAllCodesDialog from '../../../dialogs/DeleteAllCodesDialog'
+  // import codeImportDialog from '@/views/comps/dialogs/CodeImportDialog'
+  // import commonDialog from '@/views/comps/dialogs/CommonDialog'
+  // import qrCodeDialog from './dialogs/QrCodeDialog'
 
   import dtTableMixin from '@/mixins/DtTableMixin'
 
@@ -173,50 +71,40 @@
     components: {
       ...dtCommon,
       ...dtComps,
-      xlsFileUpload,
-      searchField,
+      dataRadioToggle
 
-      codeImportDialog,
-      deleteAllCodesDialog,
-      commonDialog,
-      qrCodeDialog,
-
-      uploadButton,
-      dataRadioToggle,
+      // xlsFileUpload,
+      // searchField,
+      //
+      // codeImportDialog,
+      // deleteAllCodesDialog,
+      // commonDialog,
+      // qrCodeDialog,
+      //
+      // uploadButton,
       // ,
       // helpers
     },
     data () {
       return {
-        qrCodeDialogParams: {
-          link: '',
-          key: ''
-        },
-        voucherTypeOptions: [
-          {name: 'Multiple', value: 0},
-          {name: 'Single', value: 1}
-        ],
-        // echo: null,
-        statusSummary: {
-          pending: 0,
-          hold: 0,
-          completed: 0,
-          fails: 0
-        },
         channel: null,
-        showingDeleteAllCodesDialog: false,
-        showingCodeImportDialog: false,
-        showingCodeExportDialog: false,
-        showingQrCodeDialog: false,
 
-        importedFileKey: '',
-        importedFieldInfos: [],
-        uploadRoute: '/agent_codes/upload',
         appLoading: false,
         uploading: false,
         loading: false,
 
-        columns: [],
+        columns: (() => {
+          const cols = [
+            {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
+            {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'name'},
+            {title: 'general.location_code', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'location_code'},
+            {title: 'general.confirmation_code', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdQrcode', field: 'confirmation_code'},
+            {title: 'general.redemption_count', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCommon', tdClass: 'text-center', field: 'redemption_count'},
+            {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
+          ]
+          return cols
+        })(),
+
         allData: [],
         data: [],
         total: 0,
@@ -229,7 +117,7 @@
           page: 0
         },
         xprops: {
-          buttons: ['delete', 'email'],
+          buttons: ['edit', 'delete'],
           // buttons: ['view', 'delete', 'update', 'email'],
           // buttons: ['edit','view','delete'],
           eventbus: new Vue(),
@@ -238,51 +126,6 @@
         },
         HeaderSettings: false,
         selectedRow: null,
-        defaultColumns1: [
-          {
-            title: 'general.views',
-            thComp: 'ThCommonHeader',
-            thClass: 'text-center',
-            tdClass: 'align-middle text-center',
-            tdComp: 'TdViews',
-            field: 'views',
-            sortable: false
-          },
-          {
-            title: 'general.key',
-            thComp: 'ThKeyBadgeHeader',
-            thClass: 'text-center',
-            tdClass: 'align-middle text-center',
-            tdComp: 'TdKey',
-            field: 'key',
-            sortable: true
-          }
-        ],
-        defaultColumns2: [
-          {
-            title: 'general.remark',
-            thComp: 'ThCommonHeader',
-            tdClass: 'align-middle',
-            tdComp: 'TdCommonInputWithButton',
-            field: 'remark'
-          },
-          {
-            title: 'general.status',
-            thComp: 'ThCommonHeader',
-            thClass: 'text-center',
-            tdClass: 'align-middle text-center',
-            tdComp: 'TdCodeStatus',
-            field: 'status',
-            sortable: true
-          },
-          {
-            title: 'general.action',
-            thComp: 'ThCommonHeader',
-            tdClass: 'align-middle',
-            tdComp: 'TdCommonOpt',
-            field: 'id'
-          }
-        ],
         searchValue: '',
         searchInputTimer: 3000,
         filterFields: '*'
@@ -392,7 +235,6 @@
         // console.log('watch(codeFieldsStr) : newValue: ' + newValue)
         const vm = this
         // console.log('watch(codeFieldsStr) :: newValue: ', newValue)
-        vm.setColumns(newValue)
       },
       voucherId: {
         handler: function (newValue) {
@@ -441,15 +283,8 @@
 
       // vm.listen()
       vm.initPusherChannel()
-
-      vm.setColumns(vm.codeFieldsStr)
-      // vm.setTableData(vm.codeInfos)
       vm.query.page = 1
       vm.xprops.record = vm.record
-      vm.showingCodeImportDialog = false
-      vm.showingCodeExportDialog = false
-      vm.showingDeleteAllCodesDialog = false
-      vm.reloadCodeSummary()
     },
     created () {
       const vm = this
@@ -903,42 +738,23 @@
       onQueryChangedHandler (query) {
         const vm = this
         // console.log('onQueryChangedHandler')
-        vm.reloadCodeList(query)
+        vm.reloadRedemptionLocations(query)
       },
 
       refresh () {
         const vm = this
         // console.log('refresh')
-        vm.reloadCodeSummary()
-        vm.reloadCodeList()
+        vm.reloadRedemptionLocations()
       },
 
       reloadAll () {
         const vm = this
 
-        vm.reloadCodeSummary()
-        vm.reloadCodeList()
+        vm.reloadRedemptionLocations()
       },
 
-      reloadCodeSummary () {
-        // const vm = this
-        // vm.loading = true
-        // if (vm.voucherId === 0) {
-        //   alert('vm.voucherId = 0')
-        //   return
-        // }
-        // const data = {
-        //   urlCommand: '/vouchers/' + vm.voucherId + '/code_summary'
-        // }
-        // vm.$store.dispatch('AUTH_GET', data).then(response => {
-        //   vm.statusSummary = response.code_summary
-        //   vm.loading = false
-        // })
-      },
-
-      reloadCodeList (query) {
+      reloadRedemptionLocations (query) {
         const vm = this
-        // console.log('AgentCodeTable :: reloadCodeList')
         vm.loading = true
         if (typeof query === 'undefined') {
           query = vm.query
@@ -948,51 +764,14 @@
           return
         }
         const data = {
-          urlCommand: '/vouchers/' + vm.voucherId + '/codes',
+          urlCommand: '/vouchers/' + vm.voucherId + '/redemption_locations',
           query: query
         }
         vm.$store.dispatch('AUTH_GET', data).then(response => {
-          // console.log('AUTH_GET :: response: ', response)
           vm.total = response.total
-          vm.data = vm.parseCodeInfoData(response.data)
-          // console.log('reloadCodeList => configRowButtons: vm.data.length = ' + vm.data.length)
-
-          // console.log('reloadCodeList => configRowButtons: buttons.length = ' + vm.data[0].buttons)
-          vm.configRowButtons(vm.data)
-          // console.log('reloadCodeList => forceUpdate')
-          vm.$forceUpdate()
-          // console.log('reloadCodeList => loading = false')
-          vm.loading = false
-          // console.log('reloadCodeList ends')
+          vm.data = response.data
+          // vm.loading = false
         })
-      },
-
-      configRowButtons (data) {
-        const vm = this
-        if (typeof data === 'undefined') {
-          data = vm.data
-        }
-        for (var i = 0; i < data.length; i++) {
-          vm.configRowButtonsByIndex(i)
-        }
-      },
-
-      configRowButtonsByIndex (index) {
-        const vm = this
-        const row = vm.data[index]
-        var disabled = []
-        if (row.locked) {
-          disabled.push('delete')
-        }
-        if (row.participant) {
-          disabled.push('delete')
-          if (vm.record.has_one_code || row.participant_email.trim() === '' || row.status === 'fails' || row.status === 'completed') {
-            disabled.push('email')
-          }
-        } else {
-          disabled.push('email')
-        }
-        vm.data[index].buttons = vm.xprops.buttons.filter(item => disabled.indexOf(item) === -1)
       },
 
       row2CodeInfo (row) {
@@ -1118,7 +897,7 @@
               dataVoucherCode.error_message = voucherCode.error_message
               dataVoucherCode.sent_on = voucherCode.sent_on
             }
-            // vm.reloadCodeList()
+            // vm.reloadRedemptionLocations()
           },
           error => {
             vm.$toaster.error(error.message)
@@ -1259,136 +1038,6 @@
         // console.log('getCodeFieldsFromStr: result: ', result)
         return result
       },
-
-      setColumns (fieldsStr) {
-        // Input : fieldsStr
-        //
-        // Code:string|Serial No:string|activate_date:date
-        //
-        const vm = this
-        // console.log('setColumns: fieldsStr = ' + fieldsStr)
-        const codeFields = vm.getCodeFieldsFromStr(fieldsStr);
-        // codeFields = [
-        //    {
-        //      title: 'title 1',
-        //      type: 'number'
-        //    },
-        //    {
-        //      title: 'title 2',
-        //      type: 'string'
-        //    },
-        //
-        //
-        vm.columns = [{
-          title: vm.$t('general.number'),
-          tdClass: 'text-center',
-          thClass: 'text-center',
-          tdComp: 'TdCommonIndex',
-          field: 'id'
-        }];
-
-        var tdClass = 'text-left align-middle'
-        var thClass = 'text-left'
-        var field = null
-
-        // code field
-        if (codeFields.length > 0) {
-          field = codeFields[0]
-          vm.columns.push({
-            title: field['title'],
-            thComp: 'ThCodeBadgeHeader',
-            tdClass: tdClass,
-            thClass: thClass,
-            field: 'field0'
-          })
-        }
-
-        // default columns set #1
-        for (let j = 0; j < vm.defaultColumns1.length; j++) {
-          vm.columns.push(vm.defaultColumns1[j])
-        }
-
-        if (vm.record.redemption_method && vm.record.redemption_method !== 'none') {
-          vm.columns.push({
-            title: 'general.redeemed_on',
-            thComp: 'ThCommonHeader',
-            thClass: 'text-center',
-            tdClass: 'align-middle',
-            tdComp: 'TdRedeemedOn',
-            field: 'redeemed_on',
-            sortable: true
-          })
-        }
-
-        // code fields except "code"
-        for (let i = 1; i < codeFields.length; i++) {
-          tdClass = 'text-left align-middle'
-          thClass = 'text-left'
-          const field = codeFields[i]
-          switch (field['type']) {
-            case 'date':
-            case 'integer':
-              tdClass = 'text-center align-middle'
-              thClass = 'text-center align-middle'
-              break;
-          }
-          vm.columns.push({
-            title: field['title'],
-            thComp: 'ThCodeBadgeHeader',
-            tdClass: tdClass,
-            thClass: thClass,
-            field: 'field' + i
-          })
-        }
-
-        // default columns set #2
-        for (let j = 0; j < vm.defaultColumns2.length; j++) {
-          vm.columns.push(vm.defaultColumns2[j])
-        }
-
-      },
-
-      parseCodeInfoData (infoData) {
-        const vm = this
-        let result = []
-        if (vm.columns) {
-          for (let i = 0; i < infoData.length; i++) {
-            const codeRecord = infoData[i]
-            const fieldsStr = codeRecord['code'] + '|' + codeRecord['extra_fields']
-            const arFieldValues = fieldsStr.split('|')
-
-            const obj = {
-              id: codeRecord['id'],
-              order: codeRecord['order']
-            }
-            for (let j = 0; j < arFieldValues.length; j++) {
-              obj['field' + j] = arFieldValues[j]
-            }
-            obj['status'] = codeRecord['status']
-            obj['key'] = codeRecord['key']
-            obj['redeemed_on'] = codeRecord['redeemed_on']
-            obj['remark'] = codeRecord['remark']
-            obj['error_message'] = codeRecord['error_message']
-            obj['participant'] = codeRecord['participant']
-            obj['participant_name'] = codeRecord['participant'] ? codeRecord['participant']['name'] : null
-            obj['participant_email'] = codeRecord['participant'] ? codeRecord['participant']['email'] : null
-            obj['participant_phone'] = codeRecord['participant'] ? codeRecord['participant']['phone'] : null
-            obj['sent_at'] = codeRecord['sent_at']
-            obj['views'] = codeRecord['views']
-            obj['buttons'] = []
-            result.push(obj)
-          }
-        } else {
-          result = infoData
-        }
-        return result
-      },
-
-      // setTableData (tableData) {
-      //   const vm = this
-      //   vm.allData = vm.parseCodeInfoData(tableData)
-      //   vm.total = vm.allData.length
-      // },
 
       onUploadingHandler () {
         const vm = this
@@ -1636,15 +1285,14 @@
     width: 120px;
   }
 
-  #loadingMask {
+  .loading-mask {
     background-color: rgba(128, 128, 128, .5);
     position: absolute;
     left: 0;
-    top: 0;
+    top: 5px;
     width: 100%;
     height: 100%;
-    min-height: 480px;
-    padding-top: 150px;
+    min-height: 320px;
     font-size: 48px;
   }
 

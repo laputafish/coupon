@@ -15,9 +15,16 @@
         </div>
       </div>
       <div class="row" v-if="record.redemption_method==='qrcode'">
-        <div class="col-sm-12 position-relative">
-          <div class="position-absolute" style="right:0;top:0;margin-top:-14px">
-            <button class="btn btn-primary min-width mr-1">
+        <div class="col-sm-12 position-relative d-flex flex-row justify-content-between align-items-end">
+          <label>Locations</label>
+          <div class="position-absolute" style="right:0;">
+            <button class="btn btn-outline-primary min-width mr-1"
+              @click="refresh">
+              <font-awesome-icon class="mr-2" icon="sync"></font-awesome-icon>
+              Refresh
+            </button>
+            <button class="btn btn-info min-width mr-1"
+              @click="useDefault">
               <font-awesome-icon class="mr-2" icon="check-circle"></font-awesome-icon>
               Use Default
             </button>
@@ -26,13 +33,21 @@
               <font-awesome-icon class="mr-2" icon="download"></font-awesome-icon>
               Download
             </button>
+            <button class="btn btn-primary min-width mr-1"
+                    @click="newRecord">
+              <font-awesome-icon icon="plus"></font-awesome-icon>
+            </button>
           </div>
-          <label>Locations</label>
-          <!--<redemption-location-table-->
-            <!--ref="redemptionLocationTable"-->
-            <!--:pusherChannel="pusherChannel"-->
-            <!--@onCommand="onCommandHandler"-->
-            <!--:record="record"></redemption-location-table>-->
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <redemption-location-table
+            ref="redemptionLocationTable"
+            :pusherChannel="pusherChannel"
+            @onCommand="onCommandHandler"
+            :record="record"></redemption-location-table>
         </div>
       </div>
       <div class="row" v-if="record.redemption_method==='password'">
@@ -71,7 +86,7 @@ import copyLink from '@/views/comps/CopyLink'
 import formInputs from '@/views/comps/forms'
 import vueRangeSlider from 'vue-range-slider'
 import DataRadioToggle from "../../../../comps/forms/DataRadioToggle"
-// import redemptionLocationTable from './page_redemption/RedemptionLocationTable'
+import redemptionLocationTable from './page_redemption/RedemptionLocationTable'
 
 export default {
   components: {
@@ -79,9 +94,8 @@ export default {
     copyToken,
     copyLink,
     vueRangeSlider,
-    ...formInputs
-    // ,
-    // redemptionLocationTable
+    ...formInputs,
+    redemptionLocationTable
   },
   props: {
     record: {
@@ -114,12 +128,25 @@ export default {
   //   }
   // },
   methods: {
+    newRecord () {
+
+    },
+    refresh () {
+      const vm = this
+      vm.$refs.redemptionLocationTable.reloadAll()
+    },
+    useDefault () {
+
+    },
     exportLocationSummary () {
 
     },
     async validate () {
       const vm = this
       return vm.$refs.infoPageObserver.validate()
+    },
+    onCommandHandler (payload) {
+
     }
   }
 }
