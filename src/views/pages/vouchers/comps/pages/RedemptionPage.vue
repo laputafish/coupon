@@ -1,6 +1,5 @@
 <template>
   <div>
-    <validation-observer ref="redemptionPageObserver" v-slot="{ invalid }">
       <div class="row pt-2">
         <div class="col-sm-12">
           <div class="form-group mb-3">
@@ -14,7 +13,7 @@
           </div>
         </div>
       </div>
-      <div class="row" v-if="record.redemption_method==='qrcode'">
+      <div class="row" v-if="['qrcode','qrcode_password'].indexOf(record.redemption_method)>=0">
         <div class="col-sm-12 position-relative d-flex flex-row justify-content-between align-items-end">
           <label>Locations</label>
           <div class="position-absolute" style="right:0;">
@@ -38,14 +37,13 @@
               <font-awesome-icon icon="plus"></font-awesome-icon>
             </button>
           </div>
-
         </div>
-      </div>
-      <div class="row">
+
         <div class="col-sm-12">
           <redemption-location-table
             ref="redemptionLocationTable"
             :pusherChannel="pusherChannel"
+            :redemptionMethod="record.redemption_method"
             @onCommand="onCommandHandler"
             :record="record"></redemption-location-table>
         </div>
@@ -76,7 +74,6 @@
             </div>
         </div>
       </div>
-    </validation-observer>
   </div>
 </template>
 
@@ -118,7 +115,8 @@ export default {
       redemptionOptions: [
         {name: 'None', value: 'none'},
         {name: 'Password', value: 'password'},
-        {name: 'QR Code', value: 'qrcode'}
+        {name: 'QR Code', value: 'qrcode'},
+        {name: 'QR Code/Password', value: 'qrcode_password'}
       ]
     }
   },
@@ -129,7 +127,9 @@ export default {
   // },
   methods: {
     newRecord () {
-
+      const vm = this
+      console.log('RedemptionPage :: newRecord :: vm.$refs.redemptionLocationTable : ', vm.$refs.redemptionLocationTable)
+      vm.$refs.redemptionLocationTable.newRecord()
     },
     refresh () {
       const vm = this

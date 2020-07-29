@@ -6,6 +6,7 @@ import TdCodeStatus from './TdCodeStatus.vue'
 import TdSingleChoice from './TdSingleChoice.vue'
 import TdMultipleChoice from './TdMultipleChoice.vue'
 import TdParticipantField from './TdParticipantField.vue'
+import TdPassword from './TdPassword.vue'
 import TdQrcode from './TdQrcode.vue'
 import TdRedeemedOn from './TdRedeemedOn.vue'
 import TdViews from './TdViews'
@@ -19,6 +20,7 @@ export default {
   TdSingleChoice,
   TdMultipleChoice,
   TdParticipantField,
+  TdPassword,
   TdQrcode,
   TdRedeemedOn,
   TdViews

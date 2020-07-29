@@ -36,7 +36,9 @@
     "redeemed_on": "Redeemed On",
     "location_code": "Location Code",
     "confirmation_code": "Confirmation Code",
-    "redemption_count": "Redemption Count"
+    "redemption_count": "Redemption Count",
+    "password": "Password",
+    "qrcode": "QR Code"
   },
   "status": {
     "pending": "Pending",

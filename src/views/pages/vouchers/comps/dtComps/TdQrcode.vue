@@ -1,24 +1,30 @@
 <template>
   <div class="text-center">
     <qrcode-vue
-      :value="qrcode"
+      :value="qrcodeLink"
       :size="120"
       level="M"></qrcode-vue>
+    <div class="d-inline-block">
+      <copy-link :link="qrcodeLink"></copy-link>
+      value: {{ value }}
+    </div>
   </div>
 </template>
 
 <script>
 import qrcodeVue from 'qrcode.vue'
+import copyLink from '@/views/comps/CopyLink.vue'
 
 export default {
   components: {
-    qrcodeVue
+    qrcodeVue,
+    copyLink
   },
   props: ['row', 'value', 'xprops'],
   computed: {
-    qrcode () {
+    qrcodeLink() {
       const vm = this
-      return vm.value
+      return vm.$store.getters.appHost + '/redeem/' + btoa(vm.value)
     }
   }
 }

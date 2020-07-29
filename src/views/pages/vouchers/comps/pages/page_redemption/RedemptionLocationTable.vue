@@ -42,12 +42,17 @@
         <!--:buttons="[{caption:'Only Codes',command:'exportCodesOnly',variant:'info'},{caption:'Codes with Participants',command:'exportCodesWithParticipants',variant:'primary'}]"-->
         <!--@onCommand="onCommandHandler"></common-dialog>-->
 
-
+    <redemption-location-dialog
+      ref="redemptionLocationDialog"
+      :params="redemptionLocationDialogParams"
+      @onCommand="onCommandHandler"
+      v-model="showingRedemptionLocationDialog"></redemption-location-dialog>
   </div>
 </template>
 
 <script>
   import Vue from 'vue'
+  import redemptionLocationDialog from './dialogs/RedemptionLocationDialog'
 
   // import uploadButton from '@/views/comps/UploadButton'
   import dataRadioToggle from '@/views/comps/forms/DataRadioToggle'
@@ -69,6 +74,8 @@
       dtTableMixin
     ],
     components: {
+      redemptionLocationDialog,
+
       ...dtCommon,
       ...dtComps,
       dataRadioToggle
@@ -87,24 +94,34 @@
     },
     data () {
       return {
+        showingRedemptionLocationDialog: false,
+        redemptionLocationDialogParams: null,
         channel: null,
 
         appLoading: false,
         uploading: false,
         loading: false,
 
-        columns: (() => {
-          const cols = [
-            {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
-            {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'name'},
-            {title: 'general.location_code', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'location_code'},
-            {title: 'general.confirmation_code', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdQrcode', field: 'confirmation_code'},
-            {title: 'general.redemption_count', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCommon', tdClass: 'text-center', field: 'redemption_count'},
-            {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
-          ]
-          return cols
-        })(),
+        columns: [],
 
+        COLUMNS_NO_PASSWORD: [
+          {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
+          {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'name'},
+          {title: 'general.location_code', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'location_code'},
+          {title: 'general.qrcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdQrcode', field: 'qrcode'},
+          {title: 'general.redemption_count', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCommon', tdClass: 'text-center', field: 'redemption_count'},
+          {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
+        ],
+
+        COLUMNS_WITH_PASSWORD: [
+          {title: 'general.number', thComp: 'ThCommonHeader', tdComp: 'TdCommonIndex', field: 'id'},
+          {title: 'general.name', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'name'},
+          {title: 'general.location_code', thComp: 'ThCommonHeader', tdComp: 'TdCommon', field: 'location_code'},
+          {title: 'general.qrcode', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdQrcode', field: 'qrcode'},
+          {title: 'general.password', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdPassword', tdClass: 'text-center', field: 'password'},
+          {title: 'general.redemption_count', thComp: 'ThCommonHeader', thClass: 'text-center', tdComp: 'TdCommon', tdClass: 'text-center', field: 'redemption_count'},
+          {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
+        ],
         allData: [],
         data: [],
         total: 0,
@@ -194,9 +211,17 @@
       record: {
         type: Object,
         default: null
+      },
+      redemptionMethod: {
+        type: String,
+        default: 'qrcode'
       }
     },
     watch: {
+      redemptionMethod: function (newValue) {
+        const vm = this
+        vm.setColumns(newValue)
+      },
       pusher: function (newValue) {
         const vm = this
         if (newValue) {
@@ -283,6 +308,8 @@
 
       // vm.listen()
       vm.initPusherChannel()
+      vm.setColumns(vm.redemptionMethod)
+
       vm.query.page = 1
       vm.xprops.record = vm.record
     },
@@ -305,11 +332,59 @@
       vm.xprops.eventbus.$off('onRowCommand')
     },
     methods: {
+      setColumns (redemptionMethod) {
+        const vm = this
+        switch (redemptionMethod) {
+          case 'qrcode':
+            vm.columns = vm.COLUMNS_NO_PASSWORD
+            break
+          case 'qrcode_password':
+            vm.columns = vm.COLUMNS_WITH_PASSWORD
+            break
+        }
+      },
+      newRecord () {
+        const vm = this
+        vm.redemptionLocationDialogParams = {
+          redemptionLocation: {
+            id: 0,
+            name: '',
+            location_code: '',
+            qrcode: '',
+            password: ''
+          }
+        }
+        // vm.$refs.redemptionLocationDialog.reset()
+        vm.$bvModal.show('redemptionLocationDialog')
+      },
+      delete (id) {
+        const vm = this
+        const deleteData = {
+          urlCommand: '/vouchers/' + record.id + '/redemption_locations' + id
+        }
+        vm.$store.dispatch('AUTH_DELETE', deleteData).then(
+          response => {
+            vm.reloadAll()
+          }
+        )
+      },
+      update (data) {
+        const vm = this
+        const putData = {
+          urlCommand: '/vouchers/' + vm.record.id + '/redemption_locations/' + data.id,
+          data: data
+        }
+        vm.$store.dispatch('AUTH_PUT', putData).then(
+          response => {
+            vm.reloadAll()
+          }
+        )
+      },
       updateOneCodeMode (fieldName, fieldValue) {
         const vm = this
         switch (fieldName) {
           case 'has_one_code':
-            const hasOneCode = fieldValue===1
+            const hasOneCode = fieldValue === 1
             // console.log('updateOneCodeMode :: hasOneCode = ' + hasOneCode)
             // console.log('updateOneCodeMode :: record.code_count = ' + vm.record.code_count)
 
@@ -408,56 +483,6 @@
       download () {
         const vm = this
         vm.showingCodeExportDialog = true
-      },
-      updateCodeViewCount (row) {
-        const vm = this
-        const postData = {
-          urlCommand: '/agent_codes/' + row.id + '/update_views'
-        }
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          () => {
-          }
-        )
-      },
-      sendEmail (row) {
-        const vm = this
-        const participant = row['participant']
-        if (participant) {
-          const postData = {
-            urlCommand: '/participants/' + participant.id + '/send_email'
-          }
-          var commandStatus = 'email:' + row.id
-          vm.addXpropsStatus(commandStatus)
-          vm.$store.dispatch('AUTH_POST', postData).then(
-            response => {
-              // console.log('AgentCodeTable :: sendEmail :: response: ', response)
-              vm.removeXpropsStatus(commandStatus)
-            },
-            error => {
-              row['error_message'] = error['message']
-              row['sent_at'] = error['sent_at']
-              row['status'] = error['status']
-              vm.$toaster.warning(error['message'])
-              vm.removeXpropsStatus(commandStatus)
-            }
-          )
-        } else {
-          vm.$toaster.error('Participant not specified!')
-        }
-      },
-      sendVoucherCodeEmail (row) {
-        const vm = this
-        const postData = {
-          urlCommand: '/vouchers/' + vm.record.id + '/codes/' + row.id + '/send_email'
-        }
-        var commandStatus = 'email:' + row.id
-        vm.addXpropsStatus(commandStatus)
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          response => {
-            // console.log('sendVoucherCodeEmail :: response: ', response)
-            vm.removeXpropsStatus(commandStatus)
-          }
-        )
       },
 
       onVoucherCodeRedeemed (data) {
@@ -606,6 +631,11 @@
             if (typeof payload.callback === 'function') {
               payload.callback()
             }
+            break
+          case 'redemptionLocationDialogConfirm':
+            console.log('onCommandHandler :: redemptionLocationDialogConfirm')
+            vm.update(payload.redemptionLocation)
+            break
         }
       },
       saveCodeInfo (row) {
@@ -770,7 +800,7 @@
         vm.$store.dispatch('AUTH_GET', data).then(response => {
           vm.total = response.total
           vm.data = response.data
-          // vm.loading = false
+          vm.loading = false
         })
       },
 
@@ -798,20 +828,17 @@
       },
       onRowCommandHandler (payload) {
         const vm = this
-        console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+        console.log('RedemptionLocationTable :: onRowCommandHandler :: payload: ', payload)
         switch (payload.command) {
           // case 'onLinkClicked':
           //   vm.updateCodeViewCount(payload.row)
           //   break
-          case 'showQrCodeDialog':
-            vm.qrCodeDialogParams = {
-              link: payload.link,
-              codeKey: payload.codeKey
-            }
-            vm.$bvModal.show('qrCodeDialog')
-            break
           case 'edit':
-            alert('onRowCommandHandler :; edit')
+            console.log('onRowCommandHandler :: payload.command = edit')
+            vm.redemptionLocationDialogParams = {
+              redemptionLocation: JSON.parse(JSON.stringify(payload.row))
+            }
+            vm.$bvModal.show('redemptionLocationDialog')
             break
           // case 'view':
           //   vm.$emit('onCommand', {
@@ -822,460 +849,13 @@
           case 'delete':
             vm.$dialog.confirm(vm.$t('messages.areYouSure'))
               .then(() => {
-                vm.$emit('onCommand', {
-                  command: 'delete_code_info',
-                  index: payload.index
-                })
+                vm.delete(vm.data[payload.index].id)
               })
             break
-          case 'update': // = save
-            vm.saveCodeInfo(payload.row);
-            break
-          case 'changeStatus':
-            vm.changeStatus(payload)
-            break
-          case 'resetRedemptionStatus':
-            vm.$dialog.confirm(vm.$t('messages.areYouSure')).then(
-              () => {
-                vm.resetRedemptionStatus(payload)
-              }
-            )
-            break
-          case 'email':
-            if (payload.row.participant) {
-              vm.sendEmail(payload.row)
-            }
-            // vm.sendVoucherCodeEmail(payload.row)
-            break
-          case 'saveField':
-            vm.saveCodeInfoField(
-              payload.row,
-              payload.fieldName,
-              payload.fieldValue
-            )
-            break
-          case 'updateField':
-            vm.setCodeFieldValue(
-              payload.row,
-              // vm.row2CodeInfo(payload.row),
-              payload.fieldName,
-              payload.fieldValue
-            )
-            // )
-            //   command: 'update_code_info_field',
-            //   row: vm.row2CodeInfo(payload.row),
-            //   fieldName: payload.fieldName,
-            //   fieldValue: payload.fieldValue
-            // })
-            break
-          case 'gotoLink':
-            vm.$emit('onCommand', payload)
-            break
         }
       },
-      setVoucherCodeStatus (row, status) {
-        const vm = this
-        const postData = {
-          urlCommand: '/vouchers/' + vm.record.id + '/codes/' + row.id + '/set_status',
-          data: {
-            status: status
-          }
-
-        }
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          response => {
-            // console.log('sendEmail : response: ', response)
-            if (response.message) {
-              vm.$toaster.info(response.message)
-            }
-            const voucherCode = response.voucherCode
-            // console.log('setVoucherCodeStatus :: data: ', vm.data)
-            // console.log('response.voucherCode = ', voucherCode)
-            var dataVoucherCode = vm.data.find(item => item.id === voucherCode.id)
-            if (dataVoucherCode) {
-              dataVoucherCode.status = voucherCode.status
-              dataVoucherCode.error_message = voucherCode.error_message
-              dataVoucherCode.sent_on = voucherCode.sent_on
-            }
-            // vm.reloadRedemptionLocations()
-          },
-          error => {
-            vm.$toaster.error(error.message)
-          }
-        )
-      },
-
-      saveCodeInfoField (row, fieldName, fieldValue) {
-        const vm = this
-        const postData = {
-          urlCommand: '/agent_codes/' + row.id + '/update_field',
-          data: {
-            fieldName: fieldName,
-            fieldValue: fieldValue
-          }
-        }
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          () => {
-            vm.$toaster.info('Successfully updated!')
-          }
-        )
-      },
-
-      setCodeFieldValue (row, fieldName, fieldValue) {
-        const vm = this
-        for (let i = 0; i < vm.data.length; i++) {
-          if (vm.data[i] == row) {
-            // console.log('vm.data[' + i + '] == row')
-            vm.data[i][fieldName] = fieldValue
-            break
-          } else {
-            // console.log('vm.data[' + i + '] not equals to row')
-          }
-        }
-      },
-      setCodeFieldValue2 (row, fieldName, fieldValue) {
-        const vm = this
-        for (let i = 0; i < vm.data.length; i++) {
-          const codeInfo = vm.data[i]
-          if (codeInfo['code'] === row['code'] && codeInfo['extra_fields'] === row['extra_fields']) {
-            vm.data[i][fieldName] = fieldValue
-            break
-          }
-        }
-      },
-
-      resetRedemptionStatus (payload) {
-        const vm = this
-        const postData = {
-          urlCommand: '/agent_codes/' + payload.row.id + '/reset_redemption_status'
-        }
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          () => {
-            for (var i = 0; i < vm.data.length; i++) {
-              if (vm.data[i].id === payload.row.id) {
-                vm.updateCodeField(i, 'redeemed_on', '')
-                break
-              }
-            }
-          }
-        )
-
-      },
-
-      changeStatus (payload) {
-        const vm = this
-        const participant = payload.row.participant
-        if (participant) {
-          const postData = {
-            // urlCommand: '/agent_codes/' + payload.row.id + '/change_status/' + payload.status
-            urlCommand: '/participants/' + participant.id + '/change_status/' + payload.status
-          }
-          vm.$store.dispatch('AUTH_POST', postData).then(
-            () => {
-              const statusInfo = {
-                status: payload.status,
-                sent_at: '',
-                error_message: ''
-              }
-
-              for (var i = 0; i < vm.data.length; i++) {
-                if (vm.data[i].id === payload.row.id) {
-                  vm.updateStatusByIndex(i, statusInfo)
-                  break
-                }
-              }
-              // vm.reloadAll()
-            }
-          )
-        }
-      },
-
-      updateCodeField (index, fieldName, fieldValue) {
-        const vm = this
-        vm.data[index][fieldName] = fieldValue
-      },
-
-      // statusInfo = {
-      //    status: '',
-      //    sent_at: '',
-      //    error_message: ''
-      // }
-      updateStatusByIndex (index, statusInfo) {
-        const vm = this
-        const status = statusInfo.status
-        vm.data[index].status = status
-        switch (status) {
-          case 'fails':
-          case 'completed':
-            vm.data[index].sent_at = statusInfo.sent_at
-            vm.data[index].error_message = statusInfo.error_message
-            break
-          case 'hold':
-          case 'pending':
-          case 'processing':
-            vm.data[index].sent_at = ''
-            vm.data[index].error_message = ''
-            break
-        }
-        vm.configRowButtonsByIndex(index)
-        // console.log('updateStatusByIndex: index =' + index + ': ', vm.data[index])
-      },
-
-      getCodeFieldsFromStr (fieldStr) {
-        const result = []
-        // console.log('getCodeFieldsFromStr: fieldStr = ' + fieldStr)
-        if (fieldStr !== null && fieldStr !== '') {
-          const arTitleType = fieldStr.split('|')
-          for (let i = 0; i < arTitleType.length; i++) {
-            const titleTypePair = arTitleType[i]
-            const segs = titleTypePair.split(':')
-            result.push({
-              title: segs[0],
-              type: segs[1]
-            })
-          }
-        }
-        // console.log('getCodeFieldsFromStr: result: ', result)
-        return result
-      },
-
-      onUploadingHandler () {
-        const vm = this
-        vm.uploading = true
-        vm.$bvModal.hide('codeImportDialog')
-        // vm.showingCodeImportDialog = false
-      },
-
-      onUploadedHandler (result) {
-        const vm = this
-        // console.log('onUploaded');
-        // result = {
-        //    codeFields: "barcode:string|serialno:string|actdate:date|exdate:date"
-        //    new: 9
-        //    updated: 0
-        // }
-        //
-        vm.uploading = false
-        // vm.showingCodeImportDialog = true
-        vm.$refs.codeImportDialog.preInit(result.fields, result.key)
-        vm.$bvModal.show('codeImportDialog')
-        // vm.$refs.codeImportDialog.toggle()
-      },
-
-      onParsingCodes (payload) {
-        const vm = this
-        console.log('onParsingCodes :: payload: ', payload)
-        const postData = {
-          urlCommand: '/agent_codes/parse/' + payload.key,
-          data: {
-            fieldInfos: payload.fieldInfos,
-            includeCode: payload.includeCode,
-            includeParticipant: payload.includeParticipant,
-            singleCodeMode: vm.record.has_one_code
-          }
-        }
-
-        console.log('AgentCodeTable :: onParsingCodes :: postData: ', postData)
-        vm.uploading = true
-        vm.$store.dispatch('AUTH_POST', postData).then(
-          result => {
-            vm.uploading = false
-
-            var msgs = []
-            if (result.codeFields) {
-              vm.updateCodeFields(result)
-              if (result.existing > 0) {
-                msgs.push(result.existing + ' code(s) are duplicated')
-              } else {
-                msgs.push('No code(s) is duplicated')
-              }
-              if (result.new > 0) {
-                msgs.push(result.new + ' code(s) are added')
-              } else {
-                msgs.push('no code(s) are added')
-              }
-            }
-
-            if (result.participantConfigs) {
-              vm.updateParticipantFields(result)
-              msgs.push(result.participantIds.length + ' participant(s) are added')
-            }
-            vm.$dialog.alert(msgs.join('<br/>'), {html: true})
-            // vm.$toaster.success(msgs.join(' and ') + '.')
-            vm.reloadAll()
-            // const newParticipantConfigs = result.participantConfigs
-            // console.log('parse: vm.record.participant_configs: ', vm.record.participant_configs)
-            // console.log('parse: newParticipantConfigs: ', newParticipantConfigs)
-            // console.log('parse: result.participantCount: ', result.participantCount)
-            //
-            // if (JSON.stringify(vm.record.participant_configs) === JSON.stringify(newParticipantConfigs)) {
-            //   console.log('participant configs no changed')
-            // } else {
-            //
-            //   vm.$emit('onCommand', {
-            //     command: 'updateField',
-            //     fieldName: 'participant_configs',
-            //     fieldValue: newParticipantConfigs
-            //   })
-            //   vm.$emit('onCommand', {
-            //     command: 'updateField',
-            //     fieldName: 'participant_count',
-            //     fieldValue: result.participantCount
-            //   })
-            // }
-            //
-            // console.log('after')
-            // console.log('parse: vm.record.participant_configs: ', vm.record.participant_configs)
-
-            //   let msgs = []
-            //   if (result.existing > 0) {
-            //     msgs.push(result.existing + ' code(s) are duplicated')
-            //   } else {
-            //     msgs.push('No code(s) is duplicated')
-            //   }
-            //   if (result.new > 0) {
-            //     msgs.push(result.new + ' code(s) are added')
-            //   } else {
-            //     msgs.push('no code(s) are added')
-            //   }
-            //   vm.$toaster.success(msgs.join(' and ') + '.')
-            //   vm.reloadAll()
-            //   // vm.onQueryChangedHandler(vm.query)
-            // } else {
-            //   vm.$dialog.alert(vm.$t('messages.error_occurred_maybe_invalid_format'))
-            // }
-          },
-          error => {
-            vm.uploading = false
-            console.log('error: ', error)
-          }
-        )
-      },
-      // onUploaded2 (result) {
-      //   const vm = this
-      //   // result = {
-      //   //    fields: [
-      //   //      {title: 'PCC', type: 'string'},
-      //   //      {title: 'PCC', type: 'string'},
-      //   //      {title: 'PCC', type: 'string'},
-      //   //      {title: 'PCC', type: 'string'}
-      //   //    ],
-      //   //    values: [ ... ]
-      //   // }
-      //   //
-      //   const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
-      //   console.log('onUploaded :: newCodeFieldsStr: ', newCodeFieldsStr)
-      //   // let goAhead = true
-      //   // console.log('codeFieldsStr = [' + vm.codeFieldsStr + ']')
-      //   // console.log('newCodeFieldsStr = [' + newCodeFieldsStr + ']')
-      //   if (vm.codeFieldsStr !== '' && vm.codeFieldsStr !== null) {
-      //     if (newCodeFieldsStr !== vm.codeFieldsStr) {
-      //       // goAhead = false
-      //       const options = {
-      //         okText: vm.$t('buttons.continue'),
-      //         cancelText: vm.$t('buttons.cancel')
-      //       }
-      //       vm.$dialog.confirm(vm.$t('messages.fields_not_matched_please_delete_all_first'), options).then(
-      //         () => {
-      //           vm.$emit('onCommand', {
-      //             command: 'clear_all_code_info',
-      //             callback: () => {
-      //               vm.importCodes(result)
-      //             }
-      //           })
-      //         }
-      //       )
-      //     } else {
-      //       vm.importCodes(result)
-      //     }
-      //   } else {
-      //     vm.importCodes(result)
-      //   }
-      // },
-      //
-      // importCodes (result) {
-      //   console.log('importCodes :: result: ', result)
-      //   const vm = this
-      //   // const newCodeFieldsStr = vm.getCodeFieldsStrFromArray(result.fields)
-      //
-      //   // console.log('codeFieldsStr: ' + vm.codeFieldsStr)
-      //   // console.log('newCodeFieldsStr = ' + newCodeFieldsStr)
-      //
-      //   // console.log('equal: ' + (vm.codeFieldsStr === newCodeFieldsStr ? 'yes' : 'no'))
-      //   vm.$emit('onCommand', {
-      //     command: 'setCodeFields',
-      //     value: result.fields
-      //   })
-      //   vm.$emit('onCommand', {
-      //     command: 'setCodeDataRows',
-      //     value: result.data
-      //   })
-      //
-      //   vm.$emit('onCommand', {
-      //     command: 'setQrCodeComposition',
-      //     data: helpers.str2token('code_', result.fields[0].title)
-      //   })
-      // },
-      getCodeFieldsStrFromArray (fields) {
-        const result = []
-        for (let i = 0; i < fields.length; i++) {
-          result.push(fields[i].title + ':' + fields[i].type)
-        }
-        return result.join('|')
-      },
-      // onSuccess () {
-      //   alert('AgentCodeTable')
-      //   // alert('success')
-      // },
-
-      updateCodeFields (result) {
-        const vm = this
-        const newCodeFieldsStr = result.codeFields
-        if (vm.codeFieldsStr == newCodeFieldsStr) {} else {
-          vm.$emit('onCommand', {command: 'setCodeFields', value: newCodeFieldsStr})
-          vm.$emit('onCommand', {command: 'setRecordField', fieldName: 'code_count', fieldValue: result.codeCount })
-          if (result.code_composition) {
-            vm.$emit('onCommand', {command: 'setQrCodeAndBarcodeComposition', data: result.code_composition })
-          }
-        }
-      },
-
-      updateParticipantFields (result) {
-        // result = {
-        //    participantConfigs
-        //    participantIds
-        // }
-        const vm = this
-        const newParticipantConfigs = result.participantConfigs
-        const newParticipantCount = result.participantIds.length
-        if (JSON.stringify(vm.record.participant_configs) === JSON.stringify(newParticipantConfigs)) {} else {
-          vm.$emit('onCommand', {command: 'updateField', fieldName: 'participant_configs', fieldValue: newParticipantConfigs})
-          vm.$emit('onCommand', {command: 'updateField', fieldName: 'participant_count', fieldValue: newParticipantCount })
-        }
-      },
-
-      search () {
-      }
-
-      // editSave() {
-      //   console.log('editSave')
-      //   this.edit = false
-      //   // let file = this.files[0]
-      //   // let oldFile = this.files[0]
-      //   // let binStr = atob(this.cropper.getCroppedCanvas().toDataURL(oldFile.type).split(',')[1])
-      //   // let arr = new Uint8Array(binStr.length)
-      //   // for (let i = 0; i < binStr.length; i++) {
-      //   //   arr[i] = binStr.charCodeAt(i)
-      //   // }
-      //   // let file = new File([arr], oldFile.name, { type: oldFile.type })
-      //   this.$refs.upload.update(file.id, {
-      //     file,
-      //     type: file.type,
-      //     size: file.size,
-      //     active: true,
-      //   })
-      // },
     }
+
   }
 </script>
 

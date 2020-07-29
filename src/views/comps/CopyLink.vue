@@ -110,10 +110,11 @@ export default {
     },
     gotoLink (link) {
       const vm = this
-      vm.$emit('onCommand', {
-        command: 'onLinkClicked',
-        link: link
-      })
+      window.open(link, '_blank');
+      // vm.$emit('onCommand', {
+      //   command: 'onLinkClicked',
+      //   link: link
+      // })
     }
     // ,
     // onLinkClicked () {
