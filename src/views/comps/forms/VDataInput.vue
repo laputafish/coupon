@@ -7,6 +7,7 @@
              :class="{'border-danger':errors.length>0}"
              :id="id"
              :name="id"
+             autocomplete="false"
              :type="type"
              :value="value"
              @input="$event=>$emit('input',$event.target.value)"/>

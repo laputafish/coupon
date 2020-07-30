@@ -3,7 +3,7 @@
     <button v-if="value && value!==''" type="button" style="padding:0.1rem 0.3rem;"
       class="btn btn-info"
       @click="resetStatus">
-      <font-awesome-icon class="fa-fw" icon="recycle"></font-awesome-icon>
+      <font-awesome-icon class="fa-fw" icon="undo"></font-awesome-icon>
     </button>
     <span class="text-muted" v-else>Available</span>
   </div>

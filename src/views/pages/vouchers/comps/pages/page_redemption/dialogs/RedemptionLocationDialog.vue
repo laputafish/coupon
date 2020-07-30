@@ -9,8 +9,14 @@
     :value="value"
     @input="value=>$emit('input',value)">
     <template v-slot:dialogBody>
-      <validation-observer ref="observer" v-slot="{invalid, passes, reset}" tag="form">
+      <validation-observer ref="observer" v-slot="{invalid, passes, reset}" tag="form"
+        autocomplete="off">
+
         <div class="container-fluid">
+          <!--<div class="row" style="display:none;">-->
+            <!--<input type="text"/>-->
+            <!--<input type="password"/>-->
+          <!--</div>-->
           <div v-if="redemptionLocation" class="row">
             <v-data-input id="name"
                         rules="required"

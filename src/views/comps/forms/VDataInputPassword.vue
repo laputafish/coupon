@@ -9,6 +9,7 @@
                  :id="id"
                  :name="id"
                  :type="inputType"
+                 autocomplete="new-password"
                  :value="value"
                  @input="$event=>$emit('input',$event.target.value)"/>
           <button class="input-group-append" @click="toggleShowingPassword">

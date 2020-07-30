@@ -15,8 +15,10 @@
     <font-awesome-icon icon="qrcode"/>
   </div>
 
-  <div v-if="!hideLink" class="badge flex-grow-1 mr-1 key-value link-label"
+  <div v-if="!hideLink" class="badge flex-grow-1 mr-1 key-value link-label overflow-hidden"
        :class="'badge-'+variant"
+       data-toggle="tooltip"
+       :title="linkLabel"
        @click.stop.prevent="copyLink()">
     {{ linkLabel }}
   </div>

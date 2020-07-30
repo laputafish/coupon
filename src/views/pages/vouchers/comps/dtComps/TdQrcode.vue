@@ -1,12 +1,12 @@
 <template>
-  <div class="text-center">
+  <div class="text-center" style="line-height:1.2;">
     <qrcode-vue
       :value="qrcodeLink"
       :size="120"
       level="M"></qrcode-vue>
+    {{ value }}<br/>
     <div class="d-inline-block">
       <copy-link :link="qrcodeLink"></copy-link>
-      value: {{ value }}
     </div>
   </div>
 </template>

@@ -115,8 +115,9 @@ export default {
       redemptionOptions: [
         {name: 'None', value: 'none'},
         {name: 'Password', value: 'password'},
-        {name: 'QR Code', value: 'qrcode'},
-        {name: 'QR Code/Password', value: 'qrcode_password'}
+        {name: 'QR Code', value: 'qrcode'}
+        // ,
+        // {name: 'QR Code/Password', value: 'qrcode_password'}
       ]
     }
   },
