@@ -136,6 +136,12 @@
                               @click="onPageSelected('email')"
                               :selected="activePage==='email'"
                               :imgSrc="IMAGE_PATH_EMAIL"></voucher-toolbar-button>
+      <!-- Authorization -->
+      <voucher-toolbar-button
+                              caption="Authorization"
+                              @click="onPageSelected('authorization')"
+                              :selected="activePage==='authorization'"
+                              :imgSrc="IMAGE_PATH_AUTHORIZATION"></voucher-toolbar-button>
     </div>
 
     <!--<voucher-toolbar-->
@@ -196,6 +202,12 @@
         v-if="record && activePage==='participants'"
         :record="record"
         @onCommand="onCommandHandler"></participants-page>
+
+    <authorization-page
+        ref="authorizationPage"
+        v-if="record && activePage==='authorization'"
+        :record="record"
+        @onCommand="onCommandHandler"></authorization-page>
 
     <email-page
         ref="emailPage"
@@ -467,6 +479,7 @@
   import formFillingPage from './comps/pages/FormFillingPage'
   import customFormsPage from './comps/pages/CustomFormsPage'
   import participantsPage from './comps/pages/ParticipantsPage'
+  import authorizationPage from './comps/pages/AuthorizationPage'
   import emailPage from './comps/pages/EmailPage'
   import vouchertoolbarButton from './comps/VoucherToolbarButton'
   import copyLink from '@/views/comps/CopyLink'
@@ -497,6 +510,7 @@
       formFillingPage,
       customFormsPage,
       participantsPage,
+      authorizationPage,
       emailPage,
 
       // agentCodeTable,
@@ -589,6 +603,7 @@
         IMAGE_PATH_CUSTOM_FORMS: '/img/64x64/form_builder.png',
         IMAGE_PATH_PARTICIPANTS: '/img/64x64/participants.png',
         IMAGE_PATH_EMAIL: '/img/64x64/email.png',
+        IMAGE_PATH_AUTHORIZATION: '/img/64x64/authorization.png',
 
         tabButtons: [
           {

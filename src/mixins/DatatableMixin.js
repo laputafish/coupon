@@ -17,7 +17,7 @@ const mixin = Vue.util.mergeOptions(appMixin, {
             <div class="row">
               <div v-if="tableFilters.length>0" class="col-12 text-center mb-2">
                 <div class="btn-group">
-                  <button class="btn"
+                  <button class="btn min-width-80"
                     v-for="filter in tableFilters"
                     @click="selectedFilter=filter.value"
                     :key="filter.value"

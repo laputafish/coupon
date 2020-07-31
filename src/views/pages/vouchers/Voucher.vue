@@ -11,15 +11,15 @@
       ...dtComps,
       dataRecord
     },
-    computed: {
-      agents () {
-        const vm = this
-        return vm.$store.getters.agents
-      }
-    },
+    // computed: {
+    //   agents () {
+    //     const vm = this
+    //     return vm.$store.getters.agents
+    //   }
+    // },
     data () {
       return {
-        tableFilers: [],
+        agents: [],
         tableId: 'voucher-table',
         moduleNameTag: 'menu.vouchers',
         apiPath: '/vouchers',
@@ -118,19 +118,45 @@
     methods: {
       setTableFilters () {
         const vm = this
+        console.log('setTableFilters')
         let filters = [
           {caption: 'All', value: 0}
         ]
-        for (let i = 0; i < vm.agents.length; i++) {
-          filters.push({
-            caption: vm.agents[i].name,
-            value: vm.agents[i].id
-          })
+        const getData = {
+          urlCommand: '/user/voucher_agents'
         }
-        vm.tableFilters = filters
+        vm.$store.dispatch('AUTH_GET', getData).then(
+          response => {
+            console.log('/user/voucher_agents: reponse: ', response)
+            if (response && response.length > 0) {
+              for (let i = 0; i < response.length; i++) {
+                filters.push({
+                  caption: response[i].name,
+                  value: response[i].id
+                })
+              }
+            }
+            vm.tableFilters = filters
+            console.log('tableFilters: ', vm.tableFilters)
+          }
+        )
       },
+      // setTableFilters () {
+      //   const vm = this
+      //   let filters = [
+      //     {caption: 'All', value: 0}
+      //   ]
+      //   for (let i = 0; i < vm.agents.length; i++) {
+      //     filters.push({
+      //       caption: vm.agents[i].name,
+      //       value: vm.agents[i].id
+      //     })
+      //   }
+      //   vm.tableFilters = filters
+      // },
       onMounting () {
         const vm = this
+        console.log('onMounting')
         this.xprops.buttons = ['edit', 'delete']
         // this.xprops.buttons = ['edit', 'print', 'download', 'delete']
         vm.setTableFilters()
