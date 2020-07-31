@@ -134,6 +134,9 @@ export default {
       vm.$store.dispatch('AUTH_POST', postData).then(
         response => {
           vm.refresh()
+        },
+        error => {
+          vm.$dialog.alert(error.message)
         }
       )
     },
