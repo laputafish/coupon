@@ -68,7 +68,7 @@
             {
               title: 'general.created_at',
               thComp: 'ThCommonHeader',
-              tdComp: 'TdCommonDate',
+              tdComp: 'TdCreatedInfo',
               thClass: 'text-center',
               tdClass: 'text-center',
               field: 'created_at'
@@ -90,8 +90,18 @@
               field: 'code_count'
             },
             // {title: 'vouchers.email_sent_total', thComp: 'ThCommonHeader', thClass: 'text-center', tdClass: 'text-center', tdComp: 'TdEmailSentTotal', field: 'id'},
-            {title: 'general.status', thComp: 'ThCommonHeader', tdComp: 'TdCommonStatus', field: 'status'},
-            {title: 'general.action', thComp: 'ThCommonHeader', tdComp: 'TdCommonOpt', field: 'id'}
+            {
+              title: 'general.status',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdCommonStatus',
+              field: 'status'
+            },
+            {
+              title: 'general.action',
+              thComp: 'ThCommonHeader',
+              tdComp: 'TdCommonOpt',
+              field: 'id'
+            }
           ]
           return cols
         })(),
@@ -116,9 +126,23 @@
 
     },
     methods: {
+      onDataLoaded (data) {
+        const vm = this
+        for (var i = 0; i < data.length; i++) {
+          var item = data[i]
+          var buttons = ['edit']
+
+          // is owner
+          if (vm.user.id === item.user_id) {
+            buttons.push('delete')
+          }
+          data[i].buttons = buttons
+        }
+        return data
+      },
       setTableFilters () {
         const vm = this
-        console.log('setTableFilters')
+        // console.log('setTableFilters')
         let filters = [
           {caption: 'All', value: 0}
         ]
@@ -127,7 +151,7 @@
         }
         vm.$store.dispatch('AUTH_GET', getData).then(
           response => {
-            console.log('/user/voucher_agents: reponse: ', response)
+            // console.log('/user/voucher_agents: reponse: ', response)
             if (response && response.length > 0) {
               for (let i = 0; i < response.length; i++) {
                 filters.push({
@@ -137,7 +161,7 @@
               }
             }
             vm.tableFilters = filters
-            console.log('tableFilters: ', vm.tableFilters)
+            // console.log('tableFilters: ', vm.tableFilters)
           }
         )
       },
@@ -156,7 +180,7 @@
       // },
       onMounting () {
         const vm = this
-        console.log('onMounting')
+        // console.log('onMounting')
         this.xprops.buttons = ['edit', 'delete']
         // this.xprops.buttons = ['edit', 'print', 'download', 'delete']
         vm.setTableFilters()

@@ -21,7 +21,7 @@ export default {
     qrcodeClass () {
       const vm = this
       var result = 'text-disabled'
-      console.log('computed(qrcodeClass) : vm.row[qrcode_comp]: ' + vm.row['qrcode_comp'])
+      // console.log('computed(qrcodeClass) : vm.row[qrcode_comp]: ' + vm.row['qrcode_comp'])
       if (vm.row['qrcode_comp'] !== '') {
         result = 'text-success'
       }
@@ -30,7 +30,7 @@ export default {
     barcodeClass () {
       const vm = this
       var result = 'text-disabled'
-      console.log('computed(barcodeClass) : vm.row[barcode_comp]: ' + vm.row['barcode_comp'])
+      // console.log('computed(barcodeClass) : vm.row[barcode_comp]: ' + vm.row['barcode_comp'])
       if (vm.row['barcode_comp'] !== '') {
         result = 'text-success'
       }

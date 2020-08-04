@@ -9,11 +9,16 @@
                @onCommand="onCommandHandler"></title-row>
 
     <!-- Record # and creation date/time -->
+
     <div v-if="record" class="w-100 d-flex flex-row justify-content-between" style="margin-top:-20px;">
+      <!-- Record # -->
       <div style="color:rgba(0,0,0,.6);">{{ record ? '#' + record.id : '' }}</div>
+      <!-- Created At -->
       <div>
         <div class="p-0 m-0 mr-2 d-inline field-label">{{ $t('general.created_at') }}</div>&nbsp;&nbsp;&nbsp;
-        <div class="p-0 m-0 d-inline" style="color:rgba(0,0,0,.6);">{{ record ? record.created_at : '' }}</div>
+        <div class="p-0 m-0 mr-2 d-inline text-black">{{ record ? record.created_at : '' }}</div>
+        <div class="p-0 m-0 mr-2 d-inline field-label">By</div>
+        <div class="p-0 m-0 d-inline text-black">{{ record ? record.creator.name : '' }}</div>
       </div>
     </div>
 
@@ -137,11 +142,12 @@
                               :selected="activePage==='email'"
                               :imgSrc="IMAGE_PATH_EMAIL"></voucher-toolbar-button>
       <!-- Authorization -->
-      <voucher-toolbar-button
+      <voucher-toolbar-button v-if="isOwner"
                               caption="Authorization"
                               @click="onPageSelected('authorization')"
                               :selected="activePage==='authorization'"
-                              :imgSrc="IMAGE_PATH_AUTHORIZATION"></voucher-toolbar-button>
+                              :imgSrc="IMAGE_PATH_AUTHORIZATION"
+                              :badge="record ? record.assigned_users.length : 0"></voucher-toolbar-button>
     </div>
 
     <!--<voucher-toolbar-->
@@ -665,6 +671,17 @@
     },
 
     computed: {
+      user () {
+        return this.$store.getters.user
+      },
+      isOwner () {
+        const vm = this
+        var result = false
+        if (vm.record && vm.user) {
+          result = vm.record.user_id === vm.user.id
+        }
+        return result
+      },
       customLink () {
         const vm = this
         return vm.$store.getters.appHost + '/q/' + vm.record.custom_link_key
@@ -795,24 +812,24 @@
     watch: {
       pusher: function (newValue) {
         const vm = this
-        console.log('VoucherRecord :: watch(pusher)')
+        // console.log('VoucherRecord :: watch(pusher)')
         if (newValue) {
-          console.log('VoucherRecord :: watch(pusher) :: new value => initPusherChannel')
+          // console.log('VoucherRecord :: watch(pusher) :: new value => initPusherChannel')
           vm.initPusherChannel()
         } else {
-          console.log('VoucherRecord :: watch(pusher) :: not new value')
+          // console.log('VoucherRecord :: watch(pusher) :: not new value')
         }
       },
       recordId: function (newValue) {
         const vm = this
         vm.refresh(newValue)
-        console.log('VoucherRecord :: watch(recordId) => initPusherChannel')
+        // console.log('VoucherRecord :: watch(recordId) => initPusherChannel')
         vm.initPusherChannel()
       }
     },
     mounted () {
       const vm = this
-      console.log('VoucherRecord :: mounted => initPusherChannel')
+      // console.log('VoucherRecord :: mounted => initPusherChannel')
       vm.initPusherChannel()
 
       if (!vm.activePage) {
@@ -842,7 +859,7 @@
     methods: {
       onVoucherStatusUpdated (data) {
         const vm = this
-        console.log('onVoucherStatusUpdated: data: ', data)
+        // console.log('onVoucherStatusUpdated: data: ', data)
         if (vm.record) {
           vm.record.status = data.voucher.status;
         } else {
@@ -2244,7 +2261,7 @@
   }
 
   .field-label {
-    color: darkgray;
+    color: rgba(0,0,0,.3);
   }
 
   .field-content {

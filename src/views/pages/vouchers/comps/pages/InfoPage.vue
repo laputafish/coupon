@@ -12,7 +12,9 @@
         <!--v-model="record.notes"></data-input>-->
         <div class="col-sm-6">
           <div class="form-group mb-1">
-            <label for="description">{{ $t('vouchers.title') }}</label>
+            <label for="description">
+              {{ $t('vouchers.title') }}
+            </label>
             <validation-provider rules="required" :immediate="true" v-slot="{errors}">
             <input class="form-control"
                    :class="{'has-error': errors.length>0}"
@@ -44,12 +46,24 @@
         <!-- ********* -->
         <!-- Row #1 -->
         <!-- ********* -->
-        <data-input-select width="2" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
-                           :options="agents"
-                           optionLabelField="name"></data-input-select>
-        <!--<data-input-readonly width="2" id="created_at" labelTag="vouchers.creation_date"-->
-        <!--v-model="record.created_at"></data-input-readonly>-->
+        <data-input-select  v-if="isAgentOwner"
+                            width="2" id="agent_id" labelTag="agents.agent" v-model="record.agent_id"
+                            :options="agents"
+                            optionLabelField="name"></data-input-select>
+        <div v-else class="col-sm-2">
+          <div class="form-group">
+            <label for="agent_id">Agent</label>
+            <input readonly id="agent_id" name="agent_id" class="form-control"
+              :value="record.agent.name">
+            <input type="hidden" id="agent_id" name="agent_id" class="form_control"
+                   :value="record && record.agent && record.agent_id"/>
+          </div>
+        </div>
 
+        <!--<div class="col-sm-4">-->
+          <!--record.user_id = {{ record.user_id }}<br/>-->
+          <!--currntUser.id = {{ user.id }}-->
+        <!--</div>-->
         <div class="col-sm-2">
           <div class="d-flex flex-row justify-content-between">
             <label>QR Code
@@ -188,6 +202,27 @@ export default {
     }
   },
   computed: {
+    isAgentOwner () {
+      const vm = this
+      var result = true
+      const agentIds = vm.agents.map(agent => agent.id)
+      if (vm.record) {
+        result = agentIds.indexOf(vm.record.agent_id) >= 0
+      }
+      return result
+    },
+    isOwner () {
+      const vm = this
+      var result = false
+      if (vm.record) {
+        result = vm.user.id===vm.record.user_id
+      }
+      return result
+    },
+    user () {
+      const vm =this
+      return vm.$store.getters.user
+    },
     customLink () {
       const vm = this
       return vm.$store.getters.appHost + '/q/' + vm.record.custom_link_key

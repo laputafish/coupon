@@ -118,25 +118,25 @@
       },
       resetAll () {
         const vm = this
-        console.log('resetAll')
+        // console.log('resetAll')
         vm.$store.dispatch('SET_TOKEN', '').then(()=> {
-          console.log('resetAll :: SET_TOKEN.then')
+          // console.log('resetAll :: SET_TOKEN.then')
         }).catch(() => {
           vm.loading = false
-          console.log('resetAll :: SET_TOKEN.catch')
+          // console.log('resetAll :: SET_TOKEN.catch')
         })
         vm.$store.dispatch('SET_USER', null).then(()=> {
-          console.log('resetAll :: SET_USER.then')
+          // console.log('resetAll :: SET_USER.then')
         }).catch(() => {
           vm.loading = false
-          console.log('resetAll :: SET_USER.catch')
+          // console.log('resetAll :: SET_USER.catch')
         })
         vm.$store.dispatch('CLEAR_AGENTS').then(()=>{
-          console.log('logout => AFTER AGENTS CLEAR_AGENTS')
-          console.log('logout, agents: ', vm.agents)
-          console.log('resetAll :: CLEAR_AGENTS.then')
+          // console.log('logout => AFTER AGENTS CLEAR_AGENTS')
+          // console.log('logout, agents: ', vm.agents)
+          // console.log('resetAll :: CLEAR_AGENTS.then')
         }).catch(() => {
-          console.log('resetAll :: CLEAR_AGENTS.catch')
+          // console.log('resetAll :: CLEAR_AGENTS.catch')
         })
       },
       login () {
@@ -159,7 +159,7 @@
             })
           },
           error => {
-            console.log('logoin : error: ', error)
+            // console.log('logoin : error: ', error)
             vm.loading = false
             vm.messageTag = error.messageTag
           }

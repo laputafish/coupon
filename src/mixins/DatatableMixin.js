@@ -116,6 +116,11 @@ const mixin = Vue.util.mergeOptions(appMixin, {
   created () {
     this.xprops.eventbus.$on('onRowCommand', this.onRowCommandHandler)
   },
+  computed: {
+    user () {
+      return this.$store.getters.user
+    }
+  },
   destroyed () {
     this.xprops.eventbus.$off('onRowCommand')
   },
@@ -320,6 +325,9 @@ const mixin = Vue.util.mergeOptions(appMixin, {
           vm.total = response.total
           vm.query.page = response.current_page
           vm.query.offset = (vm.query.page - 1) * vm.query.limit
+        }
+        if (typeof vm.onDataLoaded === 'function') {
+          vm.data = vm.onDataLoaded(vm.data)
         }
       }, () => {
         vm.loading = false

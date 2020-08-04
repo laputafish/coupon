@@ -85,7 +85,7 @@ const actions = {
       // new Promise((resolve) => {
       const accessToken = localStorage.getItem('accessToken') || ''
       /*const promise = */
-      console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
+      // console.log('system.js :: FETCH_TOKEN :: accessToken = ' + accessToken)
       // console.log('localStorage(accessToken) = ' + accessToken)
       commit('setAccessToken', accessToken)
       //   resolve(accessToken)
@@ -147,7 +147,7 @@ const actions = {
     }
     dispatch('AUTH_POST', postData).then(
       response => {
-        console.log('AUTH_POST (/users/settings): response: ', response)
+        // console.log('AUTH_POST (/users/settings): response: ', response)
       }
     )
   },
@@ -158,7 +158,7 @@ const actions = {
     }
     dispatch('AUTH_GET', data).then(
       response => {
-        console.log('FETCH_USER_SETTINGS :: response: ', response)
+        // console.log('FETCH_USER_SETTINGS :: response: ', response)
         commit('setUserSettings', response)
       }
     )
