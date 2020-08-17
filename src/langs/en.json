@@ -63,6 +63,7 @@
   },
   "message": "hello i18n !!",
   "messages": {
+    "reset_view_count": "Reset View Count",
     "sign_up_success_and_check_email": "Signed up successfully. Please check your email.",
     "verification_code_is_invalid_or_expired": "Verification code is invalid or expired!",
     "email_not_registered_yet": "Email was not registered yet!",

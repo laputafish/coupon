@@ -1020,7 +1020,11 @@
       onRowCommandHandler (payload) {
         const vm = this
         console.log('AgentCodeTable :: onRowCommandHandler :: payload: ', payload)
+
         switch (payload.command) {
+          case 'resetViewCount':
+            vm.resetViewCount(payload)
+            break
           // case 'onLinkClicked':
           //   vm.updateCodeViewCount(payload.row)
           //   break
@@ -1094,6 +1098,31 @@
             break
         }
       },
+
+      resetViewCount (payload) {
+        const vm = this
+        const postData = {
+          urlCommand: '/agent_codes/' + payload.row.id + '/reset_view_count'
+        }
+        vm.$store.dispatch('AUTH_POST', postData).then(
+          response => {
+            // console.log('sendEmail : response: ', response)
+            if (response.message) {
+              vm.$toaster.info(response.message)
+            }
+            const voucherCode = response.voucherCode
+            console.log('resetViewCount response.voucherCode: ', response.voucherCode)
+            console.log('response.voucherCode = ', voucherCode)
+            var dataVoucherCode = vm.data.find(item => item.id === voucherCode.id)
+            console.log('dataVoucherCode: ', dataVoucherCode)
+            if (dataVoucherCode) {
+              dataVoucherCode.views = 0
+            }
+          }
+        )
+
+      },
+
       setVoucherCodeStatus (row, status) {
         const vm = this
         const postData = {
@@ -1101,7 +1130,6 @@
           data: {
             status: status
           }
-
         }
         vm.$store.dispatch('AUTH_POST', postData).then(
           response => {

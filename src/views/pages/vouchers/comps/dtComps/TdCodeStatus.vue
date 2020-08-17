@@ -87,23 +87,6 @@
           status: status
         })
       },
-      // release () {
-      //   const vm = this
-      //   vm.xprops.eventbus.$emit('onRowCommand', {
-      //     command: 'resetStatus',
-      //     row: vm.row,
-      //     status: 'pending'
-      //   })
-      // },
-      //
-      // hold () {
-      //   const vm = this
-      //   vm.xprops.eventbus.$emit('onRowCommand', {
-      //     command: 'resetStatus',
-      //     row: vm.row,
-      //     status: 'hold'
-      //   })
-      // },
       resetStatus () {
         const vm = this
         vm.$dialog.confirm(vm.$t('messages.reset_status')).then(
